@@ -1,0 +1,123 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.0.4'
+    }
+}
+
+subprojects {
+    apply plugin: 'signing'
+    apply plugin: 'maven-publish'
+
+    ext {
+        libName = 'A3WT'
+        libGroupName = 'com.ansdoship'
+        libVendorName = 'AnsdoShip'
+
+        libVersionCode = 1
+        libVersionName = '0.0.1'
+
+        libSourceCompatibility = JavaVersion.VERSION_1_8
+        libTargetCompatibility = JavaVersion.VERSION_1_8
+
+        libAndroidCompileSdk = 31
+        libAndroidMinSdk = 16
+        libAndroidTargetSdk = 31
+    }
+
+    repositories {
+        mavenCentral()
+        google()
+    }
+
+}
+
+configure([project(':core'), project(':awt')]) {
+    apply plugin: 'java'
+
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+    sourceCompatibility = libSourceCompatibility
+    targetCompatibility = libTargetCompatibility
+
+    group = libGroupName
+    version = libVersionName
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
+
+    javadoc {
+        if(JavaVersion.current().isJava9Compatible()) {
+            options.addBooleanOption('html5', true)
+        }
+    }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = libGroupName
+                artifactId = "${rootProject.name}-${project.name}"
+                version = libVersionName
+                from components.java
+                pom {
+                    name = libName
+                    description = 'A simple helper library for use the Dear ImGui with jMonkeyEngine. Currently supports LWJGL3 platform only.'
+                    url = 'https://github.com/Tianscar/jme3-imgui'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'Tianscar'
+                            name = 'Tiansword Carbonicacid'
+                            email = 'tianscar@protonmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git@github.com/Tianscar/jme3-imgui.git'
+                        developerConnection = 'scm:git:git@github.com/Tianscar/jme3-imgui.git'
+                        url = 'https://github.com/Tianscar/jme3-imgui'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "OSSRH"
+                if (project.version.toString().endsWith("-SNAPSHOT")) {
+                    url = "https://s01.oss.sonatype.org/content/repositories/snapshots"
+                } else {
+                    url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                }
+                credentials {
+                    username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
+                    password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
+                }
+            }
+        }
+    }
+
+    signing {
+        def signingKey = findProperty("signingKey") ?: System.getenv("GPG_KEY")
+        def signingPassword = findProperty("signingPassword") ?:System.getenv("GPG_PASSWORD")
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications.mavenJava)
+    }
+
+}
