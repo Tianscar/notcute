@@ -419,7 +419,7 @@ public final class BitmapIO {
             }
         }
         else if (format.equals("bmp")) {
-            result = WindowsBitmapEncoder.compress(bitmap, output);
+            result = BitmapBMPEncoder.compress(bitmap, output);
         }
         output.flush();
         output.close();

@@ -3,19 +3,27 @@ package com.ansdoship.a3wt.awt;
 import com.ansdoship.a3wt.graphics.A3Canvas;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
+import com.ansdoship.a3wt.input.A3CanvasListener;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.ComponentListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
-public class A3Component extends Component implements A3Canvas {
+public class A3AWTComponent extends Component implements A3Canvas, ComponentListener, FocusListener {
 
     protected volatile long elapsed = 0;
     protected final AWTA3Graphics graphics = new A3ComponentGraphics();
     protected volatile Image buffer = null;
+    protected final List<A3CanvasListener> a3CanvasListeners = new ArrayList<>();
 
     private static class A3ComponentGraphics extends AWTA3Graphics {
         public A3ComponentGraphics() {
@@ -26,6 +34,11 @@ public class A3Component extends Component implements A3Canvas {
             this.width = width;
             this.height = height;
         }
+    }
+
+    public A3AWTComponent() {
+        addComponentListener(this);
+        addFocusListener(this);
     }
 
     @Override
@@ -49,6 +62,9 @@ public class A3Component extends Component implements A3Canvas {
 
     @Override
     public void paint(A3Graphics graphics) {
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasPaint(graphics);
+        }
     }
 
     @Override
@@ -81,6 +97,58 @@ public class A3Component extends Component implements A3Canvas {
     public synchronized A3Image snapshotBuffer() {
         if (buffer == null) return null;
         return new AWTA3Image(A3AWTUtils.copyImage(buffer));
+    }
+
+    @Override
+    public List<A3CanvasListener> getA3CanvasListeners() {
+        return a3CanvasListeners;
+    }
+
+    @Override
+    public void addA3CanvasListener(A3CanvasListener listener) {
+        a3CanvasListeners.add(listener);
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasResized(e.getComponent().getWidth(), e.getComponent().getHeight());
+        }
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasMoved(e.getComponent().getX(), e.getComponent().getY());
+        }
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasShown();
+        }
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasHidden();
+        }
+    }
+
+    @Override
+    public void focusGained(FocusEvent e) {
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasFocusGained();
+        }
+    }
+
+    @Override
+    public void focusLost(FocusEvent e) {
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasFocusLost();
+        }
     }
 
 }

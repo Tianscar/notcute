@@ -35,9 +35,9 @@ import java.io.OutputStream;
 /**
  * A factory class providing functions to encode Windows Bitmap (*.bmp).
  */
-final class WindowsBitmapEncoder {
+final class BitmapBMPEncoder {
 
-    private WindowsBitmapEncoder(){}
+    private BitmapBMPEncoder(){}
 
     private final static short BF_TYPE = 0x4D42;
 

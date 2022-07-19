@@ -25,7 +25,7 @@ public class A3AndroidUtils {
      */
     @SuppressLint("UseCompatLoadingForDrawables")
     public static Drawable getDrawable(@NonNull Context context, @DrawableRes int id) {
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return context.getDrawable(id);
         } else {
             return context.getResources().getDrawable(id);

@@ -3,15 +3,22 @@ package com.ansdoship.a3wt.android;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.ansdoship.a3wt.graphics.A3Canvas;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
+import com.ansdoship.a3wt.input.A3CanvasListener;
 
-public class A3SurfaceView extends SurfaceView implements A3Canvas, SurfaceHolder.Callback {
+import java.util.ArrayList;
+import java.util.List;
+
+public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, SurfaceHolder.Callback, View.OnLayoutChangeListener {
 
     protected volatile long elapsed = 0;
     protected AndroidA3Graphics graphics = new A3SurfaceViewGraphics();
@@ -19,6 +26,8 @@ public class A3SurfaceView extends SurfaceView implements A3Canvas, SurfaceHolde
 
     protected SurfaceHolder surfaceHolder;
     protected boolean destroyed = false;
+
+    protected final List<A3CanvasListener> a3CanvasListeners = new ArrayList<>();
 
     private static class A3SurfaceViewGraphics extends AndroidA3Graphics {
         public A3SurfaceViewGraphics() {
@@ -29,18 +38,19 @@ public class A3SurfaceView extends SurfaceView implements A3Canvas, SurfaceHolde
         }
     }
 
-    public A3SurfaceView(Context context) {
+    public A3AndroidSurfaceView(Context context) {
         this(context, null);
     }
 
-    public A3SurfaceView(Context context, AttributeSet attrs) {
+    public A3AndroidSurfaceView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-        surfaceHolder = getHolder();
-        surfaceHolder.addCallback(this);
     }
 
-    public A3SurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public A3AndroidSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        surfaceHolder = getHolder();
+        surfaceHolder.addCallback(this);
+        addOnLayoutChangeListener(this);
     }
 
     @Override
@@ -50,7 +60,6 @@ public class A3SurfaceView extends SurfaceView implements A3Canvas, SurfaceHolde
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-
     }
 
     @Override
@@ -65,6 +74,9 @@ public class A3SurfaceView extends SurfaceView implements A3Canvas, SurfaceHolde
 
     @Override
     public void paint(A3Graphics graphics) {
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasPaint(graphics);
+        }
     }
 
     @Override
@@ -108,6 +120,53 @@ public class A3SurfaceView extends SurfaceView implements A3Canvas, SurfaceHolde
         Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         buffer.setBitmap(bitmap);
         return new AndroidA3Image(bitmap);
+    }
+
+    @Override
+    public List<A3CanvasListener> getA3CanvasListeners() {
+        return a3CanvasListeners;
+    }
+
+    @Override
+    public void addA3CanvasListener(A3CanvasListener listener) {
+        a3CanvasListeners.add(listener);
+    }
+
+    @Override
+    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+        if (gainFocus) {
+            for (A3CanvasListener listener : a3CanvasListeners) {
+                listener.canvasFocusGained();
+            }
+        }
+        else {
+            for (A3CanvasListener listener : a3CanvasListeners) {
+                listener.canvasFocusLost();
+            }
+        }
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+    }
+
+    @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        if (visibility == VISIBLE) {
+            for (A3CanvasListener listener : a3CanvasListeners) {
+                listener.canvasShown();
+            }
+        }
+        else {
+            for (A3CanvasListener listener : a3CanvasListeners) {
+                listener.canvasHidden();
+            }
+        }
+    }
+
+    @Override
+    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasMoved(left, top);
+            listener.canvasResized(right - left, bottom - top);
+        }
     }
 
 }

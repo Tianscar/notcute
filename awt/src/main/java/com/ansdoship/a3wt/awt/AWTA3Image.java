@@ -22,7 +22,7 @@ public class AWTA3Image implements A3Image {
 
     @Override
     public A3Graphics getGraphics() {
-        return null;
+        return graphics;
     }
 
     @Override

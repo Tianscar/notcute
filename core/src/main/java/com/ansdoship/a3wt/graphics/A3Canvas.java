@@ -1,5 +1,9 @@
 package com.ansdoship.a3wt.graphics;
 
+import com.ansdoship.a3wt.input.A3CanvasListener;
+
+import java.util.List;
+
 public interface A3Canvas {
 
     int getWidth();
@@ -11,5 +15,8 @@ public interface A3Canvas {
 
     A3Image snapshot();
     A3Image snapshotBuffer();
+
+    List<A3CanvasListener> getA3CanvasListeners();
+    void addA3CanvasListener(A3CanvasListener listener);
 
 }
