@@ -15,6 +15,5 @@ public interface A3Images {
     boolean write(A3Image image, String formatName, OutputStream output) throws IOException;
     String[] getReaderFormatNames();
     String[] getWriterFormatNames();
-    A3Image copy(A3Image source);
 
 }

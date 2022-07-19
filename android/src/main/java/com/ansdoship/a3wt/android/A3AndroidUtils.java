@@ -2,6 +2,7 @@ package com.ansdoship.a3wt.android;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import androidx.annotation.DrawableRes;
@@ -29,6 +30,10 @@ public class A3AndroidUtils {
         } else {
             return context.getResources().getDrawable(id);
         }
+    }
+
+    public static Bitmap copyBitmap(@NonNull Bitmap source) {
+        return source.copy(source.getConfig(), source.isMutable());
     }
 
 }

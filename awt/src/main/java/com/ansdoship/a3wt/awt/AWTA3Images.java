@@ -46,9 +46,4 @@ public class AWTA3Images implements A3Images {
         return ImageIO.getWriterFormatNames();
     }
 
-    @Override
-    public A3Image copy(A3Image source) {
-        return new AWTA3Image(A3AWTUtils.copyBufferedImage(((AWTA3Image)source).getBufferedImage()));
-    }
-
 }

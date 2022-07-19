@@ -2,8 +2,16 @@ package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
+import com.ansdoship.a3wt.graphics.A3Path;
 
 import java.awt.Graphics2D;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.Point2D;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
 
 public class AWTA3Graphics implements A3Graphics {
@@ -36,6 +44,17 @@ public class AWTA3Graphics implements A3Graphics {
         return graphics2D;
     }
 
+    public void drawShape(Shape shape) {
+        checkDisposed("Can't call drawShape() on a disposed A3Graphics");
+        graphics2D.draw(shape);
+    }
+
+    @Override
+    public void drawPath(A3Path path) {
+        checkDisposed("Can't call drawPath() on a disposed A3Graphics");
+        graphics2D.draw(((AWTA3Path)path).getPath2D());
+    }
+
     @Override
     public void drawImage(A3Image image, int x, int y) {
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
@@ -43,46 +62,47 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawArc(int left, int top, int right, int bottom, int startAngle, int sweepAngle) {
+    public void drawPoint(float x, float y) {
+        checkDisposed("Can't call drawPoint() on a disposed A3Graphics");
+        Point2D point2D = new Point2D.Float(x, y);
+        graphics2D.draw(new Line2D.Float(point2D, point2D));
+    }
+
+    @Override
+    public void drawArc(float left, float top, float right, float bottom, float startAngle, float sweepAngle, boolean useCenter) {
         checkDisposed("Can't call drawArc() on a disposed A3Graphics");
-        graphics2D.drawArc(left, top, right - left, bottom - top, startAngle, sweepAngle);
+        graphics2D.draw(new Arc2D.Float(new Rectangle2D.Float(left, top, right - left, bottom - top), startAngle, sweepAngle,
+                useCenter ? Arc2D.PIE : Arc2D.OPEN));
     }
 
     @Override
-    public void drawLine(int startX, int startY, int stopX, int stopY) {
+    public void drawLine(float startX, float startY, float stopX, float stopY) {
         checkDisposed("Can't call drawLine() on a disposed A3Graphics");
-        graphics2D.drawLine(startX, startY, stopX, stopY);
+        graphics2D.draw(new Line2D.Float(startX, startY, stopX, stopY));
     }
 
     @Override
-    public void drawOval(int left, int top, int right, int bottom) {
+    public void drawOval(float left, float top, float right, float bottom) {
         checkDisposed("Can't call drawOval() on a disposed A3Graphics");
-        graphics2D.drawOval(left, top, right - left, bottom - top);
+        graphics2D.draw(new Ellipse2D.Float(left, top, right - left, bottom - top));
     }
 
     @Override
-    public void drawRect(int left, int top, int right, int bottom) {
+    public void drawRect(float left, float top, float right, float bottom) {
         checkDisposed("Can't call drawRect() on a disposed A3Graphics");
-        graphics2D.drawRect(left, top, right - left, bottom - top);
+        graphics2D.draw(new Rectangle2D.Float(left, top, right - left, bottom - top));
     }
 
     @Override
-    public void drawRoundRect(int left, int top, int right, int bottom, int rx, int ry) {
+    public void drawRoundRect(float left, float top, float right, float bottom, float rx, float ry) {
         checkDisposed("Can't call drawRoundRect() on a disposed A3Graphics");
-        graphics2D.drawRoundRect(left, top, right - left, bottom - top, rx, ry);
+        graphics2D.draw(new RoundRectangle2D.Float(left, top, right - left, bottom - top, rx, ry));
     }
 
     @Override
     public void drawText(String text, float x, float y) {
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
         graphics2D.drawString(text, x, y);
-    }
-
-    @Override
-    public void drawPolygon(int[] xpoints, int[] ypoints, int npoints, boolean close) {
-        checkDisposed("Can't call drawPolygon() on a disposed A3Graphics");
-        if (close) graphics2D.drawPolygon(xpoints, ypoints, npoints);
-        else graphics2D.drawPolyline(xpoints, ypoints, npoints);
     }
 
     @Override

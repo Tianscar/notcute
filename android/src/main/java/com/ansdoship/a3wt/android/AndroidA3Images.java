@@ -1,6 +1,5 @@
 package com.ansdoship.a3wt.android;
 
-import android.graphics.Bitmap;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3Images;
 
@@ -48,12 +47,6 @@ public class AndroidA3Images implements A3Images {
     @Override
     public String[] getWriterFormatNames() {
         return WRITER_FORMAT_NAMES;
-    }
-
-    @Override
-    public A3Image copy(A3Image source) {
-        Bitmap bitmap = ((AndroidA3Image)source).getBitmap();
-        return new AndroidA3Image(bitmap.copy(bitmap.getConfig(), bitmap.isMutable()));
     }
 
 }
