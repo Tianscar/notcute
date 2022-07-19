@@ -3,9 +3,6 @@ package com.ansdoship.a3wt.awt;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3Images;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,11 +48,7 @@ public class AWTA3Images implements A3Images {
 
     @Override
     public A3Image copy(A3Image source) {
-        BufferedImage bufferedImage = ((AWTA3Image)source).getBufferedImage();
-        ColorModel cm = bufferedImage.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bufferedImage.copyData(bufferedImage.getRaster().createCompatibleWritableRaster());
-        return new AWTA3Image(new BufferedImage(cm, raster, isAlphaPremultiplied, null));
+        return new AWTA3Image(A3AWTUtils.copyBufferedImage(((AWTA3Image)source).getBufferedImage()));
     }
 
 }
