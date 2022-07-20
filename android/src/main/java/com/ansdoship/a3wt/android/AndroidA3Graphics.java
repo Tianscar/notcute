@@ -134,17 +134,11 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void dispose() {
-        checkDisposed("Can't call dispose() on a disposed A3Graphics");
+    public synchronized void dispose() {
+        if (isDisposed()) return;
         disposed = true;
         canvas = null;
         paint = null;
-    }
-
-    private void checkDisposed(String errorMessage) {
-        if (isDisposed()) {
-            throw new IllegalStateException(errorMessage);
-        }
     }
 
 }

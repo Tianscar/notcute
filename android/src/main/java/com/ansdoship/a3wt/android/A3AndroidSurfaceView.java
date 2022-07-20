@@ -22,12 +22,14 @@ public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, Surfa
 
     protected volatile long elapsed = 0;
     protected AndroidA3Graphics graphics = new A3SurfaceViewGraphics();
-    protected volatile Canvas buffer = null;
+    protected volatile Bitmap buffer = null;
+    protected volatile int backgroundColor = 0xFF000000;
+    protected volatile boolean surfaceFirstCreated = false;
 
     protected SurfaceHolder surfaceHolder;
-    protected boolean destroyed = false;
 
     protected final List<A3CanvasListener> a3CanvasListeners = new ArrayList<>();
+    protected volatile boolean disposed = false;
 
     private static class A3SurfaceViewGraphics extends AndroidA3Graphics {
         public A3SurfaceViewGraphics() {
@@ -55,16 +57,21 @@ public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, Surfa
 
     @Override
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
-        destroyed = false;
+        if (!surfaceFirstCreated) {
+            surfaceFirstCreated = true;
+            for (A3CanvasListener listener : a3CanvasListeners) {
+                listener.canvasCreated();
+            }
+        }
     }
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+        postUpdate();
     }
 
     @Override
     public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-        destroyed = true;
     }
 
     @Override
@@ -75,33 +82,55 @@ public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, Surfa
     @Override
     public void paint(A3Graphics graphics) {
         for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasPaint(graphics);
+            listener.canvasPainted(graphics);
         }
     }
 
-    @Override
-    public synchronized void update() {
-        long time = System.currentTimeMillis();
+    public void update(Canvas canvas) {
+        if (buffer == null) return;
+        canvas.drawBitmap(buffer, 0, 0, null);
+        canvas.save();
+        canvas.restore();
+    }
+
+    public synchronized void postUpdate() {
         Canvas canvas = surfaceHolder.lockCanvas();
         if (canvas == null) return;
-        Bitmap tmpBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-        buffer = new Canvas(tmpBitmap);
         try {
-            graphics.setCanvas(buffer);
-            paint(graphics);
-            buffer.save();
-            buffer.restore();
-            canvas.drawBitmap(tmpBitmap, 0, 0, null);
+            update(canvas);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         finally {
-            graphics.setCanvas(null);
-            buffer.setBitmap(null);
-            tmpBitmap.recycle();
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        this.backgroundColor = color;
+    }
+
+    @Override
+    public int getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    @Override
+    public synchronized void update() {
+        checkDisposed("Can't call update() on a disposed A3Canvas");
+        long time = System.currentTimeMillis();
+        if (buffer != null && !buffer.isRecycled()) buffer.recycle();
+        buffer = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas tmpCanvas = new Canvas(buffer);
+        tmpCanvas.drawColor(backgroundColor);
+        graphics.setCanvas(tmpCanvas);
+        paint(graphics);
+        tmpCanvas.save();
+        tmpCanvas.restore();
+        graphics.setCanvas(null);
+        postUpdate();
         long now = System.currentTimeMillis();
         elapsed = now - time;
     }
@@ -117,9 +146,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, Surfa
     @Override
     public synchronized A3Image snapshotBuffer() {
         if (buffer == null) return null;
-        Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-        buffer.setBitmap(bitmap);
-        return new AndroidA3Image(bitmap);
+        return new AndroidA3Image(A3AndroidUtils.copyBitmap(buffer));
     }
 
     @Override
@@ -134,6 +161,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, Surfa
 
     @Override
     protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
         if (gainFocus) {
             for (A3CanvasListener listener : a3CanvasListeners) {
                 listener.canvasFocusGained();
@@ -144,7 +172,6 @@ public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, Surfa
                 listener.canvasFocusLost();
             }
         }
-        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     }
 
     @Override
@@ -163,9 +190,27 @@ public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, Surfa
 
     @Override
     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+        int width = right - left;
+        int height = bottom - top;
         for (A3CanvasListener listener : a3CanvasListeners) {
             listener.canvasMoved(left, top);
-            listener.canvasResized(right - left, bottom - top);
+            listener.canvasResized(width, height);
+        }
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return disposed;
+    }
+
+    @Override
+    public synchronized void dispose() {
+        if (isDisposed()) return;
+        disposed = true;
+        if (buffer != null && !buffer.isRecycled()) buffer.recycle();
+        buffer = null;
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasDisposed();
         }
     }
 

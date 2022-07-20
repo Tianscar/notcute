@@ -10,6 +10,7 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.EventQueue;
 import java.awt.event.ComponentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
@@ -24,6 +25,7 @@ public class A3AWTComponent extends Component implements A3Canvas, ComponentList
     protected final AWTA3Graphics graphics = new A3ComponentGraphics();
     protected volatile Image buffer = null;
     protected final List<A3CanvasListener> a3CanvasListeners = new ArrayList<>();
+    protected volatile boolean disposed = false;
 
     private static class A3ComponentGraphics extends AWTA3Graphics {
         public A3ComponentGraphics() {
@@ -39,6 +41,14 @@ public class A3AWTComponent extends Component implements A3Canvas, ComponentList
     public A3AWTComponent() {
         addComponentListener(this);
         addFocusListener(this);
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                for (A3CanvasListener listener : a3CanvasListeners) {
+                    listener.canvasCreated();
+                }
+            }
+        });
     }
 
     @Override
@@ -63,12 +73,23 @@ public class A3AWTComponent extends Component implements A3Canvas, ComponentList
     @Override
     public void paint(A3Graphics graphics) {
         for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasPaint(graphics);
+            listener.canvasPainted(graphics);
         }
     }
 
     @Override
+    public int getBackgroundColor() {
+        return getBackground().getRGB();
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        setBackground(new Color(color));
+    }
+
+    @Override
     public synchronized void update() {
+        checkDisposed("Can't call update() on a disposed A3Canvas");
         long time = System.currentTimeMillis();
         buffer = createImage(getWidth(), getHeight());
         Graphics gTmp = buffer.getGraphics();
@@ -148,6 +169,21 @@ public class A3AWTComponent extends Component implements A3Canvas, ComponentList
     public void focusLost(FocusEvent e) {
         for (A3CanvasListener listener : a3CanvasListeners) {
             listener.canvasFocusLost();
+        }
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return disposed;
+    }
+
+    @Override
+    public void dispose() {
+        if (isDisposed()) return;
+        disposed = true;
+        buffer = null;
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasDisposed();
         }
     }
 

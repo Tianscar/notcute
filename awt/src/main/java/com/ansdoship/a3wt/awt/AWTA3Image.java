@@ -68,17 +68,11 @@ public class AWTA3Image implements A3Image {
 
     @Override
     public synchronized void dispose() {
-        checkDisposed("Can't call dispose() on a disposed A3Image");
+        if (isDisposed()) return;
         disposed = true;
         graphics.dispose();
         graphics = null;
         bufferedImage = null;
-    }
-
-    private void checkDisposed(String errorMessage) {
-        if (disposed) {
-            throw new IllegalStateException(errorMessage);
-        }
     }
 
     @Override

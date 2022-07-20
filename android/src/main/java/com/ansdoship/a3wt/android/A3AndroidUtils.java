@@ -2,9 +2,12 @@ package com.ansdoship.a3wt.android;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
@@ -34,6 +37,16 @@ public class A3AndroidUtils {
 
     public static Bitmap copyBitmap(@NonNull Bitmap source) {
         return source.copy(source.getConfig(), source.isMutable());
+    }
+
+    public static int getDisplayWidth(@NonNull Resources resources) {
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return metrics.widthPixels;
+    }
+
+    public static int getDisplayHeight(@NonNull Resources resources) {
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        return metrics.heightPixels;
     }
 
 }

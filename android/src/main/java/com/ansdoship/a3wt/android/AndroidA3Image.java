@@ -67,18 +67,12 @@ public class AndroidA3Image implements A3Image {
 
     @Override
     public synchronized void dispose() {
-        checkDisposed("Can't call dispose() on a disposed A3Image");
+        if (isDisposed()) return;
         disposed = true;
         graphics.dispose();
         graphics = null;
         bitmap.recycle();
         bitmap = null;
-    }
-
-    private void checkDisposed(String errorMessage) {
-        if (isDisposed()) {
-            throw new IllegalStateException(errorMessage);
-        }
     }
 
     @Override

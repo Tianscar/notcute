@@ -112,16 +112,10 @@ public class AWTA3Graphics implements A3Graphics {
 
     @Override
     public synchronized void dispose() {
-        checkDisposed("Can't call dispose() on a disposed A3Graphics");
+        if (isDisposed()) return;
         disposed = true;
         graphics2D.dispose();
         graphics2D = null;
-    }
-
-    private void checkDisposed(String errorMessage) {
-        if (disposed) {
-            throw new IllegalStateException(errorMessage);
-        }
     }
 
 }

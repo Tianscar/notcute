@@ -10,20 +10,18 @@ import java.awt.GraphicsConfiguration;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
 import java.awt.Frame;
+import java.awt.Color;
 import java.awt.event.ComponentListener;
-import java.awt.event.FocusListener;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.ComponentEvent;
-import java.awt.event.FocusEvent;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class A3AWTFrame extends Frame implements A3Container, ComponentListener, FocusListener, WindowListener, WindowFocusListener {
+public class A3AWTFrame extends Frame implements A3Container, ComponentListener, WindowListener, WindowFocusListener {
 
     protected final A3AWTComponent component;
-    protected final List<A3CanvasListener> a3CanvasListeners = new ArrayList<>();
     protected final List<A3ContainerListener> a3ContainerListeners = new ArrayList<>();
 
     public A3AWTFrame() throws HeadlessException {
@@ -39,7 +37,6 @@ public class A3AWTFrame extends Frame implements A3Container, ComponentListener,
         component = new A3AWTComponent();
         add(component);
         addComponentListener(this);
-        addFocusListener(this);
         addWindowListener(this);
         addWindowFocusListener(this);
     }
@@ -49,21 +46,23 @@ public class A3AWTFrame extends Frame implements A3Container, ComponentListener,
         component = new A3AWTComponent();
         add(component);
         addComponentListener(this);
-        addFocusListener(this);
         addWindowListener(this);
         addWindowFocusListener(this);
     }
 
     @Override
     public void paint(Graphics g) {
+        component.paint(component.getGraphics());
     }
 
     @Override
     public void update(Graphics g) {
+        component.paint(component.getGraphics());
     }
 
     @Override
     public void repaint(long tm, int x, int y, int width, int height) {
+        component.repaint(tm, x, y, width, height);
     }
 
     @Override
@@ -77,7 +76,24 @@ public class A3AWTFrame extends Frame implements A3Container, ComponentListener,
     }
 
     @Override
+    public void setBackground(Color bgColor) {
+        super.setBackground(bgColor);
+        component.setBackground(bgColor);
+    }
+
+    @Override
+    public int getBackgroundColor() {
+        return component.getBackgroundColor();
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        component.setBackgroundColor(color);
+    }
+
+    @Override
     public void update() {
+        checkDisposed("Can't call update() on a disposed A3Container");
         component.update();
     }
 
@@ -93,12 +109,12 @@ public class A3AWTFrame extends Frame implements A3Container, ComponentListener,
 
     @Override
     public List<A3CanvasListener> getA3CanvasListeners() {
-        return a3CanvasListeners;
+        return component.a3CanvasListeners;
     }
 
     @Override
     public void addA3CanvasListener(A3CanvasListener listener) {
-        a3CanvasListeners.add(listener);
+        component.addA3CanvasListener(listener);
     }
 
     @Override
@@ -113,92 +129,77 @@ public class A3AWTFrame extends Frame implements A3Container, ComponentListener,
 
     @Override
     public void componentResized(ComponentEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasResized(e.getComponent().getWidth(), e.getComponent().getHeight());
+        for (A3ContainerListener listener : a3ContainerListeners) {
+            listener.containerResized(getWidth(), getHeight());
         }
     }
 
     @Override
     public void componentMoved(ComponentEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasMoved(e.getComponent().getX(), e.getComponent().getY());
+        for (A3ContainerListener listener : a3ContainerListeners) {
+            listener.containerMoved(getX(), getY());
         }
     }
 
     @Override
     public void componentShown(ComponentEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasShown();
-        }
     }
 
     @Override
     public void componentHidden(ComponentEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasHidden();
-        }
-    }
-
-    @Override
-    public void focusGained(FocusEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasFocusGained();
-        }
-    }
-
-    @Override
-    public void focusLost(FocusEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasFocusLost();
-        }
     }
 
     @Override
     public void windowOpened(WindowEvent e) {
         for (A3ContainerListener listener : a3ContainerListeners) {
-            listener.containerOpened();
+            listener.containerCreated();
+        }
+        for (A3ContainerListener listener : a3ContainerListeners) {
+            listener.containerStarted();
         }
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
+        boolean close = true;
         for (A3ContainerListener listener : a3ContainerListeners) {
-            listener.containerClosing();
+            close = close && listener.containerCloseRequested();
         }
+        if (close) dispose();
     }
 
     @Override
     public void windowClosed(WindowEvent e) {
         for (A3ContainerListener listener : a3ContainerListeners) {
-            listener.containerClosed();
+            listener.containerDisposed();
         }
     }
 
     @Override
     public void windowIconified(WindowEvent e) {
         for (A3ContainerListener listener : a3ContainerListeners) {
-            listener.containerIconified();
+            listener.containerStopped();
         }
     }
 
     @Override
     public void windowDeiconified(WindowEvent e) {
         for (A3ContainerListener listener : a3ContainerListeners) {
-            listener.containerDeiconified();
+            listener.containerStarted();
         }
     }
 
     @Override
     public void windowActivated(WindowEvent e) {
         for (A3ContainerListener listener : a3ContainerListeners) {
-            listener.containerActivated();
+            listener.containerResumed();
         }
     }
 
     @Override
     public void windowDeactivated(WindowEvent e) {
         for (A3ContainerListener listener : a3ContainerListeners) {
-            listener.containerDeactivated();
+            listener.containerPaused();
         }
     }
 
@@ -214,6 +215,17 @@ public class A3AWTFrame extends Frame implements A3Container, ComponentListener,
         for (A3ContainerListener listener : a3ContainerListeners) {
             listener.containerFocusLost();
         }
+    }
+
+    @Override
+    public boolean isDisposed() {
+        return component.isDisposed();
+    }
+
+    @Override
+    public void dispose() {
+        component.dispose();
+        super.dispose();
     }
 
 }

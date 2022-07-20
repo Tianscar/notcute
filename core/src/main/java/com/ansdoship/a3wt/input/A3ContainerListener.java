@@ -2,14 +2,16 @@ package com.ansdoship.a3wt.input;
 
 public interface A3ContainerListener {
 
-    void containerOpened();
-    void containerClosing();
-    void containerClosed();
-    void containerIconified();
-    void containerDeiconified();
-    void containerActivated();
-    void containerDeactivated();
+    void containerCreated();
+    void containerDisposed();
+    void containerStarted();
+    void containerStopped();
+    void containerResumed();
+    void containerPaused();
     void containerFocusGained();
     void containerFocusLost();
+    void containerResized(int width, int height);
+    void containerMoved(int x, int y);
+    boolean containerCloseRequested();
 
 }
