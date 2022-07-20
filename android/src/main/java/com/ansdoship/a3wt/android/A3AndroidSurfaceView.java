@@ -193,8 +193,10 @@ public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, Surfa
         int width = right - left;
         int height = bottom - top;
         for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasMoved(left, top);
             listener.canvasResized(width, height);
+        }
+        for (A3CanvasListener listener : a3CanvasListeners) {
+            listener.canvasMoved(left, top);
         }
     }
 

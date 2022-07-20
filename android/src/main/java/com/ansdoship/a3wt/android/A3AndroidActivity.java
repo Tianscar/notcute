@@ -2,6 +2,7 @@ package com.ansdoship.a3wt.android;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import androidx.annotation.Nullable;
 import com.ansdoship.a3wt.graphics.A3Container;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -12,7 +13,7 @@ import com.ansdoship.a3wt.input.A3ContainerListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class A3AndroidActivity extends Activity implements A3Container {
+public class A3AndroidActivity extends Activity implements A3Container, View.OnLayoutChangeListener {
 
     protected volatile A3AndroidSurfaceView surfaceView;
     protected final List<A3ContainerListener> a3ContainerListeners = new ArrayList<>();
@@ -22,6 +23,7 @@ public class A3AndroidActivity extends Activity implements A3Container {
         super.onCreate(savedInstanceState);
         if (surfaceView == null) surfaceView = new A3AndroidSurfaceView(this);
         setContentView(surfaceView);
+        getWindow().getDecorView().addOnLayoutChangeListener(this);
         for (A3ContainerListener listener : a3ContainerListeners) {
             listener.containerCreated();
         }
@@ -61,12 +63,12 @@ public class A3AndroidActivity extends Activity implements A3Container {
 
     @Override
     public int getWidth() {
-        return A3AndroidUtils.getDisplayWidth(getResources());
+        return getWindow().getDecorView().getWidth();
     }
 
     @Override
     public int getHeight() {
-        return A3AndroidUtils.getDisplayHeight(getResources());
+        return getWindow().getDecorView().getHeight();
     }
 
     @Override
@@ -160,6 +162,18 @@ public class A3AndroidActivity extends Activity implements A3Container {
         }
         else {
             super.onDestroy();
+        }
+    }
+
+    @Override
+    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+        int width = right - left;
+        int height = bottom - top;
+        for (A3ContainerListener listener : a3ContainerListeners) {
+            listener.containerResized(width, height);
+        }
+        for (A3ContainerListener listener : a3ContainerListeners) {
+            listener.containerMoved(left, top);
         }
     }
 

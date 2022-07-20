@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.input;
 
-public class A3ContainerAdapter implements A3ContainerListener {
+public abstract class A3ContainerAdapter implements A3ContainerListener {
 
     @Override
     public void containerCreated() {

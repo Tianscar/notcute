@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
 import java.awt.image.WritableRaster;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class A3AWTUtils {
 
@@ -39,6 +41,12 @@ public class A3AWTUtils {
         } catch (InterruptedException ignored) {
         }
         return pg.getColorModel();
+    }
+
+    public static String currentFormattedTime(String pattern) {
+        LocalDateTime nowDateTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+        return dateTimeFormatter.format(nowDateTime);
     }
 
 }

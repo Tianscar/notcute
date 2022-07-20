@@ -20,6 +20,7 @@ import com.ansdoship.a3wt.util.A3Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
 import java.net.UnknownHostException;
 
 public class AWTA3Logger implements A3Logger {
@@ -91,16 +92,35 @@ public class AWTA3Logger implements A3Logger {
     }
 
     public int println(int priority, String tag, String msg) {
-        String log = "[" + tag + "] " + msg;
+        String log = tag + ": " + msg;
+        boolean error = false;
         switch (priority) {
-            case ERROR:
-            case ASSERT:
-                System.err.println(log);
+            case VERBOSE:
+                log = "V/" + log;
                 break;
-            default:
-                System.out.println(log);
+            case DEBUG:
+                log = "D/" + log;
+                break;
+            case INFO:
+                log = "I/" + log;
+                break;
+            case WARN:
+                log = "W/" + log;
+                break;
+            case ERROR:
+                log = "E/" + log;
+                error = true;
+                break;
+            case ASSERT:
+                log = "A/" + log;
+                error = true;
                 break;
         }
+        log = A3AWTUtils.currentFormattedTime("yyyy-MM-dd HH:mm:ss:SSS") + " " +
+                ManagementFactory.getRuntimeMXBean().getName() + " " +
+                log;
+        if (error) System.err.println(log);
+        else System.out.println(log);
         return log.length();
     }
     
