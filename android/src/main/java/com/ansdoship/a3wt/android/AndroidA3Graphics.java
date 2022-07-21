@@ -9,6 +9,11 @@ import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3Path;
 
+import static com.ansdoship.a3wt.android.A3AndroidUtils.paintStrokeCap2StrokeCap;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.paintStrokeJoin2StrokeJoin;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.strokeCap2PaintStrokeCap;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.strokeJoin2PaintStrokeJoin;
+
 public class AndroidA3Graphics implements A3Graphics {
 
     protected volatile Canvas canvas;
@@ -126,6 +131,91 @@ public class AndroidA3Graphics implements A3Graphics {
         canvas.drawText(text, x, y, paint);
         canvas.save();
         canvas.restore();
+    }
+
+    @Override
+    public int getColor() {
+        checkDisposed("Can't call getColor() on a disposed A3Graphics");
+        return paint.getColor();
+    }
+
+    @Override
+    public void setColor(int color) {
+        checkDisposed("Can't call setColor() on a disposed A3Graphics");
+        paint.setColor(color);
+    }
+
+    @Override
+    public int getStyle() {
+        checkDisposed("Can't call getStyle() on a disposed A3Graphics");
+        switch (paint.getStyle()) {
+            case STROKE:
+                return Style.STROKE;
+            case FILL:
+                return Style.FILL;
+        }
+        return -1;
+    }
+
+    @Override
+    public void setStyle(int style) {
+        checkDisposed("Can't call setStyle() on a disposed A3Graphics");
+        switch (style) {
+            case Style.STROKE: default:
+                paint.setStyle(Paint.Style.STROKE);
+                break;
+            case Style.FILL:
+                paint.setStyle(Paint.Style.FILL);
+                break;
+        }
+    }
+
+    @Override
+    public float getStrokeWidth() {
+        checkDisposed("Can't call getStrokeWidth() on a disposed A3Graphics");
+        return paint.getStrokeWidth();
+    }
+
+    @Override
+    public void setStrokeWidth(float width) {
+        checkDisposed("Can't call setStrokeWidth() on a disposed A3Graphics");
+        paint.setStrokeWidth(width);
+    }
+
+    @Override
+    public int getStrokeJoin() {
+        checkDisposed("Can't call getStrokeJoin() on a disposed A3Graphics");
+        return paintStrokeJoin2StrokeJoin(paint.getStrokeJoin());
+    }
+
+    @Override
+    public void setStrokeJoin(int join) {
+        checkDisposed("Can't call setStrokeJoin() on a disposed A3Graphics");
+        paint.setStrokeJoin(strokeJoin2PaintStrokeJoin(join));
+    }
+
+    @Override
+    public int getStrokeCap() {
+        checkDisposed("Can't call getStrokeCap() on a disposed A3Graphics");
+        return paintStrokeCap2StrokeCap(paint.getStrokeCap());
+    }
+
+    @Override
+    public void setStrokeCap(int cap) {
+        checkDisposed("Can't call setStrokeCap() on a disposed A3Graphics");
+        paint.setStrokeCap(strokeCap2PaintStrokeCap(cap));
+    }
+
+    @Override
+    public float getStrokeMiter() {
+        checkDisposed("Can't call getStrokeMiter() on a disposed A3Graphics");
+        return paint.getStrokeMiter();
+    }
+
+    @Override
+    public void setStrokeMiter(float miter) {
+        checkDisposed("Can't call setStrokeMiter() on a disposed A3Graphics");
+        paint.setStrokeMiter(miter);
     }
 
     @Override

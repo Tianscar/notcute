@@ -4,12 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Point;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import com.ansdoship.a3wt.graphics.A3Graphics;
 
 public class A3AndroidUtils {
 
@@ -47,6 +48,50 @@ public class A3AndroidUtils {
     public static int getDisplayHeight(@NonNull Resources resources) {
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return metrics.heightPixels;
+    }
+
+    public static Paint.Join strokeJoin2PaintStrokeJoin(int join) {
+        switch (join) {
+            case A3Graphics.Join.MITER: default:
+                return Paint.Join.MITER;
+            case A3Graphics.Join.ROUND:
+                return Paint.Join.ROUND;
+            case A3Graphics.Join.BEVEL:
+                return Paint.Join.BEVEL;
+        }
+    }
+
+    public static Paint.Cap strokeCap2PaintStrokeCap(int cap) {
+        switch (cap) {
+            case A3Graphics.Cap.BUTT: default:
+                return Paint.Cap.BUTT;
+            case A3Graphics.Cap.ROUND:
+                return Paint.Cap.ROUND;
+            case A3Graphics.Cap.SQUARE:
+                return Paint.Cap.SQUARE;
+        }
+    }
+
+    public static int paintStrokeJoin2StrokeJoin(Paint.Join join) {
+        switch (join) {
+            case MITER: default:
+                return A3Graphics.Join.MITER;
+            case ROUND:
+                return A3Graphics.Join.ROUND;
+            case BEVEL:
+                return A3Graphics.Join.BEVEL;
+        }
+    }
+
+    public static int paintStrokeCap2StrokeCap(Paint.Cap cap) {
+        switch (cap) {
+            case BUTT: default:
+                return A3Graphics.Cap.BUTT;
+            case ROUND:
+                return A3Graphics.Cap.ROUND;
+            case SQUARE:
+                return A3Graphics.Cap.SQUARE;
+        }
     }
 
 }
