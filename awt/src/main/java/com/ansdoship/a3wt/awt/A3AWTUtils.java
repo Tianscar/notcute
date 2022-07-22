@@ -9,6 +9,10 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
 import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -93,6 +97,38 @@ public class A3AWTUtils {
                 return A3Graphics.Cap.ROUND;
             case BasicStroke.CAP_SQUARE:
                 return A3Graphics.Cap.SQUARE;
+        }
+    }
+
+    public static boolean createFileIfNotExist(File file) {
+        try {
+            if (file.exists()) return true;
+            else {
+                File parentFile = file.getParentFile();
+                if (!parentFile.exists()) {
+                    if (!parentFile.mkdirs()) return false;
+                }
+                return file.createNewFile();
+            }
+        }
+        catch (IOException e) {
+            return false;
+        }
+    }
+
+    public static boolean createFileIfNotExistNIO(Path path) {
+        try {
+            if (!Files.exists(path)) {
+                Path parentPath = path.getParent();
+                if (!Files.exists(parentPath)) {
+                    Files.createDirectories(parentPath);
+                }
+                Files.createFile(path);
+            }
+            return true;
+        }
+        catch (IOException e) {
+            return false;
         }
     }
 
