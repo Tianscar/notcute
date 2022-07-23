@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.DisplayMetrics;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 
 public class A3AndroidUtils {
@@ -72,7 +74,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static int paintStrokeJoin2StrokeJoin(Paint.Join join) {
+    public static int paintStrokeJoin2StrokeJoin(@NonNull Paint.Join join) {
         switch (join) {
             case MITER: default:
                 return A3Graphics.Join.MITER;
@@ -83,7 +85,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static int paintStrokeCap2StrokeCap(Paint.Cap cap) {
+    public static int paintStrokeCap2StrokeCap(@NonNull Paint.Cap cap) {
         switch (cap) {
             case BUTT: default:
                 return A3Graphics.Cap.BUTT;
@@ -91,6 +93,32 @@ public class A3AndroidUtils {
                 return A3Graphics.Cap.ROUND;
             case SQUARE:
                 return A3Graphics.Cap.SQUARE;
+        }
+    }
+
+    public static int typefaceStyle2FontStyle(int style) {
+        switch (style) {
+            case Typeface.NORMAL: default:
+                return A3Font.Style.NORMAL;
+            case Typeface.BOLD:
+                return A3Font.Style.BOLD;
+            case Typeface.ITALIC:
+                return A3Font.Style.ITALIC;
+            case Typeface.BOLD_ITALIC:
+                return A3Font.Style.BOLD_ITALIC;
+        }
+    }
+
+    public static int fontStyle2TypefaceStyle(int style) {
+        switch (style) {
+            case A3Font.Style.NORMAL: default:
+                return Typeface.NORMAL;
+            case A3Font.Style.BOLD:
+                return Typeface.BOLD;
+            case A3Font.Style.ITALIC:
+                return Typeface.ITALIC;
+            case A3Font.Style.BOLD_ITALIC:
+                return Typeface.BOLD_ITALIC;
         }
     }
 

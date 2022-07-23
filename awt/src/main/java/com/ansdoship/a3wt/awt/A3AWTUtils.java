@@ -1,10 +1,12 @@
 package com.ansdoship.a3wt.awt;
 
+import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 
 import java.awt.Image;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
@@ -129,6 +131,31 @@ public class A3AWTUtils {
         }
         catch (IOException e) {
             return false;
+        }
+    }
+
+    public static int AWTFontStyle2FontStyle(int style) {
+        if (style == 0) return Font.PLAIN;
+        boolean bold = false;
+        boolean italic = false;
+        if ((style & Font.BOLD) != 0) bold = true;
+        if ((style & Font.ITALIC) != 0) italic = true;
+        if (bold && italic) return A3Font.Style.BOLD_ITALIC;
+        else if (bold) return A3Font.Style.BOLD;
+        else if (italic) return A3Font.Style.ITALIC;
+        else return Font.PLAIN;
+    }
+
+    public static int fontStyle2AWTFontStyle(int style) {
+        switch (style) {
+            case A3Font.Style.NORMAL: default:
+                return Font.PLAIN;
+            case A3Font.Style.BOLD:
+                return Font.BOLD;
+            case A3Font.Style.ITALIC:
+                return Font.ITALIC;
+            case A3Font.Style.BOLD_ITALIC:
+                return Font.BOLD | Font.ITALIC;
         }
     }
 

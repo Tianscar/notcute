@@ -11,12 +11,14 @@ public interface A3Graphics extends A3Disposable {
     }
 
     class Join {
+        private Join(){}
         public static final int MITER = 0;
         public static final int ROUND = 1;
         public static final int BEVEL = 2;
     }
 
     class Cap {
+        private Cap(){}
         public static final int BUTT = 0;
         public static final int ROUND = 1;
         public static final int SQUARE = 2;
@@ -52,5 +54,10 @@ public interface A3Graphics extends A3Disposable {
 
     float getStrokeMiter();
     void setStrokeMiter(float miter);
+
+    void setFont(A3Font font);
+    A3Font getFont();
+    void setTextSize(float size);
+    float getTextSize();
 
 }

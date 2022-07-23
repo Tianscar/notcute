@@ -1,5 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
+import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3Path;
@@ -7,6 +8,7 @@ import com.ansdoship.a3wt.graphics.A3Path;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Ellipse2D;
@@ -29,6 +31,8 @@ public class AWTA3Graphics implements A3Graphics {
     protected volatile float strokeMiter = 10.0f;
     protected volatile boolean disposed = false;
     protected volatile int width, height;
+    protected volatile Font baseFont;
+    protected volatile float textSize;
 
     @Override
     public int getWidth() {
@@ -203,6 +207,29 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
+    public A3Font getFont() {
+        return graphics2D.getFont() == null ? null : new AWTA3Font(graphics2D.getFont());
+    }
+
+    @Override
+    public void setFont(A3Font font) {
+        baseFont = ((AWTA3Font)font).getFont();
+        setTextSize(textSize);
+    }
+
+    @Override
+    public float getTextSize() {
+        return textSize;
+    }
+
+    @Override
+    public void setTextSize(float size) {
+        if (textSize == size) return;
+        textSize = size;
+        graphics2D.setFont(graphics2D.getFont().deriveFont(size));
+    }
+
+    @Override
     public boolean isDisposed() {
         return disposed;
     }
@@ -211,6 +238,7 @@ public class AWTA3Graphics implements A3Graphics {
     public synchronized void dispose() {
         if (isDisposed()) return;
         disposed = true;
+        baseFont = null;
         graphics2D.dispose();
         graphics2D = null;
     }

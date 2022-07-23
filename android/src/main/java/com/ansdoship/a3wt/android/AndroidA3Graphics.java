@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3Path;
@@ -20,6 +21,7 @@ public class AndroidA3Graphics implements A3Graphics {
     protected volatile Paint paint;
     protected volatile boolean disposed = false;
     protected volatile int width, height;
+    protected volatile AndroidA3Font font;
 
     @Override
     public int getWidth() {
@@ -219,6 +221,29 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
+    public A3Font getFont() {
+        if (paint.getTypeface() == null) return null;
+        else if (font != null && font.getTypeface().equals(paint.getTypeface())) return font;
+        else return new AndroidA3Font(paint.getTypeface());
+    }
+
+    @Override
+    public void setFont(A3Font font) {
+        this.font = (AndroidA3Font) font;
+        paint.setTypeface(this.font.getTypeface());
+    }
+
+    @Override
+    public float getTextSize() {
+        return paint.getTextSize();
+    }
+
+    @Override
+    public void setTextSize(float size) {
+        paint.setTextSize(size);
+    }
+
+    @Override
     public boolean isDisposed() {
         return disposed;
     }
@@ -227,6 +252,7 @@ public class AndroidA3Graphics implements A3Graphics {
     public synchronized void dispose() {
         if (isDisposed()) return;
         disposed = true;
+        font = null;
         canvas = null;
         paint = null;
     }

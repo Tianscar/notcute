@@ -428,7 +428,8 @@ public final class ImageIO {
             if ((cacheDirectory != null) && (!cacheDirectory.isDirectory())) {
                 throw new IllegalArgumentException("Not a directory!");
             }
-            
+
+            /*
             SecurityManager security = System.getSecurityManager();
             if (security != null) {
                 String filepath;
@@ -441,6 +442,7 @@ public final class ImageIO {
                 
                 security.checkWrite(filepath);
             }
+             */
             
             this.cacheDirectory = cacheDirectory;
         }
