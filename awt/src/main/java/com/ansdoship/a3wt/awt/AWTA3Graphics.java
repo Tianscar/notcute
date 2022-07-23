@@ -32,7 +32,7 @@ public class AWTA3Graphics implements A3Graphics {
     protected volatile boolean disposed = false;
     protected volatile int width, height;
     protected volatile Font baseFont;
-    protected volatile float textSize;
+    protected volatile float textSize = 1.0f;
 
     @Override
     public int getWidth() {
@@ -214,7 +214,7 @@ public class AWTA3Graphics implements A3Graphics {
     @Override
     public void setFont(A3Font font) {
         baseFont = ((AWTA3Font)font).getFont();
-        setTextSize(textSize);
+        graphics2D.setFont(baseFont.deriveFont(textSize));
     }
 
     @Override
@@ -226,7 +226,7 @@ public class AWTA3Graphics implements A3Graphics {
     public void setTextSize(float size) {
         if (textSize == size) return;
         textSize = size;
-        graphics2D.setFont(graphics2D.getFont().deriveFont(size));
+        if (baseFont != null) graphics2D.setFont(baseFont.deriveFont(size));
     }
 
     @Override
