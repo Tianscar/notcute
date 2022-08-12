@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 
+import java.io.File;
+
 public class A3AndroidUtils {
 
     private A3AndroidUtils(){}
@@ -119,6 +121,15 @@ public class A3AndroidUtils {
                 return Typeface.ITALIC;
             case A3Font.Style.BOLD_ITALIC:
                 return Typeface.BOLD_ITALIC;
+        }
+    }
+
+    public static boolean deleteSharedPreferences(@NonNull Context context, String name) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return context.deleteSharedPreferences(name);
+        } else {
+            context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit();
+            return new File(new File(context.getApplicationInfo().dataDir, "shared_prefs"), name + ".xml").delete();
         }
     }
 

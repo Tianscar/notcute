@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.graphics.A3Canvas;
+import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3CanvasListener;
@@ -19,13 +19,16 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class A3AWTComponent extends Component implements A3Canvas, ComponentListener, FocusListener {
+public class A3AWTComponent extends Component implements AWTA3Canvas, ComponentListener, FocusListener {
 
     protected volatile long elapsed = 0;
     protected final AWTA3Graphics graphics = new A3ComponentGraphics();
+    protected final AWTA3Context context = new AWTA3Context(this);
     protected volatile Image buffer = null;
     protected final List<A3CanvasListener> a3CanvasListeners = new ArrayList<>();
     protected volatile boolean disposed = false;
+    protected volatile String companyName = null;
+    protected volatile String appName = null;
 
     private static class A3ComponentGraphics extends AWTA3Graphics {
         public A3ComponentGraphics() {
@@ -49,6 +52,36 @@ public class A3AWTComponent extends Component implements A3Canvas, ComponentList
                 }
             }
         });
+    }
+
+    @Override
+    public A3Context getA3Context() {
+        return context;
+    }
+
+    @Override
+    public String getAppName() {
+        return appName;
+    }
+
+    @Override
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    @Override
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    @Override
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    @Override
+    public A3Graphics getA3Graphics() {
+        return graphics;
     }
 
     @Override

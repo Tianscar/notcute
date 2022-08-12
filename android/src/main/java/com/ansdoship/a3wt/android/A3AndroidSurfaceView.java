@@ -10,7 +10,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.ansdoship.a3wt.graphics.A3Canvas;
+import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3CanvasListener;
@@ -18,10 +18,11 @@ import com.ansdoship.a3wt.input.A3CanvasListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, SurfaceHolder.Callback, View.OnLayoutChangeListener {
+public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Canvas, SurfaceHolder.Callback, View.OnLayoutChangeListener {
 
     protected volatile long elapsed = 0;
-    protected AndroidA3Graphics graphics = new A3SurfaceViewGraphics();
+    protected final AndroidA3Graphics graphics = new A3SurfaceViewGraphics();
+    protected final AndroidA3Context context = new AndroidA3Context(this);
     protected volatile Bitmap buffer = null;
     protected volatile int backgroundColor = 0xFF000000;
     protected volatile boolean surfaceFirstCreated = false;
@@ -53,6 +54,16 @@ public class A3AndroidSurfaceView extends SurfaceView implements A3Canvas, Surfa
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
         addOnLayoutChangeListener(this);
+    }
+
+    @Override
+    public A3Context getA3Context() {
+        return context;
+    }
+
+    @Override
+    public AndroidA3Graphics getA3Graphics() {
+        return graphics;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.graphics.A3Container;
+import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3CanvasListener;
@@ -20,7 +20,9 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class A3AWTDialog extends Dialog implements A3Container, ComponentListener, WindowListener, WindowFocusListener {
+public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener {
+
+    protected final AWTA3Context context = new AWTA3Context(this);
 
     protected final A3AWTComponent component;
     protected final List<A3ContainerListener> a3ContainerListeners = new ArrayList<>();
@@ -89,6 +91,36 @@ public class A3AWTDialog extends Dialog implements A3Container, ComponentListene
         addComponentListener(this);
         addWindowListener(this);
         addWindowFocusListener(this);
+    }
+
+    @Override
+    public A3Context getA3Context() {
+        return context;
+    }
+
+    @Override
+    public String getCompanyName() {
+        return component.getCompanyName();
+    }
+
+    @Override
+    public String getAppName() {
+        return component.getAppName();
+    }
+
+    @Override
+    public void setCompanyName(String companyName) {
+        component.setCompanyName(companyName);
+    }
+
+    @Override
+    public void setAppName(String appName) {
+        component.setAppName(appName);
+    }
+
+    @Override
+    public A3Graphics getA3Graphics() {
+        return component.getA3Graphics();
     }
 
     @Override

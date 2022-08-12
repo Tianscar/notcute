@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.ansdoship.a3wt.graphics.A3Container;
+import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3CanvasListener;
@@ -16,7 +16,9 @@ import com.ansdoship.a3wt.input.A3ContainerListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class A3AndroidDialog extends Dialog implements A3Container, View.OnLayoutChangeListener, DialogInterface.OnDismissListener {
+public class A3AndroidDialog extends Dialog implements AndroidA3Container, View.OnLayoutChangeListener, DialogInterface.OnDismissListener {
+
+    protected final AndroidA3Context context = new AndroidA3Context(this);
 
     protected volatile A3AndroidSurfaceView surfaceView;
     protected final List<A3ContainerListener> a3ContainerListeners = new ArrayList<>();
@@ -31,6 +33,16 @@ public class A3AndroidDialog extends Dialog implements A3Container, View.OnLayou
 
     protected A3AndroidDialog(@NonNull Context context, boolean cancelable, @Nullable OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
+    }
+
+    @Override
+    public A3Context getA3Context() {
+        return context;
+    }
+
+    @Override
+    public A3Graphics getA3Graphics() {
+        return surfaceView.getA3Graphics();
     }
 
     @Override

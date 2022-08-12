@@ -30,26 +30,6 @@ public class A3MathUtils {
     private A3MathUtils(){}
 
     /**
-     * Converts radians to degrees.
-     *
-     * @param rad the radians
-     * @return the degrees
-     */
-    public static float rad2deg(float rad) {
-        return (float) rad2deg((double) rad);
-    }
-
-    /**
-     * Converts radians to degrees.
-     *
-     * @param rad the radians
-     * @return the degrees
-     */
-    public static double rad2deg(double rad) {
-        return rad * 180 / Math.PI;
-    }
-
-    /**
      * This method takes a numerical value and ensures it fits in a given numerical range. If the
      * number is smaller than the minimum required by the range, then the minimum of the range will
      * be returned. If the number is higher than the maximum allowed by the range then the maximum

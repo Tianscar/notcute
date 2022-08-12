@@ -29,19 +29,22 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.graphics.*;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
-
-import static com.ansdoship.a3wt.util.A3MathUtils.clamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A factory class that providing functions to decode and encode Android Bitmap.
@@ -51,15 +54,10 @@ public final class BitmapIO {
     private BitmapIO(){}
 
     public static Bitmap read(@NonNull InputStream stream, @Nullable Bitmap.Config config) throws IOException {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inMutable = true;
-        options.inPreferredConfig = config;
-        Bitmap bitmap = BitmapFactory.decodeStream(stream, null, options);
-        stream.close();
-        if (bitmap != null) {
-            if (!bitmap.hasAlpha()) {
-                bitmap.setHasAlpha(true);
-            }
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(stream, config);
+            if (bitmap != null) break;
         }
         return bitmap;
     }
@@ -69,27 +67,10 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull InputStream stream, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
-        BitmapRegionDecoder decoder;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            decoder = BitmapRegionDecoder.newInstance(stream);
-        }
-        else {
-            decoder = BitmapRegionDecoder.newInstance(stream, false);
-        }
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inMutable = true;
-        options.inPreferredConfig = config;
-        Bitmap bitmap = decoder.decodeRegion(region, options);
-        stream.close();
-        if (decoder != null) {
-            if (!decoder.isRecycled()) {
-                decoder.recycle();
-            }
-        }
-        if (bitmap != null) {
-            if (!bitmap.hasAlpha()) {
-                bitmap.setHasAlpha(true);
-            }
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(stream, region, config);
+            if (bitmap != null) break;
         }
         return bitmap;
     }
@@ -99,19 +80,10 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull File file, @Nullable Bitmap.Config config) throws IOException {
-        if (!file.exists() || !file.isFile()) {
-            return null;
-        }
-        FileInputStream stream = new FileInputStream(file);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inMutable = true;
-        options.inPreferredConfig = config;
-        Bitmap bitmap = BitmapFactory.decodeFileDescriptor(stream.getFD(), null, options);
-        stream.close();
-        if (bitmap != null) {
-            if (!bitmap.hasAlpha()) {
-                bitmap.setHasAlpha(true);
-            }
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(file, config);
+            if (bitmap != null) break;
         }
         return bitmap;
     }
@@ -121,28 +93,10 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull File file, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
-        FileInputStream stream = new FileInputStream(file);
-        BitmapRegionDecoder decoder;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            decoder = BitmapRegionDecoder.newInstance(stream);
-        }
-        else {
-            decoder = BitmapRegionDecoder.newInstance(stream, false);
-        }
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inMutable = true;
-        options.inPreferredConfig = config;
-        Bitmap bitmap = decoder.decodeRegion(region, options);
-        stream.close();
-        if (decoder != null) {
-            if (!decoder.isRecycled()) {
-                decoder.recycle();
-            }
-        }
-        if (bitmap != null) {
-            if (!bitmap.hasAlpha()) {
-                bitmap.setHasAlpha(true);
-            }
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(file, region, config);
+            if (bitmap != null) break;
         }
         return bitmap;
     }
@@ -176,14 +130,10 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull byte[] data, int offset, int length, @Nullable Bitmap.Config config) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inMutable = true;
-        options.inPreferredConfig = config;
-        Bitmap bitmap = BitmapFactory.decodeByteArray(data, offset, length, options);
-        if (bitmap != null) {
-            if (!bitmap.hasAlpha()) {
-                bitmap.setHasAlpha(true);
-            }
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(data, offset, length, config);
+            if (bitmap != null) break;
         }
         return bitmap;
     }
@@ -202,33 +152,9 @@ public final class BitmapIO {
 
     public static Bitmap read(@NonNull byte[] data, int offset, int length, @NonNull Rect region, @Nullable Bitmap.Config config) {
         Bitmap bitmap = null;
-        BitmapRegionDecoder decoder = null;
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                decoder = BitmapRegionDecoder.newInstance(data, offset, length);
-            }
-            else {
-                decoder = BitmapRegionDecoder.newInstance(data, offset, length, false);
-            }
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inMutable = true;
-            options.inPreferredConfig = config;
-            bitmap = decoder.decodeRegion(region, options);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-        finally {
-            if (decoder != null) {
-                if (!decoder.isRecycled()) {
-                    decoder.recycle();
-                }
-            }
-        }
-        if (bitmap != null) {
-            if (!bitmap.hasAlpha()) {
-                bitmap.setHasAlpha(true);
-            }
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(data, offset, length, region, config);
+            if (bitmap != null) break;
         }
         return bitmap;
     }
@@ -238,7 +164,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @Nullable Bitmap.Config config) throws IOException {
-        return read(assets.open(asset), config);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(assets, asset, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull AssetManager assets, @NonNull String asset) throws IOException {
@@ -246,7 +177,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
-        return read(assets.open(asset), region, config);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(assets, asset, region, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @NonNull Rect region) throws IOException {
@@ -255,15 +191,10 @@ public final class BitmapIO {
 
     @SuppressLint("ResourceType")
     public static Bitmap read(@NonNull Resources res, int id, @Nullable Bitmap.Config config) throws IOException {
-        Bitmap bitmap;
-        try {
-            bitmap = read(res.openRawResource(id), config);
-        }
-        catch (Resources.NotFoundException e) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inMutable = true;
-            options.inPreferredConfig = config;
-            bitmap = BitmapFactory.decodeResource(res, id, options);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(res, id, config);
+            if (bitmap != null) break;
         }
         return bitmap;
     }
@@ -274,7 +205,12 @@ public final class BitmapIO {
 
     @SuppressLint("ResourceType")
     public static Bitmap read(@NonNull Resources res, int id, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
-        return read(res.openRawResource(id), region, config);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(res, id, region, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull Resources res, int id, @NonNull Rect region) throws IOException {
@@ -282,32 +218,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull Drawable drawable, @Nullable Bitmap.Config config) {
-        if (drawable instanceof BitmapDrawable) {
-            Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
-            if (bitmap != null) {
-                if (!bitmap.hasAlpha()) {
-                    bitmap.setHasAlpha(true);
-                }
-            }
-            return bitmap;
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(drawable, config);
+            if (bitmap != null) break;
         }
-        else {
-            if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-                return null;
-            }
-            else {
-                Bitmap bitmap = Bitmap.createBitmap(
-                        drawable.getIntrinsicWidth(),
-                        drawable.getIntrinsicHeight(),
-                        config == null ? (
-                                drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565) :
-                                config);
-                Canvas canvas = new Canvas(bitmap);
-                drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-                drawable.draw(canvas);
-                return bitmap;
-            }
-        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull Drawable drawable) {
@@ -315,21 +231,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull Drawable drawable, @NonNull Rect region, @Nullable Bitmap.Config config) {
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            return null;
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(drawable, region, config);
+            if (bitmap != null) break;
         }
-        else {
-            Bitmap bitmap = Bitmap.createBitmap(
-                    region.width(),
-                    region.height(),
-                    config == null ? (
-                            drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565) :
-                            config);
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(region.left, region.top, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
-            return bitmap;
-        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull Drawable drawable, @NonNull Rect region) {
@@ -337,7 +244,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @Nullable Bitmap.Config config) throws IOException {
-        return read(resolver.openInputStream(uri), config);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(resolver, uri, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri) throws IOException {
@@ -345,7 +257,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
-        return read(resolver.openInputStream(uri), region, config);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(resolver, uri, region, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @NonNull Rect region) throws IOException {
@@ -353,7 +270,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull URI uri, @Nullable Bitmap.Config config) throws IOException {
-        return read(uri.toURL(), config);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(uri, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull URI uri) throws IOException {
@@ -361,7 +283,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull URI uri, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
-        return read(uri.toURL(), region, config);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(uri, region, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull URI uri, @NonNull Rect region) throws IOException {
@@ -369,7 +296,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull URL url, @Nullable Bitmap.Config config) throws IOException {
-        return read(url.openStream(), config);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(url, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
     }
 
     public static @Nullable Bitmap read(@NonNull URL url) throws IOException {
@@ -377,7 +309,12 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(@NonNull URL url, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
-        return read(url.openStream(), region, config);
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            bitmap = provider.read(url, region, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
     }
 
     public static Bitmap read(@NonNull URL url, @NonNull Rect region) throws IOException {
@@ -385,45 +322,37 @@ public final class BitmapIO {
     }
 
     public static boolean write(@NonNull File output, @NonNull Bitmap bitmap, @NonNull String formatName, int quality) throws IOException {
-        if (output.exists()) {
-            if (!output.delete()) return false;
+        boolean result = false;
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            result = provider.write(output, bitmap, formatName, quality);
+            if (result) break;
         }
-        if (!output.createNewFile()) return false;
-        FileOutputStream fos = new FileOutputStream(output);
-        return write(fos, bitmap, formatName, quality);
+        return result;
     }
 
     public static boolean write(@NonNull OutputStream output, @NonNull Bitmap bitmap, @NonNull String formatName, int quality) throws IOException {
-        quality = clamp(quality, 0, 100);
         boolean result = false;
-        String format = formatName.trim().toLowerCase();
-        if (format.equals("png")) {
-            result = bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            result = provider.write(output, bitmap, formatName, quality);
+            if (result) break;
         }
-        else if (format.equals("jpg") || format.equals("jpeg")) {
-            result = bitmap.compress(Bitmap.CompressFormat.JPEG, quality, output);
-        }
-        else if (format.equals("webp")) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (quality == 100) {
-                    result = bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS,
-                            quality, output);
-                }
-                else {
-                    result = bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY,
-                            quality, output);
-                }
-            }
-            else {
-                result = bitmap.compress(Bitmap.CompressFormat.WEBP, quality, output);
-            }
-        }
-        else if (format.equals("bmp")) {
-            result = BitmapBMPEncoder.compress(bitmap, output);
-        }
-        output.flush();
-        output.close();
         return result;
+    }
+
+    public static String[] getReaderFormatNames() {
+        List<String> formatNames = new ArrayList<>();
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            formatNames.addAll(Arrays.asList(provider.getReaderFormatNames()));
+        }
+        return formatNames.toArray(new String[0]);
+    }
+
+    public static String[] getWriterFormatNames() {
+        List<String> formatNames = new ArrayList<>();
+        for (BIOServiceProvider provider : BIORegistry.INSTANCE.getServiceProviders()) {
+            formatNames.addAll(Arrays.asList(provider.getWriterFormatNames()));
+        }
+        return formatNames.toArray(new String[0]);
     }
 
 }

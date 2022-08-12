@@ -1,11 +1,15 @@
 package com.ansdoship.a3wt.graphics;
 
+import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.input.A3CanvasListener;
 import com.ansdoship.a3wt.util.A3Disposable;
 
 import java.util.List;
 
 public interface A3Canvas extends A3Disposable {
+
+    A3Context getA3Context();
+    A3Graphics getA3Graphics();
 
     int getWidth();
     int getHeight();

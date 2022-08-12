@@ -1,10 +1,11 @@
 package com.ansdoship.a3wt.android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.ansdoship.a3wt.graphics.A3Container;
+import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3CanvasListener;
@@ -13,10 +14,27 @@ import com.ansdoship.a3wt.input.A3ContainerListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class A3AndroidActivity extends Activity implements A3Container, View.OnLayoutChangeListener {
+public class A3AndroidActivity extends Activity implements AndroidA3Container, View.OnLayoutChangeListener {
+
+    protected final AndroidA3Context context = new AndroidA3Context(this);
+
+    @Override
+    public Context getContext() {
+        return this;
+    }
 
     protected volatile A3AndroidSurfaceView surfaceView;
     protected final List<A3ContainerListener> a3ContainerListeners = new ArrayList<>();
+
+    @Override
+    public A3Context getA3Context() {
+        return context;
+    }
+
+    @Override
+    public A3Graphics getA3Graphics() {
+        return surfaceView.getA3Graphics();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

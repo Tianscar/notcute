@@ -8,11 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AndroidA3Images implements A3Images {
-
-    protected static final String[] READER_FORMAT_NAMES = new String[]{"bmp", "BMP", "webp", "WEBP", "png", "PNG", "JPEG", "jpeg", "JPG", "jpg"};
-    protected static final String[] WRITER_FORMAT_NAMES = new String[]{"bmp", "BMP", "webp", "WEBP", "png", "PNG", "JPEG", "jpeg", "JPG", "jpg"};
 
     @Override
     public A3Image read(File input) throws IOException {
@@ -41,12 +40,20 @@ public class AndroidA3Images implements A3Images {
 
     @Override
     public String[] getReaderFormatNames() {
-        return READER_FORMAT_NAMES;
+        Set<String> formatNames = new HashSet<>();
+        for (String formatName : BitmapIO.getReaderFormatNames()) {
+            formatNames.add(formatName.toLowerCase());
+        }
+        return formatNames.toArray(new String[0]);
     }
 
     @Override
     public String[] getWriterFormatNames() {
-        return WRITER_FORMAT_NAMES;
+        Set<String> formatNames = new HashSet<>();
+        for (String formatName : BitmapIO.getWriterFormatNames()) {
+            formatNames.add(formatName.toLowerCase());
+        }
+        return formatNames.toArray(new String[0]);
     }
 
 }

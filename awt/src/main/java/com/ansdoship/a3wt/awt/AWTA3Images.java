@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AWTA3Images implements A3Images {
 
@@ -38,12 +40,20 @@ public class AWTA3Images implements A3Images {
 
     @Override
     public String[] getReaderFormatNames() {
-        return ImageIO.getReaderFormatNames();
+        Set<String> formatNames = new HashSet<>();
+        for (String formatName : ImageIO.getReaderFormatNames()) {
+            formatNames.add(formatName.toLowerCase());
+        }
+        return formatNames.toArray(new String[0]);
     }
 
     @Override
     public String[] getWriterFormatNames() {
-        return ImageIO.getWriterFormatNames();
+        Set<String> formatNames = new HashSet<>();
+        for (String formatName : ImageIO.getWriterFormatNames()) {
+            formatNames.add(formatName.toLowerCase());
+        }
+        return formatNames.toArray(new String[0]);
     }
 
 }
