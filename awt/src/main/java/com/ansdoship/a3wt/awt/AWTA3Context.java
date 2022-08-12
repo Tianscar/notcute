@@ -2,8 +2,6 @@ package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.graphics.A3Canvas;
-import com.ansdoship.a3wt.graphics.A3Images;
-import com.ansdoship.a3wt.util.A3Logger;
 import com.ansdoship.a3wt.util.A3Preferences;
 
 import java.io.File;
@@ -11,8 +9,6 @@ import java.io.File;
 public class AWTA3Context implements A3Context {
 
     protected volatile AWTA3Canvas canvas;
-    protected static volatile AWTA3Logger logger;
-    protected static volatile AWTA3Images images;
 
     protected static volatile String basePreferencesPath;
     static {
@@ -40,18 +36,11 @@ public class AWTA3Context implements A3Context {
 
     public AWTA3Context(AWTA3Canvas canvas) {
         this.canvas = canvas;
-        if (logger == null) logger = new AWTA3Logger();
-        if (images == null) images = new AWTA3Images();
     }
 
     @Override
     public A3Canvas getCanvas() {
         return canvas;
-    }
-
-    @Override
-    public A3Logger getLogger() {
-        return logger;
     }
 
     @Override
@@ -71,11 +60,6 @@ public class AWTA3Context implements A3Context {
         if (canvas.getAppName() != null) basePreferencesPath += canvas.getAppName();
         if (basePreferencesPath.startsWith("/")) basePreferencesPath = basePreferencesPath.substring(1);
         return new File(new File(System.getProperty("user.home"), basePreferencesPath), name).delete();
-    }
-
-    @Override
-    public A3Images getImages() {
-        return images;
     }
 
 }

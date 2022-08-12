@@ -71,4 +71,9 @@ public class AndroidA3Path implements A3Path {
         path.addRoundRect(new RectF(left, top, right, bottom), rx, ry, Path.Direction.CW);
     }
 
+    @Override
+    public A3Path copy() {
+        return new AndroidA3Path(new Path(path));
+    }
+
 }

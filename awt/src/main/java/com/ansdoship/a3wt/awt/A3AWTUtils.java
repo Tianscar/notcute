@@ -7,12 +7,14 @@ import java.awt.Image;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -102,22 +104,6 @@ public class A3AWTUtils {
         }
     }
 
-    public static boolean createFileIfNotExist(File file) {
-        try {
-            if (file.exists()) return true;
-            else {
-                File parentFile = file.getParentFile();
-                if (!parentFile.exists()) {
-                    if (!parentFile.mkdirs()) return false;
-                }
-                return file.createNewFile();
-            }
-        }
-        catch (IOException e) {
-            return false;
-        }
-    }
-
     public static boolean createFileIfNotExistNIO(Path path) {
         try {
             if (!Files.exists(path)) {
@@ -157,6 +143,32 @@ public class A3AWTUtils {
             case A3Font.Style.BOLD_ITALIC:
                 return Font.BOLD | Font.ITALIC;
         }
+    }
+
+    public static Font readFont(File input) throws IOException {
+        Font font = null;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, input);
+        } catch (FontFormatException e) {
+            try {
+                font = Font.createFont(Font.TYPE1_FONT, input);
+            } catch (FontFormatException ignored) {
+            }
+        }
+        return font;
+    }
+
+    public static Font readFont(InputStream input) throws IOException {
+        Font font = null;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, input);
+        } catch (FontFormatException e) {
+            try {
+                font = Font.createFont(Font.TYPE1_FONT, input);
+            } catch (FontFormatException ignored) {
+            }
+        }
+        return font;
     }
 
 }

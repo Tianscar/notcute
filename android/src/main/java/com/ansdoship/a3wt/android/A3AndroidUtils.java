@@ -2,6 +2,7 @@ package com.ansdoship.a3wt.android;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
@@ -15,6 +16,11 @@ import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static com.ansdoship.a3wt.util.A3FileUtils.transferTo;
 
 public class A3AndroidUtils {
 
@@ -131,6 +137,38 @@ public class A3AndroidUtils {
             context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit();
             return new File(new File(context.getApplicationInfo().dataDir, "shared_prefs"), name + ".xml").delete();
         }
+    }
+
+    public static Typeface readTypeface(AssetManager assets, String asset) throws IOException {
+        Typeface typeface;
+        try {
+            typeface = Typeface.createFromAsset(assets, asset);
+        }
+        catch (RuntimeException e) {
+            throw new IOException(e);
+        }
+        return typeface;
+    }
+
+    public static Typeface readTypeface(File input) throws IOException {
+        Typeface typeface;
+        try {
+            typeface = Typeface.createFromFile(input);
+        }
+        catch (RuntimeException e) {
+            throw new IOException(e);
+        }
+        return typeface;
+    }
+
+    public static Typeface readTypeface(InputStream input) throws IOException {
+        File temp = File.createTempFile("font", "tmp");
+        FileOutputStream output = new FileOutputStream(temp);
+        transferTo(input, output);
+        input.close();
+        output.flush();
+        output.close();
+        return readTypeface(temp);
     }
 
 }

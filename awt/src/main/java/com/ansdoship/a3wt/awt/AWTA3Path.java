@@ -75,4 +75,9 @@ public class AWTA3Path implements A3Path {
         path2D.append(new RoundRectangle2D.Float(left, top, right - left, bottom - top, rx, ry), false);
     }
 
+    @Override
+    public A3Path copy() {
+        return new AWTA3Path((Path2D) path2D.clone());
+    }
+
 }

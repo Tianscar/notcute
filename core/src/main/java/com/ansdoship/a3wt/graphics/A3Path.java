@@ -1,6 +1,8 @@
 package com.ansdoship.a3wt.graphics;
 
-public interface A3Path {
+import com.ansdoship.a3wt.util.A3Copyable;
+
+public interface A3Path extends A3Copyable<A3Path> {
 
     void reset();
     void close();

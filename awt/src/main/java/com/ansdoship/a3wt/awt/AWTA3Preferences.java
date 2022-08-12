@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.ansdoship.a3wt.awt.A3AWTUtils.createFileIfNotExist;
+import static com.ansdoship.a3wt.util.A3FileUtils.createFileIfNotExist;
 
 public class AWTA3Preferences implements A3Preferences {
 
