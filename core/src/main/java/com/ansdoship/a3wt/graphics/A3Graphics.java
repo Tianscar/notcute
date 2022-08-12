@@ -60,4 +60,10 @@ public interface A3Graphics extends A3Disposable {
     void setTextSize(float size);
     float getTextSize();
 
+    void setAntiAlias(boolean antiAlias);
+    boolean isAntialias();
+
+    void setDither(boolean dither);
+    boolean isDither();
+
 }

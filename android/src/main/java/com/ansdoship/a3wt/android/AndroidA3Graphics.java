@@ -244,6 +244,26 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
+    public boolean isAntialias() {
+        return paint.isAntiAlias();
+    }
+
+    @Override
+    public void setAntiAlias(boolean antiAlias) {
+        paint.setAntiAlias(antiAlias);
+    }
+
+    @Override
+    public boolean isDither() {
+        return paint.isDither();
+    }
+
+    @Override
+    public void setDither(boolean dither) {
+        paint.setDither(dither);
+    }
+
+    @Override
     public boolean isDisposed() {
         return disposed;
     }

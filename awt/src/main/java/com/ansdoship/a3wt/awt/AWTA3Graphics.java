@@ -5,6 +5,7 @@ import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3Path;
 
+import java.awt.RenderingHints;
 import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -227,6 +228,30 @@ public class AWTA3Graphics implements A3Graphics {
         if (textSize == size) return;
         textSize = size;
         if (baseFont != null) graphics2D.setFont(baseFont.deriveFont(size));
+    }
+
+    @Override
+    public boolean isAntialias() {
+        return !graphics2D.getRenderingHint(RenderingHints.KEY_ANTIALIASING).equals(RenderingHints.VALUE_ANTIALIAS_OFF) &&
+                !graphics2D.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING).equals(RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+    }
+
+    @Override
+    public void setAntiAlias(boolean antiAlias) {
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                antiAlias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+        graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                antiAlias ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+    }
+
+    @Override
+    public boolean isDither() {
+        return graphics2D.getRenderingHint(RenderingHints.KEY_DITHERING).equals(RenderingHints.VALUE_DITHER_ENABLE);
+    }
+
+    @Override
+    public void setDither(boolean dither) {
+        graphics2D.setRenderingHint(RenderingHints.KEY_DITHERING, dither ? RenderingHints.VALUE_DITHER_ENABLE : RenderingHints.VALUE_DITHER_DISABLE);
     }
 
     @Override
