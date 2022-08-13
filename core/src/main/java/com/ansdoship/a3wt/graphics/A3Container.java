@@ -4,7 +4,7 @@ import com.ansdoship.a3wt.input.A3ContainerListener;
 
 import java.util.List;
 
-public interface A3Container extends A3Canvas {
+public interface A3Container extends A3Context {
 
     List<A3ContainerListener> getA3ContainerListeners();
     void addA3ContainerListener(A3ContainerListener listener);

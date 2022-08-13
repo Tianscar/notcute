@@ -1,6 +1,5 @@
 package com.ansdoship.a3wt.android;
 
-import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ public final class BIORegistry {
         registerServiceProvider(new BasicBIOSpi());
     }
 
-    public static void registerServiceProviders(@NonNull ClassLoader classLoader, boolean refresh) {
+    public static void registerServiceProviders(ClassLoader classLoader, boolean refresh) {
         ServiceLoader<BIOServiceProvider> serviceLoader = ServiceLoader.load(BIOServiceProvider.class, classLoader);
         if (refresh) {
             serviceLoader.reload();
@@ -34,7 +33,7 @@ public final class BIORegistry {
         }
     }
 
-    public static boolean registerServiceProvider(@NonNull BIOServiceProvider provider) {
+    public static boolean registerServiceProvider(BIOServiceProvider provider) {
         if (!providers.containsKey(provider.getClass())) {
             providers.put(provider.getClass(), provider);
             return true;
@@ -42,18 +41,18 @@ public final class BIORegistry {
         return false;
     }
 
-    public static void registerServiceProviders(@NonNull Iterator<BIOServiceProvider> providers) {
+    public static void registerServiceProviders(Iterator<BIOServiceProvider> providers) {
         while (providers.hasNext()) {
             BIOServiceProvider provider = providers.next();
             registerServiceProvider(provider);
         }
     }
 
-    public static boolean deregisterServiceProvider(@NonNull Class<? extends BIOServiceProvider> clazz) {
+    public static boolean deregisterServiceProvider(Class<? extends BIOServiceProvider> clazz) {
         return providers.remove(clazz) != null;
     }
 
-    public static void deregisterServiceProviders(@NonNull Iterator<Class<? extends BIOServiceProvider>> clazz) {
+    public static void deregisterServiceProviders(Iterator<Class<? extends BIOServiceProvider>> clazz) {
         while (clazz.hasNext()) {
             Class<? extends BIOServiceProvider> provider = clazz.next();
             deregisterServiceProvider(provider);
@@ -64,7 +63,7 @@ public final class BIORegistry {
         return providers.values();
     }
 
-    public static BIOServiceProvider getReader(@NonNull String readerFormat) {
+    public static BIOServiceProvider getReader(String readerFormat) {
         for (BIOServiceProvider provider : getServiceProviders()) {
             for (String mReaderFormat : provider.getReaderFormatNames()) {
                 if (mReaderFormat.equalsIgnoreCase(readerFormat)) return provider;
@@ -73,7 +72,7 @@ public final class BIORegistry {
         return null;
     }
 
-    public static BIOServiceProvider getWriter(@NonNull String writerFormat) {
+    public static BIOServiceProvider getWriter(String writerFormat) {
         for (BIOServiceProvider provider : getServiceProviders()) {
             for (String mWriterFormat : provider.getWriterFormatNames()) {
                 if (mWriterFormat.equalsIgnoreCase(writerFormat)) return provider;
@@ -82,11 +81,11 @@ public final class BIORegistry {
         return null;
     }
 
-    public static boolean contains(@NonNull BIOServiceProvider provider) {
+    public static boolean contains(BIOServiceProvider provider) {
         return providers.containsValue(provider);
     }
 
-    public static boolean contains(@NonNull Class<? extends BIOServiceProvider> clazz) {
+    public static boolean contains(Class<? extends BIOServiceProvider> clazz) {
         return providers.containsKey(clazz);
     }
 

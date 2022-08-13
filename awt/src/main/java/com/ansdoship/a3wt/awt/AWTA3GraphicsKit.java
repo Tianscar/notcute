@@ -1,5 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
+import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -30,6 +31,11 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     @Override
     public A3Image readImage(URL input) throws IOException {
         return new AWTA3Image(ImageIO.read(input));
+    }
+
+    @Override
+    public A3Image readImage(A3Assets assets, String input) throws IOException {
+        return readImage(assets.readAsset(input));
     }
 
     @Override
@@ -80,6 +86,11 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     @Override
     public A3Font readFont(URL input) throws IOException {
         return readFont(input.openStream());
+    }
+
+    @Override
+    public A3Font readFont(A3Assets assets, String input) throws IOException {
+        return readFont(assets.readAsset(input));
     }
 
 }

@@ -5,39 +5,32 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.app.A3Assets;
+import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
-import com.ansdoship.a3wt.input.A3CanvasListener;
+import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class A3AndroidDialog extends Dialog implements AndroidA3Container, View.OnLayoutChangeListener, DialogInterface.OnDismissListener {
 
-    protected final AndroidA3Context context = new AndroidA3Context(this);
-
     protected volatile A3AndroidSurfaceView surfaceView;
     protected final List<A3ContainerListener> a3ContainerListeners = new ArrayList<>();
 
-    public A3AndroidDialog(@NonNull Context context) {
+    public A3AndroidDialog(Context context) {
         super(context);
     }
 
-    public A3AndroidDialog(@NonNull Context context, int themeResId) {
+    public A3AndroidDialog(Context context, int themeResId) {
         super(context, themeResId);
     }
 
-    protected A3AndroidDialog(@NonNull Context context, boolean cancelable, @Nullable OnCancelListener cancelListener) {
+    protected A3AndroidDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
-    }
-
-    @Override
-    public A3Context getA3Context() {
-        return context;
     }
 
     @Override
@@ -46,7 +39,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container, View.
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (surfaceView == null) surfaceView = new A3AndroidSurfaceView(getOwnerActivity());
         setContentView(surfaceView);
@@ -126,13 +119,13 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container, View.
     }
 
     @Override
-    public List<A3CanvasListener> getA3CanvasListeners() {
-        return surfaceView.getA3CanvasListeners();
+    public List<A3ContextListener> getA3ContextListeners() {
+        return surfaceView.getA3ContextListeners();
     }
 
     @Override
-    public void addA3CanvasListener(A3CanvasListener listener) {
-        surfaceView.addA3CanvasListener(listener);
+    public void addA3ContextListener(A3ContextListener listener) {
+        surfaceView.addA3ContextListener(listener);
     }
 
     @Override
@@ -196,6 +189,46 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container, View.
             close = close && listener.containerCloseRequested();
         }
         if (close) super.dismiss();
+    }
+
+    @Override
+    public A3Preferences getPreferences(String name) {
+        return surfaceView.getPreferences(name);
+    }
+
+    @Override
+    public boolean deletePreferences(String name) {
+        return surfaceView.deletePreferences(name);
+    }
+
+    @Override
+    public A3Assets getA3Assets() {
+        return surfaceView.getA3Assets();
+    }
+
+    @Override
+    public File getCacheDir() {
+        return surfaceView.getCacheDir();
+    }
+
+    @Override
+    public File getConfigDir() {
+        return surfaceView.getConfigDir();
+    }
+
+    @Override
+    public File getFilesDir(String type) {
+        return surfaceView.getFilesDir(type);
+    }
+
+    @Override
+    public File getHomeDir() {
+        return surfaceView.getHomeDir();
+    }
+
+    @Override
+    public File getTmpDir() {
+        return surfaceView.getTmpDir();
     }
 
 }

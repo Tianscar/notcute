@@ -1,9 +1,9 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
-import com.ansdoship.a3wt.input.A3CanvasListener;
+import com.ansdoship.a3wt.input.A3ContextListener;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -16,19 +16,76 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class A3AWTComponent extends Component implements AWTA3Canvas, ComponentListener, FocusListener {
+import static com.ansdoship.a3wt.util.A3FileUtils.createDirIfNotExist;
+
+public class A3AWTComponent extends Component implements AWTA3Context, ComponentListener, FocusListener {
+
+    protected static final AWTA3Assets assets = new AWTA3Assets();
+
+    public static final File HOME = new File(System.getProperty("user.home"));
+    public static final File TMPDIR = new File(System.getProperty("java.io.tmpdir"));
+    public static final File BASE_CACHE_DIR;
+    public static final File BASE_CONFIG_DIR;
+    public static final File BASE_FILES_DIR;
+    static {
+        String os = AWTA3Platform.OS_NAME.trim().toLowerCase();
+        if (os.contains("win")) {
+            final String APPDATA = System.getenv("APPDATA");
+            final String LOCALAPPDATA = System.getenv("LOCALAPPDATA");
+            final File Local;
+            final File Roaming;
+            if (LOCALAPPDATA == null) {
+                if (Float.parseFloat(AWTA3Platform.OS_VERSION) < 6.0) {
+                    if (APPDATA == null) Local = new File(HOME, "Application Data");
+                    else Local = new File(APPDATA);
+                }
+                else Local = new File(HOME, "AppData\\Local");
+            }
+            else Local = new File(LOCALAPPDATA);
+            if (APPDATA == null) {
+                if (Float.parseFloat(AWTA3Platform.OS_VERSION) < 6.0) {
+                    Roaming = new File(HOME, "Application Data");
+                }
+                else Roaming = new File(HOME, "AppData\\Roaming");
+            }
+            else Roaming = new File(APPDATA);
+            BASE_CACHE_DIR = Local;
+            BASE_FILES_DIR = BASE_CONFIG_DIR = Roaming;
+        }
+        else if (os.contains("nux") || os.contains("nix")) {
+            final String XDG_CACHE_HOME = System.getenv("XDG_CACHE_HOME");
+            final String XDG_CONFIG_HOME = System.getenv("XDG_CONFIG_HOME");
+            final String XDG_DATA_HOME = System.getenv("XDG_DATA_HOME");
+            if (XDG_CACHE_HOME == null) BASE_CACHE_DIR = new File(HOME, ".cache");
+            else BASE_CACHE_DIR = new File(XDG_CACHE_HOME);
+            if (XDG_CONFIG_HOME == null) BASE_CONFIG_DIR = new File(HOME, ".config");
+            else BASE_CONFIG_DIR = new File(XDG_CONFIG_HOME);
+            if (XDG_DATA_HOME == null) BASE_FILES_DIR = new File(HOME, ".local/share");
+            else BASE_FILES_DIR = new File(XDG_DATA_HOME);
+        }
+        else if (os.contains("mac") || os.contains("osx")) {
+            BASE_CACHE_DIR = new File(HOME, "Library/Caches");
+            BASE_CONFIG_DIR = new File(HOME, "Library/Preferences");
+            BASE_FILES_DIR = new File(HOME, "Library/Application Support");
+        }
+        else {
+            BASE_CACHE_DIR = new File(HOME, ".cache");
+            BASE_CONFIG_DIR = new File(HOME, ".config");
+            BASE_FILES_DIR = new File(HOME, ".local/share");
+        }
+    }
 
     protected volatile long elapsed = 0;
     protected final AWTA3Graphics graphics = new A3ComponentGraphics();
-    protected final AWTA3Context context = new AWTA3Context(this);
     protected volatile Image buffer = null;
-    protected final List<A3CanvasListener> a3CanvasListeners = new ArrayList<>();
+    protected final List<A3ContextListener> a3ContextListeners = new ArrayList<>();
     protected volatile boolean disposed = false;
-    protected volatile String companyName = null;
-    protected volatile String appName = null;
+    protected static volatile String companyName = "";
+    protected static volatile String appName = "";
 
     private static class A3ComponentGraphics extends AWTA3Graphics {
         public A3ComponentGraphics() {
@@ -38,6 +95,7 @@ public class A3AWTComponent extends Component implements AWTA3Canvas, ComponentL
             this.graphics2D = graphics2D;
             this.width = width;
             this.height = height;
+            if (graphics2D != null) graphics2D.setRenderingHints(this.hints);
         }
     }
 
@@ -47,16 +105,11 @@ public class A3AWTComponent extends Component implements AWTA3Canvas, ComponentL
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                for (A3CanvasListener listener : a3CanvasListeners) {
-                    listener.canvasCreated();
+                for (A3ContextListener listener : a3ContextListeners) {
+                    listener.contextCreated();
                 }
             }
         });
-    }
-
-    @Override
-    public A3Context getA3Context() {
-        return context;
     }
 
     @Override
@@ -105,8 +158,8 @@ public class A3AWTComponent extends Component implements AWTA3Canvas, ComponentL
 
     @Override
     public void paint(A3Graphics graphics) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasPainted(graphics);
+        for (A3ContextListener listener : a3ContextListeners) {
+            listener.contextPainted(graphics);
         }
     }
 
@@ -122,7 +175,7 @@ public class A3AWTComponent extends Component implements AWTA3Canvas, ComponentL
 
     @Override
     public synchronized void update() {
-        checkDisposed("Can't call update() on a disposed A3Canvas");
+        checkDisposed("Can't call update() on a disposed A3Context");
         long time = System.currentTimeMillis();
         buffer = createImage(getWidth(), getHeight());
         Graphics gTmp = buffer.getGraphics();
@@ -154,55 +207,113 @@ public class A3AWTComponent extends Component implements AWTA3Canvas, ComponentL
     }
 
     @Override
-    public List<A3CanvasListener> getA3CanvasListeners() {
-        return a3CanvasListeners;
+    public List<A3ContextListener> getA3ContextListeners() {
+        return a3ContextListeners;
     }
 
     @Override
-    public void addA3CanvasListener(A3CanvasListener listener) {
-        a3CanvasListeners.add(listener);
+    public void addA3ContextListener(A3ContextListener listener) {
+        a3ContextListeners.add(listener);
     }
 
     @Override
     public void componentResized(ComponentEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasResized(e.getComponent().getWidth(), e.getComponent().getHeight());
+        for (A3ContextListener listener : a3ContextListeners) {
+            listener.contextResized(e.getComponent().getWidth(), e.getComponent().getHeight());
         }
     }
 
     @Override
     public void componentMoved(ComponentEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasMoved(e.getComponent().getX(), e.getComponent().getY());
+        for (A3ContextListener listener : a3ContextListeners) {
+            listener.contextMoved(e.getComponent().getX(), e.getComponent().getY());
         }
     }
 
     @Override
     public void componentShown(ComponentEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasShown();
+        for (A3ContextListener listener : a3ContextListeners) {
+            listener.contextShown();
         }
     }
 
     @Override
     public void componentHidden(ComponentEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasHidden();
+        for (A3ContextListener listener : a3ContextListeners) {
+            listener.contextHidden();
         }
     }
 
     @Override
     public void focusGained(FocusEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasFocusGained();
+        for (A3ContextListener listener : a3ContextListeners) {
+            listener.contextFocusGained();
         }
     }
 
     @Override
     public void focusLost(FocusEvent e) {
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasFocusLost();
+        for (A3ContextListener listener : a3ContextListeners) {
+            listener.contextFocusLost();
         }
+    }
+
+    @Override
+    public A3Preferences getPreferences(String name) {
+        return new AWTA3Preferences(getPreferencesFile(name));
+    }
+
+    @Override
+    public boolean deletePreferences(String name) {
+        getPreferences(name).clear();
+        return getPreferencesFile(name).delete();
+    }
+
+    @Override
+    public File getPreferencesFile(String name) {
+        return new File(getConfigDir(), name);
+    }
+
+    @Override
+    public AWTA3Assets getA3Assets() {
+        return assets;
+    }
+
+    @Override
+    public File getCacheDir() {
+        final String ext;
+        if (AWTA3Platform.OS_NAME.trim().toLowerCase().contains("win")) ext = "Cache";
+        else ext = "";
+        File cacheDir = new File(BASE_CACHE_DIR, getCompanyName() + "/" + getAppName() + "/" + ext);
+        createDirIfNotExist(cacheDir);
+        return cacheDir;
+    }
+
+    @Override
+    public File getConfigDir() {
+        final String ext;
+        if (AWTA3Platform.OS_NAME.trim().toLowerCase().contains("win")) ext = "Settings";
+        else ext = "";
+        File configDir = new File(BASE_CONFIG_DIR, getCompanyName() + "/" + getAppName() + "/" + ext);
+        createDirIfNotExist(configDir);
+        return configDir;
+    }
+
+    @Override
+    public File getFilesDir(String type) {
+        File filesDir = new File(new File(BASE_FILES_DIR, getCompanyName() + "/" + getAppName()), type);
+        createDirIfNotExist(filesDir);
+        return filesDir;
+    }
+
+    @Override
+    public File getHomeDir() {
+        return HOME;
+    }
+
+    @Override
+    public File getTmpDir() {
+        return TMPDIR;
     }
 
     @Override
@@ -215,8 +326,8 @@ public class A3AWTComponent extends Component implements AWTA3Canvas, ComponentL
         if (isDisposed()) return;
         disposed = true;
         buffer = null;
-        for (A3CanvasListener listener : a3CanvasListeners) {
-            listener.canvasDisposed();
+        for (A3ContextListener listener : a3ContextListeners) {
+            listener.contextDisposed();
         }
     }
 

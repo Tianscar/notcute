@@ -42,6 +42,7 @@ public class AndroidA3Graphics implements A3Graphics {
         this.width = width;
         this.height = height;
         paint = new Paint();
+        reset();
     }
 
     public Canvas getCanvas() {
@@ -58,80 +59,80 @@ public class AndroidA3Graphics implements A3Graphics {
 
     public void drawPath(Path path) {
         checkDisposed("Can't call drawPath() on a disposed A3Graphics");
-        canvas.drawPath(path, paint);
         canvas.save();
+        canvas.drawPath(path, paint);
         canvas.restore();
     }
 
     @Override
     public void drawPath(A3Path path) {
         checkDisposed("Can't call drawPath() on a disposed A3Graphics");
-        canvas.drawPath(((AndroidA3Path)path).getPath(), paint);
         canvas.save();
+        canvas.drawPath(((AndroidA3Path)path).getPath(), paint);
         canvas.restore();
     }
 
     @Override
     public void drawImage(A3Image image, int x, int y) {
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
-        canvas.drawBitmap(((AndroidA3Image)image).getBitmap(), x, y, paint);
         canvas.save();
+        canvas.drawBitmap(((AndroidA3Image)image).getBitmap(), x, y, paint);
         canvas.restore();
     }
 
     @Override
     public void drawPoint(float x, float y) {
         checkDisposed("Can't call drawPoint() on a disposed A3Graphics");
-        canvas.drawPoint(x, y, paint);
         canvas.save();
+        canvas.drawPoint(x, y, paint);
         canvas.restore();
     }
 
     @Override
     public void drawArc(float left, float top, float right, float bottom, float startAngle, float sweepAngle, boolean useCenter) {
         checkDisposed("Can't call drawArc() on a disposed A3Graphics");
-        canvas.drawArc(new RectF(left, top, right, bottom), startAngle, sweepAngle, useCenter, paint);
         canvas.save();
+        canvas.drawArc(new RectF(left, top, right, bottom), startAngle, sweepAngle, useCenter, paint);
         canvas.restore();
     }
 
     @Override
     public void drawLine(float startX, float startY, float stopX, float stopY) {
         checkDisposed("Can't call drawLine() on a disposed A3Graphics");
-        canvas.drawLine(startX, startY, stopX, stopY, paint);
         canvas.save();
+        canvas.drawLine(startX, startY, stopX, stopY, paint);
         canvas.restore();
     }
 
     @Override
     public void drawOval(float left, float top, float right, float bottom) {
         checkDisposed("Can't call drawOval() on a disposed A3Graphics");
-        canvas.drawOval(new RectF(left, top, right, bottom), paint);
         canvas.save();
+        canvas.drawOval(new RectF(left, top, right, bottom), paint);
         canvas.restore();
     }
 
     @Override
     public void drawRect(float left, float top, float right, float bottom) {
         checkDisposed("Can't call drawRect() on a disposed A3Graphics");
-        canvas.drawRect(new RectF(left, top, right, bottom), paint);
         canvas.save();
+        canvas.drawRect(new RectF(left, top, right, bottom), paint);
         canvas.restore();
     }
 
     @Override
     public void drawRoundRect(float left, float top, float right, float bottom, float rx, float ry) {
         checkDisposed("Can't call drawRoundRect() on a disposed A3Graphics");
-        canvas.drawRoundRect(new RectF(left, top, right, bottom), rx, ry, paint);
         canvas.save();
+        canvas.drawRoundRect(new RectF(left, top, right, bottom), rx, ry, paint);
         canvas.restore();
     }
 
     @Override
     public void drawText(String text, float x, float y) {
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
-        canvas.drawText(text, x, y, paint);
         canvas.save();
+        canvas.drawText(text, x, y, paint);
         canvas.restore();
     }
 
@@ -245,12 +246,33 @@ public class AndroidA3Graphics implements A3Graphics {
 
     @Override
     public boolean isAntialias() {
-        return paint.isAntiAlias();
+        return paint.isAntiAlias() && paint.isLinearText();
     }
 
     @Override
     public void setAntiAlias(boolean antiAlias) {
         paint.setAntiAlias(antiAlias);
+        paint.setLinearText(antiAlias);
+    }
+
+    @Override
+    public boolean isFilterBitmap() {
+        return paint.isFilterBitmap();
+    }
+
+    @Override
+    public void setFilterBitmap(boolean filterBitmap) {
+        paint.setFilterBitmap(filterBitmap);
+    }
+
+    @Override
+    public boolean isSubpixelText() {
+        return paint.isSubpixelText();
+    }
+
+    @Override
+    public void setSubpixelText(boolean subpixelText) {
+        paint.setSubpixelText(true);
     }
 
     @Override
@@ -261,6 +283,14 @@ public class AndroidA3Graphics implements A3Graphics {
     @Override
     public void setDither(boolean dither) {
         paint.setDither(dither);
+    }
+
+    @Override
+    public void reset() {
+        setAntiAlias(true);
+        setFilterBitmap(true);
+        setDither(true);
+        setSubpixelText(true);
     }
 
     @Override

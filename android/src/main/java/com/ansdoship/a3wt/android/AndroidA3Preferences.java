@@ -1,8 +1,7 @@
 package com.ansdoship.a3wt.android;
 
 import android.content.SharedPreferences;
-import androidx.annotation.NonNull;
-import com.ansdoship.a3wt.util.A3Preferences;
+import com.ansdoship.a3wt.app.A3Preferences;
 
 public class AndroidA3Preferences implements A3Preferences {
 
@@ -10,7 +9,7 @@ public class AndroidA3Preferences implements A3Preferences {
     protected final SharedPreferences.Editor editor;
     protected final String name;
 
-    public AndroidA3Preferences(@NonNull SharedPreferences sharedPreferences, String name) {
+    public AndroidA3Preferences(SharedPreferences sharedPreferences, String name) {
         this.sharedPreferences = sharedPreferences;
         editor = sharedPreferences.edit();
         this.name = name;

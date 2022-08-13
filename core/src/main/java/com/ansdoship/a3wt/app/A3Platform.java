@@ -8,4 +8,9 @@ public interface A3Platform {
     A3Logger getLogger();
     A3GraphicsKit getGraphicsKit();
 
+    String getBackendName();
+    String getPlatformName();
+    String getPlatformVersion();
+    String getPlatformArch();
+
 }

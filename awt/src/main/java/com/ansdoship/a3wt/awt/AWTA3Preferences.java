@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.util.A3Preferences;
+import com.ansdoship.a3wt.app.A3Preferences;
 
 import java.awt.EventQueue;
 import java.io.File;

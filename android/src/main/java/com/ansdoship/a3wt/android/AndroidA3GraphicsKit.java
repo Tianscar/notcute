@@ -2,6 +2,8 @@ package com.ansdoship.a3wt.android;
 
 import android.graphics.Path;
 import android.graphics.Typeface;
+import com.ansdoship.a3wt.A3WT;
+import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -16,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.readTypeface;
+import static com.ansdoship.a3wt.util.A3FileUtils.removeStartSeparator;
 
 public class AndroidA3GraphicsKit implements A3GraphicsKit {
 
@@ -32,6 +35,11 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
     @Override
     public A3Image readImage(URL input) throws IOException {
         return new AndroidA3Image(BitmapIO.read(input));
+    }
+
+    @Override
+    public A3Image readImage(A3Assets assets, String input) throws IOException {
+        return new AndroidA3Image(BitmapIO.read(((AndroidA3Assets)assets).getAssets(), removeStartSeparator(input)));
     }
 
     @Override
@@ -75,13 +83,18 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
 
     @Override
     public A3Font readFont(InputStream input) throws IOException {
-        Typeface typeface = readTypeface(input);
-        return typeface == null ? null : new AndroidA3Font(typeface);
+        throw new UnsupportedOperationException(A3WT.getPlatform().getBackendName() + " backend currently do not support read font from InputStream");
     }
 
     @Override
     public A3Font readFont(URL input) throws IOException {
-        return readFont(input.openStream());
+        throw new UnsupportedOperationException(A3WT.getPlatform().getBackendName() + " backend currently do not support read font from URL");
+    }
+
+    @Override
+    public A3Font readFont(A3Assets assets, String input) throws IOException {
+        Typeface typeface = readTypeface(((AndroidA3Assets)assets).getAssets(), removeStartSeparator(input));
+        return typeface == null ? null : new AndroidA3Font(typeface);
     }
 
 }

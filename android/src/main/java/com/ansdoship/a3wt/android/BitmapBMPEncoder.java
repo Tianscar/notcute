@@ -27,7 +27,6 @@ package com.ansdoship.a3wt.android;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -49,7 +48,7 @@ final class BitmapBMPEncoder {
     private final static short BI_BIT_COUNT_24 = 24;
     private final static short BI_BIT_COUNT_32 = 32;
 
-    private static @NonNull byte[] getBitmapFileHeader (int bfSize) {
+    private static byte[] getBitmapFileHeader (int bfSize) {
         byte[] buffer = new byte[BITMAP_FILE_HEADER_SIZE];
         // bfType
         // The file type; must be BM.
@@ -78,7 +77,7 @@ final class BitmapBMPEncoder {
         return buffer;
     }
 
-    private static @NonNull byte[] getBitmapInfoHeader (int biWidth, int biHeight, short biBitCount, int biSizeImage) {
+    private static byte[] getBitmapInfoHeader (int biWidth, int biHeight, short biBitCount, int biSizeImage) {
         byte[] buffer = new byte[BITMAP_INFO_HEADER_SIZE];
         // biSize
         // The number of bytes required by the structure.
@@ -167,7 +166,7 @@ final class BitmapBMPEncoder {
         return buffer;
     }
 
-    private static @NonNull byte[] getDIBData (@NonNull Bitmap bitmap) {
+    private static byte[] getDIBData (Bitmap bitmap) {
         int biWidth = bitmap.getWidth();
         int biHeight = bitmap.getHeight();
         byte[] data;
@@ -200,7 +199,7 @@ final class BitmapBMPEncoder {
         return data;
     }
 
-    public static boolean compress(@NonNull Bitmap bitmap, @NonNull OutputStream stream) {
+    public static boolean compress(Bitmap bitmap, OutputStream stream) {
         int biWidth = bitmap.getWidth();
         int biHeight = bitmap.getHeight();
         byte biBitCount;

@@ -1,65 +1,17 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.app.A3Context;
-import com.ansdoship.a3wt.graphics.A3Canvas;
-import com.ansdoship.a3wt.util.A3Preferences;
+import com.ansdoship.a3wt.graphics.A3Context;
 
 import java.io.File;
 
-public class AWTA3Context implements A3Context {
+public interface AWTA3Context extends A3Context {
 
-    protected volatile AWTA3Canvas canvas;
+    String getCompanyName();
+    String getAppName();
 
-    protected static volatile String basePreferencesPath;
-    static {
-        String osName = System.getProperty("os.name").trim().toLowerCase();
-        if (osName.contains("win")) {
-            if (Float.parseFloat(System.getProperty("os.version")) < 6.0) {
-                basePreferencesPath = "Application Data/";
-            }
-            else {
-                basePreferencesPath = "AppData/Roaming/";
-            }
-        }
-        else if (osName.contains("osx") || osName.contains("mac")) {
-            basePreferencesPath = "Library/Application Support/";
-        }
-        else if (osName.contains("linux") || osName.contains("bsd")) {
-            String XDGHome = System.getenv().get("XDG_DATA_HOME");
-            if (XDGHome == null) XDGHome = ".local/share/";
-            if (!XDGHome.endsWith("/")) XDGHome += "/";
-            basePreferencesPath = XDGHome;
-        }
-        else basePreferencesPath = "/";
+    void setCompanyName(String companyName);
+    void setAppName(String appName);
 
-    }
-
-    public AWTA3Context(AWTA3Canvas canvas) {
-        this.canvas = canvas;
-    }
-
-    @Override
-    public A3Canvas getCanvas() {
-        return canvas;
-    }
-
-    @Override
-    public A3Preferences getPreferences(String name) {
-        String basePreferencesPath = AWTA3Context.basePreferencesPath;
-        if (canvas.getCompanyName() != null) basePreferencesPath += canvas.getCompanyName() + "/";
-        if (canvas.getAppName() != null) basePreferencesPath += canvas.getAppName();
-        if (basePreferencesPath.startsWith("/")) basePreferencesPath = basePreferencesPath.substring(1);
-        return new AWTA3Preferences(new File(new File(System.getProperty("user.home"), basePreferencesPath), name));
-    }
-
-    @Override
-    public boolean deletePreferences(String name) {
-        getPreferences(name).clear();
-        String basePreferencesPath = AWTA3Context.basePreferencesPath;
-        if (canvas.getCompanyName() != null) basePreferencesPath += canvas.getCompanyName() + "/";
-        if (canvas.getAppName() != null) basePreferencesPath += canvas.getAppName();
-        if (basePreferencesPath.startsWith("/")) basePreferencesPath = basePreferencesPath.substring(1);
-        return new File(new File(System.getProperty("user.home"), basePreferencesPath), name).delete();
-    }
+    File getPreferencesFile(String name);
 
 }

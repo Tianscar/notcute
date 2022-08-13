@@ -33,8 +33,6 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +51,7 @@ public final class BitmapIO {
 
     private BitmapIO(){}
 
-    public static Bitmap read(@NonNull InputStream stream, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(InputStream stream, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(stream, config);
@@ -62,11 +60,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull InputStream stream) throws IOException {
+    public static Bitmap read(InputStream stream) throws IOException {
         return read(stream, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull InputStream stream, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(InputStream stream, Rect region, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(stream, region, config);
@@ -75,11 +73,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull InputStream stream, @NonNull Rect region) throws IOException {
+    public static Bitmap read(InputStream stream, Rect region) throws IOException {
         return read(stream, region, null);
     }
 
-    public static Bitmap read(@NonNull File file, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(File file, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(file, config);
@@ -88,11 +86,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull File file) throws IOException {
+    public static Bitmap read(File file) throws IOException {
         return read(file, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull File file, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(File file, Rect region, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(file, region, config);
@@ -101,35 +99,35 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull File file, @NonNull Rect region) throws IOException {
+    public static Bitmap read(File file, Rect region) throws IOException {
         return read(file, region, null);
     }
 
-    public static Bitmap read(@NonNull String pathname, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(String pathname, Bitmap.Config config) throws IOException {
         return read(new File(pathname), config);
     }
 
-    public static Bitmap read(@NonNull String pathname) throws IOException {
+    public static Bitmap read(String pathname) throws IOException {
         return read(pathname, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull String pathname, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(String pathname, Rect region, Bitmap.Config config) throws IOException {
         return read(new File(pathname), region, config);
     }
 
-    public static Bitmap read(@NonNull String pathname, @NonNull Rect region) throws IOException {
+    public static Bitmap read(String pathname, Rect region) throws IOException {
         return read(pathname, region, null);
     }
 
-    public static Bitmap read(@NonNull byte[] data, @Nullable Bitmap.Config config) {
+    public static Bitmap read(byte[] data, Bitmap.Config config) {
         return read(data, 0, data.length, config);
     }
 
-    public static Bitmap read(@NonNull byte[] data) {
+    public static Bitmap read(byte[] data) {
         return read(data, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull byte[] data, int offset, int length, @Nullable Bitmap.Config config) {
+    public static Bitmap read(byte[] data, int offset, int length, Bitmap.Config config) {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(data, offset, length, config);
@@ -138,19 +136,19 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull byte[] data, int offset, int length) {
+    public static Bitmap read(byte[] data, int offset, int length) {
         return read(data, offset, length, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull byte[] data, @NonNull Rect region, @Nullable Bitmap.Config config) {
+    public static Bitmap read(byte[] data, Rect region, Bitmap.Config config) {
         return read(data, 0, data.length, region, config);
     }
 
-    public static Bitmap read(@NonNull byte[] data, @NonNull Rect region) {
+    public static Bitmap read(byte[] data, Rect region) {
         return read(data, region, null);
     }
 
-    public static Bitmap read(@NonNull byte[] data, int offset, int length, @NonNull Rect region, @Nullable Bitmap.Config config) {
+    public static Bitmap read(byte[] data, int offset, int length, Rect region, Bitmap.Config config) {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(data, offset, length, region, config);
@@ -159,11 +157,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull byte[] data, int offset, int length, @NonNull Rect region) {
+    public static Bitmap read(byte[] data, int offset, int length, Rect region) {
         return read(data, offset, length, region, null);
     }
 
-    public static Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(AssetManager assets, String asset, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(assets, asset, config);
@@ -172,11 +170,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull AssetManager assets, @NonNull String asset) throws IOException {
+    public static Bitmap read(AssetManager assets, String asset) throws IOException {
         return read(assets, asset, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(AssetManager assets, String asset, Rect region, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(assets, asset, region, config);
@@ -185,12 +183,12 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @NonNull Rect region) throws IOException {
+    public static Bitmap read(AssetManager assets, String asset, Rect region) throws IOException {
         return read(assets, asset, region, null);
     }
 
     @SuppressLint("ResourceType")
-    public static Bitmap read(@NonNull Resources res, int id, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(Resources res, int id, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(res, id, config);
@@ -199,12 +197,12 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull Resources res, int id) throws IOException {
+    public static Bitmap read(Resources res, int id) throws IOException {
         return read(res, id, (Bitmap.Config) null);
     }
 
     @SuppressLint("ResourceType")
-    public static Bitmap read(@NonNull Resources res, int id, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(Resources res, int id, Rect region, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(res, id, region, config);
@@ -213,11 +211,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull Resources res, int id, @NonNull Rect region) throws IOException {
+    public static Bitmap read(Resources res, int id, Rect region) throws IOException {
         return read(res, id, region, null);
     }
 
-    public static Bitmap read(@NonNull Drawable drawable, @Nullable Bitmap.Config config) {
+    public static Bitmap read(Drawable drawable, Bitmap.Config config) {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(drawable, config);
@@ -226,11 +224,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull Drawable drawable) {
+    public static Bitmap read(Drawable drawable) {
         return read(drawable, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull Drawable drawable, @NonNull Rect region, @Nullable Bitmap.Config config) {
+    public static Bitmap read(Drawable drawable, Rect region, Bitmap.Config config) {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(drawable, region, config);
@@ -239,11 +237,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull Drawable drawable, @NonNull Rect region) {
+    public static Bitmap read(Drawable drawable, Rect region) {
         return read(drawable, region, null);
     }
 
-    public static Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(ContentResolver resolver, Uri uri, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(resolver, uri, config);
@@ -252,11 +250,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri) throws IOException {
+    public static Bitmap read(ContentResolver resolver, Uri uri) throws IOException {
         return read(resolver, uri, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(ContentResolver resolver, Uri uri, Rect region, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(resolver, uri, region, config);
@@ -265,11 +263,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @NonNull Rect region) throws IOException {
+    public static Bitmap read(ContentResolver resolver, Uri uri, Rect region) throws IOException {
         return read(resolver, uri, region, null);
     }
 
-    public static Bitmap read(@NonNull URI uri, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(URI uri, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(uri, config);
@@ -278,11 +276,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull URI uri) throws IOException {
+    public static Bitmap read(URI uri) throws IOException {
         return read(uri, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull URI uri, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(URI uri, Rect region, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(uri, region, config);
@@ -291,11 +289,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull URI uri, @NonNull Rect region) throws IOException {
+    public static Bitmap read(URI uri, Rect region) throws IOException {
         return read(uri, region, null);
     }
 
-    public static Bitmap read(@NonNull URL url, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(URL url, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(url, config);
@@ -304,11 +302,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static @Nullable Bitmap read(@NonNull URL url) throws IOException {
+    public static Bitmap read(URL url) throws IOException {
         return read(url, (Bitmap.Config) null);
     }
 
-    public static Bitmap read(@NonNull URL url, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public static Bitmap read(URL url, Rect region, Bitmap.Config config) throws IOException {
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(url, region, config);
@@ -317,11 +315,11 @@ public final class BitmapIO {
         return bitmap;
     }
 
-    public static Bitmap read(@NonNull URL url, @NonNull Rect region) throws IOException {
+    public static Bitmap read(URL url, Rect region) throws IOException {
         return read(url, region, null);
     }
 
-    public static boolean write(@NonNull File output, @NonNull Bitmap bitmap, @NonNull String formatName, int quality) throws IOException {
+    public static boolean write(File output, Bitmap bitmap, String formatName, int quality) throws IOException {
         boolean result = false;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             result = provider.write(output, bitmap, formatName, quality);
@@ -330,7 +328,7 @@ public final class BitmapIO {
         return result;
     }
 
-    public static boolean write(@NonNull OutputStream output, @NonNull Bitmap bitmap, @NonNull String formatName, int quality) throws IOException {
+    public static boolean write(OutputStream output, Bitmap bitmap, String formatName, int quality) throws IOException {
         boolean result = false;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             result = provider.write(output, bitmap, formatName, quality);

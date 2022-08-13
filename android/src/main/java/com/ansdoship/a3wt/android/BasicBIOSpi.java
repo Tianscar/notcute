@@ -13,8 +13,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +31,7 @@ public class BasicBIOSpi implements BIOServiceProvider {
     protected static final String[] WRITER_FORMAT_NAMES = new String[]{"bmp", "webp", "png", "jpeg", "jpg"};
 
     @Override
-    public Bitmap read(@NonNull InputStream stream, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(InputStream stream, Bitmap.Config config) throws IOException {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;
         options.inPreferredConfig = config;
@@ -48,7 +46,7 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(@NonNull InputStream stream, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(InputStream stream, Rect region, Bitmap.Config config) throws IOException {
         BitmapRegionDecoder decoder;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             decoder = BitmapRegionDecoder.newInstance(stream);
@@ -75,7 +73,7 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(@NonNull File file, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(File file, Bitmap.Config config) throws IOException {
         if (!file.exists() || !file.isFile()) {
             return null;
         }
@@ -94,7 +92,7 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(@NonNull File file, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(File file, Rect region, Bitmap.Config config) throws IOException {
         FileInputStream stream = new FileInputStream(file);
         BitmapRegionDecoder decoder;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -122,7 +120,7 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(@NonNull byte[] data, int offset, int length, @Nullable Bitmap.Config config) {
+    public Bitmap read(byte[] data, int offset, int length, Bitmap.Config config) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;
         options.inPreferredConfig = config;
@@ -136,7 +134,7 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(@NonNull byte[] data, int offset, int length, @NonNull Rect region, @Nullable Bitmap.Config config) {
+    public Bitmap read(byte[] data, int offset, int length, Rect region, Bitmap.Config config) {
         Bitmap bitmap = null;
         BitmapRegionDecoder decoder = null;
         try {
@@ -170,17 +168,17 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(AssetManager assets, String asset, Bitmap.Config config) throws IOException {
         return read(assets.open(asset), config);
     }
 
     @Override
-    public Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(AssetManager assets, String asset, Rect region, Bitmap.Config config) throws IOException {
         return read(assets.open(asset), region, config);
     }
 
     @Override
-    public Bitmap read(@NonNull Resources res, int id, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(Resources res, int id, Bitmap.Config config) throws IOException {
         Bitmap bitmap;
         try {
             bitmap = read(res.openRawResource(id), config);
@@ -195,12 +193,12 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(@NonNull Resources res, int id, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(Resources res, int id, Rect region, Bitmap.Config config) throws IOException {
         return read(res.openRawResource(id), region, config);
     }
 
     @Override
-    public Bitmap read(@NonNull Drawable drawable, @Nullable Bitmap.Config config) {
+    public Bitmap read(Drawable drawable, Bitmap.Config config) {
         if (drawable instanceof BitmapDrawable) {
             Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
             if (bitmap != null) {
@@ -230,7 +228,7 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(@NonNull Drawable drawable, @NonNull Rect region, @Nullable Bitmap.Config config) {
+    public Bitmap read(Drawable drawable, Rect region, Bitmap.Config config) {
         if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
             return null;
         }
@@ -249,37 +247,37 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(ContentResolver resolver, Uri uri, Bitmap.Config config) throws IOException {
         return read(resolver.openInputStream(uri), config);
     }
 
     @Override
-    public Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(ContentResolver resolver, Uri uri, Rect region, Bitmap.Config config) throws IOException {
         return read(resolver.openInputStream(uri), region, config);
     }
 
     @Override
-    public Bitmap read(@NonNull URI uri, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(URI uri, Bitmap.Config config) throws IOException {
         return read(uri.toURL(), config);
     }
 
     @Override
-    public Bitmap read(@NonNull URI uri, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(URI uri, Rect region, Bitmap.Config config) throws IOException {
         return read(uri.toURL(), region, config);
     }
 
     @Override
-    public Bitmap read(@NonNull URL url, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(URL url, Bitmap.Config config) throws IOException {
         return read(url.openStream(), config);
     }
 
     @Override
-    public Bitmap read(@NonNull URL url, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException {
+    public Bitmap read(URL url, Rect region, Bitmap.Config config) throws IOException {
         return read(url.openStream(), region, config);
     }
 
     @Override
-    public boolean write(@NonNull File output, @NonNull Bitmap bitmap, @NonNull String formatName, int quality) throws IOException {
+    public boolean write(File output, Bitmap bitmap, String formatName, int quality) throws IOException {
         if (output.exists()) {
             if (!output.delete()) return false;
         }
@@ -289,7 +287,7 @@ public class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public boolean write(@NonNull OutputStream output, @NonNull Bitmap bitmap, @NonNull String formatName, int quality) throws IOException {
+    public boolean write(OutputStream output, Bitmap bitmap, String formatName, int quality) throws IOException {
         quality = clamp(quality, 0, 100);
         boolean result = false;
         String format = formatName.trim().toLowerCase();

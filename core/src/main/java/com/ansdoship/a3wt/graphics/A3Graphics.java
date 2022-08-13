@@ -62,8 +62,13 @@ public interface A3Graphics extends A3Disposable {
 
     void setAntiAlias(boolean antiAlias);
     boolean isAntialias();
-
+    void setFilterBitmap(boolean filterBitmap);
+    boolean isFilterBitmap();
+    void setSubpixelText(boolean subpixelText);
+    boolean isSubpixelText();
     void setDither(boolean dither);
     boolean isDither();
+
+    void reset();
 
 }

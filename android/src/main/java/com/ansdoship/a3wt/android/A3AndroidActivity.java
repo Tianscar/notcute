@@ -4,19 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import androidx.annotation.Nullable;
-import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.app.A3Assets;
+import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
-import com.ansdoship.a3wt.input.A3CanvasListener;
+import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class A3AndroidActivity extends Activity implements AndroidA3Container, View.OnLayoutChangeListener {
-
-    protected final AndroidA3Context context = new AndroidA3Context(this);
 
     @Override
     public Context getContext() {
@@ -27,17 +26,12 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     protected final List<A3ContainerListener> a3ContainerListeners = new ArrayList<>();
 
     @Override
-    public A3Context getA3Context() {
-        return context;
-    }
-
-    @Override
     public A3Graphics getA3Graphics() {
         return surfaceView.getA3Graphics();
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (surfaceView == null) surfaceView = new A3AndroidSurfaceView(this);
         setContentView(surfaceView);
@@ -126,13 +120,13 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     }
 
     @Override
-    public List<A3CanvasListener> getA3CanvasListeners() {
-        return surfaceView.getA3CanvasListeners();
+    public List<A3ContextListener> getA3ContextListeners() {
+        return surfaceView.getA3ContextListeners();
     }
 
     @Override
-    public void addA3CanvasListener(A3CanvasListener listener) {
-        surfaceView.addA3CanvasListener(listener);
+    public void addA3ContextListener(A3ContextListener listener) {
+        surfaceView.addA3ContextListener(listener);
     }
 
     @Override
@@ -202,6 +196,46 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
             close = close && listener.containerCloseRequested();
         }
         if (close) super.finish();
+    }
+
+    @Override
+    public A3Preferences getPreferences(String name) {
+        return surfaceView.getPreferences(name);
+    }
+
+    @Override
+    public boolean deletePreferences(String name) {
+        return surfaceView.deletePreferences(name);
+    }
+
+    @Override
+    public A3Assets getA3Assets() {
+        return surfaceView.getA3Assets();
+    }
+
+    @Override
+    public File getCacheDir() {
+        return surfaceView.getCacheDir();
+    }
+
+    @Override
+    public File getConfigDir() {
+        return surfaceView.getConfigDir();
+    }
+
+    @Override
+    public File getFilesDir(String type) {
+        return surfaceView.getFilesDir(type);
+    }
+
+    @Override
+    public File getHomeDir() {
+        return surfaceView.getHomeDir();
+    }
+
+    @Override
+    public File getTmpDir() {
+        return surfaceView.getTmpDir();
     }
 
 }

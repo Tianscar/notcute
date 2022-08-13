@@ -35,6 +35,8 @@ public class AWTA3Graphics implements A3Graphics {
     protected volatile Font baseFont;
     protected volatile float textSize = 1.0f;
 
+    protected final RenderingHints hints = new RenderingHints(null);
+
     @Override
     public int getWidth() {
         return width;
@@ -53,10 +55,15 @@ public class AWTA3Graphics implements A3Graphics {
         this.graphics2D = graphics2D;
         this.width = width;
         this.height = height;
+        reset();
     }
 
     public Graphics2D getGraphics() {
         return graphics2D;
+    }
+
+    public RenderingHints getRenderingHints() {
+        return hints;
     }
 
     public void drawShape(Shape shape) {
@@ -232,26 +239,66 @@ public class AWTA3Graphics implements A3Graphics {
 
     @Override
     public boolean isAntialias() {
-        return !graphics2D.getRenderingHint(RenderingHints.KEY_ANTIALIASING).equals(RenderingHints.VALUE_ANTIALIAS_OFF) &&
-                !graphics2D.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING).equals(RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        return hints.get(RenderingHints.KEY_ANTIALIASING).equals(RenderingHints.VALUE_ANTIALIAS_ON) &&
+                !hints.get(RenderingHints.KEY_TEXT_ANTIALIASING).equals(RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
     }
 
     @Override
     public void setAntiAlias(boolean antiAlias) {
-        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        hints.put(RenderingHints.KEY_ANTIALIASING,
                 antiAlias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
-        graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+        hints.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                 antiAlias ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        if (graphics2D != null) graphics2D.setRenderingHints(hints);
+    }
+
+    @Override
+    public boolean isFilterBitmap() {
+        return !hints.get(RenderingHints.KEY_INTERPOLATION).equals(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+    }
+
+    @Override
+    public void setFilterBitmap(boolean filterBitmap) {
+        hints.put(RenderingHints.KEY_INTERPOLATION,
+                filterBitmap ? RenderingHints.VALUE_INTERPOLATION_BILINEAR : RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        if (graphics2D != null) graphics2D.setRenderingHints(hints);
+    }
+
+    @Override
+    public boolean isSubpixelText() {
+        return hints.get(RenderingHints.KEY_FRACTIONALMETRICS).equals(RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+    }
+
+    @Override
+    public void setSubpixelText(boolean subpixelText) {
+        hints.put(RenderingHints.KEY_FRACTIONALMETRICS,
+                subpixelText ? RenderingHints.VALUE_FRACTIONALMETRICS_ON : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+        if (graphics2D != null) graphics2D.setRenderingHints(hints);
     }
 
     @Override
     public boolean isDither() {
-        return graphics2D.getRenderingHint(RenderingHints.KEY_DITHERING).equals(RenderingHints.VALUE_DITHER_ENABLE);
+        return hints.get(RenderingHints.KEY_DITHERING).equals(RenderingHints.VALUE_DITHER_ENABLE);
     }
 
     @Override
     public void setDither(boolean dither) {
-        graphics2D.setRenderingHint(RenderingHints.KEY_DITHERING, dither ? RenderingHints.VALUE_DITHER_ENABLE : RenderingHints.VALUE_DITHER_DISABLE);
+        hints.put(RenderingHints.KEY_DITHERING,
+                dither ? RenderingHints.VALUE_DITHER_ENABLE : RenderingHints.VALUE_DITHER_DISABLE);
+        if (graphics2D != null) graphics2D.setRenderingHints(hints);
+    }
+
+    @Override
+    public void reset() {
+        hints.clear();
+        hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        hints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        hints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        setAntiAlias(true);
+        setFilterBitmap(true);
+        setDither(true);
+        setSubpixelText(true);
     }
 
     @Override

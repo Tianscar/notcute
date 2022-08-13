@@ -1,9 +1,9 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
-import com.ansdoship.a3wt.input.A3CanvasListener;
+import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 
 import java.awt.GraphicsConfiguration;
@@ -16,12 +16,11 @@ import java.awt.event.WindowListener;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class A3AWTWindow extends Window implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener {
-
-    protected final AWTA3Context context = new AWTA3Context(this);
 
     protected final A3AWTComponent component;
     protected final List<A3ContainerListener> a3ContainerListeners = new ArrayList<>();
@@ -51,11 +50,6 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         addComponentListener(this);
         addWindowListener(this);
         addWindowFocusListener(this);
-    }
-
-    @Override
-    public A3Context getA3Context() {
-        return context;
     }
 
     @Override
@@ -141,13 +135,13 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
     }
 
     @Override
-    public List<A3CanvasListener> getA3CanvasListeners() {
-        return component.a3CanvasListeners;
+    public List<A3ContextListener> getA3ContextListeners() {
+        return component.a3ContextListeners;
     }
 
     @Override
-    public void addA3CanvasListener(A3CanvasListener listener) {
-        component.addA3CanvasListener(listener);
+    public void addA3ContextListener(A3ContextListener listener) {
+        component.addA3ContextListener(listener);
     }
 
     @Override
@@ -248,6 +242,51 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         for (A3ContainerListener listener : a3ContainerListeners) {
             listener.containerFocusLost();
         }
+    }
+
+    @Override
+    public A3Preferences getPreferences(String name) {
+        return component.getPreferences(name);
+    }
+
+    @Override
+    public boolean deletePreferences(String name) {
+        return component.deletePreferences(name);
+    }
+
+    @Override
+    public File getPreferencesFile(String name) {
+        return component.getPreferencesFile(name);
+    }
+
+    @Override
+    public AWTA3Assets getA3Assets() {
+        return component.getA3Assets();
+    }
+
+    @Override
+    public File getCacheDir() {
+        return component.getCacheDir();
+    }
+
+    @Override
+    public File getConfigDir() {
+        return component.getConfigDir();
+    }
+
+    @Override
+    public File getFilesDir(String type) {
+        return component.getFilesDir(type);
+    }
+
+    @Override
+    public File getHomeDir() {
+        return component.getHomeDir();
+    }
+
+    @Override
+    public File getTmpDir() {
+        return component.getTmpDir();
     }
 
     @Override

@@ -7,8 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,27 +17,27 @@ import java.net.URL;
 
 public interface BIOServiceProvider {
 
-    Bitmap read(@NonNull InputStream stream, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull InputStream stream, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull File file, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull File file, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull byte[] data, int offset, int length, @Nullable Bitmap.Config config);
-    Bitmap read(@NonNull byte[] data, int offset, int length, @NonNull Rect region, @Nullable Bitmap.Config config);
-    Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull AssetManager assets, @NonNull String asset, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull Resources res, int id, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull Resources res, int id, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull Drawable drawable, @Nullable Bitmap.Config config);
-    Bitmap read(@NonNull Drawable drawable, @NonNull Rect region, @Nullable Bitmap.Config config);
-    Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull ContentResolver resolver, @NonNull Uri uri, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull URI uri, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull URI uri, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull URL url, @Nullable Bitmap.Config config) throws IOException;
-    Bitmap read(@NonNull URL url, @NonNull Rect region, @Nullable Bitmap.Config config) throws IOException;
+    Bitmap read(InputStream stream, Bitmap.Config config) throws IOException;
+    Bitmap read(InputStream stream, Rect region, Bitmap.Config config) throws IOException;
+    Bitmap read(File file, Bitmap.Config config) throws IOException;
+    Bitmap read(File file, Rect region, Bitmap.Config config) throws IOException;
+    Bitmap read(byte[] data, int offset, int length, Bitmap.Config config);
+    Bitmap read(byte[] data, int offset, int length, Rect region, Bitmap.Config config);
+    Bitmap read(AssetManager assets, String asset, Bitmap.Config config) throws IOException;
+    Bitmap read(AssetManager assets, String asset, Rect region, Bitmap.Config config) throws IOException;
+    Bitmap read(Resources res, int id, Bitmap.Config config) throws IOException;
+    Bitmap read(Resources res, int id, Rect region, Bitmap.Config config) throws IOException;
+    Bitmap read(Drawable drawable, Bitmap.Config config);
+    Bitmap read(Drawable drawable, Rect region, Bitmap.Config config);
+    Bitmap read(ContentResolver resolver, Uri uri, Bitmap.Config config) throws IOException;
+    Bitmap read(ContentResolver resolver, Uri uri, Rect region, Bitmap.Config config) throws IOException;
+    Bitmap read(URI uri, Bitmap.Config config) throws IOException;
+    Bitmap read(URI uri, Rect region, Bitmap.Config config) throws IOException;
+    Bitmap read(URL url, Bitmap.Config config) throws IOException;
+    Bitmap read(URL url, Rect region, Bitmap.Config config) throws IOException;
 
-    boolean write(@NonNull File output, @NonNull Bitmap bitmap, @NonNull String formatName, int quality) throws IOException;
-    boolean write(@NonNull OutputStream output, @NonNull Bitmap bitmap, @NonNull String formatName, int quality) throws IOException;
+    boolean write(File output, Bitmap bitmap, String formatName, int quality) throws IOException;
+    boolean write(OutputStream output, Bitmap bitmap, String formatName, int quality) throws IOException;
 
     String[] getReaderFormatNames();
     String[] getWriterFormatNames();

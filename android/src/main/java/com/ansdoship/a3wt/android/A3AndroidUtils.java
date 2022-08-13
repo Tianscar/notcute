@@ -9,18 +9,13 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Environment;
 import android.util.DisplayMetrics;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-
-import static com.ansdoship.a3wt.util.A3FileUtils.transferTo;
 
 public class A3AndroidUtils {
 
@@ -38,7 +33,7 @@ public class A3AndroidUtils {
      * @return Drawable An object that can be used to draw this resource.
      */
     @SuppressLint("UseCompatLoadingForDrawables")
-    public static Drawable getDrawable(@NonNull Context context, @DrawableRes int id) {
+    public static Drawable getDrawable(Context context, int id) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return context.getDrawable(id);
         } else {
@@ -46,16 +41,16 @@ public class A3AndroidUtils {
         }
     }
 
-    public static Bitmap copyBitmap(@NonNull Bitmap source) {
+    public static Bitmap copyBitmap(Bitmap source) {
         return source.copy(source.getConfig(), source.isMutable());
     }
 
-    public static int getDisplayWidth(@NonNull Resources resources) {
+    public static int getDisplayWidth(Resources resources) {
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return metrics.widthPixels;
     }
 
-    public static int getDisplayHeight(@NonNull Resources resources) {
+    public static int getDisplayHeight(Resources resources) {
         DisplayMetrics metrics = resources.getDisplayMetrics();
         return metrics.heightPixels;
     }
@@ -82,7 +77,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static int paintStrokeJoin2StrokeJoin(@NonNull Paint.Join join) {
+    public static int paintStrokeJoin2StrokeJoin(Paint.Join join) {
         switch (join) {
             case MITER: default:
                 return A3Graphics.Join.MITER;
@@ -93,7 +88,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static int paintStrokeCap2StrokeCap(@NonNull Paint.Cap cap) {
+    public static int paintStrokeCap2StrokeCap(Paint.Cap cap) {
         switch (cap) {
             case BUTT: default:
                 return A3Graphics.Cap.BUTT;
@@ -130,13 +125,17 @@ public class A3AndroidUtils {
         }
     }
 
-    public static boolean deleteSharedPreferences(@NonNull Context context, String name) {
+    public static boolean deleteSharedPreferences(Context context, String name) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return context.deleteSharedPreferences(name);
         } else {
             context.getSharedPreferences(name, Context.MODE_PRIVATE).edit().clear().commit();
             return new File(new File(context.getApplicationInfo().dataDir, "shared_prefs"), name + ".xml").delete();
         }
+    }
+
+    public static File getSharedPreferencesDir(Context context) {
+        return new File(context.getApplicationInfo().dataDir, "shared_prefs");
     }
 
     public static Typeface readTypeface(AssetManager assets, String asset) throws IOException {
@@ -161,14 +160,21 @@ public class A3AndroidUtils {
         return typeface;
     }
 
-    public static Typeface readTypeface(InputStream input) throws IOException {
-        File temp = File.createTempFile("font", "tmp");
-        FileOutputStream output = new FileOutputStream(temp);
-        transferTo(input, output);
-        input.close();
-        output.flush();
-        output.close();
-        return readTypeface(temp);
+    public static boolean isExternalStorageWriteable() {
+        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
+    }
+
+    public static boolean isExternalStorageReadable() {
+        return isExternalStorageWriteable() || Environment.MEDIA_MOUNTED_READ_ONLY.equals(Environment.getExternalStorageState());
+    }
+
+    public static File getStorageDir() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.getStorageDirectory();
+        }
+        else {
+            return isExternalStorageWriteable() ? Environment.getExternalStorageDirectory() : Environment.getDataDirectory();
+        }
     }
 
 }
