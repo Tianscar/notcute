@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import com.ansdoship.a3wt.A3WT;
 import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -59,6 +60,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
     public A3AndroidSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        if (A3WT.getPlatform() == null) A3WT.setPlatform(new AndroidA3Platform());
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
         addOnLayoutChangeListener(this);

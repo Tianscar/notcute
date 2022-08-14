@@ -41,6 +41,11 @@ public class AndroidA3Assets implements A3Assets {
         return null;
     }
 
+    @Override
+    public String[] listAssets(String asset) throws IOException {
+        return assets.list(asset);
+    }
+
     public Uri getAssetUri(String asset) {
         return Uri.parse("file:///android_asset/" + removeStartSeparator(asset));
     }

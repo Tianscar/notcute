@@ -1,5 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
+import com.ansdoship.a3wt.A3WT;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
@@ -100,6 +101,7 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
     }
 
     public A3AWTComponent() {
+        if (A3WT.getPlatform() == null) A3WT.setPlatform(new AWTA3Platform());
         addComponentListener(this);
         addFocusListener(this);
         EventQueue.invokeLater(new Runnable() {
