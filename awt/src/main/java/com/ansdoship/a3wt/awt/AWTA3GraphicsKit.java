@@ -93,4 +93,9 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
         return readFont(assets.readAsset(input));
     }
 
+    @Override
+    public A3Font readFont(String familyName, int style) {
+        return new AWTA3Font(Font.getFont(familyName));
+    }
+
 }

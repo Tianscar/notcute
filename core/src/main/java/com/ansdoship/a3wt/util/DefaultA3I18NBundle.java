@@ -19,10 +19,10 @@ import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
 
-import static com.ansdoship.a3wt.util.Asserts.checkArgNotNull;
-import static com.ansdoship.a3wt.util.Asserts.notSupportedYet;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Asserts.notSupportedYet;
 
-public class CommonA3I18NBundle implements A3I18NBundle {
+public class DefaultA3I18NBundle implements A3I18NBundle {
 
     protected final Map<Locale, Properties> localeProperties = new HashMap<>();
     protected final Map<Locale, Locale> localeMappings = new HashMap<>();

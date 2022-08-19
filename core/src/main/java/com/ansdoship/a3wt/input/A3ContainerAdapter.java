@@ -52,9 +52,4 @@ public abstract class A3ContainerAdapter implements A3ContainerListener {
 
     }
 
-    @Override
-    public boolean containerCloseRequested() {
-        return true;
-    }
-
 }

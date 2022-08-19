@@ -16,4 +16,6 @@ public interface A3Platform {
 
     A3I18NBundle getI18NBundle();
 
+    int getBaselinePPI();
+
 }

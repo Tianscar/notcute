@@ -5,9 +5,9 @@ import com.ansdoship.a3wt.app.A3Platform;
 
 import java.util.Collection;
 
-public class Asserts {
+public class A3Asserts {
     
-    private Asserts(){}
+    private A3Asserts(){}
     
     public static void checkArgNotNull(Object arg) {
         checkArgNotNull(arg, null);

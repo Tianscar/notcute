@@ -1,17 +1,16 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.A3WT;
 import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.util.A3I18NBundle;
 import com.ansdoship.a3wt.util.A3Logger;
-import com.ansdoship.a3wt.util.CommonA3I18NBundle;
+import com.ansdoship.a3wt.util.DefaultA3I18NBundle;
 
 public class AWTA3Platform implements A3Platform {
 
     protected static volatile AWTA3Logger logger = new AWTA3Logger();
     protected static volatile AWTA3GraphicsKit graphicsKit = new AWTA3GraphicsKit();
-    protected static volatile CommonA3I18NBundle i18NBundle = new CommonA3I18NBundle();
+    protected static volatile DefaultA3I18NBundle i18NBundle = new DefaultA3I18NBundle();
 
     public static final String BACKEND_NAME = "AWT";
 
@@ -19,9 +18,7 @@ public class AWTA3Platform implements A3Platform {
     public static final String OS_VERSION = System.getProperty("os.version");
     public static final String OS_ARCH = System.getProperty("os.arch");
 
-    static {
-        if (A3WT.getPlatform() == null) A3WT.setPlatform(new AWTA3Platform());
-    }
+    public static final int BASELINE_PPI = 96;
 
     @Override
     public A3Logger getLogger() {
@@ -56,6 +53,11 @@ public class AWTA3Platform implements A3Platform {
     @Override
     public A3I18NBundle getI18NBundle() {
         return i18NBundle;
+    }
+
+    @Override
+    public int getBaselinePPI() {
+        return BASELINE_PPI;
     }
 
 }

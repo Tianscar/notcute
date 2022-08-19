@@ -2,7 +2,11 @@ package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
+import com.ansdoship.a3wt.input.A3InputListener;
 
+import java.awt.Window;
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsDevice;
 import java.awt.Image;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
@@ -12,11 +16,15 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
 import java.awt.image.WritableRaster;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class A3AWTUtils {
 
@@ -151,6 +159,121 @@ public class A3AWTUtils {
             }
         }
         return font;
+    }
+
+    public static int mouseEventButton2Button(int button) {
+        switch (button) {
+            case MouseEvent.BUTTON1: default:
+                return A3InputListener.Button.LEFT;
+            case MouseEvent.BUTTON2:
+                return A3InputListener.Button.MIDDLE;
+            case MouseEvent.BUTTON3:
+                return A3InputListener.Button.RIGHT;
+        }
+    }
+
+    public static void commonMousePressed(List<A3InputListener> listeners, MouseEvent e) {
+        boolean result;
+        int x = e.getX();
+        int y = e.getY();
+        int pointer = e.getClickCount() - 1;
+        int button = mouseEventButton2Button(e.getButton());
+        for (A3InputListener listener : listeners) {
+            result = listener.pointerDown(x, y, pointer, button);
+            if (result) break;
+        }
+    }
+
+    public static void commonMouseReleased(List<A3InputListener> listeners, MouseEvent e) {
+        boolean result;
+        int x = e.getX();
+        int y = e.getY();
+        int pointer = e.getClickCount() - 1;
+        int button = mouseEventButton2Button(e.getButton());
+        for (A3InputListener listener : listeners) {
+            result = listener.pointerUp(x, y, pointer, button);
+            if (result) break;
+        }
+    }
+
+    public static void commonMouseDragged(List<A3InputListener> listeners, MouseEvent e) {
+        boolean result;
+        int x = e.getX();
+        int y = e.getY();
+        int button = mouseEventButton2Button(e.getButton());
+        for (A3InputListener listener : listeners) {
+            result = listener.pointerDragged(x, y, 0, button);
+            if (result) break;
+        }
+    }
+
+    public static void commonMouseMoved(List<A3InputListener> listeners, MouseEvent e) {
+        boolean result;
+        int x = e.getX();
+        int y = e.getY();
+        for (A3InputListener listener : listeners) {
+            result = listener.mouseMoved(x, y);
+            if (result) break;
+        }
+    }
+
+    public static int mouseWheelScrollType2ScrollType(int scrollType) {
+        switch (scrollType) {
+            case MouseWheelEvent.WHEEL_UNIT_SCROLL:
+                return A3InputListener.ScrollType.UNIT;
+            case MouseWheelEvent.WHEEL_BLOCK_SCROLL:
+                return A3InputListener.ScrollType.BLOCK;
+        }
+        return -1;
+    }
+
+    public static void commonMouseWheelMoved(List<A3InputListener> listeners, MouseWheelEvent e) {
+        boolean result;
+        int scrollType = mouseWheelScrollType2ScrollType(e.getScrollType());
+        float amount = 0;
+        if (scrollType == A3InputListener.ScrollType.UNIT) {
+            amount = (float) (Math.abs(e.getUnitsToScroll()) * e.getPreciseWheelRotation());
+        }
+        for (A3InputListener listener : listeners) {
+            result = listener.mouseWheelScrolled(amount, scrollType);
+            if (result) break;
+        }
+    }
+
+    public static int getScreenWidth() {
+        return Toolkit.getDefaultToolkit().getScreenSize().width;
+    }
+
+    public static int getScreenHeight() {
+        return Toolkit.getDefaultToolkit().getScreenSize().height;
+    }
+
+    public static int getPPI() {
+        return Toolkit.getDefaultToolkit().getScreenResolution();
+    }
+
+    public static float getDensity() {
+        return getPPI() / (float) AWTA3Platform.BASELINE_PPI;
+    }
+
+    public static float getScaledDensity(float scale) {
+        return getDensity() * scale;
+    }
+
+    public static void setFullscreenWindow(GraphicsDevice device, Window window) {
+        device.setFullScreenWindow(window);
+    }
+
+    public static void setFullscreenWindow(Window window) {
+        setFullscreenWindow(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice(), window);
+    }
+
+    public static Window getFullscreenWindow(GraphicsDevice device) {
+        return device.getFullScreenWindow();
+    }
+
+    public static Window getFullscreenWindow() {
+        return getFullscreenWindow(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice());
     }
 
 }

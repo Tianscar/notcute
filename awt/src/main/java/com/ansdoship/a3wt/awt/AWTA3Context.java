@@ -14,4 +14,7 @@ public interface AWTA3Context extends A3Context {
 
     File getPreferencesFile(String name);
 
+    void setPPIScale(float scale);
+    float getPPIScale();
+
 }

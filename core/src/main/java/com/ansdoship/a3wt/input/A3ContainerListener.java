@@ -12,6 +12,8 @@ public interface A3ContainerListener {
     void containerFocusLost();
     void containerResized(int width, int height);
     void containerMoved(int x, int y);
-    boolean containerCloseRequested();
+    default boolean containerCloseRequested() {
+        return true;
+    }
 
 }

@@ -25,5 +25,6 @@ public interface A3GraphicsKit {
     A3Font readFont(InputStream input) throws IOException;
     A3Font readFont(URL input) throws IOException;
     A3Font readFont(A3Assets assets, String input) throws IOException;
+    A3Font readFont(String familyName, int style);
 
 }

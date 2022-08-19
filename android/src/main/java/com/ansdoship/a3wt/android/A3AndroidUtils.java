@@ -11,11 +11,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
+import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class A3AndroidUtils {
 
@@ -125,6 +128,26 @@ public class A3AndroidUtils {
         }
     }
 
+    public static Paint.Style style2PaintStyle(int style) {
+        switch (style) {
+            case A3Graphics.Style.STROKE: default:
+                return Paint.Style.STROKE;
+            case A3Graphics.Style.FILL:
+                return Paint.Style.FILL;
+        }
+    }
+
+    public static int paintStyle2Style(Paint.Style style) {
+        switch (style) {
+            case STROKE:
+                return A3Graphics.Style.STROKE;
+            case FILL:
+                return A3Graphics.Style.FILL;
+            default:
+                return -1;
+        }
+    }
+
     public static boolean deleteSharedPreferences(Context context, String name) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return context.deleteSharedPreferences(name);
@@ -175,6 +198,51 @@ public class A3AndroidUtils {
         else {
             return isExternalStorageWriteable() ? Environment.getExternalStorageDirectory() : Environment.getDataDirectory();
         }
+    }
+
+    public static boolean commonOnTouchEvent(List<A3InputListener> listeners, MotionEvent event) {
+        boolean downResult = false;
+        boolean moveResult = false;
+        boolean upResult = false;
+        int pointerIndex = event.getPointerCount() - 1;
+        float x = event.getX(pointerIndex);
+        float y = event.getY(pointerIndex);
+        for (A3InputListener listener : listeners) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    if (!downResult) downResult = listener.pointerDown(x, y, pointerIndex, A3InputListener.Button.LEFT);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (!moveResult) moveResult = listener.pointerDragged(x, y, pointerIndex, A3InputListener.Button.LEFT);
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_POINTER_UP:
+                    if (!upResult) upResult = listener.pointerUp(x, y, pointerIndex, A3InputListener.Button.LEFT);
+                    break;
+            }
+        }
+        return downResult || moveResult || upResult;
+    }
+
+    public static int getScreenWidth(Resources resources) {
+        return resources.getDisplayMetrics().widthPixels;
+    }
+
+    public static int getScreenHeight(Resources resources) {
+        return resources.getDisplayMetrics().heightPixels;
+    }
+
+    public static int getPPI(Resources resources) {
+        return resources.getDisplayMetrics().densityDpi;
+    }
+
+    public static float getDensity(Resources resources) {
+        return resources.getDisplayMetrics().density;
+    }
+
+    public static float getScaledDensity(Resources resources) {
+        return resources.getDisplayMetrics().scaledDensity;
     }
 
 }

@@ -25,47 +25,47 @@ import java.net.UnknownHostException;
 
 public class AWTA3Logger implements A3Logger {
 
-    public int v(String tag, String msg) {
+    public int verbose(String tag, String msg) {
         return println(VERBOSE, tag, msg);
     }
 
-    public int v(String tag, String msg, Throwable tr) {
+    public int verbose(String tag, String msg, Throwable tr) {
         return println(VERBOSE, tag, msg + '\n' + getStackTraceString(tr));
     }
 
-    public int d(String tag, String msg) {
+    public int debug(String tag, String msg) {
         return println(DEBUG, tag, msg);
     }
 
-    public int d(String tag, String msg, Throwable tr) {
+    public int debug(String tag, String msg, Throwable tr) {
         return println(DEBUG, tag, msg + '\n' + getStackTraceString(tr));
     }
 
-    public int i(String tag, String msg) {
+    public int info(String tag, String msg) {
         return println(INFO, tag, msg);
     }
 
-    public int i(String tag, String msg, Throwable tr) {
+    public int info(String tag, String msg, Throwable tr) {
         return println(INFO, tag, msg + '\n' + getStackTraceString(tr));
     }
 
-    public int w(String tag, String msg) {
+    public int warn(String tag, String msg) {
         return println(WARN, tag, msg);
     }
 
-    public int w(String tag, String msg, Throwable tr) {
+    public int warn(String tag, String msg, Throwable tr) {
         return println(WARN, tag, msg + '\n' + getStackTraceString(tr));
     }
 
-    public int w(String tag, Throwable tr) {
+    public int warn(String tag, Throwable tr) {
         return println(WARN, tag, getStackTraceString(tr));
     }
 
-    public int e(String tag, String msg) {
+    public int error(String tag, String msg) {
         return println(ERROR, tag, msg);
     }
 
-    public int e(String tag, String msg, Throwable tr) {
+    public int error(String tag, String msg, Throwable tr) {
         return println(ERROR, tag, msg + '\n' + getStackTraceString(tr));
     }
 

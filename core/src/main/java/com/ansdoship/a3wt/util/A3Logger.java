@@ -38,7 +38,7 @@ public interface A3Logger {
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    int v(String tag, String msg);
+    int verbose(String tag, String msg);
 
     /**
      * Send a {@link #VERBOSE} log message and log the exception.
@@ -47,7 +47,7 @@ public interface A3Logger {
      * @param msg The message you would like logged.
      * @param tr An exception to log
      */
-    int v(String tag, String msg, Throwable tr);
+    int verbose(String tag, String msg, Throwable tr);
 
     /**
      * Send a {@link #DEBUG} log message.
@@ -55,7 +55,7 @@ public interface A3Logger {
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    int d(String tag, String msg);
+    int debug(String tag, String msg);
 
     /**
      * Send a {@link #DEBUG} log message and log the exception.
@@ -64,7 +64,7 @@ public interface A3Logger {
      * @param msg The message you would like logged.
      * @param tr An exception to log
      */
-    int d(String tag, String msg, Throwable tr);
+    int debug(String tag, String msg, Throwable tr);
 
     /**
      * Send an {@link #INFO} log message.
@@ -72,7 +72,7 @@ public interface A3Logger {
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    int i(String tag, String msg);
+    int info(String tag, String msg);
 
     /**
      * Send a {@link #INFO} log message and log the exception.
@@ -81,7 +81,7 @@ public interface A3Logger {
      * @param msg The message you would like logged.
      * @param tr An exception to log
      */
-    int i(String tag, String msg, Throwable tr);
+    int info(String tag, String msg, Throwable tr);
 
     /**
      * Send a {@link #WARN} log message.
@@ -89,7 +89,7 @@ public interface A3Logger {
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    int w(String tag, String msg);
+    int warn(String tag, String msg);
 
     /**
      * Send a {@link #WARN} log message and log the exception.
@@ -98,7 +98,7 @@ public interface A3Logger {
      * @param msg The message you would like logged.
      * @param tr An exception to log
      */
-    int w(String tag, String msg, Throwable tr);
+    int warn(String tag, String msg, Throwable tr);
 
     /*
      * Send a {@link #WARN} log message and log the exception.
@@ -106,7 +106,7 @@ public interface A3Logger {
      *        the class or activity where the log call occurs.
      * @param tr An exception to log
      */
-    int w(String tag, Throwable tr);
+    int warn(String tag, Throwable tr);
 
     /**
      * Send an {@link #ERROR} log message.
@@ -114,7 +114,7 @@ public interface A3Logger {
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    int e(String tag, String msg);
+    int error(String tag, String msg);
 
     /**
      * Send a {@link #ERROR} log message and log the exception.
@@ -123,7 +123,7 @@ public interface A3Logger {
      * @param msg The message you would like logged.
      * @param tr An exception to log
      */
-    int e(String tag, String msg, Throwable tr);
+    int error(String tag, String msg, Throwable tr);
 
     /**
      * Handy function to get a loggable stack trace from a Throwable

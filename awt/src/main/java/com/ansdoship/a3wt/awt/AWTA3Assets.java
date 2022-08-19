@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import static com.ansdoship.a3wt.util.A3FileUtils.ensureStartSeparatorUNIX;
-import static com.ansdoship.a3wt.util.Asserts.notSupportedYetOnPlatform;
+import static com.ansdoship.a3wt.util.A3Asserts.notSupportedYetOnPlatform;
 
 public class AWTA3Assets implements A3Assets {
 

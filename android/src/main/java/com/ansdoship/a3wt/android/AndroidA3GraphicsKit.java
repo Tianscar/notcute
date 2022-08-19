@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.ansdoship.a3wt.android.A3AndroidUtils.fontStyle2TypefaceStyle;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.readTypeface;
 import static com.ansdoship.a3wt.util.A3FileUtils.removeStartSeparator;
 
@@ -95,6 +96,11 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
     public A3Font readFont(A3Assets assets, String input) throws IOException {
         Typeface typeface = readTypeface(((AndroidA3Assets)assets).getAssets(), removeStartSeparator(input));
         return typeface == null ? null : new AndroidA3Font(typeface);
+    }
+
+    @Override
+    public A3Font readFont(String familyName, int style) {
+        return new AndroidA3Font(Typeface.create(familyName, fontStyle2TypefaceStyle(style)));
     }
 
 }
