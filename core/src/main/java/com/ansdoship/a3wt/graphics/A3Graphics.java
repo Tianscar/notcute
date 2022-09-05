@@ -3,9 +3,14 @@ package com.ansdoship.a3wt.graphics;
 import com.ansdoship.a3wt.util.A3Copyable;
 import com.ansdoship.a3wt.util.A3Disposable;
 
+import static com.ansdoship.a3wt.util.A3ColorUtils.Black;
+
 public interface A3Graphics extends A3Disposable {
 
     interface Data extends A3Copyable<Data> {
+        A3Path getClip();
+        void setClip(A3Path path);
+
         int getColor();
         void setColor(int color);
 
@@ -47,6 +52,7 @@ public interface A3Graphics extends A3Disposable {
 
     class DefaultData implements Data {
 
+        protected A3Path clip;
         protected int color;
         protected int style;
         protected float strokeWidth;
@@ -64,6 +70,16 @@ public interface A3Graphics extends A3Disposable {
 
         public DefaultData() {
             reset();
+        }
+
+        @Override
+        public A3Path getClip() {
+            return clip;
+        }
+
+        @Override
+        public void setClip(A3Path clip) {
+            this.clip = clip;
         }
 
         @Override
@@ -208,14 +224,15 @@ public interface A3Graphics extends A3Disposable {
 
         @Override
         public void reset() {
-            setColor(0xFF000000);
+            setClip(null);
+            setColor(Black);
             setStyle(Style.STROKE);
-            setStrokeWidth(16);//FIXME
+            setStrokeWidth(1.0f);
             setStrokeJoin(Join.MITER);
             setStrokeCap(Cap.BUTT);
-            setStrokeMiter(10.0f);//FIXME
+            setStrokeMiter(10.0f);
             setFont(null);
-            setTextSize(16);//FIXME
+            setTextSize(16.0f);
             setAntiAlias(true);
             setFilterImage(true);
             setSubpixelText(true);
@@ -227,6 +244,7 @@ public interface A3Graphics extends A3Disposable {
         @Override
         public Data copy() {
             DefaultData copy = new DefaultData();
+            copy.setClip(getClip());
             copy.setColor(getColor());
             copy.setStyle(getStyle());
             copy.setStrokeWidth(getStrokeWidth());
@@ -269,6 +287,7 @@ public interface A3Graphics extends A3Disposable {
     int getWidth();
     int getHeight();
 
+    void drawColor();
     void drawPath(A3Path path);
     void drawImage(A3Image image, int x, int y);
     void drawPoint(float x, float y);
@@ -279,6 +298,10 @@ public interface A3Graphics extends A3Disposable {
     void drawRoundRect(float left, float top, float right, float bottom, float rx, float ry);
     void drawText(CharSequence text, float x, float y);
     void drawText(char[] text, int offset, int length, float x, float y);
+
+    A3Path getClip();
+    void setClip(A3Path path);
+    void setClip(float left, float top, float right, float bottom);
 
     int getColor();
     void setColor(int color);

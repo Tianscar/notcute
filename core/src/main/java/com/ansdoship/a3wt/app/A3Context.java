@@ -1,7 +1,7 @@
-package com.ansdoship.a3wt.graphics;
+package com.ansdoship.a3wt.app;
 
-import com.ansdoship.a3wt.app.A3Assets;
-import com.ansdoship.a3wt.app.A3Preferences;
+import com.ansdoship.a3wt.graphics.A3Graphics;
+import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 import com.ansdoship.a3wt.util.A3Disposable;
@@ -12,6 +12,8 @@ import java.util.List;
 public interface A3Context extends A3Disposable {
 
     interface Handle {
+        A3Platform getPlatform();
+
         void postRunnable(Runnable runnable);
 
         A3Graphics getGraphics();
@@ -48,6 +50,19 @@ public interface A3Context extends A3Disposable {
         int getPPI();
         float getDensity();
         float getScaledDensity();
+        default float px2dp(float px) {
+            return px / getDensity();
+        }
+        default float dp2px(float dp) {
+            return dp * getDensity();
+        }
+        default float px2sp(float px) {
+            return px / getScaledDensity();
+        }
+        default float sp2px(float sp) {
+            return sp * getScaledDensity();
+        }
+        A3Clipboard getClipboard();
     }
 
     Handle getContextHandle();

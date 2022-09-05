@@ -3,7 +3,6 @@ package com.ansdoship.a3wt.util;
 import com.ansdoship.a3wt.app.A3Assets;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
@@ -13,12 +12,11 @@ import java.util.Properties;
 
 public interface A3I18NBundle {
 
-    boolean loadAll(File input) throws IOException;
-    boolean loadAll(A3Assets assets, String input) throws IOException;
-    void load(Locale locale, File input) throws IOException;
-    void load(Locale locale, InputStream input) throws IOException;
-    void load(Locale locale, URL input) throws IOException;
-    void load(Locale locale, A3Assets assets, String input) throws IOException;
+    boolean loadAll(File input);
+    boolean load(Locale locale, File input);
+    boolean load(Locale locale, InputStream input);
+    boolean load(Locale locale, URL input);
+    boolean load(Locale locale, A3Assets assets, String input);
 
     Properties unload(Locale locale);
 

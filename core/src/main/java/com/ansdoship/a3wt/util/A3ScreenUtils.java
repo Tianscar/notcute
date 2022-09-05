@@ -4,19 +4,19 @@ public class A3ScreenUtils {
 
     private A3ScreenUtils(){}
 
-    public static float px2dp(float density, float px) {
+    public static float px2dp(final float density, final float px) {
         return px / density;
     }
 
-    public static float dp2px(float density, float dp) {
+    public static float dp2px(final float density, final float dp) {
         return dp * density;
     }
 
-    public static float px2sp(float scaledDensity, float px) {
+    public static float px2sp(final float scaledDensity, final float px) {
         return px / scaledDensity;
     }
 
-    public static float sp2px(float scaledDensity, float sp) {
+    public static float sp2px(final float scaledDensity, final float sp) {
         return sp * scaledDensity;
     }
 

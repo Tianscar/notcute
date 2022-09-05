@@ -17,4 +17,6 @@ public interface A3Path extends A3Copyable<A3Path> {
     void addRect(float left, float top, float right, float bottom);
     void addRoundRect(float left, float top, float right, float bottom, float rx, float ry);
 
+    boolean contains(float x, float y);
+
 }

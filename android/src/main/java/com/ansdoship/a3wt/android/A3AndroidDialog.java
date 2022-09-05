@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Assets;
+import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Preferences;
-import com.ansdoship.a3wt.graphics.A3Container;
-import com.ansdoship.a3wt.graphics.A3Context;
+import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
@@ -19,24 +21,32 @@ import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
 public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         View.OnLayoutChangeListener, DialogInterface.OnDismissListener, DialogInterface.OnKeyListener {
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(final MotionEvent event) {
         return commonOnTouchEvent(handle.inputListeners, event) || super.onTouchEvent(event);
     }
 
     @Override
-    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+    public boolean onKey(final DialogInterface dialog, final int keyCode, final KeyEvent event) {
+        // FIXME
         return false;
     }
 
     protected static class A3AndroidDialogHandle implements A3Context.Handle, A3Container.Handle {
+
+        @Override
+        public A3Platform getPlatform() {
+            return dialog.surfaceView.handle.getPlatform();
+        }
 
         @Override
         public int getScreenWidth() {
@@ -70,12 +80,13 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
         protected final A3AndroidDialog dialog;
 
-        public A3AndroidDialogHandle(A3AndroidDialog dialog) {
+        public A3AndroidDialogHandle(final A3AndroidDialog dialog) {
+            checkArgNotNull(dialog, "dialog");
             this.dialog = dialog;
         }
 
-        protected final List<A3ContainerListener> containerListeners = new ArrayList<>();
-        protected final List<A3InputListener> inputListeners = new ArrayList<>();
+        protected final List<A3ContainerListener> containerListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
 
         @Override
         public A3Graphics getGraphics() {
@@ -99,7 +110,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
         @Override
         public void setBackgroundColor(int color) {
-            dialog.surfaceView.setBackgroundColor(color);
+            dialog.surfaceView.handle.setBackgroundColor(color);
         }
 
         @Override
@@ -108,7 +119,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         }
 
         @Override
-        public void paint(A3Graphics graphics) {
+        public void paint(final A3Graphics graphics) {
             dialog.surfaceView.handle.paint(graphics);
         }
 
@@ -134,7 +145,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         }
 
         @Override
-        public void addContextListener(A3ContextListener listener) {
+        public void addContextListener(final A3ContextListener listener) {
             dialog.surfaceView.handle.addContextListener(listener);
         }
 
@@ -144,7 +155,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         }
 
         @Override
-        public void addContainerListener(A3ContainerListener listener) {
+        public void addContainerListener(final A3ContainerListener listener) {
             containerListeners.add(listener);
         }
 
@@ -154,7 +165,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         }
 
         @Override
-        public void addContextInputListener(A3InputListener listener) {
+        public void addContextInputListener(final A3InputListener listener) {
             dialog.surfaceView.handle.addContextInputListener(listener);
         }
 
@@ -164,17 +175,17 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         }
 
         @Override
-        public void addContainerInputListener(A3InputListener listener) {
+        public void addContainerInputListener(final A3InputListener listener) {
             inputListeners.add(listener);
         }
 
         @Override
-        public A3Preferences getPreferences(String name) {
+        public A3Preferences getPreferences(final String name) {
             return dialog.surfaceView.handle.getPreferences(name);
         }
 
         @Override
-        public boolean deletePreferences(String name) {
+        public boolean deletePreferences(final String name) {
             return dialog.surfaceView.handle.deletePreferences(name);
         }
 
@@ -194,7 +205,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         }
 
         @Override
-        public File getFilesDir(String type) {
+        public File getFilesDir(final String type) {
             return dialog.surfaceView.handle.getFilesDir(type);
         }
 
@@ -209,18 +220,24 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         }
 
         @Override
-        public void setFullscreen(boolean fullscreen) {
-
+        public void setFullscreen(final boolean fullscreen) {
+            // FIXME
         }
 
         @Override
         public boolean isFullscreen() {
+            // FIXME
             return false;
+        }
+
+        @Override
+        public A3Clipboard getClipboard() {
+            return dialog.surfaceView.handle.getClipboard();
         }
 
     }
 
-    protected volatile A3AndroidDialogHandle handle;
+    protected A3AndroidDialogHandle handle;
 
     @Override
     public A3Context.Handle getContextHandle() {
@@ -232,22 +249,22 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         return handle;
     }
 
-    protected volatile A3AndroidSurfaceView surfaceView;
+    protected A3AndroidSurfaceView surfaceView;
 
-    public A3AndroidDialog(Context context) {
+    public A3AndroidDialog(final Context context) {
         super(context);
     }
 
-    public A3AndroidDialog(Context context, int themeResId) {
+    public A3AndroidDialog(final Context context, final int themeResId) {
         super(context, themeResId);
     }
 
-    protected A3AndroidDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
+    protected A3AndroidDialog(final Context context, final boolean cancelable, final OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (surfaceView == null) surfaceView = new A3AndroidSurfaceView(getOwnerActivity());
         setContentView(surfaceView);
@@ -288,7 +305,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
+    public void onWindowFocusChanged(final boolean hasFocus) {
         if (hasFocus) {
             for (A3ContainerListener listener : handle.containerListeners) {
                 listener.containerFocusGained();
@@ -312,7 +329,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
     }
 
     @Override
-    public void onDismiss(DialogInterface dialog) {
+    public void onDismiss(final DialogInterface dialog) {
         dispose();
         for (A3ContainerListener listener : handle.containerListeners) {
             listener.containerDisposed();
@@ -321,9 +338,10 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
     }
 
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        int width = right - left;
-        int height = bottom - top;
+    public void onLayoutChange(final View v, final int left, final int top, final int right, final int bottom,
+                               final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
+        final int width = right - left;
+        final int height = bottom - top;
         for (A3ContainerListener listener : handle.containerListeners) {
             listener.containerResized(width, height);
         }

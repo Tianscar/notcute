@@ -8,11 +8,14 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+
 public class AWTA3Path implements A3Path {
 
     protected final Path2D path2D;
 
-    public AWTA3Path(Path2D path2D) {
+    public AWTA3Path(final Path2D path2D) {
+        checkArgNotNull(path2D, "path2D");
         this.path2D = path2D;
     }
 
@@ -31,48 +34,54 @@ public class AWTA3Path implements A3Path {
     }
 
     @Override
-    public void moveTo(float x, float y) {
+    public void moveTo(final float x, final float y) {
         path2D.moveTo(x, y);
     }
 
     @Override
-    public void lineTo(float x, float y) {
+    public void lineTo(final float x, final float y) {
         path2D.lineTo(x, y);
     }
 
     @Override
-    public void quadTo(float x1, float y1, float x2, float y2) {
+    public void quadTo(final float x1, final float y1, final float x2, final float y2) {
         path2D.quadTo(x1, y1, x2, y2);
     }
 
     @Override
-    public void cubicTo(float x1, float y1, float x2, float y2, float x3, float y3) {
+    public void cubicTo(final float x1, final float y1, final float x2, final float y2, final float x3, final float y3) {
         path2D.curveTo(x1, y1, x2, y2, x3, y3);
     }
 
     @Override
-    public void addPath(A3Path path) {
+    public void addPath(final A3Path path) {
+        checkArgNotNull(path, "path");
         path2D.append(((AWTA3Path)path).getPath2D(), false);
     }
 
     @Override
-    public void addArc(float left, float top, float right, float bottom, float startAngle, float sweepAngle) {
+    public void addArc(final float left, final float top, final float right, final float bottom, final float startAngle, final float sweepAngle) {
         path2D.append(new Arc2D.Float(new Rectangle2D.Float(left, top, right - left, bottom - top), startAngle, sweepAngle, Arc2D.OPEN), false);
     }
 
     @Override
-    public void addOval(float left, float top, float right, float bottom) {
+    public void addOval(final float left, final float top, final float right, final float bottom) {
         path2D.append(new Ellipse2D.Float(left, top, right - left, bottom - top), false);
     }
 
     @Override
-    public void addRect(float left, float top, float right, float bottom) {
+    public void addRect(final float left, final float top, final float right, final float bottom) {
         path2D.append(new Rectangle2D.Float(left, top, right - left, bottom - top), false);
     }
 
     @Override
-    public void addRoundRect(float left, float top, float right, float bottom, float rx, float ry) {
+    public void addRoundRect(final float left, final float top, final float right, final float bottom, final float rx, final float ry) {
         path2D.append(new RoundRectangle2D.Float(left, top, right - left, bottom - top, rx, ry), false);
+    }
+
+    @Override
+    public boolean contains(final float x, final float y) {
+        return path2D.contains(x, y);
     }
 
     @Override

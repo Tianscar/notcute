@@ -1,12 +1,12 @@
 package com.ansdoship.a3wt.android;
 
+import android.graphics.Bitmap;
 import android.graphics.Path;
 import android.graphics.Typeface;
-import com.ansdoship.a3wt.A3WT;
 import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.graphics.A3Font;
-import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
+import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3Path;
 
 import java.io.File;
@@ -19,38 +19,76 @@ import java.util.Set;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.fontStyle2TypefaceStyle;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.readTypeface;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3FileUtils.removeStartSeparator;
 
 public class AndroidA3GraphicsKit implements A3GraphicsKit {
 
     @Override
-    public A3Image readImage(File input) throws IOException {
-        return new AndroidA3Image(BitmapIO.read(input));
+    public A3Image createImage(final int width, final int height) {
+        return new AndroidA3Image(Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888));
     }
 
     @Override
-    public A3Image readImage(InputStream input) throws IOException {
-        return new AndroidA3Image(BitmapIO.read(input));
+    public A3Image readImage(final File input) {
+        checkArgNotNull(input, "input");
+        try {
+            return new AndroidA3Image(BitmapIO.read(input));
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
-    public A3Image readImage(URL input) throws IOException {
-        return new AndroidA3Image(BitmapIO.read(input));
+    public A3Image readImage(final InputStream input) {
+        checkArgNotNull(input, "input");
+        try {
+            return new AndroidA3Image(BitmapIO.read(input));
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
-    public A3Image readImage(A3Assets assets, String input) throws IOException {
-        return new AndroidA3Image(BitmapIO.read(((AndroidA3Assets)assets).getAssets(), removeStartSeparator(input)));
+    public A3Image readImage(final URL input) {
+        checkArgNotNull(input, "input");
+        try {
+            return new AndroidA3Image(BitmapIO.read(input));
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
-    public boolean writeImage(A3Image image, String formatName, File output) throws IOException {
-        return BitmapIO.write(output, ((AndroidA3Image)image).getBitmap(), formatName, 100);
+    public A3Image readImage(final A3Assets assets, final String input) {
+        checkArgNotNull(assets, "assets");
+        checkArgNotEmpty(input, "input");
+        try {
+            return new AndroidA3Image(BitmapIO.read(((AndroidA3Assets)assets).getAssets(), removeStartSeparator(input)));
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
-    public boolean writeImage(A3Image image, String formatName, OutputStream output) throws IOException {
-        return BitmapIO.write(output, ((AndroidA3Image)image).getBitmap(), formatName, 100);
+    public boolean writeImage(final A3Image image, final String formatName, final File output) {
+        checkArgNotNull(image, "image");
+        try {
+            return BitmapIO.write(output, ((AndroidA3Image)image).getBitmap(), formatName, 100);
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean writeImage(final A3Image image, final String formatName, final OutputStream output) {
+        checkArgNotNull(image, "image");
+        try {
+            return BitmapIO.write(output, ((AndroidA3Image)image).getBitmap(), formatName, 100);
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     @Override
@@ -77,29 +115,31 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public A3Font readFont(File input) throws IOException {
-        Typeface typeface = readTypeface(input);
-        return typeface == null ? null : new AndroidA3Font(typeface);
+    public A3Font readFont(final File input) {
+        checkArgNotNull(input, "input");
+        try {
+            final Typeface typeface = readTypeface(input);
+            return typeface == null ? null : new AndroidA3Font(typeface);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
-    public A3Font readFont(InputStream input) throws IOException {
-        throw new UnsupportedOperationException(A3WT.getPlatform().getBackendName() + " backend currently do not support read font from InputStream");
+    public A3Font readFont(final A3Assets assets, final String input) {
+        checkArgNotNull(assets, "assets");
+        checkArgNotEmpty(input, "input");
+        try {
+            final Typeface typeface = readTypeface(((AndroidA3Assets)assets).getAssets(), removeStartSeparator(input));
+            return typeface == null ? null : new AndroidA3Font(typeface);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
-    public A3Font readFont(URL input) throws IOException {
-        throw new UnsupportedOperationException(A3WT.getPlatform().getBackendName() + " backend currently do not support read font from URL");
-    }
-
-    @Override
-    public A3Font readFont(A3Assets assets, String input) throws IOException {
-        Typeface typeface = readTypeface(((AndroidA3Assets)assets).getAssets(), removeStartSeparator(input));
-        return typeface == null ? null : new AndroidA3Font(typeface);
-    }
-
-    @Override
-    public A3Font readFont(String familyName, int style) {
+    public A3Font readFont(final String familyName, final int style) {
+        checkArgNotEmpty(familyName, "familyName");
         return new AndroidA3Font(Typeface.create(familyName, fontStyle2TypefaceStyle(style)));
     }
 

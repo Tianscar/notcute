@@ -3,38 +3,39 @@ package com.ansdoship.a3wt.util;
 import com.ansdoship.a3wt.app.A3Assets;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import java.io.FileFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
-import static com.ansdoship.a3wt.util.A3Asserts.notSupportedYet;
+import static com.ansdoship.a3wt.util.A3Charsets.UTF_8;
 
 public class DefaultA3I18NBundle implements A3I18NBundle {
 
-    protected final Map<Locale, Properties> localeProperties = new HashMap<>();
-    protected final Map<Locale, Locale> localeMappings = new HashMap<>();
+    protected final Map<Locale, Properties> localeProperties = new ConcurrentHashMap<>();
+    protected final Map<Locale, Locale> localeMappings = new ConcurrentHashMap<>();
 
-    protected Locale defaultLocale = Locale.getDefault();
+    protected volatile Locale defaultLocale = Locale.getDefault();
 
     @Override
-    public boolean loadAll(File input) throws IOException {
-        checkArgNotNull(input);
-        String basename = input.getName();
-        List<Locale> locales = new ArrayList<>();
-        File[] files = input.getParentFile().listFiles(new FileFilter() {
+    public boolean loadAll(final File input) {
+        checkArgNotNull(input, "input");
+        final String basename = input.getName();
+        final List<Locale> locales = new ArrayList<>();
+        final File[] files = input.getParentFile().listFiles(new FileFilter() {
             @Override
             public boolean accept(File pathname) {
                 if (!pathname.isFile()) return false;
@@ -70,52 +71,67 @@ public class DefaultA3I18NBundle implements A3I18NBundle {
     }
 
     @Override
-    public boolean loadAll(A3Assets assets, String input) throws IOException {
-        notSupportedYet("A3I18NBundle.loadAll(A3Assets, String)");
-        return false;
+    public boolean load(final Locale locale, final File input) {
+        checkArgNotNull(input, "input");
+        try {
+            load(locale, new FileInputStream(input));
+            return true;
+        } catch (FileNotFoundException e) {
+            return false;
+        }
     }
 
     @Override
-    public void load(Locale locale, File input) throws IOException {
-        load(locale, new FileInputStream(input));
-    }
-
-    @Override
-    public void load(Locale locale, InputStream input) throws IOException {
-        checkArgNotNull(locale);
+    public boolean load(final Locale locale, final InputStream input) {
+        checkArgNotNull(locale, "locale");
+        checkArgNotNull(input, "input");
         Properties buffer = new Properties();
-        try (InputStreamReader reader = new InputStreamReader(input, "UTF-8");
+        try (InputStreamReader reader = new InputStreamReader(input, UTF_8);
              BufferedReader bufferedReader = new BufferedReader(reader)) {
             buffer.load(bufferedReader);
+            input.close();
+        } catch (IOException e) {
+            return false;
         }
-        input.close();
         Properties properties = localeProperties.get(locale);
         if (properties == null) localeProperties.put(locale, buffer);
         else properties.putAll(buffer);
+        return true;
     }
 
     @Override
-    public void load(Locale locale, URL input) throws IOException {
-        load(locale, input.openStream());
+    public boolean load(final Locale locale, final URL input) {
+        checkArgNotNull(input, "input");
+        try {
+            load(locale, input.openStream());
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     @Override
-    public void load(Locale locale, A3Assets assets, String input) throws IOException {
-        load(locale, assets.readAsset(input));
+    public boolean load(final Locale locale, final A3Assets assets, final String input) {
+        checkArgNotNull(assets, "assets");
+        return load(locale, assets.readAsset(input));
     }
 
     @Override
-    public Properties unload(Locale locale) {
+    public Properties unload(final Locale locale) {
+        checkArgNotNull(locale, "locale");
         return localeProperties.remove(locale);
     }
 
     @Override
-    public Locale putLocaleMapping(Locale target, Locale replacement) {
+    public Locale putLocaleMapping(final Locale target, final Locale replacement) {
+        checkArgNotNull(target, "target");
+        checkArgNotNull(replacement, "replacement");
         return localeMappings.put(target, replacement);
     }
 
     @Override
-    public Locale removeLocaleMapping(Locale target) {
+    public Locale removeLocaleMapping(final Locale target) {
+        checkArgNotNull(target, "target");
         return localeMappings.remove(target);
     }
 
@@ -125,14 +141,16 @@ public class DefaultA3I18NBundle implements A3I18NBundle {
     }
 
     @Override
-    public Locale getMappedLocale(Locale target) {
-        Locale replacement = localeMappings.get(target);
+    public Locale getMappedLocale(final Locale target) {
+        checkArgNotNull(target, "target");
+        final Locale replacement = localeMappings.get(target);
         return replacement == null ? target : replacement;
     }
 
     @Override
-    public void setDefaultLocale(Locale locale) {
-        defaultLocale = locale == null ? Locale.getDefault() : locale;
+    public void setDefaultLocale(final Locale locale) {
+        checkArgNotNull(locale, "locale");
+        defaultLocale = locale;
     }
 
     @Override
@@ -141,30 +159,28 @@ public class DefaultA3I18NBundle implements A3I18NBundle {
     }
 
     @Override
-    public String get(Locale locale, String key, Object... args) {
-        checkArgNotNull(locale);
-        checkArgNotNull(key);
-        Locale locale0 = getMappedLocale(locale);
-        if (locale0.equals(getDefaultLocale())) locale0 = null;
-        Properties properties = localeProperties.get(locale0);
+    public String get(final Locale locale, final String key, final Object... args) {
+        checkArgNotNull(locale, "locale");
+        checkArgNotNull(key, "key");
+        final Properties properties = localeProperties.get(getMappedLocale(locale));
         if (properties == null) return null;
         else {
-            String value = properties.getProperty(key);
+            final String value = properties.getProperty(key);
             if (value == null) return null;
             else return String.format(value, args);
         }
     }
 
     @Override
-    public String get(Locale locale, String key, Collection<Object> args) {
-        checkArgNotNull(args);
+    public String get(final Locale locale, final String key, final Collection<Object> args) {
+        checkArgNotNull(args, "args");
         return get(locale, key, args.toArray(new Object[0]));
     }
 
     @Override
-    public String get(Locale locale, String key, Iterator<Object> args) {
-        checkArgNotNull(args);
-        List<Object> args0 = new ArrayList<>();
+    public String get(final Locale locale, final String key, final Iterator<Object> args) {
+        checkArgNotNull(args, "args");
+        final List<Object> args0 = new ArrayList<>();
         while (args.hasNext()) {
             args0.add(args.next());
         }

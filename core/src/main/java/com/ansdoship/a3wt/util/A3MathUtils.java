@@ -41,7 +41,7 @@ public class A3MathUtils {
      *
      * @return the clamped value.
      */
-    public static int clamp(int value, int min, int max) {
+    public static int clamp(final int value, final int min, final int max) {
         if (value < min) {
             return min;
         } else if (value > max) {

@@ -5,12 +5,14 @@ import com.ansdoship.a3wt.graphics.A3Font;
 import java.awt.Font;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.AWTFontStyle2FontStyle;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
 public class AWTA3Font implements A3Font {
 
     protected final Font font;
 
-    public AWTA3Font(Font font) {
+    public AWTA3Font(final Font font) {
+        checkArgNotNull(font, "font");
         this.font = font;
     }
 

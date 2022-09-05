@@ -4,12 +4,14 @@ import android.graphics.Typeface;
 import com.ansdoship.a3wt.graphics.A3Font;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.typefaceStyle2FontStyle;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
 public class AndroidA3Font implements A3Font {
 
     protected final Typeface typeface;
 
-    public AndroidA3Font(Typeface typeface) {
+    public AndroidA3Font(final Typeface typeface) {
+        checkArgNotNull(typeface, "typeface");
         this.typeface = typeface;
     }
 

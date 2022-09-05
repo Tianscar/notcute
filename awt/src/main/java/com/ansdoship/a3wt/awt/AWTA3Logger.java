@@ -25,51 +25,51 @@ import java.net.UnknownHostException;
 
 public class AWTA3Logger implements A3Logger {
 
-    public int verbose(String tag, String msg) {
+    public int verbose(final String tag, final String msg) {
         return println(VERBOSE, tag, msg);
     }
 
-    public int verbose(String tag, String msg, Throwable tr) {
+    public int verbose(final String tag, final String msg, final Throwable tr) {
         return println(VERBOSE, tag, msg + '\n' + getStackTraceString(tr));
     }
 
-    public int debug(String tag, String msg) {
+    public int debug(final String tag, final String msg) {
         return println(DEBUG, tag, msg);
     }
 
-    public int debug(String tag, String msg, Throwable tr) {
+    public int debug(final String tag, final String msg, final Throwable tr) {
         return println(DEBUG, tag, msg + '\n' + getStackTraceString(tr));
     }
 
-    public int info(String tag, String msg) {
+    public int info(final String tag, final String msg) {
         return println(INFO, tag, msg);
     }
 
-    public int info(String tag, String msg, Throwable tr) {
+    public int info(final String tag, final String msg, final Throwable tr) {
         return println(INFO, tag, msg + '\n' + getStackTraceString(tr));
     }
 
-    public int warn(String tag, String msg) {
+    public int warn(final String tag, final String msg) {
         return println(WARN, tag, msg);
     }
 
-    public int warn(String tag, String msg, Throwable tr) {
+    public int warn(final String tag, final String msg, final Throwable tr) {
         return println(WARN, tag, msg + '\n' + getStackTraceString(tr));
     }
 
-    public int warn(String tag, Throwable tr) {
+    public int warn(final String tag, final Throwable tr) {
         return println(WARN, tag, getStackTraceString(tr));
     }
 
-    public int error(String tag, String msg) {
+    public int error(final String tag, final String msg) {
         return println(ERROR, tag, msg);
     }
 
-    public int error(String tag, String msg, Throwable tr) {
+    public int error(final String tag, final String msg, final Throwable tr) {
         return println(ERROR, tag, msg + '\n' + getStackTraceString(tr));
     }
 
-    public String getStackTraceString(Throwable tr) {
+    public String getStackTraceString(final Throwable tr) {
         if (tr == null) {
             return "";
         }
@@ -91,7 +91,7 @@ public class AWTA3Logger implements A3Logger {
         return sw.toString();
     }
 
-    public int println(int priority, String tag, String msg) {
+    public int println(final int priority, final String tag, final String msg) {
         String log = tag + ": " + msg;
         boolean error = false;
         switch (priority) {

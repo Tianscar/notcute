@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.graphics.A3Context;
+import com.ansdoship.a3wt.app.A3Context;
 
 import java.io.File;
 

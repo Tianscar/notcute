@@ -8,11 +8,11 @@ import com.ansdoship.a3wt.util.DefaultA3I18NBundle;
 
 public class AWTA3Platform implements A3Platform {
 
-    protected static volatile AWTA3Logger logger = new AWTA3Logger();
-    protected static volatile AWTA3GraphicsKit graphicsKit = new AWTA3GraphicsKit();
-    protected static volatile DefaultA3I18NBundle i18NBundle = new DefaultA3I18NBundle();
+    protected static final AWTA3Logger logger = new AWTA3Logger();
+    protected static final AWTA3GraphicsKit graphicsKit = new AWTA3GraphicsKit();
+    protected static final DefaultA3I18NBundle i18NBundle = new DefaultA3I18NBundle();
 
-    public static final String BACKEND_NAME = "AWT";
+    public static final String BACKEND_NAME = "AWT (Java2D)";
 
     public static final String OS_NAME = System.getProperty("os.name");
     public static final String OS_VERSION = System.getProperty("os.version");

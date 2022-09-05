@@ -9,13 +9,16 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3FileUtils.removeStartSeparator;
 
 public class AndroidA3Assets implements A3Assets {
 
     protected final AssetManager assets;
 
-    public AndroidA3Assets(AssetManager assets) {
+    public AndroidA3Assets(final AssetManager assets) {
+        checkArgNotNull(assets, "assets");
         this.assets = assets;
     }
 
@@ -24,7 +27,8 @@ public class AndroidA3Assets implements A3Assets {
     }
 
     @Override
-    public InputStream readAsset(String asset) {
+    public InputStream readAsset(final String asset) {
+        checkArgNotEmpty(asset, "asset");
         try {
             return assets.open(removeStartSeparator(asset), AssetManager.ACCESS_STREAMING);
         } catch (IOException ignored) {
@@ -33,7 +37,8 @@ public class AndroidA3Assets implements A3Assets {
     }
 
     @Override
-    public URL getAssetURL(String asset) {
+    public URL getAssetURL(final String asset) {
+        checkArgNotNull(asset, "asset");
         try {
             return new URL("file:///android_asset/" + removeStartSeparator(asset));
         } catch (MalformedURLException ignored) {
@@ -41,12 +46,8 @@ public class AndroidA3Assets implements A3Assets {
         return null;
     }
 
-    @Override
-    public String[] listAssets(String asset) throws IOException {
-        return assets.list(asset);
-    }
-
-    public Uri getAssetUri(String asset) {
+    public Uri getAssetUri(final String asset) {
+        checkArgNotNull(asset, "asset");
         return Uri.parse("file:///android_asset/" + removeStartSeparator(asset));
     }
 

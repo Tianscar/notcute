@@ -320,6 +320,15 @@ public final class BitmapIO {
     }
 
     public static boolean write(File output, Bitmap bitmap, String formatName, int quality) throws IOException {
+        if (bitmap == null) {
+            throw new IllegalArgumentException("bitmap cannot be NULL");
+        }
+        if (formatName == null) {
+            throw new IllegalArgumentException("format name cannot be NULL");
+        }
+        if (output == null) {
+            throw new IllegalArgumentException("output cannot be NULL");
+        }
         boolean result = false;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             result = provider.write(output, bitmap, formatName, quality);
@@ -329,6 +338,15 @@ public final class BitmapIO {
     }
 
     public static boolean write(OutputStream output, Bitmap bitmap, String formatName, int quality) throws IOException {
+        if (bitmap == null) {
+            throw new IllegalArgumentException("bitmap cannot be NULL");
+        }
+        if (formatName == null) {
+            throw new IllegalArgumentException("format name cannot be NULL");
+        }
+        if (output == null) {
+            throw new IllegalArgumentException("output cannot be NULL");
+        }
         boolean result = false;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             result = provider.write(output, bitmap, formatName, quality);

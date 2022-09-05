@@ -1,6 +1,9 @@
 package com.ansdoship.a3wt.android;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -8,17 +11,24 @@ import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
 public class A3AndroidUtils {
 
@@ -36,7 +46,8 @@ public class A3AndroidUtils {
      * @return Drawable An object that can be used to draw this resource.
      */
     @SuppressLint("UseCompatLoadingForDrawables")
-    public static Drawable getDrawable(Context context, int id) {
+    public static Drawable getDrawable(final Context context, final int id) {
+        checkArgNotNull(context, "context");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return context.getDrawable(id);
         } else {
@@ -44,21 +55,24 @@ public class A3AndroidUtils {
         }
     }
 
-    public static Bitmap copyBitmap(Bitmap source) {
+    public static Bitmap copyBitmap(final Bitmap source) {
+        checkArgNotNull(source, "source");
         return source.copy(source.getConfig(), source.isMutable());
     }
 
-    public static int getDisplayWidth(Resources resources) {
-        DisplayMetrics metrics = resources.getDisplayMetrics();
+    public static int getDisplayWidth(final Resources resources) {
+        checkArgNotNull(resources, "resources");
+        final DisplayMetrics metrics = resources.getDisplayMetrics();
         return metrics.widthPixels;
     }
 
-    public static int getDisplayHeight(Resources resources) {
-        DisplayMetrics metrics = resources.getDisplayMetrics();
+    public static int getDisplayHeight(final Resources resources) {
+        checkArgNotNull(resources, "resources");
+        final DisplayMetrics metrics = resources.getDisplayMetrics();
         return metrics.heightPixels;
     }
 
-    public static Paint.Join strokeJoin2PaintStrokeJoin(int join) {
+    public static Paint.Join strokeJoin2PaintStrokeJoin(final int join) {
         switch (join) {
             case A3Graphics.Join.MITER: default:
                 return Paint.Join.MITER;
@@ -69,7 +83,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static Paint.Cap strokeCap2PaintStrokeCap(int cap) {
+    public static Paint.Cap strokeCap2PaintStrokeCap(final int cap) {
         switch (cap) {
             case A3Graphics.Cap.BUTT: default:
                 return Paint.Cap.BUTT;
@@ -80,7 +94,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static int paintStrokeJoin2StrokeJoin(Paint.Join join) {
+    public static int paintStrokeJoin2StrokeJoin(final Paint.Join join) {
         switch (join) {
             case MITER: default:
                 return A3Graphics.Join.MITER;
@@ -91,7 +105,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static int paintStrokeCap2StrokeCap(Paint.Cap cap) {
+    public static int paintStrokeCap2StrokeCap(final Paint.Cap cap) {
         switch (cap) {
             case BUTT: default:
                 return A3Graphics.Cap.BUTT;
@@ -102,7 +116,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static int typefaceStyle2FontStyle(int style) {
+    public static int typefaceStyle2FontStyle(final int style) {
         switch (style) {
             case Typeface.NORMAL: default:
                 return A3Font.Style.NORMAL;
@@ -115,7 +129,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static int fontStyle2TypefaceStyle(int style) {
+    public static int fontStyle2TypefaceStyle(final int style) {
         switch (style) {
             case A3Font.Style.NORMAL: default:
                 return Typeface.NORMAL;
@@ -128,7 +142,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static Paint.Style style2PaintStyle(int style) {
+    public static Paint.Style style2PaintStyle(final int style) {
         switch (style) {
             case A3Graphics.Style.STROKE: default:
                 return Paint.Style.STROKE;
@@ -137,7 +151,7 @@ public class A3AndroidUtils {
         }
     }
 
-    public static int paintStyle2Style(Paint.Style style) {
+    public static int paintStyle2Style(final Paint.Style style) {
         switch (style) {
             case STROKE:
                 return A3Graphics.Style.STROKE;
@@ -148,7 +162,9 @@ public class A3AndroidUtils {
         }
     }
 
-    public static boolean deleteSharedPreferences(Context context, String name) {
+    public static boolean deleteSharedPreferences(final Context context, final String name) {
+        checkArgNotNull(context, "context");
+        checkArgNotEmpty(name, "name");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return context.deleteSharedPreferences(name);
         } else {
@@ -157,12 +173,15 @@ public class A3AndroidUtils {
         }
     }
 
-    public static File getSharedPreferencesDir(Context context) {
+    public static File getSharedPreferencesDir(final Context context) {
+        checkArgNotNull(context, "context");
         return new File(context.getApplicationInfo().dataDir, "shared_prefs");
     }
 
-    public static Typeface readTypeface(AssetManager assets, String asset) throws IOException {
-        Typeface typeface;
+    public static Typeface readTypeface(final AssetManager assets, final String asset) throws IOException {
+        checkArgNotNull(assets, "assets");
+        checkArgNotEmpty(asset, "asset");
+        final Typeface typeface;
         try {
             typeface = Typeface.createFromAsset(assets, asset);
         }
@@ -172,8 +191,9 @@ public class A3AndroidUtils {
         return typeface;
     }
 
-    public static Typeface readTypeface(File input) throws IOException {
-        Typeface typeface;
+    public static Typeface readTypeface(final File input) throws IOException {
+        checkArgNotNull(input, "input");
+        final Typeface typeface;
         try {
             typeface = Typeface.createFromFile(input);
         }
@@ -200,13 +220,15 @@ public class A3AndroidUtils {
         }
     }
 
-    public static boolean commonOnTouchEvent(List<A3InputListener> listeners, MotionEvent event) {
+    public static boolean commonOnTouchEvent(final List<A3InputListener> listeners, final MotionEvent event) {
+        checkArgNotNull(listeners, "listeners");
+        checkArgNotNull(event, "event");
         boolean downResult = false;
         boolean moveResult = false;
         boolean upResult = false;
-        int pointerIndex = event.getPointerCount() - 1;
-        float x = event.getX(pointerIndex);
-        float y = event.getY(pointerIndex);
+        final int pointerIndex = event.getPointerCount() - 1;
+        final float x = event.getX(pointerIndex);
+        final float y = event.getY(pointerIndex);
         for (A3InputListener listener : listeners) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -214,7 +236,7 @@ public class A3AndroidUtils {
                     if (!downResult) downResult = listener.pointerDown(x, y, pointerIndex, A3InputListener.Button.LEFT);
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (!moveResult) moveResult = listener.pointerDragged(x, y, pointerIndex, A3InputListener.Button.LEFT);
+                    if (!moveResult) moveResult = listener.pointerDragged(x, y, pointerIndex);
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_POINTER_UP:
@@ -225,24 +247,147 @@ public class A3AndroidUtils {
         return downResult || moveResult || upResult;
     }
 
-    public static int getScreenWidth(Resources resources) {
+    public static int getScreenWidth(final Resources resources) {
+        checkArgNotNull(resources, "resources");
         return resources.getDisplayMetrics().widthPixels;
     }
 
-    public static int getScreenHeight(Resources resources) {
+    public static int getScreenHeight(final Resources resources) {
+        checkArgNotNull(resources, "resources");
         return resources.getDisplayMetrics().heightPixels;
     }
 
-    public static int getPPI(Resources resources) {
+    public static int getPPI(final Resources resources) {
+        checkArgNotNull(resources, "resources");
         return resources.getDisplayMetrics().densityDpi;
     }
 
-    public static float getDensity(Resources resources) {
+    public static float getDensity(final Resources resources) {
+        checkArgNotNull(resources, "resources");
         return resources.getDisplayMetrics().density;
     }
 
-    public static float getScaledDensity(Resources resources) {
+    public static float getScaledDensity(final Resources resources) {
+        checkArgNotNull(resources, "resources");
         return resources.getDisplayMetrics().scaledDensity;
+    }
+
+    public static void putPlainTextToClipboard(final ClipboardManager manager, final CharSequence plainText) {
+        checkArgNotNull(manager, "manager");
+        checkArgNotNull(plainText, "plainText");
+        manager.setPrimaryClip(ClipData.newPlainText(null, plainText));
+    }
+
+    public static CharSequence getPlainTextFromClipboard(final ClipboardManager manager) {
+        checkArgNotNull(manager, "manager");
+        if (!manager.hasPrimaryClip()) return null;
+        final ClipData clipData = manager.getPrimaryClip();
+        if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) return null;
+        final StringBuilder builder = new StringBuilder();
+        CharSequence text;
+        final int itemCount = clipData.getItemCount();
+        for (int i = 0; i < itemCount; i ++) {
+            text = clipData.getItemAt(i).getText();
+            if (text != null) {
+                builder.append(text);
+                if (i + 1 < itemCount) builder.append('\n');
+            }
+        }
+        return builder;
+    }
+
+    public static void putHTMLTextToClipboard(final ClipboardManager manager, final String HTMLText) {
+        checkArgNotNull(manager, "manager");
+        checkArgNotNull(HTMLText, "HTMLText");
+        manager.setPrimaryClip(ClipData.newHtmlText(null, HTMLText, HTMLText));
+    }
+
+    public static String getHTMLTextFromClipboard(final ClipboardManager manager) {
+        checkArgNotNull(manager, "manager");
+        if (!manager.hasPrimaryClip()) return null;
+        final ClipData clipData = manager.getPrimaryClip();
+        if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) return null;
+        final StringBuilder builder = new StringBuilder();
+        String text;
+        final int itemCount = clipData.getItemCount();
+        for (int i = 0; i < itemCount; i ++) {
+            text = clipData.getItemAt(i).getHtmlText();
+            if (text != null) {
+                builder.append(text);
+                if (i + 1 < itemCount) builder.append('\n');
+            }
+        }
+        return builder.toString();
+    }
+
+    public static void putFilesToClipboard(final ClipboardManager manager, final File[] files) {
+        checkArgNotNull(manager, "manager");
+        checkArgNotNull(files, "files");
+        if (files.length > 0) {
+            final ClipData clipData = ClipData.newRawUri(null, Uri.fromFile(files[0]));
+            for (int i = 1; i < files.length; i ++) {
+                clipData.addItem(new ClipData.Item(Uri.fromFile(files[i])));
+            }
+            manager.setPrimaryClip(clipData);
+        }
+        else manager.setPrimaryClip(ClipData.newPlainText(null, ""));
+    }
+
+    public static File[] getFilesFromClipboard(final ClipboardManager manager) {
+        checkArgNotNull(manager, "manager");
+        if (!manager.hasPrimaryClip()) return null;
+        final ClipData clipData = manager.getPrimaryClip();
+        if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) return null;
+        final List<File> files = new ArrayList<>();
+        Uri uri;
+        for (int i = 0; i < clipData.getItemCount(); i ++) {
+            uri = clipData.getItemAt(i).getUri();
+            if (uri != null && uri.getScheme().equals("file")) files.add(new File(URI.create(uri.toString())));
+        }
+        return files.size() > 0 ? files.toArray(new File[0]) : null;
+    }
+
+    public static void putUrisToClipboard(final ClipboardManager manager, final Uri[] uris) {
+        checkArgNotNull(manager, "manager");
+        checkArgNotNull(uris, "uris");
+        if (uris.length > 0) {
+            final ClipData clipData = ClipData.newRawUri(null, uris[0]);
+            for (int i = 1; i < uris.length; i ++) {
+                clipData.addItem(new ClipData.Item(uris[i]));
+            }
+            manager.setPrimaryClip(clipData);
+        }
+        else manager.setPrimaryClip(ClipData.newPlainText(null, ""));
+    }
+
+    public static Uri[] getUrisFromClipboard(final ClipboardManager manager) {
+        checkArgNotNull(manager, "manager");
+        if (!manager.hasPrimaryClip()) return null;
+        final ClipData clipData = manager.getPrimaryClip();
+        if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) return null;
+        final List<Uri> uris = new ArrayList<>();
+        Uri uri;
+        for (int i = 0; i < clipData.getItemCount(); i ++) {
+            uri = clipData.getItemAt(i).getUri();
+            if (uri != null) uris.add(uri);
+        }
+        return uris.toArray(new Uri[0]);
+    }
+
+    public static int getClipboardContentType(final ClipboardManager manager) {
+        checkArgNotNull(manager, "manager");
+        if (!manager.hasPrimaryClip()) return -1;
+        final ClipData clipData = manager.getPrimaryClip();
+        final ClipDescription description = clipData.getDescription();
+        if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) return A3Clipboard.ContentType.HTML_TEXT;
+        else if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) return A3Clipboard.ContentType.PLAIN_TEXT;
+        else if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) {
+            for (int i = 0; i < clipData.getItemCount(); i ++) {
+                if (clipData.getItemAt(i).getUri().getScheme().equals("file")) return A3Clipboard.ContentType.FILE_LIST;
+            }
+            return -1;
+        }
+        else return -1;
     }
 
 }

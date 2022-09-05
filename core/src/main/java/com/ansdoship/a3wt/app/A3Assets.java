@@ -8,6 +8,5 @@ public interface A3Assets {
 
     InputStream readAsset(String asset);
     URL getAssetURL(String asset);
-    String[] listAssets(String asset) throws IOException;
 
 }

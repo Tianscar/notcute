@@ -4,13 +4,16 @@ import android.graphics.Bitmap;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+
 public class AndroidA3Image implements A3Image {
 
     protected volatile Bitmap bitmap;
     protected volatile AndroidA3Graphics graphics;
     protected volatile boolean disposed = false;
 
-    public AndroidA3Image(Bitmap bitmap) {
+    public AndroidA3Image(final Bitmap bitmap) {
+        checkArgNotNull(bitmap, "bitmap");
         this.bitmap = bitmap;
         this.graphics = new AndroidA3Graphics(bitmap);
     }
@@ -37,25 +40,27 @@ public class AndroidA3Image implements A3Image {
     }
 
     @Override
-    public int getPixel(int x, int y) {
+    public int getPixel(final int x, final int y) {
         checkDisposed("Can't call getPixel() on a disposed A3Image");
         return bitmap.getPixel(x, y);
     }
 
     @Override
-    public void setPixel(int x, int y, int color) {
+    public void setPixel(final int x, final int y, final int color) {
         checkDisposed("Can't call setPixel() on a disposed A3Image");
         bitmap.setPixel(x, y, color);
     }
 
     @Override
-    public void getPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
+    public void getPixels(final int[] pixels, final int offset, final int stride, final int x, final int y, final int width, final int height) {
+        checkArgNotNull(pixels, "pixels");
         checkDisposed("Can't call getPixels() on a disposed A3Image");
         bitmap.getPixels(pixels, offset, stride, x, y, width, height);
     }
 
     @Override
-    public void setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
+    public void setPixels(final int[] pixels, final int offset, final int stride, final int x, final int y, final int width, final int height) {
+        checkArgNotNull(pixels, "pixels");
         checkDisposed("Can't call setPixels() on a disposed A3Image");
         bitmap.setPixels(pixels, offset, stride, x, y, width, height);
     }
@@ -66,12 +71,12 @@ public class AndroidA3Image implements A3Image {
     }
 
     @Override
-    public synchronized void dispose() {
-        if (isDisposed()) return;
+    public void dispose() {
+        if (disposed) return;
         disposed = true;
         graphics.dispose();
         graphics = null;
-        bitmap.recycle();
+        if (!bitmap.isRecycled()) bitmap.recycle();
         bitmap = null;
     }
 

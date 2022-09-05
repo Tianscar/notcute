@@ -25,10 +25,10 @@ import java.net.URL;
 
 import static com.ansdoship.a3wt.util.A3MathUtils.clamp;
 
-public class BasicBIOSpi implements BIOServiceProvider {
+public final class BasicBIOSpi implements BIOServiceProvider {
 
-    protected static final String[] READER_FORMAT_NAMES = new String[]{"bmp", "webp", "png", "jpeg", "jpg"};
-    protected static final String[] WRITER_FORMAT_NAMES = new String[]{"bmp", "webp", "png", "jpeg", "jpg"};
+    private static final String[] READER_FORMAT_NAMES = new String[]{"bmp", "webp", "png", "jpeg", "jpg"};
+    private static final String[] WRITER_FORMAT_NAMES = new String[]{"bmp", "webp", "png", "jpeg", "jpg"};
 
     @Override
     public Bitmap read(InputStream stream, Bitmap.Config config) throws IOException {

@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Assets;
+import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Preferences;
-import com.ansdoship.a3wt.graphics.A3Container;
-import com.ansdoship.a3wt.graphics.A3Context;
+import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
@@ -18,28 +20,37 @@ import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
 public class A3AndroidActivity extends Activity implements AndroidA3Container, View.OnLayoutChangeListener {
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(final MotionEvent event) {
         return commonOnTouchEvent(handle.inputListeners, event) || super.onTouchEvent(event);
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(final int keyCode, final KeyEvent event) {
+        // FIXME
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(final int keyCode, final KeyEvent event) {
+        // FIXME
         return super.onKeyUp(keyCode, event);
     }
 
     protected static class A3AndroidActivityHandle implements A3Context.Handle, A3Container.Handle {
+
+        @Override
+        public A3Platform getPlatform() {
+            return activity.surfaceView.handle.getPlatform();
+        }
 
         @Override
         public int getScreenWidth() {
@@ -67,18 +78,20 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public void postRunnable(Runnable runnable) {
+        public void postRunnable(final Runnable runnable) {
+            checkArgNotNull(runnable, "runnable");
             activity.runOnUiThread(runnable);
         }
 
         protected final A3AndroidActivity activity;
         
-        public A3AndroidActivityHandle(A3AndroidActivity activity) {
+        public A3AndroidActivityHandle(final A3AndroidActivity activity) {
+            checkArgNotNull(activity, "activity");
             this.activity = activity;
         }
 
-        protected final List<A3ContainerListener> containerListeners = new ArrayList<>();
-        protected final List<A3InputListener> inputListeners = new ArrayList<>();
+        protected final List<A3ContainerListener> containerListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
 
         @Override
         public A3Graphics getGraphics() {
@@ -101,8 +114,8 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public void setBackgroundColor(int color) {
-            activity.surfaceView.setBackgroundColor(color);
+        public void setBackgroundColor(final int color) {
+            activity.surfaceView.handle.setBackgroundColor(color);
         }
 
         @Override
@@ -111,7 +124,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public void paint(A3Graphics graphics) {
+        public void paint(final A3Graphics graphics) {
             activity.surfaceView.handle.paint(graphics);
         }
 
@@ -137,7 +150,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public void addContextListener(A3ContextListener listener) {
+        public void addContextListener(final A3ContextListener listener) {
             activity.surfaceView.handle.addContextListener(listener);
         }
 
@@ -147,7 +160,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public void addContainerListener(A3ContainerListener listener) {
+        public void addContainerListener(final A3ContainerListener listener) {
             containerListeners.add(listener);
         }
 
@@ -157,7 +170,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public void addContextInputListener(A3InputListener listener) {
+        public void addContextInputListener(final A3InputListener listener) {
             activity.surfaceView.handle.addContextInputListener(listener);
         }
 
@@ -167,17 +180,17 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public void addContainerInputListener(A3InputListener listener) {
+        public void addContainerInputListener(final A3InputListener listener) {
             inputListeners.add(listener);
         }
 
         @Override
-        public A3Preferences getPreferences(String name) {
+        public A3Preferences getPreferences(final String name) {
             return activity.surfaceView.handle.getPreferences(name);
         }
 
         @Override
-        public boolean deletePreferences(String name) {
+        public boolean deletePreferences(final String name) {
             return activity.surfaceView.handle.deletePreferences(name);
         }
 
@@ -197,7 +210,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public File getFilesDir(String type) {
+        public File getFilesDir(final String type) {
             return activity.surfaceView.handle.getFilesDir(type);
         }
 
@@ -212,13 +225,19 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public void setFullscreen(boolean fullscreen) {
-
+        public void setFullscreen(final boolean fullscreen) {
+            // FIXME
         }
 
         @Override
         public boolean isFullscreen() {
+            // FIXME
             return false;
+        }
+
+        @Override
+        public A3Clipboard getClipboard() {
+            return activity.surfaceView.handle.getClipboard();
         }
 
     }
@@ -228,7 +247,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         return this;
     }
     
-    protected volatile A3AndroidActivityHandle handle;
+    protected A3AndroidActivityHandle handle;
 
     @Override
     public A3Context.Handle getContextHandle() {
@@ -240,10 +259,10 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         return handle;
     }
 
-    protected volatile A3AndroidSurfaceView surfaceView;
+    protected A3AndroidSurfaceView surfaceView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (surfaceView == null) surfaceView = new A3AndroidSurfaceView(this);
         setContentView(surfaceView);
@@ -292,7 +311,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
+    public void onWindowFocusChanged(final boolean hasFocus) {
         if (hasFocus) {
             for (A3ContainerListener listener : handle.containerListeners) {
                 listener.containerFocusGained();
@@ -331,9 +350,10 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     }
 
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        int width = right - left;
-        int height = bottom - top;
+    public void onLayoutChange(final View v, final int left, final int top, final int right, final int bottom,
+                               final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
+        final int width = right - left;
+        final int height = bottom - top;
         for (A3ContainerListener listener : handle.containerListeners) {
             listener.containerResized(width, height);
         }

@@ -1,7 +1,8 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.A3WT;
+import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Preferences;
+import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
@@ -11,7 +12,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.image.VolatileImage;
 import java.awt.EventQueue;
 import java.awt.event.ComponentListener;
 import java.awt.event.ComponentEvent;
@@ -27,59 +28,72 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMousePressed;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseReleased;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseDragged;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseMoved;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseEntered;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseExited;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseWheelMoved;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyTyped;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyPressed;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyReleased;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3ColorUtils.White;
 import static com.ansdoship.a3wt.util.A3FileUtils.createDirIfNotExist;
 
 public class A3AWTComponent extends Component implements AWTA3Context, ComponentListener, FocusListener,
         MouseInputListener, MouseWheelListener, HierarchyListener, KeyListener {
 
     @Override
-    public void mouseClicked(MouseEvent e) {
+    public void mouseClicked(final MouseEvent e) {
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(final MouseEvent e) {
         commonMousePressed(handle.inputListeners, e);
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
+    public void mouseReleased(final MouseEvent e) {
         commonMouseReleased(handle.inputListeners, e);
     }
 
     @Override
-    public void mouseEntered(MouseEvent e) {
+    public void mouseEntered(final MouseEvent e) {
+        commonMouseEntered(handle.inputListeners, e);
     }
 
     @Override
-    public void mouseExited(MouseEvent e) {
+    public void mouseExited(final MouseEvent e) {
+        commonMouseExited(handle.inputListeners, e);
     }
 
     @Override
-    public void mouseDragged(MouseEvent e) {
+    public void mouseDragged(final MouseEvent e) {
         commonMouseDragged(handle.inputListeners, e);
     }
 
     @Override
-    public void mouseMoved(MouseEvent e) {
+    public void mouseMoved(final MouseEvent e) {
         commonMouseMoved(handle.inputListeners, e);
     }
 
     @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
+    public void mouseWheelMoved(final MouseWheelEvent e) {
         commonMouseWheelMoved(handle.inputListeners, e);
     }
 
-    protected volatile boolean componentFirstVisible = true;
+    private boolean componentFirstVisible = true;
 
     @Override
-    public void hierarchyChanged(HierarchyEvent e) {
+    public void hierarchyChanged(final HierarchyEvent e) {
         if (!componentFirstVisible) return;
         if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) == HierarchyEvent.SHOWING_CHANGED) {
             componentFirstVisible = false;
@@ -90,34 +104,30 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-        boolean result;
-        char keyChar = e.getKeyChar();
-        for (A3InputListener listener : handle.inputListeners) {
-            result = listener.keyTyped(keyChar);
-            if (result) break;
-        }
+    public void keyTyped(final KeyEvent e) {
+        commonKeyTyped(handle.inputListeners, e);
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
-        boolean result;
-        for (A3InputListener listener : handle.inputListeners) {
-            result = listener.keyDown(1);
-            if (result) break;
-        }
+    public void keyPressed(final KeyEvent e) {
+        commonKeyPressed(handle.inputListeners, e);
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
-        boolean result;
-        for (A3InputListener listener : handle.inputListeners) {
-            result = listener.keyUp(0);
-            if (result) break;
-        }
+    public void keyReleased(final KeyEvent e) {
+        commonKeyReleased(handle.inputListeners, e);
     }
 
     protected static class A3AWTComponentHandle implements Handle {
+
+        protected static final AWTA3Platform platform = new AWTA3Platform();
+
+        @Override
+        public A3Platform getPlatform() {
+            return platform;
+        }
+
+        protected final Map<String, AWTA3Preferences> preferencesMap = new ConcurrentHashMap<>();
 
         @Override
         public int getScreenWidth() {
@@ -141,21 +151,24 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
 
         @Override
         public float getScaledDensity() {
-            return A3AWTUtils.getScaledDensity(ppiScale);
+            return A3AWTUtils.getScaledDensity(A3AWTSharedState.getPPIScale());
         }
 
         @Override
-        public void postRunnable(Runnable runnable) {
+        public void postRunnable(final Runnable runnable) {
+            checkArgNotNull(runnable, "runnable");
             EventQueue.invokeLater(runnable);
         }
 
         protected final A3AWTComponent component;
 
-        public A3AWTComponentHandle(A3AWTComponent component) {
+        public A3AWTComponentHandle(final A3AWTComponent component) {
+            checkArgNotNull(component, "component");
             this.component = component;
         }
 
         protected static final AWTA3Assets assets = new AWTA3Assets();
+        protected static final AWTA3Clipboard clipboard = new AWTA3Clipboard();
 
         public static final File HOME = new File(System.getProperty("user.home"));
         public static final File TMPDIR = new File(System.getProperty("java.io.tmpdir"));
@@ -163,7 +176,7 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
         public static final File BASE_CONFIG_DIR;
         public static final File BASE_FILES_DIR;
         static {
-            String os = AWTA3Platform.OS_NAME.trim().toLowerCase();
+            final String os = AWTA3Platform.OS_NAME.trim().toLowerCase();
             if (os.contains("win")) {
                 final String APPDATA = System.getenv("APPDATA");
                 final String LOCALAPPDATA = System.getenv("LOCALAPPDATA");
@@ -212,9 +225,12 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
 
         protected volatile long elapsed = 0;
         protected final AWTA3Graphics graphics = new A3ComponentGraphics();
-        protected volatile Image buffer = null;
-        protected final List<A3ContextListener> contextListeners = new ArrayList<>();
-        protected final List<A3InputListener> inputListeners = new ArrayList<>();
+        protected volatile VolatileImage buffer = null;
+        protected final ReentrantReadWriteLock bufferLock = new ReentrantReadWriteLock(true);
+        protected volatile int backgroundColor = White;
+
+        protected final List<A3ContextListener> contextListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
 
         @Override
         public A3Graphics getGraphics() {
@@ -223,12 +239,12 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
 
         @Override
         public int getWidth() {
-            return component.getWidth();
+            return component.getBounds().width;
         }
 
         @Override
         public int getHeight() {
-            return component.getHeight();
+            return component.getBounds().height;
         }
 
         @Override
@@ -237,7 +253,8 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
         }
 
         @Override
-        public void paint(A3Graphics graphics) {
+        public void paint(final A3Graphics graphics) {
+            checkArgNotNull(graphics, "graphics");
             for (A3ContextListener listener : contextListeners) {
                 listener.contextPainted(graphics);
             }
@@ -245,45 +262,84 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
 
         @Override
         public int getBackgroundColor() {
-            return component.getBackground().getRGB();
+            return backgroundColor;
         }
 
         @Override
-        public void setBackgroundColor(int color) {
-            component.setBackground(new Color(color));
+        public void setBackgroundColor(final int color) {
+            backgroundColor = color;
+        }
+
+        private void renderOffscreen() {
+            if (buffer == null) return;
+            do {
+                if (buffer.validate(component.getGraphicsConfiguration()) == VolatileImage.IMAGE_INCOMPATIBLE) {
+                    buffer = component.createVolatileImage(getWidth(), getHeight());
+                }
+                final Graphics gTmp = buffer.getGraphics();
+                gTmp.setColor(new Color(getBackgroundColor(), true));
+                gTmp.fillRect(0, 0, getWidth(), getHeight());
+                gTmp.setColor(Color.BLACK);
+                ((A3ComponentGraphics)graphics).setGraphics((Graphics2D) gTmp, getWidth(), getHeight());
+                paint(graphics);
+                ((A3ComponentGraphics)graphics).setGraphics(null, -1, -1);
+                gTmp.dispose();
+            } while (buffer != null && buffer.contentsLost());
         }
 
         @Override
-        public synchronized void update() {
+        public void update() {
             component.checkDisposed("Can't call update() on a disposed A3Context");
-            long time = System.currentTimeMillis();
-            buffer = component.createImage(getWidth(), getHeight());
-            Graphics gTmp = buffer.getGraphics();
-            gTmp.setColor(component.getBackground());
-            gTmp.fillRect(0, 0, getWidth(), getHeight());
-            gTmp.setColor(new Color(0x000000));
-            ((A3ComponentGraphics)graphics).setGraphics((Graphics2D) gTmp, getWidth(), getHeight());
-            paint(graphics);
-            ((A3ComponentGraphics)graphics).setGraphics(null, -1, -1);
-            gTmp.dispose();
-            component.update(component.getGraphics());
-            long now = System.currentTimeMillis();
-            elapsed = now - time;
+            bufferLock.writeLock().lock();
+            try {
+                final long time = System.currentTimeMillis();
+                final int width = getWidth();
+                final int height = getHeight();
+                if (buffer != null) buffer.flush();
+                if (buffer == null || buffer.getWidth() != width || buffer.getHeight() != height) {
+                    buffer = component.createVolatileImage(width, height);
+                }
+                do {
+                    int returnCode = buffer.validate(component.getGraphicsConfiguration());
+                    if (returnCode == VolatileImage.IMAGE_RESTORED) {
+                        renderOffscreen();
+                    } else if (returnCode == VolatileImage.IMAGE_INCOMPATIBLE) {
+                        buffer = component.createVolatileImage(width, height);
+                        renderOffscreen();
+                    }
+                    component.update(component.getGraphics());
+                } while (buffer != null && buffer.contentsLost());
+                final long now = System.currentTimeMillis();
+                elapsed = now - time;
+            }
+            finally {
+                bufferLock.writeLock().unlock();
+            }
         }
 
         @Override
-        public synchronized A3Image snapshot() {
-            BufferedImage bufferedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-            Graphics2D gTmp = bufferedImage.createGraphics();
+        public A3Image snapshot() {
+            component.checkDisposed("Can't call snapshot() on a disposed A3Context");
+            final BufferedImage bufferedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            final Graphics2D gTmp = bufferedImage.createGraphics();
             component.print(gTmp);
             gTmp.dispose();
             return new AWTA3Image(bufferedImage);
         }
 
         @Override
-        public synchronized A3Image snapshotBuffer() {
-            if (buffer == null) return null;
-            return new AWTA3Image(A3AWTUtils.copyImage(buffer));
+        public A3Image snapshotBuffer() {
+            component.checkDisposed("Can't call snapshotBuffer() on a disposed A3Context");
+            final A3Image result;
+            bufferLock.readLock().lock();
+            try {
+                if (buffer == null) result = null;
+                else result = new AWTA3Image(A3AWTUtils.copyImage(buffer));
+            }
+            finally {
+                bufferLock.readLock().unlock();
+            }
+            return result;
         }
 
         @Override
@@ -292,7 +348,8 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
         }
 
         @Override
-        public void addContextListener(A3ContextListener listener) {
+        public void addContextListener(final A3ContextListener listener) {
+            checkArgNotNull(listener, "listener");
             contextListeners.add(listener);
         }
 
@@ -302,19 +359,27 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
         }
 
         @Override
-        public void addContextInputListener(A3InputListener listener) {
+        public void addContextInputListener(final A3InputListener listener) {
+            checkArgNotNull(listener, "listener");
             inputListeners.add(listener);
         }
 
         @Override
-        public A3Preferences getPreferences(String name) {
-            return new AWTA3Preferences(component.getPreferencesFile(name));
+        public A3Preferences getPreferences(final String name) {
+            checkArgNotNull(name, "name");
+            if (preferencesMap.containsKey(name)) return preferencesMap.get(name);
+            else return preferencesMap.put(name, new AWTA3Preferences(component.getPreferencesFile(name)));
         }
 
         @Override
-        public boolean deletePreferences(String name) {
-            getPreferences(name).clear();
-            return component.getPreferencesFile(name).delete();
+        public boolean deletePreferences(final String name) {
+            checkArgNotNull(name, "name");
+            if (preferencesMap.containsKey(name)) {
+                AWTA3Preferences preferences = preferencesMap.get(name);
+                preferences.clear();
+                return preferences.getFile().delete();
+            }
+            else return component.getPreferencesFile(name).delete();
         }
 
         @Override
@@ -327,7 +392,7 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
             final String ext;
             if (AWTA3Platform.OS_NAME.trim().toLowerCase().contains("win")) ext = "Cache";
             else ext = "";
-            File cacheDir = new File(BASE_CACHE_DIR, component.getCompanyName() + "/" + component.getAppName() + "/" + ext);
+            final File cacheDir = new File(BASE_CACHE_DIR, component.getCompanyName() + "/" + component.getAppName() + "/" + ext);
             createDirIfNotExist(cacheDir);
             return cacheDir;
         }
@@ -337,14 +402,15 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
             final String ext;
             if (AWTA3Platform.OS_NAME.trim().toLowerCase().contains("win")) ext = "Settings";
             else ext = "";
-            File configDir = new File(BASE_CONFIG_DIR, component.getCompanyName() + "/" + component.getAppName() + "/" + ext);
+            final File configDir = new File(BASE_CONFIG_DIR, component.getCompanyName() + "/" + component.getAppName() + "/" + ext);
             createDirIfNotExist(configDir);
             return configDir;
         }
 
         @Override
         public File getFilesDir(String type) {
-            File filesDir = new File(new File(BASE_FILES_DIR, component.getCompanyName() + "/" + component.getAppName()), type);
+            if (type == null) type = "";
+            final File filesDir = new File(new File(BASE_FILES_DIR, component.getCompanyName() + "/" + component.getAppName()), type);
             createDirIfNotExist(filesDir);
             return filesDir;
         }
@@ -359,6 +425,11 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
             return TMPDIR;
         }
 
+        @Override
+        public A3Clipboard getClipboard() {
+            return clipboard;
+        }
+
     }
 
     protected final A3AWTComponentHandle handle;
@@ -369,15 +440,12 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
     }
 
     protected volatile boolean disposed = false;
-    protected static volatile String companyName = "";
-    protected static volatile String appName = "";
-    protected static volatile float ppiScale = 1.0f;
 
     private static class A3ComponentGraphics extends AWTA3Graphics {
         public A3ComponentGraphics() {
             super(null, -1, -1);
         }
-        public void setGraphics(Graphics2D graphics2D, int width, int height) {
+        public void setGraphics(final Graphics2D graphics2D, final int width, final int height) {
             save();
             this.graphics2D = graphics2D;
             this.width = width;
@@ -387,7 +455,7 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
     }
 
     public A3AWTComponent() {
-        if (A3WT.getPlatform() == null) A3WT.setPlatform(new AWTA3Platform());
+        enableInputMethods(false);
         addComponentListener(this);
         addFocusListener(this);
         addMouseListener(this);
@@ -396,97 +464,111 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
         addHierarchyListener(this);
         addKeyListener(this);
         handle = new A3AWTComponentHandle(this);
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                repaint();
+            }
+        });
     }
 
     @Override
     public String getAppName() {
-        return appName;
+        return A3AWTSharedState.getAppName();
     }
 
     @Override
     public String getCompanyName() {
-        return companyName;
+        return A3AWTSharedState.getCompanyName();
     }
 
     @Override
-    public void setAppName(String appName) {
-        A3AWTComponent.appName = appName;
+    public void setAppName(final String appName) {
+        A3AWTSharedState.setAppName(appName);
     }
 
     @Override
-    public void setCompanyName(String companyName) {
-        A3AWTComponent.companyName = companyName;
+    public void setCompanyName(final String companyName) {
+        A3AWTSharedState.setCompanyName(companyName);
     }
 
     @Override
-    public void paint(Graphics g) {
-        if (handle.buffer != null) g.drawImage(handle.buffer, 0, 0, null);
+    public void paint(final Graphics g) {
+        checkArgNotNull(g, "graphics");
+        handle.bufferLock.readLock().lock();
+        try {
+            if (handle.buffer != null) g.drawImage(handle.buffer, 0, 0, null);
+        }
+        finally {
+            handle.bufferLock.readLock().unlock();
+        }
     }
 
     @Override
-    public void update(Graphics g) {
+    public void update(final Graphics g) {
         paint(g);
     }
 
     @Override
-    public void repaint(long tm, int x, int y, int width, int height) {
+    public void repaint(final long tm, final int x, final int y, final int width, final int height) {
     }
 
     @Override
-    public void componentResized(ComponentEvent e) {
+    public void componentResized(final ComponentEvent e) {
         for (A3ContextListener listener : handle.contextListeners) {
             listener.contextResized(e.getComponent().getWidth(), e.getComponent().getHeight());
         }
     }
 
     @Override
-    public void componentMoved(ComponentEvent e) {
+    public void componentMoved(final ComponentEvent e) {
         for (A3ContextListener listener : handle.contextListeners) {
             listener.contextMoved(e.getComponent().getX(), e.getComponent().getY());
         }
     }
 
     @Override
-    public void componentShown(ComponentEvent e) {
+    public void componentShown(final ComponentEvent e) {
         for (A3ContextListener listener : handle.contextListeners) {
             listener.contextShown();
         }
     }
 
     @Override
-    public void componentHidden(ComponentEvent e) {
+    public void componentHidden(final ComponentEvent e) {
         for (A3ContextListener listener : handle.contextListeners) {
             listener.contextHidden();
         }
     }
 
     @Override
-    public void focusGained(FocusEvent e) {
+    public void focusGained(final FocusEvent e) {
         for (A3ContextListener listener : handle.contextListeners) {
             listener.contextFocusGained();
         }
     }
 
     @Override
-    public void focusLost(FocusEvent e) {
+    public void focusLost(final FocusEvent e) {
         for (A3ContextListener listener : handle.contextListeners) {
             listener.contextFocusLost();
         }
     }
 
     @Override
-    public File getPreferencesFile(String name) {
-        return new File(handle.getConfigDir(), name);
+    public File getPreferencesFile(final String name) {
+        checkArgNotNull(name, "name");
+        return new File(handle.getConfigDir(), name + ".xml");
     }
 
     @Override
-    public void setPPIScale(float scale) {
-        ppiScale = scale;
+    public void setPPIScale(final float scale) {
+        A3AWTSharedState.setPPIScale(scale);
     }
 
     @Override
     public float getPPIScale() {
-        return ppiScale;
+        return A3AWTSharedState.getPPIScale();
     }
 
     @Override
@@ -496,7 +578,7 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
 
     @Override
     public void dispose() {
-        if (isDisposed()) return;
+        if (disposed) return;
         disposed = true;
         handle.buffer = null;
         for (A3ContextListener listener : handle.contextListeners) {

@@ -1,9 +1,11 @@
 package com.ansdoship.a3wt.awt;
 
+import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.app.A3Preferences;
-import com.ansdoship.a3wt.graphics.A3Container;
-import com.ansdoship.a3wt.graphics.A3Context;
+import com.ansdoship.a3wt.app.A3Clipboard;
+import com.ansdoship.a3wt.app.A3Container;
+import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
@@ -16,7 +18,6 @@ import java.awt.Graphics;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
-import java.awt.Color;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowFocusListener;
@@ -25,13 +26,29 @@ import java.awt.event.WindowEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static com.ansdoship.a3wt.awt.A3AWTUtils.*;
+import static com.ansdoship.a3wt.awt.A3AWTSharedState.getFullscreenWindow;
+import static com.ansdoship.a3wt.awt.A3AWTSharedState.setFullscreenWindow;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMousePressed;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseReleased;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseDragged;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseMoved;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseEntered;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseExited;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseWheelMoved;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyTyped;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyPressed;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyReleased;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
-public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener, MouseInputListener, MouseWheelListener {
+public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener,
+        MouseInputListener, MouseWheelListener, KeyListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -49,10 +66,12 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        commonMouseEntered(handle.inputListeners, e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
+        commonMouseExited(handle.inputListeners, e);
     }
 
     @Override
@@ -70,7 +89,27 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         commonMouseWheelMoved(handle.inputListeners, e);
     }
 
+    @Override
+    public void keyTyped(final KeyEvent e) {
+        commonKeyTyped(handle.inputListeners, e);
+    }
+
+    @Override
+    public void keyPressed(final KeyEvent e) {
+        commonKeyPressed(handle.inputListeners, e);
+    }
+
+    @Override
+    public void keyReleased(final KeyEvent e) {
+        commonKeyReleased(handle.inputListeners, e);
+    }
+
     protected static class A3AWTDialogHandle implements A3Context.Handle, A3Container.Handle {
+
+        @Override
+        public A3Platform getPlatform() {
+            return dialog.component.handle.getPlatform();
+        }
 
         @Override
         public int getScreenWidth() {
@@ -99,17 +138,19 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
         @Override
         public void postRunnable(Runnable runnable) {
+            checkArgNotNull(runnable, "runnable");
             EventQueue.invokeLater(runnable);
         }
 
         protected final A3AWTDialog dialog;
 
         public A3AWTDialogHandle(A3AWTDialog dialog) {
+            checkArgNotNull(dialog, "dialog");
             this.dialog = dialog;
         }
 
-        protected final List<A3ContainerListener> containerListeners = new ArrayList<>();
-        protected final List<A3InputListener> inputListeners = new ArrayList<>();
+        protected final List<A3ContainerListener> containerListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
 
         @Override
         public A3Graphics getGraphics() {
@@ -242,25 +283,24 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
             containerListeners.add(listener);
         }
 
-        private volatile boolean resizable;
-
         @Override
         public void setFullscreen(boolean fullscreen) {
             if (fullscreen) {
-                resizable = dialog.isResizable();
-                dialog.setUndecorated(true);
-                dialog.setResizable(false);
                 setFullscreenWindow(dialog);
             }
             else {
                 setFullscreenWindow(null);
-                dialog.setResizable(resizable);
             }
         }
 
         @Override
         public boolean isFullscreen() {
             return getFullscreenWindow() == dialog;
+        }
+
+        @Override
+        public A3Clipboard getClipboard() {
+            return dialog.component.handle.getClipboard();
         }
 
     }
@@ -329,6 +369,7 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
     public A3AWTDialog(Window owner, String title, ModalityType modalityType) {
         super(owner, title, modalityType);
+        enableInputMethods(false);
         component = new A3AWTComponent();
         add(component);
         addComponentListener(this);
@@ -386,12 +427,6 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
     @Override
     public void repaint(long tm, int x, int y, int width, int height) {
         component.repaint(tm, x, y, width, height);
-    }
-
-    @Override
-    public void setBackground(Color bgColor) {
-        super.setBackground(bgColor);
-        component.setBackground(bgColor);
     }
 
     @Override

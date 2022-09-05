@@ -1,5 +1,6 @@
 package com.ansdoship.a3wt.android;
 
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,8 +11,9 @@ import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
-import com.ansdoship.a3wt.A3WT;
+import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Assets;
+import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
@@ -20,28 +22,45 @@ import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.getSharedPreferencesDir;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.isExternalStorageWriteable;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.getStorageDir;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3ColorUtils.White;
 import static com.ansdoship.a3wt.util.A3FileUtils.createDirIfNotExist;
 
 public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Context, SurfaceHolder.Callback,
         View.OnLayoutChangeListener, View.OnTouchListener, View.OnKeyListener {
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouch(final View v, final MotionEvent event) {
         return commonOnTouchEvent(handle.inputListeners, event);
     }
 
     @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
+    public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
+        // FIXME
         return false;
     }
 
     protected static class A3AndroidSurfaceViewHandle implements Handle {
+
+        protected static final AndroidA3Platform platform = new AndroidA3Platform();
+
+        @Override
+        public A3Platform getPlatform() {
+            return platform;
+        }
+
+        protected final Map<String, AndroidA3Preferences> preferencesMap = new ConcurrentHashMap<>();
 
         @Override
         public int getScreenWidth() {
@@ -69,36 +88,42 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         }
 
         @Override
-        public void postRunnable(Runnable runnable) {
+        public void postRunnable(final Runnable runnable) {
+            checkArgNotNull(runnable, "runnable");
             surfaceView.post(runnable);
         }
 
         protected final A3AndroidSurfaceView surfaceView;
 
-        public A3AndroidSurfaceViewHandle(A3AndroidSurfaceView surfaceView) {
+        public A3AndroidSurfaceViewHandle(final A3AndroidSurfaceView surfaceView) {
+            checkArgNotNull(surfaceView, "surfaceView");
             this.surfaceView = surfaceView;
-            if (assets == null) assets = new AndroidA3Assets(surfaceView.getContext().getAssets());
+            assetsRef.compareAndSet(null, new AndroidA3Assets(surfaceView.getContext().getAssets()));
+            clipboardRef.compareAndSet(null, new AndroidA3Clipboard((ClipboardManager) surfaceView.getContext().getSystemService(Context.CLIPBOARD_SERVICE)));
         }
 
         public static final File TMPDIR;
         static {
-            String tmpDirPath = System.getProperty("java.io.tmpdir");
+            final String tmpDirPath = System.getProperty("java.io.tmpdir");
             if (tmpDirPath == null) TMPDIR = null;
             else TMPDIR = new File(tmpDirPath);
         }
         
-        protected static volatile AndroidA3Assets assets = null;
+        protected static final AtomicReference<AndroidA3Assets> assetsRef = new AtomicReference<>(null);
+        protected static final AtomicReference<AndroidA3Clipboard> clipboardRef = new AtomicReference<>(null);
         
         protected volatile long elapsed = 0;
         protected final AndroidA3Graphics graphics = new A3SurfaceViewGraphics();
         protected volatile Bitmap buffer = null;
-        protected volatile int backgroundColor = 0xFF000000;
-        protected volatile boolean surfaceFirstCreated = false;
+        protected final ReentrantReadWriteLock bufferLock = new ReentrantReadWriteLock(true);
+        protected volatile int backgroundColor = White;
 
-        protected SurfaceHolder surfaceHolder;
+        private volatile boolean surfaceFirstCreated = false;
 
-        protected final List<A3ContextListener> contextListeners = new ArrayList<>();
-        protected final List<A3InputListener> inputListeners = new ArrayList<>();
+        protected volatile SurfaceHolder surfaceHolder;
+
+        protected final List<A3ContextListener> contextListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
 
         @Override
         public AndroidA3Graphics getGraphics() {
@@ -121,7 +146,8 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         }
 
         @Override
-        public void paint(A3Graphics graphics) {
+        public void paint(final A3Graphics graphics) {
+            checkArgNotNull(graphics, "graphics");
             for (A3ContextListener listener : contextListeners) {
                 listener.contextPainted(graphics);
             }
@@ -133,40 +159,56 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         }
 
         @Override
-        public void setBackgroundColor(int backgroundColor) {
+        public void setBackgroundColor(final int backgroundColor) {
             this.backgroundColor = backgroundColor;
         }
 
         @Override
-        public synchronized void update() {
+        public void update() {
             surfaceView.checkDisposed("Can't call update() on a disposed A3Context");
-            long time = System.currentTimeMillis();
-            if (buffer != null && !buffer.isRecycled()) buffer.recycle();
-            buffer = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas tmpCanvas = new Canvas(buffer);
-            tmpCanvas.drawColor(backgroundColor);
-            ((A3SurfaceViewGraphics)graphics).setCanvas(tmpCanvas, getWidth(), getHeight());
-            tmpCanvas.save();
-            paint(graphics);
-            tmpCanvas.restore();
-            ((A3SurfaceViewGraphics)graphics).setCanvas(null, 0, 0);
-            surfaceView.postUpdate();
-            long now = System.currentTimeMillis();
-            elapsed = now - time;
+            bufferLock.writeLock().lock();
+            try {
+                final long time = System.currentTimeMillis();
+                if (buffer == null || buffer.getWidth() != getWidth() || buffer.getHeight() != getHeight()) {
+                    if (buffer != null && !buffer.isRecycled()) buffer.recycle();
+                    buffer = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+                }
+                final Canvas tmpCanvas = new Canvas(buffer);
+                tmpCanvas.drawColor(backgroundColor);
+                ((A3SurfaceViewGraphics)graphics).setCanvas(tmpCanvas, getWidth(), getHeight());
+                tmpCanvas.save();
+                paint(graphics);
+                tmpCanvas.restore();
+                ((A3SurfaceViewGraphics)graphics).setCanvas(null, -1, -1);
+                surfaceView.postUpdate();
+                final long now = System.currentTimeMillis();
+                elapsed = now - time;
+            }
+            finally {
+                bufferLock.writeLock().unlock();
+            }
         }
 
         @Override
-        public synchronized A3Image snapshot() {
-            Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
+        public A3Image snapshot() {
+            final Bitmap bitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+            final Canvas canvas = new Canvas(bitmap);
             surfaceView.draw(canvas);
             return new AndroidA3Image(bitmap);
         }
 
         @Override
-        public synchronized A3Image snapshotBuffer() {
-            if (buffer == null) return null;
-            return new AndroidA3Image(A3AndroidUtils.copyBitmap(buffer));
+        public A3Image snapshotBuffer() {
+            final A3Image result;
+            bufferLock.readLock().lock();
+            try {
+                if (buffer == null) result = null;
+                else result = new AndroidA3Image(A3AndroidUtils.copyBitmap(buffer));
+            }
+            finally {
+                bufferLock.readLock().unlock();
+            }
+            return result;
         }
 
         @Override
@@ -175,7 +217,8 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         }
 
         @Override
-        public void addContextListener(A3ContextListener listener) {
+        public void addContextListener(final A3ContextListener listener) {
+            checkArgNotNull(listener, "listener");
             contextListeners.add(listener);
         }
 
@@ -185,28 +228,32 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         }
 
         @Override
-        public void addContextInputListener(A3InputListener listener) {
+        public void addContextInputListener(final A3InputListener listener) {
+            checkArgNotNull(listener, "listener");
             inputListeners.add(listener);
         }
 
         @Override
-        public A3Preferences getPreferences(String name) {
-            return new AndroidA3Preferences(surfaceView.getContext().getSharedPreferences(name, Context.MODE_PRIVATE), name);
+        public A3Preferences getPreferences(final String name) {
+            checkArgNotNull(name, "name");
+            if (preferencesMap.containsKey(name)) return preferencesMap.get(name);
+            else return preferencesMap.put(name, new AndroidA3Preferences(surfaceView.getContext().getSharedPreferences(name, Context.MODE_PRIVATE), name));
         }
 
         @Override
-        public boolean deletePreferences(String name) {
+        public boolean deletePreferences(final String name) {
+            checkArgNotNull(name, "name");
             return A3AndroidUtils.deleteSharedPreferences(surfaceView.getContext(), name);
         }
 
         @Override
         public A3Assets getAssets() {
-            return assets;
+            return assetsRef.get();
         }
 
         @Override
         public File getCacheDir() {
-            File cacheDir = isExternalStorageWriteable() ? surfaceView.getContext().getExternalCacheDir() : surfaceView.getContext().getCacheDir();
+            final File cacheDir = isExternalStorageWriteable() ? surfaceView.getContext().getExternalCacheDir() : surfaceView.getContext().getCacheDir();
             createDirIfNotExist(cacheDir);
             return cacheDir;
         }
@@ -218,7 +265,8 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
         @Override
         public File getFilesDir(String type) {
-            File filesDir = isExternalStorageWriteable() ? surfaceView.getContext().getExternalFilesDir(type) : new File(surfaceView.getContext().getFilesDir(), type);
+            if (type == null) type = "";
+            final File filesDir = isExternalStorageWriteable() ? surfaceView.getContext().getExternalFilesDir(type) : new File(surfaceView.getContext().getFilesDir(), type);
             createDirIfNotExist(filesDir);
             return filesDir;
         }
@@ -232,7 +280,12 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         public File getTmpDir() {
             return TMPDIR == null ? getFilesDir("tmp") : TMPDIR;
         }
-        
+
+        @Override
+        public A3Clipboard getClipboard() {
+            return clipboardRef.get();
+        }
+
     }
 
     protected final A3AndroidSurfaceViewHandle handle;
@@ -246,26 +299,25 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
     private static class A3SurfaceViewGraphics extends AndroidA3Graphics {
         public A3SurfaceViewGraphics() {
-            super(null, 0, 0);
+            super(null, -1, -1);
         }
-        public void setCanvas(Canvas canvas, int width, int height) {
+        public void setCanvas(final Canvas canvas, final int width, final int height) {
             this.canvas = canvas;
             this.width = width;
             this.height = height;
         }
     }
 
-    public A3AndroidSurfaceView(Context context) {
+    public A3AndroidSurfaceView(final Context context) {
         this(context, null);
     }
 
-    public A3AndroidSurfaceView(Context context, AttributeSet attrs) {
+    public A3AndroidSurfaceView(final Context context, final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public A3AndroidSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public A3AndroidSurfaceView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        if (A3WT.getPlatform() == null) A3WT.setPlatform(new AndroidA3Platform());
         handle = new A3AndroidSurfaceViewHandle(this);
         handle.surfaceHolder = getHolder();
         handle.surfaceHolder.addCallback(this);
@@ -275,7 +327,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
+    public void surfaceCreated(final SurfaceHolder holder) {
         if (!handle.surfaceFirstCreated) {
             handle.surfaceFirstCreated = true;
             for (A3ContextListener listener : handle.contextListeners) {
@@ -285,29 +337,34 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    public void surfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
         postUpdate();
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
+    public void surfaceDestroyed(final SurfaceHolder holder) {
     }
 
-    public void update(Canvas canvas) {
-        if (handle.buffer == null) return;
-        canvas.save();
-        canvas.drawBitmap(handle.buffer, 0, 0, null);
-        canvas.restore();
+    public void update(final Canvas canvas) {
+        checkArgNotNull(canvas, "canvas");
+        handle.bufferLock.readLock().lock();
+        try {
+            if (handle.buffer != null) {
+                canvas.save();
+                canvas.drawBitmap(handle.buffer, 0, 0, null);
+                canvas.restore();
+            }
+        }
+        finally {
+            handle.bufferLock.readLock().unlock();
+        }
     }
 
     public synchronized void postUpdate() {
-        Canvas canvas = handle.surfaceHolder.lockCanvas();
+        final Canvas canvas = handle.surfaceHolder.lockCanvas();
         if (canvas == null) return;
         try {
             update(canvas);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
         }
         finally {
             handle.surfaceHolder.unlockCanvasAndPost(canvas);
@@ -315,7 +372,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     }
 
     @Override
-    protected void onFocusChanged(boolean gainFocus, int direction, Rect previouslyFocusedRect) {
+    protected void onFocusChanged(final boolean gainFocus, final int direction, final Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
         if (gainFocus) {
             for (A3ContextListener listener : handle.contextListeners) {
@@ -330,7 +387,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     }
 
     @Override
-    protected void onVisibilityChanged(View changedView, int visibility) {
+    protected void onVisibilityChanged(final View changedView, final int visibility) {
         if (visibility == VISIBLE) {
             for (A3ContextListener listener : handle.contextListeners) {
                 listener.contextShown();
@@ -344,9 +401,10 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     }
 
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        int width = right - left;
-        int height = bottom - top;
+    public void onLayoutChange(final View v, final int left, final int top, final int right, final int bottom,
+                               final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
+        final int width = right - left;
+        final int height = bottom - top;
         for (A3ContextListener listener : handle.contextListeners) {
             listener.contextResized(width, height);
         }
@@ -361,8 +419,8 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     }
 
     @Override
-    public synchronized void dispose() {
-        if (isDisposed()) return;
+    public void dispose() {
+        if (disposed) return;
         disposed = true;
         if (handle.buffer != null && !handle.buffer.isRecycled()) handle.buffer.recycle();
         handle.buffer = null;

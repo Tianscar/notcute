@@ -3,12 +3,12 @@ package com.ansdoship.a3wt.input;
 public abstract class A3InputAdapter implements A3InputListener {
 
     @Override
-    public boolean keyDown(int keyCode) {
+    public boolean keyDown(int keyCode, int keyLocation) {
         return false;
     }
 
     @Override
-    public boolean keyUp(int keyCode) {
+    public boolean keyUp(int keyCode, int keyLocation) {
         return false;
     }
 
@@ -28,7 +28,7 @@ public abstract class A3InputAdapter implements A3InputListener {
     }
 
     @Override
-    public boolean pointerDragged(float x, float y, int pointer, int button) {
+    public boolean pointerDragged(float x, float y, int pointer) {
         return false;
     }
 

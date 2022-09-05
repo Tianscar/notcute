@@ -9,11 +9,11 @@ import com.ansdoship.a3wt.util.DefaultA3I18NBundle;
 
 public class AndroidA3Platform implements A3Platform {
 
-    protected static volatile AndroidA3Logger logger = new AndroidA3Logger();
-    protected static volatile AndroidA3GraphicsKit graphicsKit = new AndroidA3GraphicsKit();
-    protected static volatile DefaultA3I18NBundle i18NBundle = new DefaultA3I18NBundle();
+    protected static final AndroidA3Logger logger = new AndroidA3Logger();
+    protected static final AndroidA3GraphicsKit graphicsKit = new AndroidA3GraphicsKit();
+    protected static final DefaultA3I18NBundle i18NBundle = new DefaultA3I18NBundle();
 
-    public static final String BACKEND_NAME = "Android GUI";
+    public static final String BACKEND_NAME = "Android Native GUI";
 
     public static final int BASELINE_PPI = 160;
 

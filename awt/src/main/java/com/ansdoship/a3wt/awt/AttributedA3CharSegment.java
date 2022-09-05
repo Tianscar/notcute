@@ -34,22 +34,12 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Holds a CharSequence with attributes describing the characters of
- * this CharSequence.
+ * Holds a A3Segment with attributes describing the characters of
+ * this A3Segment.
  */
-public class AttributedCharSequence {
+public class AttributedA3CharSegment {
 
-    private boolean newArraySegment = false;
-
-    public A3CharSegment getNewArraySegment() {
-        return newArraySegment ? (A3CharSegment) text : null;
-    }
-
-    public boolean isNewArraySegment() {
-        return newArraySegment;
-    }
-
-    CharSequence text;
+    A3CharSegment text;
 
     Map<Attribute, List<Range>> attributeMap;
 
@@ -71,27 +61,27 @@ public class AttributedCharSequence {
 
         private int begin, end, offset;
 
-        private AttributedCharSequence attrCharSequence;
+        private AttributedA3CharSegment attrSegment;
 
         private HashSet<Attribute> attributesAllowed;
 
-        AttributedIterator(AttributedCharSequence attrCharSequence) {
-            this.attrCharSequence = attrCharSequence;
+        AttributedIterator(AttributedA3CharSegment attrSegment) {
+            this.attrSegment = attrSegment;
             begin = 0;
-            end = attrCharSequence.text.length();
+            end = attrSegment.text.length();
             offset = 0;
         }
 
-        AttributedIterator(AttributedCharSequence attrCharSequence,
-                Attribute[] attributes, int begin,
-                int end) {
-            if (begin < 0 || end > attrCharSequence.text.length() || begin > end) {
+        AttributedIterator(AttributedA3CharSegment attrSegment,
+                           Attribute[] attributes, int begin,
+                           int end) {
+            if (begin < 0 || end > attrSegment.text.length() || begin > end) {
                 throw new IllegalArgumentException();
             }
             this.begin = begin;
             this.end = end;
             offset = begin;
-            this.attrCharSequence = attrCharSequence;
+            this.attrSegment = attrSegment;
             if (attributes != null) {
                 HashSet<Attribute> set = new HashSet<Attribute>(
                         (attributes.length * 4 / 3) + 1);
@@ -103,7 +93,7 @@ public class AttributedCharSequence {
         }
 
         /**
-         * Returns a new {@code AttributedIterator} with the same source CharSequence,
+         * Returns a new {@code AttributedIterator} with the same source A3Segment,
          * begin, end, and current index as this attributed iterator.
          * 
          * @return a shallow copy of this attributed iterator.
@@ -128,7 +118,7 @@ public class AttributedCharSequence {
             if (offset == end) {
                 return DONE;
             }
-            return attrCharSequence.text.charAt(offset);
+            return attrSegment.text.charAt(offset);
         }
 
         public char first() {
@@ -136,11 +126,11 @@ public class AttributedCharSequence {
                 return DONE;
             }
             offset = begin;
-            return attrCharSequence.text.charAt(offset);
+            return attrSegment.text.charAt(offset);
         }
 
         /**
-         * Returns the begin index in the source CharSequence.
+         * Returns the begin index in the source A3Segment.
          * 
          * @return the index of the first character to iterate.
          */
@@ -149,7 +139,7 @@ public class AttributedCharSequence {
         }
 
         /**
-         * Returns the end index in the source CharSequence.
+         * Returns the end index in the source A3Segment.
          * 
          * @return the index one past the last character to iterate.
          */
@@ -158,7 +148,7 @@ public class AttributedCharSequence {
         }
 
         /**
-         * Returns the current index in the source CharSequence.
+         * Returns the current index in the source A3Segment.
          * 
          * @return the current index.
          */
@@ -190,20 +180,20 @@ public class AttributedCharSequence {
         }
 
         /**
-         * Returns a set of attributes present in the {@code AttributedCharSequence}.
+         * Returns a set of attributes present in the {@code AttributedA3Segment}.
          * An empty set returned indicates that no attributes where defined.
          *
          * @return a set of attribute keys that may be empty.
          */
         public Set<Attribute> getAllAttributeKeys() {
-            if (begin == 0 && end == attrCharSequence.text.length()
+            if (begin == 0 && end == attrSegment.text.length()
                     && attributesAllowed == null) {
-                return attrCharSequence.attributeMap.keySet();
+                return attrSegment.attributeMap.keySet();
             }
 
             Set<Attribute> result = new HashSet<Attribute>(
-                    (attrCharSequence.attributeMap.size() * 4 / 3) + 1);
-            Iterator<Map.Entry<Attribute, List<Range>>> it = attrCharSequence.attributeMap
+                    (attrSegment.attributeMap.size() * 4 / 3) + 1);
+            Iterator<Map.Entry<Attribute, List<Range>>> it = attrSegment.attributeMap
                     .entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<Attribute, List<Range>> entry = it.next();
@@ -235,7 +225,7 @@ public class AttributedCharSequence {
                     && !attributesAllowed.contains(attribute)) {
                 return null;
             }
-            ArrayList<Range> ranges = (ArrayList<Range>) attrCharSequence.attributeMap
+            ArrayList<Range> ranges = (ArrayList<Range>) attrSegment.attributeMap
                     .get(attribute);
             if (ranges == null) {
                 return null;
@@ -245,8 +235,8 @@ public class AttributedCharSequence {
 
         public Map<Attribute, Object> getAttributes() {
             Map<Attribute, Object> result = new HashMap<Attribute, Object>(
-                    (attrCharSequence.attributeMap.size() * 4 / 3) + 1);
-            Iterator<Map.Entry<Attribute, List<Range>>> it = attrCharSequence.attributeMap
+                    (attrSegment.attributeMap.size() * 4 / 3) + 1);
+            Iterator<Map.Entry<Attribute, List<Range>>> it = attrSegment.attributeMap
                     .entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<Attribute, List<Range>> entry = it.next();
@@ -288,7 +278,7 @@ public class AttributedCharSequence {
                     && !attributesAllowed.contains(attribute)) {
                 return end;
             }
-            ArrayList<Range> ranges = (ArrayList<Range>) attrCharSequence.attributeMap
+            ArrayList<Range> ranges = (ArrayList<Range>) attrSegment.attributeMap
                     .get(attribute);
             if (ranges == null) {
                 return end;
@@ -336,7 +326,7 @@ public class AttributedCharSequence {
                     && !attributesAllowed.contains(attribute)) {
                 return begin;
             }
-            ArrayList<Range> ranges = (ArrayList<Range>) attrCharSequence.attributeMap
+            ArrayList<Range> ranges = (ArrayList<Range>) attrSegment.attributeMap
                     .get(attribute);
             if (ranges == null) {
                 return begin;
@@ -362,7 +352,7 @@ public class AttributedCharSequence {
                 return DONE;
             }
             offset = end - 1;
-            return attrCharSequence.text.charAt(offset);
+            return attrSegment.text.charAt(offset);
         }
 
         public char next() {
@@ -370,14 +360,14 @@ public class AttributedCharSequence {
                 offset = end;
                 return DONE;
             }
-            return attrCharSequence.text.charAt(++offset);
+            return attrSegment.text.charAt(++offset);
         }
 
         public char previous() {
             if (offset == begin) {
                 return DONE;
             }
-            return attrCharSequence.text.charAt(--offset);
+            return attrSegment.text.charAt(--offset);
         }
 
         public char setIndex(int location) {
@@ -388,24 +378,23 @@ public class AttributedCharSequence {
             if (offset == end) {
                 return DONE;
             }
-            return attrCharSequence.text.charAt(offset);
+            return attrSegment.text.charAt(offset);
         }
     }
 
     /**
-     * Constructs an {@code AttributedCharSequence} from an {@code
+     * Constructs an {@code AttributedA3Segment} from an {@code
      * AttributedCharacterIterator}, which represents attributed text.
      *
      * @param iterator
      *            the {@code AttributedCharacterIterator} that contains the text
-     *            for this attributed CharSequence.
+     *            for this attributed A3Segment.
      */
-    public AttributedCharSequence(AttributedCharacterIterator iterator) {
+    public AttributedA3CharSegment(AttributedCharacterIterator iterator) {
         if (iterator.getBeginIndex() > iterator.getEndIndex()) {
-            throw new IllegalArgumentException("Invalid subsequence range"); //$NON-NLS-1$
+            throw new IllegalArgumentException("Invalid subSequence range"); //$NON-NLS-1$
         }
-        text = A3CharSegment.fromCharacterIterator(iterator);
-        newArraySegment = true;
+        text = A3CharSegment.fromCharacterIterator(iterator, iterator.getBeginIndex(), iterator.getEndIndex());
         Set<Attribute> attributes = iterator
                 .getAllAttributeKeys();
         if (attributes == null) {
@@ -430,8 +419,8 @@ public class AttributedCharSequence {
         }
     }
 
-    private AttributedCharSequence(AttributedCharacterIterator iterator, int start,
-            int end, Set<Attribute> attributes) {
+    private AttributedA3CharSegment(AttributedCharacterIterator iterator, int start,
+                                    int end, Set<Attribute> attributes) {
         if (start < iterator.getBeginIndex() || end > iterator.getEndIndex()
                 || start > end) {
             throw new IllegalArgumentException();
@@ -441,9 +430,7 @@ public class AttributedCharSequence {
             return;
         }
 
-
         text = A3CharSegment.fromCharacterIterator(iterator, start, end);
-        newArraySegment = true;
         attributeMap = new HashMap<Attribute, List<Range>>(
                 (attributes.size() * 4 / 3) + 1);
 
@@ -467,14 +454,14 @@ public class AttributedCharSequence {
     }
 
     /**
-     * Constructs an {@code AttributedCharSequence} from a range of the text contained
+     * Constructs an {@code AttributedA3Segment} from a range of the text contained
      * in the specified {@code AttributedCharacterIterator}, starting at {@code
      * start} and ending at {@code end}. All attributes will be copied to this
-     * attributed CharSequence.
+     * attributed A3Segment.
      *
      * @param iterator
      *            the {@code AttributedCharacterIterator} that contains the text
-     *            for this attributed CharSequence.
+     *            for this attributed A3Segment.
      * @param start
      *            the start index of the range of the copied text.
      * @param end
@@ -484,13 +471,13 @@ public class AttributedCharSequence {
      *             {@code iterator}, {@code end} is greater than the last
      *             index + 1 in {@code iterator} or if {@code start > end}.
      */
-    public AttributedCharSequence(AttributedCharacterIterator iterator, int start,
-            int end) {
+    public AttributedA3CharSegment(AttributedCharacterIterator iterator, int start,
+                                   int end) {
         this(iterator, start, end, iterator.getAllAttributeKeys());
     }
 
     /**
-     * Constructs an {@code AttributedCharSequence} from a range of the text contained
+     * Constructs an {@code AttributedA3Segment} from a range of the text contained
      * in the specified {@code AttributedCharacterIterator}, starting at {@code
      * start}, ending at {@code end} and it will copy the attributes defined in
      * the specified set. If the set is {@code null} then all attributes are
@@ -498,7 +485,7 @@ public class AttributedCharSequence {
      *
      * @param iterator
      *            the {@code AttributedCharacterIterator} that contains the text
-     *            for this attributed CharSequence.
+     *            for this attributed A3Segment.
      * @param start
      *            the start index of the range of the copied text.
      * @param end
@@ -511,19 +498,19 @@ public class AttributedCharSequence {
      *             {@code iterator}, {@code end} is greater than the last index +
      *             1 in {@code iterator} or if {@code start > end}.
      */
-    public AttributedCharSequence(AttributedCharacterIterator iterator, int start,
-            int end, Attribute[] attributes) {
+    public AttributedA3CharSegment(AttributedCharacterIterator iterator, int start,
+                                   int end, Attribute[] attributes) {
         this(iterator, start, end, new HashSet<Attribute>(Arrays
                 .asList(attributes)));
     }
 
     /**
-     * Creates an {@code AttributedCharSequence} from the given text.
+     * Creates an {@code AttributedA3Segment} from the given text.
      *
      * @param value
-     *            the text to take as base for this attributed CharSequence.
+     *            the text to take as base for this attributed A3Segment.
      */
-    public AttributedCharSequence(CharSequence value) {
+    public AttributedA3CharSegment(A3CharSegment value) {
         if (value == null) {
             throw new NullPointerException();
         }
@@ -532,11 +519,11 @@ public class AttributedCharSequence {
     }
 
     /**
-     * Creates an {@code AttributedCharSequence} from the given text and the
+     * Creates an {@code AttributedA3Segment} from the given text and the
      * attributes. The whole text has the given attributes applied.
      *
      * @param value
-     *            the text to take as base for this attributed CharSequence.
+     *            the text to take as base for this attributed A3Segment.
      * @param attributes
      *            the attributes that the text is associated with.
      * @throws IllegalArgumentException
@@ -545,13 +532,13 @@ public class AttributedCharSequence {
      * @throws NullPointerException
      *             if {@code value} is {@code null}.
      */
-    public AttributedCharSequence(CharSequence value,
-            Map<? extends Attribute, ?> attributes) {
+    public AttributedA3CharSegment(A3CharSegment value,
+                                   Map<? extends Attribute, ?> attributes) {
         if (value == null) {
             throw new NullPointerException();
         }
         if (value.length() == 0 && !attributes.isEmpty()) {
-            throw new IllegalArgumentException("Cannot add attributes to empty CharSequence"); //$NON-NLS-1$
+            throw new IllegalArgumentException("Cannot add attributes to empty A3Segment"); //$NON-NLS-1$
         }
         text = value;
         attributeMap = new HashMap<Attribute, List<Range>>(
@@ -567,15 +554,15 @@ public class AttributedCharSequence {
     }
 
     /**
-     * Applies a given attribute to this CharSequence.
+     * Applies a given attribute to this A3Segment.
      *
      * @param attribute
-     *            the attribute that will be applied to this CharSequence.
+     *            the attribute that will be applied to this A3Segment.
      * @param value
      *            the value of the attribute that will be applied to this
-     *            CharSequence.
+     *            A3Segment.
      * @throws IllegalArgumentException
-     *             if the length of this attributed CharSequence is 0.
+     *             if the length of this attributed A3Segment is 0.
      * @throws NullPointerException
      *             if {@code attribute} is {@code null}.
      */
@@ -599,20 +586,20 @@ public class AttributedCharSequence {
     }
 
     /**
-     * Applies a given attribute to the given range of this CharSequence.
+     * Applies a given attribute to the given range of this A3Segment.
      *
      * @param attribute
-     *            the attribute that will be applied to this CharSequence.
+     *            the attribute that will be applied to this A3Segment.
      * @param value
      *            the value of the attribute that will be applied to this
-     *            CharSequence.
+     *            A3Segment.
      * @param start
      *            the start of the range where the attribute will be applied.
      * @param end
      *            the end of the range where the attribute will be applied.
      * @throws IllegalArgumentException
      *             if {@code start < 0}, {@code end} is greater than the length
-     *             of this CharSequence, or if {@code start >= end}.
+     *             of this A3Segment, or if {@code start >= end}.
      * @throws NullPointerException
      *             if {@code attribute} is {@code null}.
      */
@@ -698,17 +685,17 @@ public class AttributedCharSequence {
     }
 
     /**
-     * Applies a given set of attributes to the given range of the CharSequence.
+     * Applies a given set of attributes to the given range of the A3Segment.
      *
      * @param attributes
-     *            the set of attributes that will be applied to this CharSequence.
+     *            the set of attributes that will be applied to this A3Segment.
      * @param start
      *            the start of the range where the attribute will be applied.
      * @param end
      *            the end of the range where the attribute will be applied.
      * @throws IllegalArgumentException
      *             if {@code start < 0}, {@code end} is greater than the length
-     *             of this CharSequence, or if {@code start >= end}.
+     *             of this A3Segment, or if {@code start >= end}.
      */
     public void addAttributes(
             Map<? extends Attribute, ?> attributes,
@@ -724,7 +711,7 @@ public class AttributedCharSequence {
 
     /**
      * Returns an {@code AttributedCharacterIterator} that gives access to the
-     * complete content of this attributed CharSequence.
+     * complete content of this attributed A3Segment.
      *
      * @return the newly created {@code AttributedCharacterIterator}.
      */
@@ -734,7 +721,7 @@ public class AttributedCharSequence {
 
     /**
      * Returns an {@code AttributedCharacterIterator} that gives access to the
-     * complete content of this attributed CharSequence. Only attributes contained in
+     * complete content of this attributed A3Segment. Only attributes contained in
      * {@code attributes} are available from this iterator if they are defined
      * for this text.
      *
@@ -750,7 +737,7 @@ public class AttributedCharSequence {
 
     /**
      * Returns an {@code AttributedCharacterIterator} that gives access to the
-     * contents of this attributed CharSequence starting at index {@code start} up to
+     * contents of this attributed A3Segment starting at index {@code start} up to
      * index {@code end}. Only attributes contained in {@code attributes} are
      * available from this iterator if they are defined for this text.
      *

@@ -16,15 +16,18 @@ import static com.ansdoship.a3wt.android.A3AndroidUtils.paintStrokeJoin2StrokeJo
 import static com.ansdoship.a3wt.android.A3AndroidUtils.strokeJoin2PaintStrokeJoin;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.paintStrokeCap2StrokeCap;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.strokeCap2PaintStrokeCap;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
 public class AndroidA3Graphics implements A3Graphics {
 
     protected volatile Canvas canvas;
     protected volatile Paint paint;
     protected volatile boolean disposed = false;
-    protected volatile int width, height;
+    protected volatile int width;
+    protected volatile int height;
     protected volatile Data data;
     protected volatile Data cacheData;
+    protected volatile AndroidA3Path clip = null;
 
     @Override
     public int getWidth() {
@@ -36,11 +39,16 @@ public class AndroidA3Graphics implements A3Graphics {
         return height;
     }
 
-    public AndroidA3Graphics(Bitmap bitmap) {
+    @Override
+    public void drawColor() {
+        canvas.drawColor(paint.getColor());
+    }
+
+    public AndroidA3Graphics(final Bitmap bitmap) {
         this(new Canvas(bitmap), bitmap.getWidth(), bitmap.getHeight());
     }
 
-    public AndroidA3Graphics(Canvas canvas, int width, int height) {
+    public AndroidA3Graphics(final Canvas canvas, final int width, final int height) {
         this.canvas = canvas;
         this.width = width;
         this.height = height;
@@ -56,7 +64,8 @@ public class AndroidA3Graphics implements A3Graphics {
         return paint;
     }
 
-    public void drawPath(Path path) {
+    public void drawPath(final Path path) {
+        checkArgNotNull(path, "path");
         checkDisposed("Can't call drawPath() on a disposed A3Graphics");
         canvas.save();
         canvas.drawPath(path, paint);
@@ -64,7 +73,8 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawPath(A3Path path) {
+    public void drawPath(final A3Path path) {
+        checkArgNotNull(path, "path");
         checkDisposed("Can't call drawPath() on a disposed A3Graphics");
         canvas.save();
         canvas.drawPath(((AndroidA3Path)path).getPath(), paint);
@@ -72,7 +82,8 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawImage(A3Image image, int x, int y) {
+    public void drawImage(final A3Image image, final int x, final int y) {
+        checkArgNotNull(image, "image");
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
         canvas.save();
         canvas.drawBitmap(((AndroidA3Image)image).getBitmap(), x, y, paint);
@@ -80,7 +91,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawPoint(float x, float y) {
+    public void drawPoint(final float x, final float y) {
         checkDisposed("Can't call drawPoint() on a disposed A3Graphics");
         canvas.save();
         canvas.drawPoint(x, y, paint);
@@ -88,7 +99,8 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawArc(float left, float top, float right, float bottom, float startAngle, float sweepAngle, boolean useCenter) {
+    public void drawArc(final float left, final float top, final float right, final float bottom,
+                        final float startAngle, final float sweepAngle, final boolean useCenter) {
         checkDisposed("Can't call drawArc() on a disposed A3Graphics");
         canvas.save();
         canvas.drawArc(new RectF(left, top, right, bottom), startAngle, sweepAngle, useCenter, paint);
@@ -96,7 +108,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawLine(float startX, float startY, float stopX, float stopY) {
+    public void drawLine(final float startX, final float startY, final float stopX, final float stopY) {
         checkDisposed("Can't call drawLine() on a disposed A3Graphics");
         canvas.save();
         canvas.drawLine(startX, startY, stopX, stopY, paint);
@@ -104,7 +116,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawOval(float left, float top, float right, float bottom) {
+    public void drawOval(final float left, final float top, final float right, final float bottom) {
         checkDisposed("Can't call drawOval() on a disposed A3Graphics");
         canvas.save();
         canvas.drawOval(new RectF(left, top, right, bottom), paint);
@@ -112,7 +124,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawRect(float left, float top, float right, float bottom) {
+    public void drawRect(final float left, final float top, final float right, final float bottom) {
         checkDisposed("Can't call drawRect() on a disposed A3Graphics");
         canvas.save();
         canvas.drawRect(new RectF(left, top, right, bottom), paint);
@@ -120,7 +132,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawRoundRect(float left, float top, float right, float bottom, float rx, float ry) {
+    public void drawRoundRect(final float left, final float top, final float right, final float bottom, final float rx, final float ry) {
         checkDisposed("Can't call drawRoundRect() on a disposed A3Graphics");
         canvas.save();
         canvas.drawRoundRect(new RectF(left, top, right, bottom), rx, ry, paint);
@@ -128,9 +140,10 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawText(CharSequence text, float x, float y) {
+    public void drawText(final CharSequence text, final float x, final float y) {
+        checkArgNotNull(text, "text");
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
-        Paint.Style style = paint.getStyle();
+        final Paint.Style style = paint.getStyle();
         paint.setStyle(Paint.Style.FILL);
         canvas.save();
         canvas.drawText(text, 0, text.length(), x, y, paint);
@@ -139,14 +152,38 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawText(char[] text, int offset, int length, float x, float y) {
+    public void drawText(final char[] text, final int offset, final int length, final float x, final float y) {
+        checkArgNotNull(text, "text");
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
-        Paint.Style style = paint.getStyle();
+        final Paint.Style style = paint.getStyle();
         paint.setStyle(Paint.Style.FILL);
         canvas.save();
         canvas.drawText(text, offset, length, x, y, paint);
         canvas.restore();
         paint.setStyle(style);
+    }
+
+    @Override
+    public A3Path getClip() {
+        checkDisposed("Can't call getClip() on a disposed A3Graphics");
+        return clip;
+    }
+
+    @Override
+    public void setClip(final A3Path clip) {
+        checkArgNotNull(clip, "clip");
+        checkDisposed("Can't call setClip() on a disposed A3Graphics");
+        this.clip = (AndroidA3Path) clip;
+        canvas.clipPath(this.clip.path);
+    }
+
+    @Override
+    public void setClip(final float left, final float top, final float right, final float bottom) {
+        checkDisposed("Can't call setClip() on a disposed A3Graphics");
+        if (clip == null) clip = new AndroidA3Path(new Path());
+        else clip.reset();
+        clip.addRect(left, top, right, bottom);
+        canvas.clipRect(left, top, right, bottom);
     }
 
     @Override
@@ -156,7 +193,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setColor(int color) {
+    public void setColor(final int color) {
         checkDisposed("Can't call setColor() on a disposed A3Graphics");
         data.setColor(color);
         paint.setColor(color);
@@ -169,7 +206,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStyle(int style) {
+    public void setStyle(final int style) {
         checkDisposed("Can't call setStyle() on a disposed A3Graphics");
         data.setStyle(style);
         paint.setStyle(style2PaintStyle(style));
@@ -182,7 +219,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrokeWidth(float width) {
+    public void setStrokeWidth(final float width) {
         checkDisposed("Can't call setStrokeWidth() on a disposed A3Graphics");
         data.setStrokeWidth(width);
         paint.setStrokeWidth(width);
@@ -195,7 +232,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrokeJoin(int join) {
+    public void setStrokeJoin(final int join) {
         checkDisposed("Can't call setStrokeJoin() on a disposed A3Graphics");
         data.setStrokeJoin(join);
         paint.setStrokeJoin(strokeJoin2PaintStrokeJoin(join));
@@ -208,7 +245,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrokeCap(int cap) {
+    public void setStrokeCap(final int cap) {
         checkDisposed("Can't call setStrokeCap() on a disposed A3Graphics");
         data.setStrokeCap(cap);
         paint.setStrokeCap(strokeCap2PaintStrokeCap(cap));
@@ -221,7 +258,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrokeMiter(float miter) {
+    public void setStrokeMiter(final float miter) {
         checkDisposed("Can't call setStrokeMiter() on a disposed A3Graphics");
         data.setStrokeMiter(miter);
         paint.setStrokeMiter(miter);
@@ -232,14 +269,14 @@ public class AndroidA3Graphics implements A3Graphics {
         checkDisposed("Can't call getFont() on a disposed A3Graphics");
         if (paint.getTypeface() == null) return null;
         else {
-            AndroidA3Font font = (AndroidA3Font) data.getFont();
+            final AndroidA3Font font = (AndroidA3Font) data.getFont();
             if (font != null && font.getTypeface().equals(paint.getTypeface())) return font;
             else return new AndroidA3Font(paint.getTypeface());
         }
     }
 
     @Override
-    public void setFont(A3Font font) {
+    public void setFont(final A3Font font) {
         checkDisposed("Can't call setFont() on a disposed A3Graphics");
         data.setFont(font);
         if (font != null) paint.setTypeface(((AndroidA3Font)font).getTypeface());
@@ -265,7 +302,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setAntiAlias(boolean antiAlias) {
+    public void setAntiAlias(final boolean antiAlias) {
         checkDisposed("Can't call setAntiAlias() on a disposed A3Graphics");
         data.setAntiAlias(antiAlias);
         paint.setAntiAlias(antiAlias);
@@ -279,7 +316,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setFilterImage(boolean filterImage) {
+    public void setFilterImage(final boolean filterImage) {
         checkDisposed("Can't call setFilterImage() on a disposed A3Graphics");
         data.setFilterImage(filterImage);
         paint.setFilterBitmap(filterImage);
@@ -292,7 +329,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setSubpixelText(boolean subpixelText) {
+    public void setSubpixelText(final boolean subpixelText) {
         checkDisposed("Can't call setSubpixelText() on a disposed A3Graphics");
         data.setSubpixelText(subpixelText);
         paint.setSubpixelText(true);
@@ -305,7 +342,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setUnderlineText(boolean underlineText) {
+    public void setUnderlineText(final boolean underlineText) {
         checkDisposed("Can't call setUnderlineText() on a disposed A3Graphics");
         data.setUnderlineText(underlineText);
         paint.setUnderlineText(true);
@@ -318,7 +355,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrikeThroughText(boolean strikeThroughText) {
+    public void setStrikeThroughText(final boolean strikeThroughText) {
         checkDisposed("Can't call setStrikeThroughText() on a disposed A3Graphics");
         data.setStrikeThroughText(strikeThroughText);
         paint.setStrikeThruText(strikeThroughText);
@@ -331,7 +368,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setDither(boolean dither) {
+    public void setDither(final boolean dither) {
         checkDisposed("Can't call setDither() on a disposed A3Graphics");
         data.setDither(dither);
         paint.setDither(dither);
@@ -348,7 +385,7 @@ public class AndroidA3Graphics implements A3Graphics {
     @Override
     public void save() {
         checkDisposed("Can't call save() on a disposed A3Graphics");
-        cacheData = data.copy();
+        if (!data.equals(cacheData)) cacheData = data.copy();
     }
 
     @Override
@@ -373,6 +410,7 @@ public class AndroidA3Graphics implements A3Graphics {
         if (font != null) paint.setTypeface(((AndroidA3Font)font).getTypeface());
         paint.setTextSize(data.getTextSize());
         paint.setAntiAlias(data.isAntiAlias());
+        paint.setLinearText(data.isAntiAlias());
         paint.setFilterBitmap(data.isFilterImage());
         paint.setSubpixelText(data.isSubpixelText());
         paint.setUnderlineText(data.isUnderlineText());
@@ -402,7 +440,7 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setData(Data data) {
+    public void setData(final Data data) {
         checkDisposed("Can't call setData() on a disposed A3Graphics");
         this.data = data;
         apply();
@@ -414,8 +452,8 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public synchronized void dispose() {
-        if (isDisposed()) return;
+    public void dispose() {
+        if (disposed) return;
         disposed = true;
         data = null;
         cacheData = null;

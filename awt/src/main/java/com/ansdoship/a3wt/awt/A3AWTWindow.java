@@ -1,9 +1,11 @@
 package com.ansdoship.a3wt.awt;
 
+import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.app.A3Preferences;
-import com.ansdoship.a3wt.graphics.A3Container;
-import com.ansdoship.a3wt.graphics.A3Context;
+import com.ansdoship.a3wt.app.A3Clipboard;
+import com.ansdoship.a3wt.app.A3Container;
+import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
@@ -15,7 +17,6 @@ import java.awt.GraphicsConfiguration;
 import java.awt.Graphics;
 import java.awt.Frame;
 import java.awt.Window;
-import java.awt.Color;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowFocusListener;
@@ -24,13 +25,28 @@ import java.awt.event.WindowEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static com.ansdoship.a3wt.awt.A3AWTUtils.*;
+import static com.ansdoship.a3wt.awt.A3AWTSharedState.getFullscreenWindow;
+import static com.ansdoship.a3wt.awt.A3AWTSharedState.setFullscreenWindow;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMousePressed;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseReleased;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseDragged;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseMoved;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseEntered;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseExited;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseWheelMoved;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyTyped;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyPressed;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyReleased;
 
-public class A3AWTWindow extends Window implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener, MouseInputListener, MouseWheelListener {
+public class A3AWTWindow extends Window implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener,
+        MouseInputListener, MouseWheelListener, KeyListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -48,10 +64,12 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        commonMouseEntered(handle.inputListeners, e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
+        commonMouseExited(handle.inputListeners, e);
     }
 
     @Override
@@ -69,7 +87,27 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         commonMouseWheelMoved(handle.inputListeners, e);
     }
 
+    @Override
+    public void keyTyped(final KeyEvent e) {
+        commonKeyTyped(handle.inputListeners, e);
+    }
+
+    @Override
+    public void keyPressed(final KeyEvent e) {
+        commonKeyPressed(handle.inputListeners, e);
+    }
+
+    @Override
+    public void keyReleased(final KeyEvent e) {
+        commonKeyReleased(handle.inputListeners, e);
+    }
+
     protected static class A3AWTWindowHandle implements A3Context.Handle, A3Container.Handle {
+
+        @Override
+        public A3Platform getPlatform() {
+            return window.component.handle.getPlatform();
+        }
 
         @Override
         public int getScreenWidth() {
@@ -107,8 +145,8 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
             this.window = window;
         }
 
-        protected final List<A3ContainerListener> containerListeners = new ArrayList<>();
-        protected final List<A3InputListener> inputListeners = new ArrayList<>();
+        protected final List<A3ContainerListener> containerListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
 
         @Override
         public A3Graphics getGraphics() {
@@ -256,6 +294,11 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
             return getFullscreenWindow() == window;
         }
 
+        @Override
+        public A3Clipboard getClipboard() {
+            return window.component.handle.getClipboard();
+        }
+
     }
 
     protected final A3AWTWindowHandle handle;
@@ -274,6 +317,7 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
 
     public A3AWTWindow(Frame owner) {
         super(owner);
+        enableInputMethods(false);
         component = new A3AWTComponent();
         add(component);
         addComponentListener(this);
@@ -287,6 +331,7 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
 
     public A3AWTWindow(Window owner) {
         super(owner);
+        enableInputMethods(false);
         component = new A3AWTComponent();
         add(component);
         addComponentListener(this);
@@ -300,6 +345,7 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
 
     public A3AWTWindow(Window owner, GraphicsConfiguration gc) {
         super(owner, gc);
+        enableInputMethods(false);
         component = new A3AWTComponent();
         add(component);
         addComponentListener(this);
@@ -344,12 +390,6 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
     @Override
     public void repaint(long tm, int x, int y, int width, int height) {
         component.repaint(tm, x, y, width, height);
-    }
-
-    @Override
-    public void setBackground(Color bgColor) {
-        super.setBackground(bgColor);
-        component.setBackground(bgColor);
     }
 
     @Override
