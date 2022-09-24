@@ -1,16 +1,26 @@
 package com.ansdoship.a3wt.util;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.StringWriter;
+import java.io.Closeable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Objects;
 
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
-public class A3FileUtils {
+public class A3Files {
 
-    private A3FileUtils(){}
+    private A3Files(){}
 
     private static final int BUFFER_SIZE = 8192;
 
@@ -133,7 +143,7 @@ public class A3FileUtils {
 
     public static URL[] files2URLs(final File[] files) throws MalformedURLException {
         checkArgNotEmpty(files, "files");
-        URL[] urls = new URL[files.length];
+        final URL[] urls = new URL[files.length];
         for (int i = 0; i < urls.length; i ++) {
             urls[i] = files[i].toURI().toURL();
         }
@@ -142,7 +152,7 @@ public class A3FileUtils {
 
     public static URI[] files2URIs(final File[] files) {
         checkArgNotEmpty(files, "files");
-        URI[] uris = new URI[files.length];
+        final URI[] uris = new URI[files.length];
         for (int i = 0; i < uris.length; i ++) {
             uris[i] = files[i].toURI();
         }
@@ -151,18 +161,18 @@ public class A3FileUtils {
 
     public static String[] files2URIStrings(final File[] files) {
         checkArgNotEmpty(files, "files");
-        String[] strings = new String[files.length];
+        final String[] strings = new String[files.length];
         for (int i = 0; i < strings.length; i ++) {
             strings[i] = "file://" + files[i].getAbsolutePath();
         }
         return strings;
     }
 
-    public static String readFully(final Reader reader) throws IOException {
+    public static String readStringAndClose(final Reader reader) throws IOException {
         checkArgNotNull(reader, "reader");
         try {
             final StringWriter writer = new StringWriter();
-            final char[] buffer = new char[BUFFER_SIZE];
+            final char[] buffer = new char[BUFFER_SIZE / 2];
             int count;
             while ((count = reader.read(buffer)) != -1) {
                 writer.write(buffer, 0, count);
@@ -171,6 +181,32 @@ public class A3FileUtils {
         } finally {
             reader.close();
         }
+    }
+
+    public static byte[] readBytesAndClose(final InputStream stream) throws IOException {
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            final byte[] buffer = new byte[BUFFER_SIZE];
+            int count;
+            while ((count = stream.read(buffer)) != -1) {
+                output.write(buffer, 0, count);
+            }
+            return output.toByteArray();
+        }
+        finally {
+            stream.close();
+        }
+    }
+
+    public static int readNBytes(final InputStream stream, final byte[] b, final int off, final int len) throws IOException {
+        int n = 0;
+        while (n < len) {
+            int count = stream.read(b, off + n, len - n);
+            if (count < 0)
+                return count;
+            n += count;
+        }
+        return n;
     }
 
     /**

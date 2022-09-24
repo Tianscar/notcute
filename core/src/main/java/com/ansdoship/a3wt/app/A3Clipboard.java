@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.app;
 
-import java.io.File;
+import java.net.URI;
 
 public interface A3Clipboard {
 
@@ -8,10 +8,17 @@ public interface A3Clipboard {
         private ContentType(){}
         public static final int PLAIN_TEXT = 0;
         public static final int HTML_TEXT = 1;
-        public static final int FILE_LIST = 2;
+        public static final int URI_LIST = 2;
+    }
+
+    class SelectionType {
+        private SelectionType(){}
+        public static final int CLIPBOARD = 0;
+        public static final int SELECTION = 1;
     }
 
     int getContentType();
+    int getSelectionType();
 
     void setPlainText(CharSequence text);
     CharSequence getPlainText();
@@ -19,7 +26,7 @@ public interface A3Clipboard {
     void setHTMLText(String html);
     String getHTMLText();
 
-    void setFiles(File[] files);
-    File[] getFiles();
+    void setURIs(URI[] uris);
+    URI[] getURIs();
 
 }

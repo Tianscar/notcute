@@ -105,7 +105,9 @@ public class AWTA3Graphics implements A3Graphics {
     public void drawImage(final A3Image image, final int x, final int y) {
         checkArgNotNull(image, "image");
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
-        graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(), x, y, image.getWidth(), image.getHeight(), null);
+        graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(),
+                x - image.getHotSpotX(), y - image.getHotSpotY(),
+                image.getWidth(), image.getHeight(), null);
     }
 
     @Override
@@ -536,7 +538,7 @@ public class AWTA3Graphics implements A3Graphics {
 
     @Override
     public void dispose() {
-        if (disposed) return;
+        if (isDisposed()) return;
         disposed = true;
         data = null;
         cacheData = null;

@@ -6,11 +6,15 @@ import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
+import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3InputListener;
+import com.ansdoship.a3wt.media.A3MediaKit;
+import com.ansdoship.a3wt.media.A3MediaPlayer;
 
 import java.awt.EventQueue;
 import java.awt.GraphicsConfiguration;
@@ -29,9 +33,8 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 import static com.ansdoship.a3wt.awt.A3AWTSharedState.getFullscreenWindow;
 import static com.ansdoship.a3wt.awt.A3AWTSharedState.setFullscreenWindow;
@@ -112,6 +115,21 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
+        public A3GraphicsKit getGraphicsKit() {
+            return dialog.component.handle.getGraphicsKit();
+        }
+
+        @Override
+        public A3MediaKit getMediaKit() {
+            return dialog.component.handle.getMediaKit();
+        }
+
+        @Override
+        public A3MediaPlayer getMediaPlayer() {
+            return dialog.component.handle.getMediaPlayer();
+        }
+
+        @Override
         public int getScreenWidth() {
             return dialog.component.handle.getScreenWidth();
         }
@@ -149,8 +167,8 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
             this.dialog = dialog;
         }
 
-        protected final List<A3ContainerListener> containerListeners = Collections.synchronizedList(new ArrayList<>());
-        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3ContainerListener> containerListeners = new ArrayList<>();
+        protected final List<A3InputListener> inputListeners = new ArrayList<>();
 
         @Override
         public A3Graphics getGraphics() {
@@ -301,6 +319,21 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         @Override
         public A3Clipboard getClipboard() {
             return dialog.component.handle.getClipboard();
+        }
+
+        @Override
+        public A3Clipboard getSelection() {
+            return dialog.component.handle.getSelection();
+        }
+
+        @Override
+        public A3Cursor getCursor() {
+            return dialog.component.handle.getCursor();
+        }
+
+        @Override
+        public void setCursor(final A3Cursor cursor) {
+            dialog.component.handle.setCursor(cursor);
         }
 
     }
@@ -541,6 +574,7 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
     @Override
     public void dispose() {
+        if (isDisposed()) return;
         component.dispose();
         super.dispose();
     }

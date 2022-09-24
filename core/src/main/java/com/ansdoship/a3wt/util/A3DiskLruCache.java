@@ -43,9 +43,9 @@ import java.util.regex.Pattern;
 
 import static com.ansdoship.a3wt.util.A3Charsets.US_ASCII;
 import static com.ansdoship.a3wt.util.A3Charsets.UTF_8;
-import static com.ansdoship.a3wt.util.A3FileUtils.closeQuietly;
-import static com.ansdoship.a3wt.util.A3FileUtils.readFully;
-import static com.ansdoship.a3wt.util.A3FileUtils.deleteContents;
+import static com.ansdoship.a3wt.util.A3Files.closeQuietly;
+import static com.ansdoship.a3wt.util.A3Files.readStringAndClose;
+import static com.ansdoship.a3wt.util.A3Files.deleteContents;
 
 /**
  * A cache that uses a bounded amount of space on a filesystem. Each cache
@@ -670,7 +670,7 @@ public class A3DiskLruCache implements Closeable {
   }
 
   private static String inputStreamToString(InputStream in) throws IOException {
-    return readFully(new InputStreamReader(in, UTF_8));
+    return readStringAndClose(new InputStreamReader(in, UTF_8));
   }
 
   /** A snapshot of the values for an entry. */

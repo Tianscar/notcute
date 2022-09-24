@@ -23,7 +23,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
-import static com.ansdoship.a3wt.util.A3MathUtils.clamp;
+import static com.ansdoship.a3wt.util.A3Arrays.copy;
+import static com.ansdoship.a3wt.util.A3Math.clamp;
 
 public final class BasicBIOSpi implements BIOServiceProvider {
 
@@ -282,8 +283,9 @@ public final class BasicBIOSpi implements BIOServiceProvider {
             if (!output.delete()) return false;
         }
         if (!output.createNewFile()) return false;
-        FileOutputStream fos = new FileOutputStream(output);
-        return write(fos, bitmap, formatName, quality);
+        try (FileOutputStream fos = new FileOutputStream(output)) {
+            return write(fos, bitmap, formatName, quality);
+        }
     }
 
     @Override
@@ -316,18 +318,18 @@ public final class BasicBIOSpi implements BIOServiceProvider {
             result = BitmapBMPEncoder.compress(bitmap, output);
         }
         output.flush();
-        output.close();
+        //output.close();
         return result;
     }
 
     @Override
     public String[] getReaderFormatNames() {
-        return READER_FORMAT_NAMES;
+        return copy(READER_FORMAT_NAMES);
     }
 
     @Override
     public String[] getWriterFormatNames() {
-        return WRITER_FORMAT_NAMES;
+        return copy(WRITER_FORMAT_NAMES);
     }
 
 }

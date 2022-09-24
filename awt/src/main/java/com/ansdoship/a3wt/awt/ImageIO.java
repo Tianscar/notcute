@@ -21,6 +21,7 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageTranscoder;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriter;
+import javax.imageio.ImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.spi.*;
@@ -43,7 +44,6 @@ public final class ImageIO {
     private static final Cache cacheInfo =  new Cache();
     
     private ImageIO() {}
-    
 
     public static void scanForPlugins() {
         registry.registerApplicationClasspathSpis();
@@ -354,6 +354,7 @@ public final class ImageIO {
 
     public static boolean write(RenderedImage im,
                                 String formatName,
+                                float quality,
                                 ImageOutputStream output)
             throws IOException {
 
@@ -370,6 +371,11 @@ public final class ImageIO {
         Iterator<ImageWriter> it = getImageWriters(ImageTypeSpecifier.createFromRenderedImage(im), formatName);
         if (it.hasNext()) {
             ImageWriter writer = it.next();
+            ImageWriteParam param = writer.getDefaultWriteParam();
+            if (param.canWriteCompressed()) {
+                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                param.setCompressionQuality(quality);
+            }
             writer.setOutput(output);
             writer.write(im);
             output.flush();
@@ -381,6 +387,7 @@ public final class ImageIO {
 
     public static boolean write(RenderedImage im,
                                 String formatName,
+                                float quality,
                                 File output)
             throws IOException {
 
@@ -393,13 +400,14 @@ public final class ImageIO {
         }
 
         ImageOutputStream ios = createImageOutputStream(output);
-        boolean rt = write(im, formatName, ios);
+        boolean rt = write(im, formatName, quality, ios);
         ios.close();
         return rt;
     }
 
     public static boolean write(RenderedImage im,
                                 String formatName,
+                                float quality,
                                 OutputStream output)
             throws IOException {
 
@@ -408,7 +416,7 @@ public final class ImageIO {
         }
 
         ImageOutputStream ios = createImageOutputStream(output);
-        boolean rt = write(im, formatName, ios);
+        boolean rt = write(im, formatName, quality, ios);
         ios.close();
         return rt;
     }

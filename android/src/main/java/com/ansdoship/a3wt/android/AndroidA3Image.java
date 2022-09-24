@@ -5,6 +5,7 @@ import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgRangeMin;
 
 public class AndroidA3Image implements A3Image {
 
@@ -12,14 +13,63 @@ public class AndroidA3Image implements A3Image {
     protected volatile AndroidA3Graphics graphics;
     protected volatile boolean disposed = false;
 
-    public AndroidA3Image(final Bitmap bitmap) {
+    protected volatile long time;
+    protected volatile int hotSpotX;
+    protected volatile int hotSpotY;
+
+    public AndroidA3Image(final Bitmap bitmap, final long time, final int hotSpotX, final int hotSpotY) {
         checkArgNotNull(bitmap, "bitmap");
+        checkArgRangeMin(time, 0, true, "time");
         this.bitmap = bitmap;
         this.graphics = new AndroidA3Graphics(bitmap);
+        this.time = time;
+        this.hotSpotX = hotSpotX;
+        this.hotSpotY = hotSpotY;
+    }
+
+    public AndroidA3Image(final Bitmap bitmap) {
+        this(bitmap, 0, 0, 0);
     }
 
     public Bitmap getBitmap() {
         return bitmap;
+    }
+
+    @Override
+    public long getTime() {
+        checkDisposed("Can't call getTime() on a disposed A3Image");
+        return time;
+    }
+
+    @Override
+    public void setTime(final long time) {
+        checkDisposed("Can't call setTime() on a disposed A3Image");
+        checkArgRangeMin(time, 0, true, "time");
+        this.time = time;
+    }
+
+    @Override
+    public int getHotSpotX() {
+        checkDisposed("Can't call getHotSpotX() on a disposed A3Image");
+        return hotSpotX;
+    }
+
+    @Override
+    public void setHotSpotX(final int hotSpotX) {
+        checkDisposed("Can't call setHotSpotX() on a disposed A3Image");
+        this.hotSpotX = hotSpotX;
+    }
+
+    @Override
+    public int getHotSpotY() {
+        checkDisposed("Can't call getHotSpotY() on a disposed A3Image");
+        return hotSpotY;
+    }
+
+    @Override
+    public void setHotSpotY(final int hotSpotY) {
+        checkDisposed("Can't call setHotSpotY() on a disposed A3Image");
+        this.hotSpotY = hotSpotY;
     }
 
     @Override
@@ -72,12 +122,13 @@ public class AndroidA3Image implements A3Image {
 
     @Override
     public void dispose() {
-        if (disposed) return;
+        if (isDisposed()) return;
         disposed = true;
         graphics.dispose();
         graphics = null;
         if (!bitmap.isRecycled()) bitmap.recycle();
         bitmap = null;
+        time = -1;
     }
 
     @Override

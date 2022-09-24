@@ -1,5 +1,8 @@
 package com.ansdoship.a3wt.app;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 public interface A3Preferences {
 
     String getName();
@@ -13,6 +16,8 @@ public interface A3Preferences {
     A3Preferences putBoolean(String key, boolean value);
     A3Preferences putChar(String key, char value);
     A3Preferences putString(String key, String value);
+    A3Preferences putBigInteger(String key, BigInteger value);
+    A3Preferences putBigDecimal(String key, BigDecimal value);
 
     byte getByte(String key, byte defValue);
     short getShort(String key, short defValue);
@@ -22,10 +27,13 @@ public interface A3Preferences {
     double getDouble(String key, double defValue);
     char getChar(String key, char defValue);
     String getString(String key, String defValue);
-    boolean contains(String key);
+    BigInteger getBigInteger(String key, BigInteger defValue);
+    BigDecimal getBigDecimal(String key, BigDecimal defValue);
 
+    boolean contains(String key);
     A3Preferences remove(String key);
     A3Preferences clear();
+
     boolean commit();
     void apply();
 

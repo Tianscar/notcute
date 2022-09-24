@@ -86,7 +86,9 @@ public class AndroidA3Graphics implements A3Graphics {
         checkArgNotNull(image, "image");
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
         canvas.save();
-        canvas.drawBitmap(((AndroidA3Image)image).getBitmap(), x, y, paint);
+        canvas.drawBitmap(((AndroidA3Image)image).getBitmap(),
+                x - image.getHotSpotX(), y - image.getHotSpotY(),
+                paint);
         canvas.restore();
     }
 
@@ -453,7 +455,7 @@ public class AndroidA3Graphics implements A3Graphics {
 
     @Override
     public void dispose() {
-        if (disposed) return;
+        if (isDisposed()) return;
         disposed = true;
         data = null;
         cacheData = null;

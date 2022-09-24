@@ -14,17 +14,18 @@ import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.graphics.A3Graphics;
+import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
 public class A3AndroidDialog extends Dialog implements AndroidA3Container,
@@ -37,8 +38,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
     @Override
     public boolean onKey(final DialogInterface dialog, final int keyCode, final KeyEvent event) {
-        // FIXME
-        return false;
+        return commonOnKeyEvent(handle.inputListeners, event);
     }
 
     protected static class A3AndroidDialogHandle implements A3Context.Handle, A3Container.Handle {
@@ -46,6 +46,11 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         @Override
         public A3Platform getPlatform() {
             return dialog.surfaceView.handle.getPlatform();
+        }
+
+        @Override
+        public A3GraphicsKit getGraphicsKit() {
+            return dialog.surfaceView.handle.getGraphicsKit();
         }
 
         @Override
@@ -85,8 +90,8 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
             this.dialog = dialog;
         }
 
-        protected final List<A3ContainerListener> containerListeners = Collections.synchronizedList(new ArrayList<>());
-        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3ContainerListener> containerListeners = new ArrayList<>();
+        protected final List<A3InputListener> inputListeners = new ArrayList<>();
 
         @Override
         public A3Graphics getGraphics() {
@@ -325,6 +330,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
     @Override
     public void dispose() {
+        if (isDisposed()) return;
         surfaceView.dispose();
     }
 

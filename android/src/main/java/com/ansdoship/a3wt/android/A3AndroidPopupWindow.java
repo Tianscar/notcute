@@ -13,17 +13,18 @@ import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.graphics.A3Graphics;
+import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
 public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Container,
@@ -34,6 +35,11 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         @Override
         public A3Platform getPlatform() {
             return popupWindow.surfaceView.handle.getPlatform();
+        }
+
+        @Override
+        public A3GraphicsKit getGraphicsKit() {
+            return popupWindow.surfaceView.handle.getGraphicsKit();
         }
 
         @Override
@@ -73,8 +79,8 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
             this.popupWindow = popupWindow;
         }
 
-        protected final List<A3ContainerListener> containerListeners = Collections.synchronizedList(new ArrayList<>());
-        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3ContainerListener> containerListeners = new ArrayList<>();
+        protected final List<A3InputListener> inputListeners = new ArrayList<>();
 
         @Override
         public A3Graphics getGraphics() {
@@ -249,7 +255,7 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         this.context = context;
         surfaceView = new A3AndroidSurfaceView(context) {
             @Override
-            public boolean onTouchEvent(MotionEvent event) {
+            public boolean onTouchEvent(final MotionEvent event) {
                 return commonOnTouchEvent(handle.inputListeners, event) || performClick() || super.onTouchEvent(event);
             }
             @Override
@@ -257,12 +263,12 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
                 return super.performClick();
             }
             @Override
-            public boolean onKeyDown(int keyCode, KeyEvent event) {
-                return super.onKeyDown(keyCode, event);
+            public boolean onKeyDown(final int keyCode, final KeyEvent event) {
+                return commonOnKeyEvent(handle.inputListeners, event) || super.onKeyDown(keyCode, event);
             }
             @Override
-            public boolean onKeyUp(int keyCode, KeyEvent event) {
-                return super.onKeyUp(keyCode, event);
+            public boolean onKeyUp(final int keyCode, final KeyEvent event) {
+                return commonOnKeyEvent(handle.inputListeners, event) || super.onKeyUp(keyCode, event);
             }
         };
         setContentView(surfaceView);
@@ -342,6 +348,7 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
 
     @Override
     public void dispose() {
+        if (isDisposed()) return;
         surfaceView.dispose();
     }
 

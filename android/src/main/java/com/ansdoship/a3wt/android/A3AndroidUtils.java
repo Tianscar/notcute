@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import android.view.KeyEvent;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -320,31 +321,31 @@ public class A3AndroidUtils {
         return builder.toString();
     }
 
-    public static void putFilesToClipboard(final ClipboardManager manager, final File[] files) {
+    public static void putURIsToClipboard(final ClipboardManager manager, final URI[] uris) {
         checkArgNotNull(manager, "manager");
-        checkArgNotNull(files, "files");
-        if (files.length > 0) {
-            final ClipData clipData = ClipData.newRawUri(null, Uri.fromFile(files[0]));
-            for (int i = 1; i < files.length; i ++) {
-                clipData.addItem(new ClipData.Item(Uri.fromFile(files[i])));
+        checkArgNotNull(uris, "uris");
+        if (uris.length > 0) {
+            final ClipData clipData = ClipData.newRawUri(null, Uri.parse(Uri.decode(uris[0].toString())));
+            for (int i = 1; i < uris.length; i ++) {
+                clipData.addItem(new ClipData.Item(Uri.parse(uris[i].toString())));
             }
             manager.setPrimaryClip(clipData);
         }
         else manager.setPrimaryClip(ClipData.newPlainText(null, ""));
     }
 
-    public static File[] getFilesFromClipboard(final ClipboardManager manager) {
+    public static URI[] getURIsFromClipboard(final ClipboardManager manager) {
         checkArgNotNull(manager, "manager");
         if (!manager.hasPrimaryClip()) return null;
         final ClipData clipData = manager.getPrimaryClip();
         if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) return null;
-        final List<File> files = new ArrayList<>();
+        final List<URI> uris = new ArrayList<>();
         Uri uri;
         for (int i = 0; i < clipData.getItemCount(); i ++) {
             uri = clipData.getItemAt(i).getUri();
-            if (uri != null && uri.getScheme().equals("file")) files.add(new File(URI.create(uri.toString())));
+            if (uri != null) uris.add(URI.create(uri.toString()));
         }
-        return files.size() > 0 ? files.toArray(new File[0]) : null;
+        return uris.toArray(new URI[0]);
     }
 
     public static void putUrisToClipboard(final ClipboardManager manager, final Uri[] uris) {
@@ -381,13 +382,27 @@ public class A3AndroidUtils {
         final ClipDescription description = clipData.getDescription();
         if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) return A3Clipboard.ContentType.HTML_TEXT;
         else if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) return A3Clipboard.ContentType.PLAIN_TEXT;
-        else if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) {
-            for (int i = 0; i < clipData.getItemCount(); i ++) {
-                if (clipData.getItemAt(i).getUri().getScheme().equals("file")) return A3Clipboard.ContentType.FILE_LIST;
-            }
-            return -1;
-        }
+        else if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) return A3Clipboard.ContentType.URI_LIST;
         else return -1;
+    }
+
+    public static boolean commonOnKeyEvent(final List<A3InputListener> listeners, final KeyEvent event) {
+        checkArgNotNull(listeners, "listeners");
+        checkArgNotNull(event, "event");
+        boolean downResult = false;
+        boolean upResult = false;
+        final int keyCode = event.getKeyCode();
+        for (A3InputListener listener : listeners) {
+            switch (event.getAction()) {
+                case KeyEvent.ACTION_DOWN:
+                    if (!downResult) downResult = listener.keyDown(keyCode, A3InputListener.KeyLocation.STANDARD);
+                    break;
+                case KeyEvent.ACTION_UP:
+                    if (!upResult) upResult = listener.keyUp(keyCode, A3InputListener.KeyLocation.STANDARD);
+                    break;
+            }
+        }
+        return downResult || upResult;
     }
 
 }

@@ -57,6 +57,8 @@ configure([project(':core'), project(':awt')]) {
     }
 
     dependencies {
+        implementation 'com.github.jnr:jnr-ffi:2.2.12'
+
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     }
@@ -74,8 +76,8 @@ configure([project(':core'), project(':awt')]) {
                 from components.java
                 pom {
                     name = libName
-                    description = 'A simple helper library for use the Dear ImGui with jMonkeyEngine. Currently supports LWJGL3 platform only.'
-                    url = 'https://github.com/Tianscar/jme3-imgui'
+                    description = 'Cross-platform direct UI Toolkit for Java. Currently supports Windows/Linux/macOS/Android.'
+                    url = 'https://github.com/AnsdoShip/a3wt'
                     licenses {
                         license {
                             name = 'The Apache License, Version 2.0'
@@ -84,15 +86,15 @@ configure([project(':core'), project(':awt')]) {
                     }
                     developers {
                         developer {
-                            id = 'Tianscar'
-                            name = 'Tiansword Carbonicacid'
+                            id = 'AnsdoShip'
+                            name = 'AnsdoShip Studio'
                             email = 'tianscar@protonmail.com'
                         }
                     }
                     scm {
-                        connection = 'scm:git:git@github.com/Tianscar/jme3-imgui.git'
-                        developerConnection = 'scm:git:git@github.com/Tianscar/jme3-imgui.git'
-                        url = 'https://github.com/Tianscar/jme3-imgui'
+                        connection = 'scm:git:git@github.com/AnsdoShip/a3wt.git'
+                        developerConnection = 'scm:git:git@github.com/AnsdoShip/a3wt.git'
+                        url = 'https://github.com/AnsdoShip/a3wt'
                     }
                 }
             }

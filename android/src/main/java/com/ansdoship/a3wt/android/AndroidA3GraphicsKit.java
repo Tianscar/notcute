@@ -21,7 +21,7 @@ import static com.ansdoship.a3wt.android.A3AndroidUtils.fontStyle2TypefaceStyle;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.readTypeface;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
-import static com.ansdoship.a3wt.util.A3FileUtils.removeStartSeparator;
+import static com.ansdoship.a3wt.util.A3Files.removeStartSeparator;
 
 public class AndroidA3GraphicsKit implements A3GraphicsKit {
 
@@ -72,20 +72,20 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public boolean writeImage(final A3Image image, final String formatName, final File output) {
+    public boolean writeImage(final A3Image image, final String formatName, final int quality, final File output) {
         checkArgNotNull(image, "image");
         try {
-            return BitmapIO.write(output, ((AndroidA3Image)image).getBitmap(), formatName, 100);
+            return BitmapIO.write(output, ((AndroidA3Image)image).getBitmap(), formatName, quality);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public boolean writeImage(final A3Image image, final String formatName, final OutputStream output) {
+    public boolean writeImage(final A3Image image, final String formatName, final int quality, final OutputStream output) {
         checkArgNotNull(image, "image");
         try {
-            return BitmapIO.write(output, ((AndroidA3Image)image).getBitmap(), formatName, 100);
+            return BitmapIO.write(output, ((AndroidA3Image)image).getBitmap(), formatName, quality);
         } catch (IOException e) {
             return false;
         }

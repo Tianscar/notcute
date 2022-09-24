@@ -1,11 +1,15 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Assets;
+import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.graphics.A3Path;
 
+import java.awt.Robot;
+import java.awt.AWTException;
+import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.geom.Path2D;
 import java.awt.image.BufferedImage;
@@ -64,20 +68,20 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public boolean writeImage(final A3Image image, final String formatName, final File output) {
+    public boolean writeImage(final A3Image image, final String formatName, final int quality, final File output) {
         checkArgNotNull(image, "image");
         try {
-            return ImageIO.write(((AWTA3Image)image).getBufferedImage(), formatName, output);
+            return ImageIO.write(((AWTA3Image)image).getBufferedImage(), formatName, quality / 100f, output);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public boolean writeImage(final A3Image image, final String formatName, final OutputStream output) {
+    public boolean writeImage(final A3Image image, final String formatName, final int quality, final OutputStream output) {
         checkArgNotNull(image, "image");
         try {
-            return ImageIO.write(((AWTA3Image)image).getBufferedImage(), formatName, output);
+            return ImageIO.write(((AWTA3Image)image).getBufferedImage(), formatName, quality / 100f, output);
         } catch (IOException e) {
             return false;
         }
@@ -133,6 +137,25 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
         final Font font = Font.decode(familyName);
         if (!familyName.equals(Font.DIALOG) && font.getFamily().equals(Font.DIALOG)) return null;
         return new AWTA3Font(font.deriveFont(fontStyle2AWTFontStyle(style)));
+    }
+
+    @Override
+    public A3Cursor createCursor(final int type) {
+        return new AWTA3Cursor(type);
+    }
+
+    @Override
+    public A3Cursor createCursor(final A3Image image) {
+        return new AWTA3Cursor((AWTA3Image) image);
+    }
+
+    @Override
+    public A3Image screenshot(final int left, final int top, final int right, final int bottom) {
+        try {
+            return new AWTA3Image(new Robot().createScreenCapture(new Rectangle(left, top, right - left, bottom - top)));
+        } catch (final AWTException e) {
+            return null;
+        }
     }
 
 }

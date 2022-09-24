@@ -1,20 +1,30 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Clipboard;
+import com.ansdoship.a3wt.awt.x11.ColorfulXCursor;
+import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.input.A3InputListener;
+import com.ansdoship.a3wt.media.A3Audio;
 
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Clipboard;
-import java.awt.Window;
-import java.awt.GraphicsEnvironment;
-import java.awt.GraphicsDevice;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import java.awt.Image;
-import java.awt.BasicStroke;
+import java.awt.Toolkit;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Graphics2D;
+import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Window;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -25,10 +35,12 @@ import java.awt.image.WritableRaster;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.KeyEvent;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -36,6 +48,7 @@ import java.util.List;
 
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Files.files2URIs;
 
 public class A3AWTUtils {
 
@@ -366,17 +379,20 @@ public class A3AWTUtils {
         else return null;
     }
 
-    public static void putFilesToClipboard(final Clipboard clipboard, final File[] files) {
+    public static void putURIsToClipboard(final Clipboard clipboard, final URI[] uris) {
         checkArgNotNull(clipboard, "clipboard");
-        checkArgNotNull(files, "files");
-        clipboard.setContents(new FileListSelection(Arrays.asList(files)), null);
+        checkArgNotNull(uris, "uris");
+        clipboard.setContents(new URIListSelection(Arrays.asList(uris)), null);
     }
 
-    public static File[] getFilesFromClipboard(final Clipboard clipboard) throws IOException, UnsupportedFlavorException {
+    public static URI[] getURIsFromClipboard(final Clipboard clipboard) throws IOException, UnsupportedFlavorException {
         checkArgNotNull(clipboard, "clipboard");
         final Transferable transferable = clipboard.getContents(null);
-        if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-            return ((List<File>) transferable.getTransferData(DataFlavor.javaFileListFlavor)).toArray(new File[0]);
+        if (transferable.isDataFlavorSupported(URIListSelection.uriListFlavor)) {
+            return ((List<URI>) transferable.getTransferData(URIListSelection.uriListFlavor)).toArray(new URI[0]);
+        }
+        else if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+            return files2URIs(((List<File>)transferable.getTransferData(DataFlavor.javaFileListFlavor)).toArray(new File[0]));
         }
         else return null;
     }
@@ -401,7 +417,10 @@ public class A3AWTUtils {
         checkArgNotNull(clipboard, "clipboard");
         final Transferable transferable = clipboard.getContents(null);
         if (transferable == null) return null;
-        if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+        if (transferable.isDataFlavorSupported(URIListSelection.uriListFlavor)) {
+            return URIListSelection.uriListFlavor;
+        }
+        else if (transferable.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
             return DataFlavor.javaFileListFlavor;
         }
         else if (transferable.isDataFlavorSupported(DataFlavor.selectionHtmlFlavor)) {
@@ -428,8 +447,8 @@ public class A3AWTUtils {
         dataFlavor.equals(DataFlavor.selectionHtmlFlavor)) {
             return A3Clipboard.ContentType.HTML_TEXT;
         }
-        else if (dataFlavor.equals(DataFlavor.javaFileListFlavor)) {
-            return A3Clipboard.ContentType.FILE_LIST;
+        else if (dataFlavor.equals(URIListSelection.uriListFlavor) || dataFlavor.equals(DataFlavor.javaFileListFlavor)) {
+            return A3Clipboard.ContentType.URI_LIST;
         }
         else return -1;
     }
@@ -440,8 +459,8 @@ public class A3AWTUtils {
                 return DataFlavor.stringFlavor;
             case A3Clipboard.ContentType.HTML_TEXT:
                 return DataFlavor.allHtmlFlavor;
-            case A3Clipboard.ContentType.FILE_LIST:
-                return DataFlavor.javaFileListFlavor;
+            case A3Clipboard.ContentType.URI_LIST:
+                return URIListSelection.uriListFlavor;
             default:
                 return null;
         }
@@ -505,6 +524,208 @@ public class A3AWTUtils {
             result = listener.keyUp(e.getExtendedKeyCode(), AWTKeyLocation2KeyLocation(e.getKeyLocation()));
             if (result) break;
         }
+    }
+
+    private static final Cursor GONE_CURSOR = Toolkit.getDefaultToolkit().createCustomCursor(
+            Toolkit.getDefaultToolkit().getImage(A3AWTUtils.class.getResource("")),
+            new Point(0, 0), "A3WT " + AWTA3Platform.BACKEND_NAME + " Gone Cursor");
+    private static final Cursor DEFAULT_CURSOR = Cursor.getDefaultCursor();
+
+    public static Cursor getGoneCursor() {
+        return GONE_CURSOR;
+    }
+
+    public static Cursor getDefaultCursor() {
+        return DEFAULT_CURSOR;
+    }
+
+    public static Cursor createCustomCursor(final Image image, final int hotSpotX, final int hotSpotY, final String name) {
+        checkArgNotNull(image, "image");
+        checkArgNotNull(name, "name");
+        final Point hotSpot = new Point(hotSpotX, hotSpotY);
+        return AWTA3Platform.isX11() ? new ColorfulXCursor(image, hotSpot, name) :
+                Toolkit.getDefaultToolkit().createCustomCursor(image, hotSpot, name);
+    }
+
+    public static int AWTCursorType2CursorType(final int type) {
+        switch (type) {
+            case Cursor.DEFAULT_CURSOR:
+                return A3Cursor.Type.DEFAULT;
+            case Cursor.CROSSHAIR_CURSOR:
+                return A3Cursor.Type.CROSSHAIR;
+            case Cursor.TEXT_CURSOR:
+                return A3Cursor.Type.TEXT;
+            case Cursor.WAIT_CURSOR:
+                return A3Cursor.Type.WAIT;
+            case Cursor.SW_RESIZE_CURSOR:
+                return A3Cursor.Type.RESIZE_SW;
+            case Cursor.SE_RESIZE_CURSOR:
+                return A3Cursor.Type.RESIZE_SE;
+            case Cursor.NW_RESIZE_CURSOR:
+                return A3Cursor.Type.RESIZE_NW;
+            case Cursor.NE_RESIZE_CURSOR:
+                return A3Cursor.Type.RESIZE_NE;
+            case Cursor.N_RESIZE_CURSOR:
+                return A3Cursor.Type.RESIZE_N;
+            case Cursor.S_RESIZE_CURSOR:
+                return A3Cursor.Type.RESIZE_S;
+            case Cursor.W_RESIZE_CURSOR:
+                return A3Cursor.Type.RESIZE_W;
+            case Cursor.E_RESIZE_CURSOR:
+                return A3Cursor.Type.RESIZE_E;
+            case Cursor.HAND_CURSOR:
+                return A3Cursor.Type.HAND;
+            case Cursor.MOVE_CURSOR:
+                return A3Cursor.Type.MOVE;
+            default:
+                return -1;
+        }
+    }
+
+    public static int cursorType2AWTCursorType(final int type) {
+        switch (type) {
+            case A3Cursor.Type.DEFAULT:
+                return Cursor.DEFAULT_CURSOR;
+            case A3Cursor.Type.CROSSHAIR:
+                return Cursor.CROSSHAIR_CURSOR;
+            case A3Cursor.Type.TEXT:
+                return Cursor.TEXT_CURSOR;
+            case A3Cursor.Type.WAIT:
+                return Cursor.WAIT_CURSOR;
+            case A3Cursor.Type.RESIZE_SW:
+                return Cursor.SW_RESIZE_CURSOR;
+            case A3Cursor.Type.RESIZE_SE:
+                return Cursor.SE_RESIZE_CURSOR;
+            case A3Cursor.Type.RESIZE_NW:
+                return Cursor.NW_RESIZE_CURSOR;
+            case A3Cursor.Type.RESIZE_NE:
+                return Cursor.NE_RESIZE_CURSOR;
+            case A3Cursor.Type.RESIZE_N:
+                return Cursor.N_RESIZE_CURSOR;
+            case A3Cursor.Type.RESIZE_S:
+                return Cursor.S_RESIZE_CURSOR;
+            case A3Cursor.Type.RESIZE_W:
+                return Cursor.W_RESIZE_CURSOR;
+            case A3Cursor.Type.RESIZE_E:
+                return Cursor.E_RESIZE_CURSOR;
+            case A3Cursor.Type.HAND:
+                return Cursor.HAND_CURSOR;
+            case A3Cursor.Type.MOVE:
+                return Cursor.MOVE_CURSOR;
+            default:
+                return -1;
+        }
+    }
+
+    public static AudioFileFormat.Type getAudioFileTypeFromExtension(final String extension) {
+        checkArgNotNull(extension, "extension");
+        for (AudioFileFormat.Type type : AudioSystem.getAudioFileTypes()) {
+            if (type.toString().equalsIgnoreCase(extension) || type.getExtension().equalsIgnoreCase(extension)) return type;
+        }
+        return null;
+    }
+
+    public static AudioFormat audioFormat2AWTAudioFormat(final A3Audio.Format format) {
+        checkArgNotNull(format, "format");
+        return new AudioFormat(new AudioFormat.Encoding(format.getEncoding()), format.getSampleRate(), format.getSampleSizeInBits(),
+                format.getChannels(), format.getFrameSize(), format.getFrameRate(), format.isBigEndian(), format.properties());
+    }
+
+    public static A3Audio.Format AWTAudioFormat2AudioFormat(final AudioFormat format) {
+        checkArgNotNull(format, "format");
+        return new A3Audio.DefaultFormat(format.getEncoding().toString(), format.getSampleRate(), format.getSampleSizeInBits(),
+                format.getChannels(), format.getFrameSize(), format.getFrameRate(), format.isBigEndian(), format.properties());
+    }
+
+    public static AudioInputStream getDecodedAudioInputStream(AudioInputStream stream) {
+        checkArgNotNull(stream, "stream");
+        final AudioFormat sourceFormat = stream.getFormat();
+        if (sourceFormat.getFrameSize() == -1 || sourceFormat.getSampleSizeInBits() == -1) {
+            final AudioFormat targetFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(),
+                    16, sourceFormat.getChannels(),
+                    sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
+            stream = AudioSystem.getAudioInputStream(targetFormat, stream);
+        }
+        return stream;
+    }
+
+    public static long getDecodedAudioInputStreamLength(AudioInputStream stream) {
+        checkArgNotNull(stream, "stream");
+        final AudioFormat sourceFormat = stream.getFormat();
+        if (sourceFormat.getFrameSize() == -1 || sourceFormat.getSampleSizeInBits() == -1) {
+            stream = getDecodedAudioInputStream(stream);
+        }
+        try {
+            long length = 0;
+            int n;
+            final byte[] buffer = new byte[8192];
+            while ((n = stream.read(buffer, 0, 8192)) != -1) {
+                length += n;
+            }
+            return length;
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static long getDecodedAudioInputStreamLengthAndClose(final AudioInputStream stream) {
+        try {
+            return getDecodedAudioInputStreamLength(stream);
+        }
+        finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static Object[] getDecodedAudioInputStreamData(AudioInputStream stream, final String algorithm) {
+        checkArgNotNull(stream, "stream");
+        checkArgNotNull(algorithm, "algorithm");
+        final AudioFormat sourceFormat = stream.getFormat();
+        if (sourceFormat.getFrameSize() == -1 || sourceFormat.getSampleSizeInBits() == -1) {
+            stream = getDecodedAudioInputStream(stream);
+        }
+        try {
+            final MessageDigest md = MessageDigest.getInstance(algorithm);
+            long length = 0;
+            int n;
+            final byte[] buffer = new byte[8192];
+            while ((n = stream.read(buffer, 0, 8192)) != -1) {
+                md.update(buffer, 0, n);
+                length += n;
+            }
+            return new Object[]{length, md.digest()};
+        }
+        catch (IOException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Object[] getDecodedAudioInputStreamDataAndClose(final AudioInputStream stream, final String algorithm) {
+        try {
+            return getDecodedAudioInputStreamData(stream, algorithm);
+        }
+        finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static BufferedImage getAlignedImage(final BufferedImage source, final int alignX, final int alignY, final int width, final int height) {
+        checkArgNotNull(source, "source");
+        if (source.getWidth() == width && source.getHeight() == height) return source;
+        final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final Graphics2D g = result.createGraphics();
+        g.drawImage(source, alignX, alignY, null);
+        g.dispose();
+        return result;
     }
 
 }

@@ -3,7 +3,7 @@ package com.ansdoship.a3wt.graphics;
 import com.ansdoship.a3wt.util.A3Copyable;
 import com.ansdoship.a3wt.util.A3Disposable;
 
-import static com.ansdoship.a3wt.util.A3ColorUtils.Black;
+import static com.ansdoship.a3wt.util.A3Colors.BLACK;
 
 public interface A3Graphics extends A3Disposable {
 
@@ -225,7 +225,7 @@ public interface A3Graphics extends A3Disposable {
         @Override
         public void reset() {
             setClip(null);
-            setColor(Black);
+            setColor(BLACK);
             setStyle(Style.STROKE);
             setStrokeWidth(1.0f);
             setStrokeJoin(Join.MITER);

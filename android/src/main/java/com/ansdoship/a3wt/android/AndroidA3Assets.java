@@ -11,7 +11,7 @@ import java.net.URL;
 
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
-import static com.ansdoship.a3wt.util.A3FileUtils.removeStartSeparator;
+import static com.ansdoship.a3wt.util.A3Files.removeStartSeparator;
 
 public class AndroidA3Assets implements A3Assets {
 

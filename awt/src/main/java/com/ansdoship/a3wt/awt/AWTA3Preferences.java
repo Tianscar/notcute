@@ -9,14 +9,16 @@ import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
-import static com.ansdoship.a3wt.util.A3FileUtils.createFileIfNotExist;
-import static com.ansdoship.a3wt.util.A3FileUtils.copyTo;
+import static com.ansdoship.a3wt.util.A3Files.createFileIfNotExist;
+import static com.ansdoship.a3wt.util.A3Files.copyTo;
 
 public class AWTA3Preferences implements A3Preferences {
 
@@ -121,7 +123,18 @@ public class AWTA3Preferences implements A3Preferences {
         return put(key, value);
     }
 
+    @Override
+    public A3Preferences putBigInteger(final String key, final BigInteger value) {
+        return put(key, value.toString());
+    }
+
+    @Override
+    public A3Preferences putBigDecimal(final String key, final BigDecimal value) {
+        return put(key, value.toPlainString());
+    }
+
     protected String get(final String key, final String defValue) {
+        checkArgNotNull(key, "key");
         return (String) properties.getOrDefault(key, defValue);
     }
 
@@ -166,6 +179,16 @@ public class AWTA3Preferences implements A3Preferences {
     }
 
     @Override
+    public BigInteger getBigInteger(final String key, final BigInteger defValue) {
+        return new BigInteger(get(key, defValue.toString()));
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(final String key, final BigDecimal defValue) {
+        return new BigDecimal(get(key, defValue.toPlainString()));
+    }
+
+    @Override
     public boolean contains(final String key) {
         checkArgNotNull(key, "key");
         return properties.contains(key);
@@ -207,28 +230,29 @@ public class AWTA3Preferences implements A3Preferences {
     }
 
     protected boolean write() {
-        boolean result = false;
         fileLock.lock();
         try {
             if (file.exists()) {
                 if (createFileIfNotExist(bakFile)) copyTo(file, bakFile);
-                else throw new IOException("Cannot create backup file: " + bakFile.getAbsolutePath());
+                else return false;
             }
             if (createFileIfNotExist(file)) {
                 try (FileOutputStream fileOutputStream = new FileOutputStream(file);
                      BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream)) {
                     properties.storeToXML(bufferedOutputStream, null, "UTF-8");
-                    result = true;
+                    bakFile.delete();
+                    return true;
                 }
             }
             bakFile.delete();
+            return false;
         }
-        catch (final IOException ignored) {
+        catch (final IOException e) {
+            return false;
         }
         finally {
             fileLock.unlock();
         }
-        return result;
     }
 
 }

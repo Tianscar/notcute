@@ -16,15 +16,15 @@ import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.graphics.A3Graphics;
+import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -33,9 +33,11 @@ import static com.ansdoship.a3wt.android.A3AndroidUtils.getSharedPreferencesDir;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.isExternalStorageWriteable;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.getStorageDir;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
+import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
-import static com.ansdoship.a3wt.util.A3ColorUtils.White;
-import static com.ansdoship.a3wt.util.A3FileUtils.createDirIfNotExist;
+import static com.ansdoship.a3wt.util.A3Colors.WHITE;
+import static com.ansdoship.a3wt.util.A3Files.createDirIfNotExist;
 
 public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Context, SurfaceHolder.Callback,
         View.OnLayoutChangeListener, View.OnTouchListener, View.OnKeyListener {
@@ -47,17 +49,22 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
     @Override
     public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
-        // FIXME
-        return false;
+        return commonOnKeyEvent(handle.inputListeners, event);
     }
 
     protected static class A3AndroidSurfaceViewHandle implements Handle {
 
         protected static final AndroidA3Platform platform = new AndroidA3Platform();
+        protected static final AndroidA3GraphicsKit graphicsKit = new AndroidA3GraphicsKit();
 
         @Override
         public A3Platform getPlatform() {
             return platform;
+        }
+
+        @Override
+        public A3GraphicsKit getGraphicsKit() {
+            return graphicsKit;
         }
 
         protected final Map<String, AndroidA3Preferences> preferencesMap = new ConcurrentHashMap<>();
@@ -116,14 +123,14 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         protected final AndroidA3Graphics graphics = new A3SurfaceViewGraphics();
         protected volatile Bitmap buffer = null;
         protected final ReentrantReadWriteLock bufferLock = new ReentrantReadWriteLock(true);
-        protected volatile int backgroundColor = White;
+        protected volatile int backgroundColor = WHITE;
 
         private volatile boolean surfaceFirstCreated = false;
 
         protected volatile SurfaceHolder surfaceHolder;
 
-        protected final List<A3ContextListener> contextListeners = Collections.synchronizedList(new ArrayList<>());
-        protected final List<A3InputListener> inputListeners = Collections.synchronizedList(new ArrayList<>());
+        protected final List<A3ContextListener> contextListeners = new ArrayList<>();
+        protected final List<A3InputListener> inputListeners = new ArrayList<>();
 
         @Override
         public AndroidA3Graphics getGraphics() {
@@ -199,16 +206,13 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
         @Override
         public A3Image snapshotBuffer() {
-            final A3Image result;
             bufferLock.readLock().lock();
             try {
-                if (buffer == null) result = null;
-                else result = new AndroidA3Image(A3AndroidUtils.copyBitmap(buffer));
+                return buffer == null ? null : new AndroidA3Image(A3AndroidUtils.copyBitmap(buffer));
             }
             finally {
                 bufferLock.readLock().unlock();
             }
-            return result;
         }
 
         @Override
@@ -235,14 +239,16 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
         @Override
         public A3Preferences getPreferences(final String name) {
-            checkArgNotNull(name, "name");
-            if (preferencesMap.containsKey(name)) return preferencesMap.get(name);
-            else return preferencesMap.put(name, new AndroidA3Preferences(surfaceView.getContext().getSharedPreferences(name, Context.MODE_PRIVATE), name));
+            checkArgNotEmpty(name, "name");
+            if (!preferencesMap.containsKey(name)) {
+                preferencesMap.put(name, new AndroidA3Preferences(surfaceView.getContext().getSharedPreferences(name, Context.MODE_PRIVATE), name));
+            }
+            return preferencesMap.get(name);
         }
 
         @Override
         public boolean deletePreferences(final String name) {
-            checkArgNotNull(name, "name");
+            checkArgNotEmpty(name, "name");
             return A3AndroidUtils.deleteSharedPreferences(surfaceView.getContext(), name);
         }
 
@@ -346,7 +352,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     }
 
     public void update(final Canvas canvas) {
-        checkArgNotNull(canvas, "canvas");
+        if (canvas == null) return;
         handle.bufferLock.readLock().lock();
         try {
             if (handle.buffer != null) {
@@ -420,7 +426,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
     @Override
     public void dispose() {
-        if (disposed) return;
+        if (isDisposed()) return;
         disposed = true;
         if (handle.buffer != null && !handle.buffer.isRecycled()) handle.buffer.recycle();
         handle.buffer = null;

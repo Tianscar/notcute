@@ -1,7 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Platform;
-import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.util.A3I18NBundle;
 import com.ansdoship.a3wt.util.A3Logger;
 import com.ansdoship.a3wt.util.DefaultA3I18NBundle;
@@ -9,7 +8,6 @@ import com.ansdoship.a3wt.util.DefaultA3I18NBundle;
 public class AWTA3Platform implements A3Platform {
 
     protected static final AWTA3Logger logger = new AWTA3Logger();
-    protected static final AWTA3GraphicsKit graphicsKit = new AWTA3GraphicsKit();
     protected static final DefaultA3I18NBundle i18NBundle = new DefaultA3I18NBundle();
 
     public static final String BACKEND_NAME = "AWT (Java2D)";
@@ -18,16 +16,52 @@ public class AWTA3Platform implements A3Platform {
     public static final String OS_VERSION = System.getProperty("os.version");
     public static final String OS_ARCH = System.getProperty("os.arch");
 
+    private static final boolean isWindows, isMac, isLinux, isSolaris, isAix;
+    private static final boolean isUnix, isX11;
+    static {
+        final String os = OS_NAME.trim().toLowerCase();
+        isWindows = os.contains("win");
+        isMac = os.contains("mac") || os.contains("osx");
+        isLinux = os.contains("nux");
+        isSolaris = os.contains("sunos") || os.contains("solaris");
+        isAix = os.contains("aix");
+        isUnix = !isWindows;
+        isX11 = !isWindows && !isMac;
+    }
+
+    public static boolean isWindows() {
+        return isWindows;
+    }
+
+    public static boolean isMac() {
+        return isMac;
+    }
+
+    public static boolean isLinux() {
+        return isLinux;
+    }
+
+    public static boolean isSolaris() {
+        return isSolaris;
+    }
+
+    public static boolean isAix() {
+        return isAix;
+    }
+
+    public static boolean isIsUnix() {
+        return isUnix;
+    }
+
+    public static boolean isX11() {
+        return isX11;
+    }
+
     public static final int BASELINE_PPI = 96;
 
     @Override
     public A3Logger getLogger() {
         return logger;
-    }
-
-    @Override
-    public A3GraphicsKit getGraphicsKit() {
-        return graphicsKit;
     }
 
     @Override
