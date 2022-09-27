@@ -13,7 +13,6 @@ import java.io.Closeable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.Objects;
 
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;

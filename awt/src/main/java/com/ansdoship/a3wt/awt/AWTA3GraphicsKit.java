@@ -1,10 +1,11 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Assets;
-import com.ansdoship.a3wt.graphics.A3Cursor;
-import com.ansdoship.a3wt.graphics.A3Font;
-import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
+import com.ansdoship.a3wt.graphics.A3Image;
+import com.ansdoship.a3wt.graphics.A3FramedImage;
+import com.ansdoship.a3wt.graphics.A3Font;
+import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Path;
 
 import java.awt.Robot;
@@ -22,10 +23,26 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.fontStyle2AWTFontStyle;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.getRGBImage;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.getBGRImage;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.getARGBImage;
+
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
 
 public class AWTA3GraphicsKit implements A3GraphicsKit {
+
+    public static BufferedImage getSupportedImage(final BufferedImage source, final String format) {
+        checkArgNotNull(source, "source");
+        checkArgNotNull(format, "format");
+        if (format.equalsIgnoreCase("jpg") || format.equalsIgnoreCase("jpeg")) {
+            return getRGBImage(source);
+        }
+        else if (format.equalsIgnoreCase("bmp")) {
+            return getBGRImage(source);
+        }
+        else return source;
+    }
 
     @Override
     public A3Image createImage(final int width, final int height) {
@@ -34,9 +51,14 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
 
     @Override
     public A3Image readImage(final File input) {
+        checkArgNotNull(input, "input");
         try {
-            return new AWTA3Image(ImageIO.read(input));
-        } catch (IOException e) {
+            final A3FramedImage framedImage = readFramedImage(input);
+            if (framedImage != null) return framedImage;
+            final BufferedImage image = ImageIO.read(input);
+            if (image == null) return null;
+            else return new AWTA3Image(getARGBImage(image));
+        } catch (final IOException e) {
             return null;
         }
     }
@@ -45,8 +67,12 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     public A3Image readImage(final InputStream input) {
         checkArgNotNull(input, "input");
         try {
-            return new AWTA3Image(ImageIO.read(input));
-        } catch (IOException e) {
+            final A3FramedImage framedImage = readFramedImage(input);
+            if (framedImage != null) return framedImage;
+            final BufferedImage image = ImageIO.read(input);
+            if (image == null) return null;
+            else return new AWTA3Image(getARGBImage(image));
+        } catch (final IOException e) {
             return null;
         }
     }
@@ -55,8 +81,12 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     public A3Image readImage(final URL input) {
         checkArgNotNull(input, "input");
         try {
-            return new AWTA3Image(ImageIO.read(input));
-        } catch (IOException e) {
+            final A3FramedImage framedImage = readFramedImage(input);
+            if (framedImage != null) return framedImage;
+            final BufferedImage image = ImageIO.read(input);
+            if (image == null) return null;
+            else return new AWTA3Image(getARGBImage(image));
+        } catch (final IOException e) {
             return null;
         }
     }
@@ -68,10 +98,50 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
+    public A3FramedImage readFramedImage(final File input) {
+        checkArgNotNull(input, "input");
+        try {
+            return FramedImageIO.read(input);
+        }
+        catch (final IOException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public A3FramedImage readFramedImage(final InputStream input) {
+        checkArgNotNull(input, "input");
+        try {
+            return FramedImageIO.read(input);
+        }
+        catch (final IOException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public A3FramedImage readFramedImage(final URL input) {
+        checkArgNotNull(input, "input");
+        try {
+            return FramedImageIO.read(input);
+        }
+        catch (final IOException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public A3FramedImage readFramedImage(final A3Assets assets, final String input) {
+        checkArgNotNull(assets, "assets");
+        return readFramedImage(assets.readAsset(input));
+    }
+
+    @Override
     public boolean writeImage(final A3Image image, final String formatName, final int quality, final File output) {
         checkArgNotNull(image, "image");
         try {
-            return ImageIO.write(((AWTA3Image)image).getBufferedImage(), formatName, quality / 100f, output);
+            if (image instanceof A3FramedImage) return writeFramedImage((A3FramedImage) image, formatName, quality, output);
+            return ImageIO.write(getSupportedImage(((AWTA3Image)image).getBufferedImage(), formatName), formatName, quality / 100f, output);
         } catch (IOException e) {
             return false;
         }
@@ -81,8 +151,31 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     public boolean writeImage(final A3Image image, final String formatName, final int quality, final OutputStream output) {
         checkArgNotNull(image, "image");
         try {
-            return ImageIO.write(((AWTA3Image)image).getBufferedImage(), formatName, quality / 100f, output);
+            if (image instanceof A3FramedImage) return writeFramedImage((A3FramedImage) image, formatName, quality, output);
+            return ImageIO.write(getSupportedImage(((AWTA3Image)image).getBufferedImage(), formatName), formatName, quality / 100f, output);
         } catch (IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean writeFramedImage(final A3FramedImage image, final String formatName, final int quality, final File output) {
+        checkArgNotNull(image, "image");
+        try {
+            return FramedImageIO.write(image, formatName, quality, output);
+        }
+        catch (IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean writeFramedImage(final A3FramedImage image, final String formatName, final int quality, final OutputStream output) {
+        checkArgNotNull(image, "image");
+        try {
+            return FramedImageIO.write(image, formatName, quality, output);
+        }
+        catch (IOException e) {
             return false;
         }
     }
@@ -146,6 +239,7 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
 
     @Override
     public A3Cursor createCursor(final A3Image image) {
+        if (image instanceof A3FramedImage) return new AWTA3Cursor((AWTA3Image) ((A3FramedImage)image).get());
         return new AWTA3Cursor((AWTA3Image) image);
     }
 

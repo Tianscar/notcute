@@ -11,8 +11,9 @@ import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontMetrics;
+import java.awt.font.TextLayout;
 import java.awt.font.TextAttribute;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
@@ -153,76 +154,112 @@ public class AWTA3Graphics implements A3Graphics {
     public void drawText(final CharSequence text, final float x, final float y) {
         checkArgNotNull(text, "text");
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
+        final Runnable[] cleanup = new Runnable[1];
+        final AttributedCharacterIterator iterator = mGetAttributedCharacterIterator(text, cleanup);
+        final Runnable cleanupRunnable = cleanup[0];
+        try {
+            mDrawText(iterator, x, y);
+        }
+        finally {
+            if (cleanupRunnable != null) cleanupRunnable.run();
+        }
+    }
+
+    private AttributedCharacterIterator mGetAttributedCharacterIterator(final CharSequence text, final Runnable[] cleanup) {
         final A3Font a3Font = getFont();
         final Font font = a3Font == null ? null : ((AWTA3Font)getFont()).getFont();
         final HashMap<AttributedCharacterIterator.Attribute, Object> attributes = new HashMap<>();
-        final FontMetrics fontMetrics;
-        if (font != null) {
-            fontMetrics = graphics2D.getFontMetrics(font);
-            attributes.put(TextAttribute.FONT, font);
-        }
-        else fontMetrics = null;
+        if (font != null) attributes.put(TextAttribute.FONT, font);
         attributes.put(TextAttribute.SIZE, data.getTextSize());
         if (data.isUnderlineText()) attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         if (data.isStrikeThroughText()) attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
         if (text instanceof String) {
             final AttributedString attributedString = new AttributedString((String) text);
             attributedString.addAttributes(attributes, 0, text.length());
-            final float ascent;
-            if (fontMetrics != null) {
-                ascent = (float) fontMetrics.getStringBounds((String) text, graphics2D).getY();
-            }
-            else ascent = 0;
-            graphics2D.drawString(attributedString.getIterator(), x, y - ascent);
+            cleanup[0] = null;
+            return attributedString.getIterator();
         }
         else if (text instanceof A3CharSegment) {
             final A3CharSegment segment = (A3CharSegment) text;
             final AttributedA3CharSegment attributedSegment = new AttributedA3CharSegment(segment);
             attributedSegment.addAttributes(attributes, 0, segment.length());
-            final float ascent;
-            if (fontMetrics != null) {
-                ascent = (float) fontMetrics.getStringBounds(segment.array(), segment.arrayOffset(), segment.length(), graphics2D).getY();
-            }
-            else ascent = 0;
-            graphics2D.drawString(attributedSegment.getIterator(), x, y - ascent);
+            cleanup[0] = null;
+            return attributedSegment.getIterator();
         }
         else {
             final AttributedCharSequence attributedCharSequence = new AttributedCharSequence(text);
             attributedCharSequence.addAttributes(attributes, 0, text.length());
-            AttributedCharacterIterator iterator = attributedCharSequence.getIterator();
-            final float ascent;
-            if (fontMetrics != null) {
-                ascent = (float) fontMetrics.getStringBounds(iterator, 0, iterator.getRunLimit(), graphics2D).getY();
+            if (attributedCharSequence.isNewArraySegment()) {
+                cleanup[0] = new Runnable() {
+                    @Override
+                    public void run() {
+                        attributedCharSequence.getNewArraySegment().fillZero();
+                    }
+                };
             }
-            else ascent = 0;
-            graphics2D.drawString(iterator, x, y - ascent);
-            if (attributedCharSequence.isNewArraySegment()) attributedCharSequence.getNewArraySegment().fillZero();
+            return attributedCharSequence.getIterator();
         }
+    }
 
+    private AttributedCharacterIterator mGetAttributedCharacterIterator(final char[] text, final int offset, final int length) {
+        final AttributedA3CharSegment attributedSegment = new AttributedA3CharSegment(new A3CharSegment(text, offset, length));
+        final A3Font a3Font = getFont();
+        final Font font = a3Font == null ? null : ((AWTA3Font)getFont()).getFont();
+        if (font != null) attributedSegment.addAttribute(TextAttribute.FONT, font);
+        attributedSegment.addAttribute(TextAttribute.SIZE, data.getTextSize());
+        if (data.isUnderlineText()) attributedSegment.addAttribute(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        if (data.isStrikeThroughText()) attributedSegment.addAttribute(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+        return attributedSegment.getIterator();
+    }
+
+    private void mDrawText(final AttributedCharacterIterator iterator, final float x, final float y) {
+        final TextLayout textLayout = new TextLayout(iterator, graphics2D.getFontRenderContext());
+        if (getStyle() == Style.STROKE) graphics2D.draw(textLayout.getOutline(AffineTransform.getTranslateInstance(x, y)));
+        else textLayout.draw(graphics2D, x, y);
     }
 
     @Override
     public void drawText(final char[] text, final int offset, final int length, final float x, final float y) {
         checkArgNotNull(text, "text");
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
-        final AttributedA3CharSegment attributedSegment = new AttributedA3CharSegment(new A3CharSegment(text, offset, length));
-        final A3Font a3Font = getFont();
-        final Font font = a3Font == null ? null : ((AWTA3Font)getFont()).getFont();
-        final FontMetrics fontMetrics;
-        if (font != null) {
-            fontMetrics = graphics2D.getFontMetrics(font);
-            attributedSegment.addAttribute(TextAttribute.FONT, font);
+        mDrawText(mGetAttributedCharacterIterator(text, offset, length), x, y);
+    }
+
+    @Override
+    public A3Font.Metrics getTextLayout(final CharSequence text) {
+        checkArgNotNull(text, "text");
+        checkDisposed("Can't call getTextLayout() on a disposed A3Graphics");
+        final Runnable[] cleanup = new Runnable[1];
+        final AttributedCharacterIterator iterator = mGetAttributedCharacterIterator(text, cleanup);
+        final Runnable cleanupRunnable = cleanup[0];
+        try {
+            final TextLayout textLayout = new TextLayout(iterator, graphics2D.getFontRenderContext());
+            final Rectangle2D bounds = textLayout.getBounds();
+            final double left = bounds.getX();
+            final double top = bounds.getY();
+            final double right = left + bounds.getWidth();
+            final double bottom = top + bounds.getHeight();
+            return new A3Font.DefaultMetrics(textLayout.getBaseline(), textLayout.getAscent(), textLayout.getDescent(),
+                    textLayout.getLeading(), (float) left, (float) top, (float) right, (float) bottom);
         }
-        else fontMetrics = null;
-        attributedSegment.addAttribute(TextAttribute.SIZE, data.getTextSize());
-        if (data.isUnderlineText()) attributedSegment.addAttribute(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-        if (data.isStrikeThroughText()) attributedSegment.addAttribute(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
-        final float ascent;
-        if (fontMetrics != null) {
-            ascent = (float) fontMetrics.getStringBounds(text, offset, length, graphics2D).getY();
+        finally {
+            if (cleanupRunnable != null) cleanupRunnable.run();
         }
-        else ascent = 0;
-        graphics2D.drawString(attributedSegment.getIterator(), x, y - ascent);
+    }
+
+    @Override
+    public A3Font.Metrics getTextLayout(final char[] text, final int offset, final int length) {
+        checkArgNotNull(text, "text");
+        checkDisposed("Can't call getTextLayout() on a disposed A3Graphics");
+        final AttributedCharacterIterator iterator = mGetAttributedCharacterIterator(text, offset, length);
+        final TextLayout textLayout = new TextLayout(iterator, graphics2D.getFontRenderContext());
+        final Rectangle2D bounds = textLayout.getBounds();
+        final double left = bounds.getX();
+        final double top = bounds.getY();
+        final double right = left + bounds.getWidth();
+        final double bottom = top + bounds.getHeight();
+        return new A3Font.DefaultMetrics(textLayout.getBaseline(), textLayout.getAscent(), textLayout.getDescent(),
+                textLayout.getLeading(), (float) left, (float) top, (float) right, (float) bottom);
     }
 
     @Override

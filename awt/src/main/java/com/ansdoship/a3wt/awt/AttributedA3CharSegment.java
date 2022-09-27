@@ -34,8 +34,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Holds a A3Segment with attributes describing the characters of
- * this A3Segment.
+ * Holds a A3CharSegment with attributes describing the characters of
+ * this A3CharSegment.
  */
 public class AttributedA3CharSegment {
 
@@ -93,7 +93,7 @@ public class AttributedA3CharSegment {
         }
 
         /**
-         * Returns a new {@code AttributedIterator} with the same source A3Segment,
+         * Returns a new {@code AttributedIterator} with the same source A3CharSegment,
          * begin, end, and current index as this attributed iterator.
          * 
          * @return a shallow copy of this attributed iterator.
@@ -130,7 +130,7 @@ public class AttributedA3CharSegment {
         }
 
         /**
-         * Returns the begin index in the source A3Segment.
+         * Returns the begin index in the source A3CharSegment.
          * 
          * @return the index of the first character to iterate.
          */
@@ -139,7 +139,7 @@ public class AttributedA3CharSegment {
         }
 
         /**
-         * Returns the end index in the source A3Segment.
+         * Returns the end index in the source A3CharSegment.
          * 
          * @return the index one past the last character to iterate.
          */
@@ -148,7 +148,7 @@ public class AttributedA3CharSegment {
         }
 
         /**
-         * Returns the current index in the source A3Segment.
+         * Returns the current index in the source A3CharSegment.
          * 
          * @return the current index.
          */
@@ -180,7 +180,7 @@ public class AttributedA3CharSegment {
         }
 
         /**
-         * Returns a set of attributes present in the {@code AttributedA3Segment}.
+         * Returns a set of attributes present in the {@code AttributedA3CharSegment}.
          * An empty set returned indicates that no attributes where defined.
          *
          * @return a set of attribute keys that may be empty.
@@ -383,12 +383,12 @@ public class AttributedA3CharSegment {
     }
 
     /**
-     * Constructs an {@code AttributedA3Segment} from an {@code
+     * Constructs an {@code AttributedA3CharSegment} from an {@code
      * AttributedCharacterIterator}, which represents attributed text.
      *
      * @param iterator
      *            the {@code AttributedCharacterIterator} that contains the text
-     *            for this attributed A3Segment.
+     *            for this attributed A3CharSegment.
      */
     public AttributedA3CharSegment(AttributedCharacterIterator iterator) {
         if (iterator.getBeginIndex() > iterator.getEndIndex()) {
@@ -454,14 +454,14 @@ public class AttributedA3CharSegment {
     }
 
     /**
-     * Constructs an {@code AttributedA3Segment} from a range of the text contained
+     * Constructs an {@code AttributedA3CharSegment} from a range of the text contained
      * in the specified {@code AttributedCharacterIterator}, starting at {@code
      * start} and ending at {@code end}. All attributes will be copied to this
-     * attributed A3Segment.
+     * attributed A3CharSegment.
      *
      * @param iterator
      *            the {@code AttributedCharacterIterator} that contains the text
-     *            for this attributed A3Segment.
+     *            for this attributed A3CharSegment.
      * @param start
      *            the start index of the range of the copied text.
      * @param end
@@ -477,7 +477,7 @@ public class AttributedA3CharSegment {
     }
 
     /**
-     * Constructs an {@code AttributedA3Segment} from a range of the text contained
+     * Constructs an {@code AttributedA3CharSegment} from a range of the text contained
      * in the specified {@code AttributedCharacterIterator}, starting at {@code
      * start}, ending at {@code end} and it will copy the attributes defined in
      * the specified set. If the set is {@code null} then all attributes are
@@ -485,7 +485,7 @@ public class AttributedA3CharSegment {
      *
      * @param iterator
      *            the {@code AttributedCharacterIterator} that contains the text
-     *            for this attributed A3Segment.
+     *            for this attributed A3CharSegment.
      * @param start
      *            the start index of the range of the copied text.
      * @param end
@@ -505,10 +505,10 @@ public class AttributedA3CharSegment {
     }
 
     /**
-     * Creates an {@code AttributedA3Segment} from the given text.
+     * Creates an {@code AttributedA3CharSegment} from the given text.
      *
      * @param value
-     *            the text to take as base for this attributed A3Segment.
+     *            the text to take as base for this attributed A3CharSegment.
      */
     public AttributedA3CharSegment(A3CharSegment value) {
         if (value == null) {
@@ -519,11 +519,11 @@ public class AttributedA3CharSegment {
     }
 
     /**
-     * Creates an {@code AttributedA3Segment} from the given text and the
+     * Creates an {@code AttributedA3CharSegment} from the given text and the
      * attributes. The whole text has the given attributes applied.
      *
      * @param value
-     *            the text to take as base for this attributed A3Segment.
+     *            the text to take as base for this attributed A3CharSegment.
      * @param attributes
      *            the attributes that the text is associated with.
      * @throws IllegalArgumentException
@@ -538,7 +538,7 @@ public class AttributedA3CharSegment {
             throw new NullPointerException();
         }
         if (value.length() == 0 && !attributes.isEmpty()) {
-            throw new IllegalArgumentException("Cannot add attributes to empty A3Segment"); //$NON-NLS-1$
+            throw new IllegalArgumentException("Cannot add attributes to empty A3CharSegment"); //$NON-NLS-1$
         }
         text = value;
         attributeMap = new HashMap<Attribute, List<Range>>(
@@ -554,15 +554,15 @@ public class AttributedA3CharSegment {
     }
 
     /**
-     * Applies a given attribute to this A3Segment.
+     * Applies a given attribute to this A3CharSegment.
      *
      * @param attribute
-     *            the attribute that will be applied to this A3Segment.
+     *            the attribute that will be applied to this A3CharSegment.
      * @param value
      *            the value of the attribute that will be applied to this
-     *            A3Segment.
+     *            A3CharSegment.
      * @throws IllegalArgumentException
-     *             if the length of this attributed A3Segment is 0.
+     *             if the length of this attributed A3CharSegment is 0.
      * @throws NullPointerException
      *             if {@code attribute} is {@code null}.
      */
@@ -586,20 +586,20 @@ public class AttributedA3CharSegment {
     }
 
     /**
-     * Applies a given attribute to the given range of this A3Segment.
+     * Applies a given attribute to the given range of this A3CharSegment.
      *
      * @param attribute
-     *            the attribute that will be applied to this A3Segment.
+     *            the attribute that will be applied to this A3CharSegment.
      * @param value
      *            the value of the attribute that will be applied to this
-     *            A3Segment.
+     *            A3CharSegment.
      * @param start
      *            the start of the range where the attribute will be applied.
      * @param end
      *            the end of the range where the attribute will be applied.
      * @throws IllegalArgumentException
      *             if {@code start < 0}, {@code end} is greater than the length
-     *             of this A3Segment, or if {@code start >= end}.
+     *             of this A3CharSegment, or if {@code start >= end}.
      * @throws NullPointerException
      *             if {@code attribute} is {@code null}.
      */
@@ -685,17 +685,17 @@ public class AttributedA3CharSegment {
     }
 
     /**
-     * Applies a given set of attributes to the given range of the A3Segment.
+     * Applies a given set of attributes to the given range of the A3CharSegment.
      *
      * @param attributes
-     *            the set of attributes that will be applied to this A3Segment.
+     *            the set of attributes that will be applied to this A3CharSegment.
      * @param start
      *            the start of the range where the attribute will be applied.
      * @param end
      *            the end of the range where the attribute will be applied.
      * @throws IllegalArgumentException
      *             if {@code start < 0}, {@code end} is greater than the length
-     *             of this A3Segment, or if {@code start >= end}.
+     *             of this A3CharSegment, or if {@code start >= end}.
      */
     public void addAttributes(
             Map<? extends Attribute, ?> attributes,
@@ -711,7 +711,7 @@ public class AttributedA3CharSegment {
 
     /**
      * Returns an {@code AttributedCharacterIterator} that gives access to the
-     * complete content of this attributed A3Segment.
+     * complete content of this attributed A3CharSegment.
      *
      * @return the newly created {@code AttributedCharacterIterator}.
      */
@@ -721,7 +721,7 @@ public class AttributedA3CharSegment {
 
     /**
      * Returns an {@code AttributedCharacterIterator} that gives access to the
-     * complete content of this attributed A3Segment. Only attributes contained in
+     * complete content of this attributed A3CharSegment. Only attributes contained in
      * {@code attributes} are available from this iterator if they are defined
      * for this text.
      *
@@ -737,7 +737,7 @@ public class AttributedA3CharSegment {
 
     /**
      * Returns an {@code AttributedCharacterIterator} that gives access to the
-     * contents of this attributed A3Segment starting at index {@code start} up to
+     * contents of this attributed A3CharSegment starting at index {@code start} up to
      * index {@code end}. Only attributes contained in {@code attributes} are
      * available from this iterator if they are defined for this text.
      *

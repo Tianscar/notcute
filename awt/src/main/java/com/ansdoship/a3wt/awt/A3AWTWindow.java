@@ -33,7 +33,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.ansdoship.a3wt.awt.A3AWTSharedState.getFullscreenWindow;
 import static com.ansdoship.a3wt.awt.A3AWTSharedState.setFullscreenWindow;
@@ -163,8 +163,8 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
             this.window = window;
         }
 
-        protected final List<A3ContainerListener> containerListeners = new ArrayList<>();
-        protected final List<A3InputListener> inputListeners = new ArrayList<>();
+        protected final List<A3ContainerListener> containerListeners = new CopyOnWriteArrayList<>();
+        protected final List<A3InputListener> inputListeners = new CopyOnWriteArrayList<>();
 
         @Override
         public A3Graphics getGraphics() {

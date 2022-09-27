@@ -31,7 +31,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -249,8 +249,8 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
         protected final ReentrantReadWriteLock bufferLock = new ReentrantReadWriteLock(true);
         protected volatile int backgroundColor = WHITE;
 
-        protected final List<A3ContextListener> contextListeners = new ArrayList<>();
-        protected final List<A3InputListener> inputListeners = new ArrayList<>();
+        protected final List<A3ContextListener> contextListeners = new CopyOnWriteArrayList<>();
+        protected final List<A3InputListener> inputListeners = new CopyOnWriteArrayList<>();
 
         @Override
         public A3Graphics getGraphics() {
@@ -291,20 +291,14 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
         }
 
         private void renderOffscreen() {
-            if (buffer == null) return;
-            do {
-                if (buffer.validate(component.getGraphicsConfiguration()) == VolatileImage.IMAGE_INCOMPATIBLE) {
-                    buffer = component.createVolatileImage(getWidth(), getHeight());
-                }
-                final Graphics gTmp = buffer.getGraphics();
-                gTmp.setColor(new Color(getBackgroundColor(), true));
-                gTmp.fillRect(0, 0, getWidth(), getHeight());
-                gTmp.setColor(Color.BLACK);
-                ((A3ComponentGraphics)graphics).setGraphics((Graphics2D) gTmp, getWidth(), getHeight());
-                paint(graphics);
-                ((A3ComponentGraphics)graphics).setGraphics(null, -1, -1);
-                gTmp.dispose();
-            } while (buffer != null && buffer.contentsLost());
+            final Graphics gTmp = buffer.getGraphics();
+            gTmp.setColor(new Color(getBackgroundColor(), true));
+            gTmp.fillRect(0, 0, getWidth(), getHeight());
+            gTmp.setColor(Color.BLACK);
+            ((A3ComponentGraphics)graphics).setGraphics((Graphics2D) gTmp, getWidth(), getHeight());
+            paint(graphics);
+            ((A3ComponentGraphics)graphics).setGraphics(null, -1, -1);
+            gTmp.dispose();
         }
 
         @Override
@@ -315,18 +309,14 @@ public class A3AWTComponent extends Component implements AWTA3Context, Component
                 final long time = System.currentTimeMillis();
                 final int width = getWidth();
                 final int height = getHeight();
-                if (buffer != null) buffer.flush();
                 if (buffer == null || buffer.getWidth() != width || buffer.getHeight() != height) {
                     buffer = component.createVolatileImage(width, height);
                 }
                 do {
-                    int returnCode = buffer.validate(component.getGraphicsConfiguration());
-                    if (returnCode == VolatileImage.IMAGE_RESTORED) {
-                        renderOffscreen();
-                    } else if (returnCode == VolatileImage.IMAGE_INCOMPATIBLE) {
+                    if (buffer.validate(component.getGraphicsConfiguration()) == VolatileImage.IMAGE_INCOMPATIBLE) {
                         buffer = component.createVolatileImage(width, height);
-                        renderOffscreen();
                     }
+                    renderOffscreen();
                     component.update(component.getGraphics());
                 } while (buffer != null && buffer.contentsLost());
                 final long now = System.currentTimeMillis();

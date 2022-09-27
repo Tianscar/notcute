@@ -26,16 +26,22 @@ public interface A3GraphicsKit {
     A3Image readImage(InputStream input);
     A3Image readImage(URL input);
     A3Image readImage(A3Assets assets, String input);
-    //A3FramedImage readFramedImage(File input);
-    //A3FramedImage readFramedImage(InputStream input);
-    //A3FramedImage readFramedImage(URL input);
-    //A3FramedImage readFramedImage(A3Assets assets, String input);
+    A3FramedImage readFramedImage(File input);
+    A3FramedImage readFramedImage(InputStream input);
+    A3FramedImage readFramedImage(URL input);
+    A3FramedImage readFramedImage(A3Assets assets, String input);
 
     boolean writeImage(A3Image image, String formatName, int quality, File output);
     boolean writeImage(A3Image image, String formatName, int quality, OutputStream output);
+    boolean writeFramedImage(A3FramedImage image, String formatName, int quality, File output);
+    boolean writeFramedImage(A3FramedImage image, String formatName, int quality, OutputStream output);
 
     String[] getImageReaderFormatNames();
     String[] getImageWriterFormatNames();
+
+    default A3Graphics.Data createGraphicsData() {
+        return new A3Graphics.DefaultData();
+    }
 
     A3Path createPath();
 

@@ -728,4 +728,26 @@ public class A3AWTUtils {
         return result;
     }
 
+    public static BufferedImage getImage(final BufferedImage source, final int type) {
+        checkArgNotNull(source, "source");
+        if (source.getType() == type) return source;
+        final BufferedImage result = new BufferedImage(source.getWidth(), source.getHeight(), type);
+        final Graphics2D g = result.createGraphics();
+        g.drawImage(source, 0, 0, null);
+        g.dispose();
+        return result;
+    }
+
+    public static BufferedImage getRGBImage(final BufferedImage source) {
+        return getImage(source, BufferedImage.TYPE_INT_RGB);
+    }
+
+    public static BufferedImage getARGBImage(final BufferedImage source) {
+        return getImage(source, BufferedImage.TYPE_INT_ARGB);
+    }
+
+    public static BufferedImage getBGRImage(final BufferedImage source) {
+        return getImage(source, BufferedImage.TYPE_INT_BGR);
+    }
+
 }

@@ -17,6 +17,8 @@
 
 package com.ansdoship.a3wt.awt;
 
+import com.twelvemonkeys.imageio.plugins.jpeg.JPEGImageWriter;
+
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTranscoder;
 import javax.imageio.ImageTypeSpecifier;
@@ -24,7 +26,13 @@ import javax.imageio.ImageWriter;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
-import javax.imageio.spi.*;
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.spi.ImageReaderWriterSpi;
+import javax.imageio.spi.ImageWriterSpi;
+import javax.imageio.spi.ImageInputStreamSpi;
+import javax.imageio.spi.ImageOutputStreamSpi;
+import javax.imageio.spi.ServiceRegistry;
 
 import java.io.File;
 import java.io.IOException;
@@ -369,12 +377,21 @@ public final class ImageIO {
         }
 
         Iterator<ImageWriter> it = getImageWriters(ImageTypeSpecifier.createFromRenderedImage(im), formatName);
+        ImageWriter writer;
+        String compressionType = null;
         if (it.hasNext()) {
-            ImageWriter writer = it.next();
-            ImageWriteParam param = writer.getDefaultWriteParam();
-            if (param.canWriteCompressed()) {
-                param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                param.setCompressionQuality(quality);
+            writer = it.next();
+            ImageWriteParam params = writer.getDefaultWriteParam();
+            if (writer instanceof com.sun.imageio.plugins.bmp.BMPImageWriter) {
+                compressionType = "BI_RGB";
+            }
+            else if (writer instanceof JPEGImageWriter || writer instanceof com.sun.imageio.plugins.jpeg.JPEGImageWriter) {
+                compressionType = "JPEG";
+            }
+            if (params.canWriteCompressed()) {
+                params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                params.setCompressionType(compressionType);
+                params.setCompressionQuality(quality);
             }
             writer.setOutput(output);
             writer.write(im);

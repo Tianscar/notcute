@@ -11,7 +11,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.BufferedInputStream;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getAlignedImage;
 import static com.ansdoship.a3wt.util.A3Arrays.copy;
@@ -19,14 +18,14 @@ import static com.madgag.gif.fmsware.GifDecoder.STATUS_OK;
 
 public final class GifFIIOSpi implements FIIOServiceProvider {
 
-    private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
+    //private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
     private static final String[] READER_FORMAT_NAMES = new String[]{"gif"};
     private static final String[] WRITER_FORMAT_NAMES = new String[]{"gif"};
 
     @Override
-    public A3FramedImage read(InputStream stream) throws IOException {
-        if (!(stream instanceof BufferedInputStream)) stream = new BufferedInputStream(stream);
+    public A3FramedImage read(final InputStream stream) throws IOException {
+        if (!stream.markSupported()) throw new IOException("stream should support mark!");
         final GifDecoder decoder = new GifDecoder();
         final int status = decoder.read(stream);
         if (status == STATUS_OK) {
@@ -43,9 +42,12 @@ public final class GifFIIOSpi implements FIIOServiceProvider {
     public boolean canRead(final InputStream stream) throws IOException {
         if (!stream.markSupported()) throw new IOException("stream should support mark!");
         stream.mark(Integer.MAX_VALUE);
-        final boolean result = isGif(stream);
-        stream.reset();
-        return result;
+        try {
+            return isGif(stream);
+        }
+        finally {
+            stream.reset();
+        }
     }
 
     @Override
@@ -54,8 +56,10 @@ public final class GifFIIOSpi implements FIIOServiceProvider {
         encoder.start(output);
         encoder.setRepeat(im.getLooping() + 1);
         encoder.setQuality((int) (A3Math.clamp((1 - quality) * 19, 1, 19) + 1));
-        encoder.setBackground(TRANSPARENT);
-        encoder.setTransparent(TRANSPARENT, false);
+        encoder.setBackground(Color.BLACK);
+        encoder.setTransparent(null);
+        //encoder.setBackground(TRANSPARENT);
+        //encoder.setTransparent(TRANSPARENT, true);
         final int width = im.getGeneralWidth();
         final int height = im.getGeneralHeight();
         encoder.setSize(width, height);

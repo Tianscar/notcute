@@ -12,7 +12,7 @@ import com.ansdoship.a3wt.media.A3MediaPlayer;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,7 +29,7 @@ public class AWTA3MediaPlayer implements A3MediaPlayer, AudioCueListener {
     protected final ReentrantLock unloadLock = new ReentrantLock(true);
     protected volatile boolean disposed = false;
 
-    protected final List<A3AudioListener> audioListeners = new ArrayList<>();
+    protected final List<A3AudioListener> audioListeners = new CopyOnWriteArrayList<>();
 
     private static void apply(final A3Audio audio, final AudioCue audioCue, final int instanceID) {
         audioCue.setVolume(instanceID, audio.getVolume());

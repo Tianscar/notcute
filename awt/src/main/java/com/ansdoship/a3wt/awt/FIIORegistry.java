@@ -21,6 +21,7 @@ public final class FIIORegistry {
 
     public static void registerBasicServiceProviders() {
         registerServiceProvider(new GifFIIOSpi());
+        registerServiceProvider(new TiffFIIOSpi());
     }
 
     public static void registerServiceProviders(ClassLoader classLoader, boolean refresh) {

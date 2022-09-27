@@ -299,6 +299,9 @@ public interface A3Graphics extends A3Disposable {
     void drawText(CharSequence text, float x, float y);
     void drawText(char[] text, int offset, int length, float x, float y);
 
+    A3Font.Metrics getTextLayout(CharSequence text);
+    A3Font.Metrics getTextLayout(char[] text, int offset, int length);
+
     A3Path getClip();
     void setClip(A3Path path);
     void setClip(float left, float top, float right, float bottom);
