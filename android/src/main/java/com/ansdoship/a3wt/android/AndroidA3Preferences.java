@@ -6,8 +6,8 @@ import com.ansdoship.a3wt.app.A3Preferences;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AndroidA3Preferences implements A3Preferences {
 

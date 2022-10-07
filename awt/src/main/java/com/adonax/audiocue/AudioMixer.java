@@ -42,7 +42,7 @@ public class AudioMixer
 	private AudioMixerTrack[] trackCache;
 
 	public int getTrackCacheCount() {
-		return trackCache.length;
+		return trackCache == null ? 0 : trackCache.length;
 	}
 
 	private AudioMixerTrack[] mixerTracks;
@@ -112,7 +112,7 @@ public class AudioMixer
 	 */
 	public AudioMixer()
 	{
-		this(null, 1024 * 8, Thread.MAX_PRIORITY); // default build
+		this(null, AudioCue.DEFAULT_BUFFER_FRAMES, Thread.MAX_PRIORITY); // default build
 	}
 	
 	/**

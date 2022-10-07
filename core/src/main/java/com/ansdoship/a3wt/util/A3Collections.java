@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class A3Collections {
 

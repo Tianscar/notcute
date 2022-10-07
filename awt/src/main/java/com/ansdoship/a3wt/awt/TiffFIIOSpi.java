@@ -17,7 +17,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 
 import static com.ansdoship.a3wt.util.A3Arrays.copy;
-import static com.ansdoship.a3wt.util.A3Files.readNBytes;
+import static com.ansdoship.a3wt.util.A3Streams.readNBytes;
 
 public final class TiffFIIOSpi implements FIIOServiceProvider {
 

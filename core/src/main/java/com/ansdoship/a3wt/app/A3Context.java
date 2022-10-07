@@ -35,7 +35,6 @@ public interface A3Context extends A3Disposable {
         void update();
 
         A3Image snapshot();
-        A3Image snapshotBuffer();
 
         List<A3ContextListener> getContextListeners();
         void addContextListener(A3ContextListener listener);
@@ -54,6 +53,10 @@ public interface A3Context extends A3Disposable {
 
         int getScreenWidth();
         int getScreenHeight();
+        int getMinScreenWidth();
+        int getMinScreenHeight();
+        int getMaxScreenWidth();
+        int getMaxScreenHeight();
         int getPPI();
         float getDensity();
         float getScaledDensity();

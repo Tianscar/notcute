@@ -15,7 +15,7 @@ import static com.ansdoship.a3wt.android.A3AndroidUtils.putURIsToClipboard;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.getURIsFromClipboard;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.putUrisToClipboard;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.getUrisFromClipboard;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AndroidA3Clipboard implements A3Clipboard {
 
@@ -29,6 +29,11 @@ public class AndroidA3Clipboard implements A3Clipboard {
     @Override
     public int getContentType() {
         return getClipboardContentType(manager);
+    }
+
+    @Override
+    public int getSelectionType() {
+        return 0;
     }
 
     @Override

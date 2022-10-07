@@ -27,8 +27,8 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.getRGBImage;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getBGRImage;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getARGBImage;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3GraphicsKit implements A3GraphicsKit {
 
@@ -230,6 +230,13 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
         final Font font = Font.decode(familyName);
         if (!familyName.equals(Font.DIALOG) && font.getFamily().equals(Font.DIALOG)) return null;
         return new AWTA3Font(font.deriveFont(fontStyle2AWTFontStyle(style)));
+    }
+
+    protected static final AWTA3Font DEFAULT_FONT = new AWTA3Font(A3AWTUtils.getDefaultFont());
+
+    @Override
+    public A3Font getDefaultFont() {
+        return DEFAULT_FONT;
     }
 
     @Override

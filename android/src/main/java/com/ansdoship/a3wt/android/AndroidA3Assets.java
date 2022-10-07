@@ -9,8 +9,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3Files.removeStartSeparator;
 
 public class AndroidA3Assets implements A3Assets {

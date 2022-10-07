@@ -17,7 +17,7 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.getDecodedAudioInputStream;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getDecodedAudioInputStreamData;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getDecodedAudioInputStreamDataAndClose;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.AWTAudioFormat2AudioFormat;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3Audio implements A3Audio {
 
@@ -30,6 +30,10 @@ public class AWTA3Audio implements A3Audio {
     protected volatile boolean disposed = false;
 
     protected final Object source;
+
+    public Object getSource() {
+        return source;
+    }
 
     protected volatile Format format;
     protected volatile AudioFormat audioFormat;

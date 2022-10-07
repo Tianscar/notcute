@@ -2,12 +2,15 @@ package com.adonax.audiocue;
 
 import com.adonax.audiocue.AudioCueInstanceEvent.Type;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 import javax.sound.sampled.AudioFormat;
@@ -19,6 +22,13 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
+import static com.ansdoship.a3wt.awt.A3AWTUtils.getDecodedAudioInputStream;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.getDecodedAudioInputStreamLength;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.getDecodedAudioInputStreamLengthAndClose;
+import static com.ansdoship.a3wt.util.A3Streams.closeQuietly;
+import static com.ansdoship.a3wt.util.A3Streams.readNBytes;
+import static com.ansdoship.a3wt.util.A3Streams.skipNBytes;
 
 /**
  * The {@code AudioCue} class functions as a data line, where the
@@ -154,6 +164,78 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  */
 public class AudioCue implements AudioMixerTrack
 {
+
+	public static enum LoadType {
+		STATIC,
+		STREAM
+	}
+
+	private final LoadType loadType;
+
+	protected final Object source;
+
+	public AudioInputStream getStream() {
+		try {
+			return getSupportedAudioInputStream(mGetStream());
+		} catch (UnsupportedAudioFileException | IOException e) {
+			return null;
+		}
+	}
+
+	protected AudioInputStream mGetStream() throws UnsupportedAudioFileException, IOException {
+		long fileLength;
+		if (source instanceof File) {
+			final AudioInputStream result = getDecodedAudioInputStream(AudioSystem.getAudioInputStream((File) source));
+			if (result.getFrameLength() == -1) {
+				if (result.markSupported()) {
+					result.mark(Integer.MAX_VALUE);
+					fileLength = getDecodedAudioInputStreamLength(result);
+					result.reset();
+				}
+				else {
+					fileLength = getDecodedAudioInputStreamLengthAndClose(AudioSystem.getAudioInputStream((File) source));
+				}
+				return new AudioInputStream(result, result.getFormat(), fileLength
+						/ result.getFormat().getChannels() / result.getFormat().getFrameSize());
+			}
+			else return result;
+		}
+		else if (source instanceof URL) {
+			final AudioInputStream result = getDecodedAudioInputStream(AudioSystem.getAudioInputStream((URL) source));
+			if (result.getFrameLength() == -1) {
+				if (result.markSupported()) {
+					result.mark(Integer.MAX_VALUE);
+					fileLength = getDecodedAudioInputStreamLength(result);
+					result.reset();
+				}
+				else {
+					fileLength = getDecodedAudioInputStreamLengthAndClose(AudioSystem.getAudioInputStream((URL) source));
+				}
+				return new AudioInputStream(result, result.getFormat(), fileLength
+						/ result.getFormat().getChannels() / result.getFormat().getFrameSize());
+			}
+			else return result;
+		}
+		else if (source instanceof InputStream) {
+			((InputStream) source).reset();
+			final AudioInputStream result = getDecodedAudioInputStream(AudioSystem.getAudioInputStream((InputStream) source));
+			if (result.getFrameLength() == -1) {
+				if (result.markSupported()) {
+					result.mark(Integer.MAX_VALUE);
+					fileLength = getDecodedAudioInputStreamLength(result);
+					result.reset();
+				}
+				else {
+					fileLength = getDecodedAudioInputStreamLengthAndClose(AudioSystem.getAudioInputStream((InputStream) source));
+				}
+				return new AudioInputStream(result, result.getFormat(), fileLength
+						/ result.getFormat().getChannels() / result.getFormat().getFrameSize());
+			}
+			else return result;
+		}
+		else return null;
+	}
+
 	/**
 	 * A {@code javax.sound.sampled.AudioFormat}, set to the only
 	 * format used by {@code AudioCue}, also known as 'CD quality.'
@@ -182,7 +264,7 @@ public class AudioCue implements AudioMixerTrack
 	 * A value indicating the default number of PCM frames in a buffer used in {@code AudioCuePlayer}
 	 * for processing media output.
 	 */
-	public static final int DEFAULT_BUFFER_FRAMES = 1024;
+	public static final int DEFAULT_BUFFER_FRAMES = 1024 * 8;
 	/**
 	 * A value indicating the number of frames over which the volume changes incrementally
 	 * when a new volume is given.
@@ -206,7 +288,7 @@ public class AudioCue implements AudioMixerTrack
 		return cue;
 	}
 
-	private final int cueFrameLength;
+	private final long cueFrameLength;
 	private final AudioCueCursor[] cursors;
 	private final int polyphony;
 
@@ -371,7 +453,7 @@ public class AudioCue implements AudioMixerTrack
 	 */
 	public static AudioCue makeStereoCue(float[] cue, String name, int polyphony)
 	{
-		return new AudioCue(cue, name, polyphony);
+		return new AudioCue(cue, name, null, polyphony);
 	}
 
 	/**
@@ -392,37 +474,88 @@ public class AudioCue implements AudioMixerTrack
 	 * 					is not 44100 fps, 16-bit, stereo, little-endian
 	 * @throws IOException if unable to load the file
 	 */
-	public static AudioCue makeStereoCue(URL url, int polyphony)
+	public static AudioCue makeStereoCue(URL url, String name, LoadType type, int polyphony)
 			throws UnsupportedAudioFileException, IOException
 	{
-		String urlName = url.getPath();
-		int urlLen = urlName.length();
-		String name = urlName.substring(urlName.lastIndexOf("/") + 1, urlLen);
-		AudioInputStream ais = AudioSystem.getAudioInputStream(url);
-		float[] cue = AudioCue.loadAudioInputStream(ais);
-		return new AudioCue(cue, name, polyphony);
+		if (name == null) {
+			String urlName = url.getPath();
+			int urlLen = urlName.length();
+			name = urlName.substring(urlName.lastIndexOf("/") + 1, urlLen);
+		}
+		if (type == LoadType.STATIC) {
+			AudioInputStream ais = AudioSystem.getAudioInputStream(url);
+			ais = getSupportedAudioInputStream(ais);
+			float[] cue = AudioCue.loadAudioInputStream(ais);
+
+			return new AudioCue(cue, name, null, polyphony);
+		}
+		else return new AudioCue(null, name, url, polyphony);
 	}
 
-	public static AudioCue makeStereoCue(File file, String name, int polyphony)
+	public static AudioCue makeStereoCue(File file, String name, LoadType type, int polyphony)
 			throws UnsupportedAudioFileException, IOException
 	{
-		AudioInputStream ais = AudioSystem.getAudioInputStream(file);
-		float[] cue = AudioCue.loadAudioInputStream(ais);
 		if (name == null) name = file.getName();
 
-		return new AudioCue(cue, name, polyphony);
+		if (type == LoadType.STATIC) {
+			AudioInputStream ais = AudioSystem.getAudioInputStream(file);
+			ais = getSupportedAudioInputStream(ais);
+			float[] cue = AudioCue.loadAudioInputStream(ais);
+
+			return new AudioCue(cue, name, null, polyphony);
+		}
+		else return new AudioCue(null, name, file, polyphony);
 	}
 
-	public static AudioCue makeStereoCue(InputStream stream, String name, int polyphony)
+	public static AudioCue makeStereoCue(InputStream stream, String name, LoadType type, int polyphony)
 			throws UnsupportedAudioFileException, IOException
 	{
 		if (name == null) throw new IllegalArgumentException("name == NULL!");
-		AudioInputStream ais;
-		if (stream instanceof AudioInputStream) ais = (AudioInputStream) stream;
-		else ais = AudioSystem.getAudioInputStream(stream);
-		float[] cue = AudioCue.loadAudioInputStream(ais);
 
-		return new AudioCue(cue, name, polyphony);
+		if (type == LoadType.STATIC) {
+			AudioInputStream ais;
+			if (stream instanceof AudioInputStream) ais = (AudioInputStream) stream;
+			else ais = AudioSystem.getAudioInputStream(stream);
+			ais = getSupportedAudioInputStream(ais);
+			float[] cue = AudioCue.loadAudioInputStream(ais);
+
+			return new AudioCue(cue, name, null, polyphony);
+		}
+		else {
+			if (!stream.markSupported()) {
+				stream = new BufferedInputStream(stream);
+			}
+			stream.mark(Integer.MAX_VALUE);
+
+			return new AudioCue(null, name, stream, polyphony);
+		}
+	}
+
+	public static AudioCue makeStereoCue(Object source, String name, LoadType type, int polyphony)
+			throws UnsupportedAudioFileException, IOException
+	{
+		if (name == null) throw new IllegalArgumentException("name == NULL!");
+		if (source instanceof File) {
+			return makeStereoCue((File) source, name, type, polyphony);
+		}
+		else if (source instanceof URL) {
+			return makeStereoCue((URL) source, name, type, polyphony);
+		}
+		else if (source instanceof InputStream) {
+			return makeStereoCue((InputStream) source, name, type, polyphony);
+		}
+		else return null;
+	}
+
+	public static AudioCue makeStereoCue(AudioInputStream stream, String name, int polyphony)
+			throws UnsupportedAudioFileException, IOException
+	{
+		if (name == null) throw new IllegalArgumentException("name == NULL!");
+
+		float[] cue = AudioCue.loadAudioInputStream(getSupportedAudioInputStream(stream));
+
+		return new AudioCue(cue, name, null, polyphony);
+
 	}
 
 	/**
@@ -434,10 +567,26 @@ public class AudioCue implements AudioMixerTrack
 	 * @param polyphony - an {@code int} specifying the maximum number of
 	 *                    concurrent instances
 	 */
-	private AudioCue(float[] cue, String name, int polyphony)
+	private AudioCue(float[] cue, String name, Object source, int polyphony)
 	{
 		this.cue = cue;
-		this.cueFrameLength = cue.length / 2;
+		this.source = source;
+		long cueFrameLength1;
+		if (cue == null) {
+			this.loadType = LoadType.STREAM;
+			try (final AudioInputStream tmp = getStream()) {
+				cueFrameLength1 = tmp.getFrameLength();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				cueFrameLength1 = -1;
+			}
+		}
+		else {
+			this.loadType = LoadType.STATIC;
+			cueFrameLength1 = cue.length / 2;
+		}
+		this.cueFrameLength = cueFrameLength1;
 		this.polyphony = polyphony;
 		this.name = name;
 
@@ -458,6 +607,34 @@ public class AudioCue implements AudioMixerTrack
 		setPanType(PanType.CENTER_LINEAR);
 
 		listeners = new CopyOnWriteArrayList<AudioCueListener>();
+	}
+
+	private static int streamLoadAudioInputStream(final float[] cue, final AudioInputStream ais) throws IOException {
+
+		Arrays.fill(cue, 0);
+
+		int bufferIdx;
+		int clipIdx = 0;
+		final byte[] buffer = new byte[cue.length / 2];
+		final int bytesRead = readNBytes(ais, buffer, 0, cue.length / 2);
+		if (bytesRead < 0) {
+			return bytesRead;
+		}
+		long tempCountdown = cue.length;
+		bufferIdx = 0;
+
+		for (int i = 0, n = (bytesRead >> 1); i < n; i ++) {
+			if ( tempCountdown-- >= 0) {
+				cue[clipIdx++] =
+						( buffer[bufferIdx++] & 0xff )
+								| ( buffer[bufferIdx++] << 8 ) ;
+			}
+		}
+		for (int i = 0; i < cue.length; i++) {
+			cue[i] = cue[i] / 32767f;
+		}
+
+		return bytesRead;
 	}
 
 	// Currently assumes stereo format ("CD Quality")
@@ -661,14 +838,20 @@ public class AudioCue implements AudioMixerTrack
 		trackRunning = true;
 		this.audioMixer = audioMixer;
 
-		// assigned size is frames * stereo
-		readBuffer = new float[audioMixer.bufferFrames * 2];
+		if (loadType == LoadType.STATIC) {
+			// assigned size is frames * stereo
+			readBuffer = new float[audioMixer.bufferFrames * 2];
+		}
+		else {
+			// Fit the sdlByteBufferSize
+			readBuffer = new float[audioMixer.sdlByteBufferSize * 2];
+		}
 
 		audioMixer.addTrack(this);
 		audioMixer.updateTracks();
 
 		broadcastOpenEvent(audioMixer.threadPriority,
-				audioMixer.bufferFrames, name);
+				readBuffer.length / 2, name);
 	}
 
 	/**
@@ -712,7 +895,7 @@ public class AudioCue implements AudioMixerTrack
 	 *
 	 * @return length in sample frames
 	 */
-	public int getFrameLength()
+	public long getFrameLength()
 	{
 		return cueFrameLength;
 	}
@@ -1508,6 +1691,14 @@ public class AudioCue implements AudioMixerTrack
 		volatile boolean isActive;
 		final int id;
 
+		AudioInputStream stream;
+		final ReentrantLock streamLock;
+		double streamCursor;
+		double streamReadCursor;
+		float[] streamCue;
+		double streamSpeed;
+		int streamCueFrameLength;
+
 		double cursor;
 		double speed;
 		float volume;
@@ -1530,6 +1721,7 @@ public class AudioCue implements AudioMixerTrack
 		AudioCueCursor(int instanceId)
 		{
 			this.id = instanceId;
+			streamLock = new ReentrantLock(true);
 		}
 
 		/*
@@ -1546,6 +1738,16 @@ public class AudioCue implements AudioMixerTrack
 			pan = 0;
 			loop = 0;
 			recycleWhenDone = false;
+
+			if (stream != null) {
+				closeQuietly(stream);
+				stream = null;
+			}
+			streamCursor = 0;
+			streamReadCursor = 0;
+			streamCue = null;
+			streamSpeed = 1;
+			streamCueFrameLength = 0;
 
 			targetSpeedSteps = 0;
 			targetVolumeSteps = 0;
@@ -1576,10 +1778,13 @@ public class AudioCue implements AudioMixerTrack
 			// NOTE: there is also a default instantiation
 			// in the AudioCue constructor (to help with testing)
 			readBuffer = new float[bufferFrames * 2];
-			// SourceDataLine must be 4 * number of frames, to
-			// account for 16-bit encoding and stereo.
-			sdlBufferSize = bufferFrames * 4;
-			audioBytes = new byte[sdlBufferSize];
+			if (loadType == LoadType.STATIC) {
+				// SourceDataLine must be 4 * number of frames, to
+				// account for 16-bit encoding and stereo.
+				sdlBufferSize = bufferFrames * 4;
+			}
+			else sdlBufferSize = bufferFrames;
+			audioBytes = new byte[readBuffer.length * 2];
 
 			sdl = getSourceDataLine(mixer, info);
 			sdl.open(audioFormat, sdlBufferSize);
@@ -1610,12 +1815,9 @@ public class AudioCue implements AudioMixerTrack
 	{
 		// Start with 0-filled buffer, send out silence
 		// if nothing playing.
-		int bufferLength = readBuffer.length;
-		for (int i = 0; i < bufferLength; i++)
-		{
-			readBuffer[i] = 0;
-		}
+		Arrays.fill(readBuffer, 0);
 
+		final int bufferLength = readBuffer.length;
 		for (int ci = 0; ci < polyphony; ci++)
 		{
 			if (cursors[ci].isPlaying)
@@ -1631,6 +1833,71 @@ public class AudioCue implements AudioMixerTrack
 
 				for (int i = 0; i < bufferLength; i += 2)
 				{
+					// STREAM or STATIC
+					final double cursor;
+					final float[] cue;
+					final long cueFrameLength;
+					if (loadType == LoadType.STREAM) {
+						final double n = acc.cursor - acc.streamCursor;
+						if (acc.stream == null) {
+							acc.stream = getStream();
+							int length = (int)(bufferLength * acc.speed);
+							final int frameSize2 = audioFormat.getFrameSize() * 2;
+							if (length % frameSize2 != 0) {
+								length += frameSize2 - (length % frameSize2);
+								acc.streamSpeed = ((double)length) / bufferLength;
+							}
+							else acc.streamSpeed = acc.speed;
+							if (n > 0) {
+								try {
+									skipNBytes(acc.stream, ((long) (Math.floor(n))) * 4L);
+								}
+								catch (final IOException e) {
+									throw new RuntimeException("Audio stream skip failed: \n" + e.getMessage());
+								}
+							}
+							acc.streamCue = new float[length];
+							try {
+								acc.streamCueFrameLength = streamLoadAudioInputStream(acc.streamCue, acc.stream);
+							} catch (final IOException e) {
+								throw new RuntimeException("Audio stream load failed: \n" + e.getMessage());
+							}
+						}
+						else if (n != 0) {
+							if (n > 0) {
+								try {
+									skipNBytes(acc.stream, (long) Math.floor(n) * 4L);
+								}
+								catch (final IOException e) {
+									throw new RuntimeException("Audio stream skip failed: \n" + e.getMessage());
+								}
+							}
+							else {
+								closeQuietly(acc.stream);
+								acc.stream = getStream();
+								try {
+									skipNBytes(acc.stream, (long) Math.floor(acc.cursor) * 4L);
+								}
+								catch (final IOException e) {
+									throw new RuntimeException("Audio stream skip failed: \n" + e.getMessage());
+								}
+							}
+							try {
+								acc.streamCueFrameLength = streamLoadAudioInputStream(acc.streamCue, acc.stream);
+							} catch (final IOException e) {
+								throw new RuntimeException("Audio stream load failed: \n" + e.getMessage());
+							}
+						}
+						cursor = acc.streamReadCursor;
+						cue = acc.streamCue;
+						cueFrameLength = acc.streamCueFrameLength;
+					}
+					else {
+						cursor = acc.cursor;
+						cue = this.cue;
+						cueFrameLength = this.cueFrameLength;
+					}
+
 					// adjust volume if needed
 					if (acc.targetVolumeSteps-- > 0)
 					{
@@ -1655,11 +1922,11 @@ public class AudioCue implements AudioMixerTrack
 
 					// get audioVals, with LERP for fractional cursor position
 					float[] audioVals = new float[2];
-					if (acc.cursor == (int)acc.cursor) {
-						audioVals[0] = cue[(int)acc.cursor * 2];
-						audioVals[1] = cue[((int)acc.cursor * 2) + 1];
+					if (cursor == (int)cursor) {
+						audioVals[0] = cue[(int)cursor * 2];
+						audioVals[1] = cue[((int)cursor * 2) + 1];
 					} else {
-						audioVals = readFractionalFrame(audioVals, acc.cursor);
+						audioVals = readFractionalFrame(cue, audioVals, cursor);
 					}
 
 					readBuffer[i] += (audioVals[0]
@@ -1677,38 +1944,93 @@ public class AudioCue implements AudioMixerTrack
 					// set NEXT read position
 					acc.cursor += acc.speed;
 
-					// test for "eof" and "looping"
-					if (acc.cursor > (cueFrameLength - 1))
-					{
-						// keep looping indefinitely
-						if (acc.loop == -1)
-						{
-							acc.cursor = 0;
-							broadcastLoopEvent(acc);
+					// STREAM or STATIC
+					if (loadType == LoadType.STREAM) {
+						acc.streamCursor = acc.cursor;
+						if (acc.targetSpeedSteps > 0) {
+							acc.streamSpeed += acc.targetSpeedIncr;
 						}
-						// loop specific number of times
-						else if (acc.loop > 0)
-						{
-							acc.loop--;
-							acc.cursor = 0;
-							broadcastLoopEvent(acc);
-						}
-						else // no more loops to do
-						{
-							acc.isPlaying = false;
-							broadcastStopEvent(acc);
-							if (acc.recycleWhenDone)
-							{
-								acc.resetInstance();
-								availables.offerFirst(acc);
-								broadcastReleaseEvent(acc);
+						acc.streamReadCursor += acc.streamSpeed;
+						if (acc.streamReadCursor > (cueFrameLength - 1)) {
+							acc.streamReadCursor -= cueFrameLength;
+							try {
+								acc.streamCueFrameLength = streamLoadAudioInputStream(acc.streamCue, acc.stream);
+							} catch (final IOException e) {
+								throw new RuntimeException("AudioInputStream load failed: \n" + e.getMessage());
 							}
-							// cursor is at end of cue before
-							// readBuffer filled, no need to
-							// process further (default 0's)
-							break;
+							if (acc.streamCueFrameLength < 0) {
+								// keep looping indefinitely
+								if (acc.loop == -1)
+								{
+									acc.cursor = 0;
+									acc.streamCue = null;
+									acc.streamReadCursor = 0;
+									acc.stream = getStream();
+									broadcastLoopEvent(acc);
+								}
+								// loop specific number of times
+								else if (acc.loop > 0)
+								{
+									acc.loop--;
+									acc.cursor = 0;
+									acc.streamCue = null;
+									acc.streamReadCursor = 0;
+									acc.stream = getStream();
+									broadcastLoopEvent(acc);
+								}
+								else // no more loops to do
+								{
+									acc.isPlaying = false;
+									broadcastStopEvent(acc);
+									if (acc.recycleWhenDone)
+									{
+										acc.resetInstance();
+										availables.offerFirst(acc);
+										broadcastReleaseEvent(acc);
+									}
+									// cursor is at end of cue before
+									// readBuffer filled, no need to
+									// process further (default 0's)
+									break;
+								}
+							}
 						}
 					}
+					else {
+						// test for "eof" and "looping"
+						if (acc.cursor > (cueFrameLength - 1))
+						{
+							// keep looping indefinitely
+							if (acc.loop == -1)
+							{
+								acc.cursor = 0;
+								broadcastLoopEvent(acc);
+							}
+							// loop specific number of times
+							else if (acc.loop > 0)
+							{
+								acc.loop--;
+								acc.cursor = 0;
+								broadcastLoopEvent(acc);
+							}
+							else // no more loops to do
+							{
+								acc.isPlaying = false;
+								broadcastStopEvent(acc);
+								if (acc.recycleWhenDone)
+								{
+									acc.resetInstance();
+									availables.offerFirst(acc);
+									broadcastReleaseEvent(acc);
+								}
+								// cursor is at end of cue before
+								// readBuffer filled, no need to
+								// process further (default 0's)
+								break;
+							}
+						}
+					}
+
 				}
 			}
 		}
@@ -1723,7 +2045,7 @@ public class AudioCue implements AudioMixerTrack
 	 *  audio data is stereo, we use `stereoIndex` (twice the amount
 	 *  of `intIndex`) to locate the audio values to be weighted.
 	 */
-	private float[] readFractionalFrame(float[] audioVals, double idx)
+	private float[] readFractionalFrame(float[] cue, float[] audioVals, double idx)
 	{
 		final int intIndex = (int) idx;
 		final int stereoIndex = intIndex * 2;

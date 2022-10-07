@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.strokeCap2BasicStrokeCap;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.strokeJoin2BasicStrokeJoin;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3Graphics implements A3Graphics {
 
@@ -76,7 +76,14 @@ public class AWTA3Graphics implements A3Graphics {
     @Override
     public void drawColor() {
         checkDisposed("Can't call clearColor() on a disposed A3Graphics");
-        graphics2D.fillRect(0, 0, width, height);
+        switch (data.getStyle()) {
+            case Style.STROKE: default:
+                graphics2D.drawRect(0, 0, width, height);
+                break;
+            case Style.FILL:
+                graphics2D.fillRect(0, 0, width, height);
+                break;
+        }
     }
 
     public void drawShape(final Shape shape) {

@@ -7,7 +7,7 @@ import java.awt.Cursor;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.createCustomCursor;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.cursorType2AWTCursorType;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3Cursor implements A3Cursor {
 

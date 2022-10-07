@@ -17,8 +17,6 @@
 
 package com.ansdoship.a3wt.awt;
 
-import com.twelvemonkeys.imageio.plugins.jpeg.JPEGImageWriter;
-
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTranscoder;
 import javax.imageio.ImageTypeSpecifier;
@@ -45,6 +43,8 @@ import java.util.List;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.net.URL;
+
+import static com.ansdoship.a3wt.util.A3Arrays.containsIgnoreCase;
 
 public final class ImageIO {
 
@@ -382,13 +382,14 @@ public final class ImageIO {
         if (it.hasNext()) {
             writer = it.next();
             ImageWriteParam params = writer.getDefaultWriteParam();
-            if (writer instanceof com.sun.imageio.plugins.bmp.BMPImageWriter) {
+            String[] compressionTypes = params.getCompressionTypes();
+            if (containsIgnoreCase(compressionTypes, "BI_RGB")) {
                 compressionType = "BI_RGB";
             }
-            else if (writer instanceof JPEGImageWriter || writer instanceof com.sun.imageio.plugins.jpeg.JPEGImageWriter) {
+            else if (containsIgnoreCase(compressionTypes, "JPEG")) {
                 compressionType = "JPEG";
             }
-            if (params.canWriteCompressed()) {
+            if (compressionType != null && params.canWriteCompressed()) {
                 params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 params.setCompressionType(compressionType);
                 params.setCompressionQuality(quality);

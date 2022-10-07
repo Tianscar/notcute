@@ -7,7 +7,7 @@ import com.ansdoship.a3wt.util.A3Math;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public interface A3Audio extends A3Disposable {
     

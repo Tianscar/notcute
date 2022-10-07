@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.util;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class A3Arrays {
     
@@ -85,6 +85,22 @@ public class A3Arrays {
             result[i] = array[i].copy();
         }
         return result;
+    }
+
+    public static <E> boolean contains(final E[] array, final E element) {
+        checkArgNotNull(array, "array");
+        for (final E e : array) {
+            if (e.equals(element)) return true;
+        }
+        return false;
+    }
+
+    public static boolean containsIgnoreCase(final String[] array, final String element) {
+        checkArgNotNull(array, "array");
+        for (final String e : array) {
+            if (e.equalsIgnoreCase(element)) return true;
+        }
+        return false;
     }
     
 }

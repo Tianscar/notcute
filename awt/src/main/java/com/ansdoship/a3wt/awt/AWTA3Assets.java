@@ -5,8 +5,8 @@ import com.ansdoship.a3wt.app.A3Assets;
 import java.io.InputStream;
 import java.net.URL;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3Files.ensureStartSeparatorUNIX;
 
 public class AWTA3Assets implements A3Assets {

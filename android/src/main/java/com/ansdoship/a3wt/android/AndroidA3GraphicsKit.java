@@ -4,10 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Path;
 import android.graphics.Typeface;
 import com.ansdoship.a3wt.app.A3Assets;
-import com.ansdoship.a3wt.graphics.A3Font;
-import com.ansdoship.a3wt.graphics.A3GraphicsKit;
-import com.ansdoship.a3wt.graphics.A3Image;
-import com.ansdoship.a3wt.graphics.A3Path;
+import com.ansdoship.a3wt.graphics.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +16,8 @@ import java.util.Set;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.fontStyle2TypefaceStyle;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.readTypeface;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3Files.removeStartSeparator;
 
 public class AndroidA3GraphicsKit implements A3GraphicsKit {
@@ -72,6 +69,26 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
+    public A3FramedImage readFramedImage(File input) {
+        return null;
+    }
+
+    @Override
+    public A3FramedImage readFramedImage(InputStream input) {
+        return null;
+    }
+
+    @Override
+    public A3FramedImage readFramedImage(URL input) {
+        return null;
+    }
+
+    @Override
+    public A3FramedImage readFramedImage(A3Assets assets, String input) {
+        return null;
+    }
+
+    @Override
     public boolean writeImage(final A3Image image, final String formatName, final int quality, final File output) {
         checkArgNotNull(image, "image");
         try {
@@ -89,6 +106,16 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
         } catch (IOException e) {
             return false;
         }
+    }
+
+    @Override
+    public boolean writeFramedImage(A3FramedImage image, String formatName, int quality, File output) {
+        return false;
+    }
+
+    @Override
+    public boolean writeFramedImage(A3FramedImage image, String formatName, int quality, OutputStream output) {
+        return false;
     }
 
     @Override
@@ -141,6 +168,21 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
     public A3Font readFont(final String familyName, final int style) {
         checkArgNotEmpty(familyName, "familyName");
         return new AndroidA3Font(Typeface.create(familyName, fontStyle2TypefaceStyle(style)));
+    }
+
+    @Override
+    public A3Cursor createCursor(int type) {
+        return null;
+    }
+
+    @Override
+    public A3Cursor createCursor(A3Image image) {
+        return null;
+    }
+
+    @Override
+    public A3Image screenshot(int left, int top, int right, int bottom) {
+        return null;
     }
 
 }

@@ -16,7 +16,7 @@ import static com.ansdoship.a3wt.android.A3AndroidUtils.paintStrokeJoin2StrokeJo
 import static com.ansdoship.a3wt.android.A3AndroidUtils.strokeJoin2PaintStrokeJoin;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.paintStrokeCap2StrokeCap;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.strokeCap2PaintStrokeCap;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AndroidA3Graphics implements A3Graphics {
 
@@ -145,24 +145,28 @@ public class AndroidA3Graphics implements A3Graphics {
     public void drawText(final CharSequence text, final float x, final float y) {
         checkArgNotNull(text, "text");
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
-        final Paint.Style style = paint.getStyle();
-        paint.setStyle(Paint.Style.FILL);
         canvas.save();
         canvas.drawText(text, 0, text.length(), x, y, paint);
         canvas.restore();
-        paint.setStyle(style);
     }
 
     @Override
     public void drawText(final char[] text, final int offset, final int length, final float x, final float y) {
         checkArgNotNull(text, "text");
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
-        final Paint.Style style = paint.getStyle();
-        paint.setStyle(Paint.Style.FILL);
         canvas.save();
         canvas.drawText(text, offset, length, x, y, paint);
         canvas.restore();
-        paint.setStyle(style);
+    }
+
+    @Override
+    public A3Font.Metrics getTextLayout(CharSequence text) {
+        return null;
+    }
+
+    @Override
+    public A3Font.Metrics getTextLayout(char[] text, int offset, int length) {
+        return null;
     }
 
     @Override

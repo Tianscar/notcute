@@ -5,7 +5,7 @@ import com.ansdoship.a3wt.graphics.A3Font;
 import java.awt.Font;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.AWTFontStyle2FontStyle;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3Font implements A3Font {
 

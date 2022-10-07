@@ -23,11 +23,6 @@ public class AndroidA3Platform implements A3Platform {
     }
 
     @Override
-    public A3GraphicsKit getGraphicsKit() {
-        return graphicsKit;
-    }
-
-    @Override
     public String getBackendName() {
         return BACKEND_NAME;
     }

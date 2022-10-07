@@ -1,21 +1,18 @@
 package com.ansdoship.a3wt.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.StringWriter;
-import java.io.Closeable;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Streams.transferTo;
 
 public class A3Files {
 
@@ -48,20 +45,10 @@ public class A3Files {
         else return dir.mkdirs();
     }
 
-    public static void transferTo(final InputStream source, final OutputStream target) throws IOException {
-        checkArgNotNull(source, "source");
-        checkArgNotNull(target, "target");
-        byte[] buffer = new byte[BUFFER_SIZE];
-        int length;
-        while ((length = source.read(buffer)) != -1) {
-            target.write(buffer, 0, length);
-        }
-    }
-
     public static void copyTo(final File source, final File target) throws IOException {
         checkArgNotNull(source, "source");
         checkArgNotNull(target, "target");
-        try (FileInputStream input = new FileInputStream(source); FileOutputStream output = new FileOutputStream(target)){
+        try (final FileInputStream input = new FileInputStream(source); final FileOutputStream output = new FileOutputStream(target)) {
             transferTo(input, output);
             output.flush();
         }
@@ -182,32 +169,6 @@ public class A3Files {
         }
     }
 
-    public static byte[] readBytesAndClose(final InputStream stream) throws IOException {
-        try {
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            final byte[] buffer = new byte[BUFFER_SIZE];
-            int count;
-            while ((count = stream.read(buffer)) != -1) {
-                output.write(buffer, 0, count);
-            }
-            return output.toByteArray();
-        }
-        finally {
-            stream.close();
-        }
-    }
-
-    public static int readNBytes(final InputStream stream, final byte[] b, final int off, final int len) throws IOException {
-        int n = 0;
-        while (n < len) {
-            int count = stream.read(b, off + n, len - n);
-            if (count < 0)
-                return count;
-            n += count;
-        }
-        return n;
-    }
-
     /**
      * Deletes the contents of {@code dir}. Throws an IOException if any file
      * could not be deleted, or if {@code dir} is not a readable directory.
@@ -224,17 +185,6 @@ public class A3Files {
             }
             if (!file.delete()) {
                 throw new IOException("failed to delete file: " + file);
-            }
-        }
-    }
-
-    public static void closeQuietly(final /*Auto*/Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
-            } catch (Exception ignored) {
             }
         }
     }

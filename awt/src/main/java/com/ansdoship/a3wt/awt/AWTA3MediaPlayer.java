@@ -1,10 +1,9 @@
 package com.ansdoship.a3wt.awt;
 
 import com.adonax.audiocue.AudioCue;
+import com.adonax.audiocue.AudioCueInstanceEvent;
 import com.adonax.audiocue.AudioCueListener;
 import com.adonax.audiocue.AudioMixer;
-import com.adonax.audiocue.AudioCueInstanceEvent;
-import com.adonax.audiocue.AudioMixerTrack;
 import com.ansdoship.a3wt.media.A3Audio;
 import com.ansdoship.a3wt.media.A3AudioListener;
 import com.ansdoship.a3wt.media.A3MediaPlayer;
@@ -12,19 +11,19 @@ import com.ansdoship.a3wt.media.A3MediaPlayer;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3MediaPlayer implements A3MediaPlayer, AudioCueListener {
 
     protected static final AudioMixer mixer = new AudioMixer();
 
-    protected final Map<A3Audio, AudioMixerTrack> keys = new ConcurrentHashMap<>();
+    protected final Map<A3Audio, AudioCue> keys = new ConcurrentHashMap<>();
     protected final Map<AudioCue, Integer> values = new ConcurrentHashMap<>();
     protected final ReentrantLock unloadLock = new ReentrantLock(true);
     protected volatile boolean disposed = false;
@@ -42,26 +41,26 @@ public class AWTA3MediaPlayer implements A3MediaPlayer, AudioCueListener {
     @Override
     public boolean loadAudio(final A3Audio audio, final int mode) {
         checkArgNotNull(audio, "audio");
-        AudioMixerTrack track = null;
+        AudioCue audioCue = null;
         try {
-            if (mode == Mode.STATIC) {
-                for (A3Audio a : keys.keySet()) {
+            if (mode == Mode.STREAM) {
+                audioCue = AudioCue.makeStereoCue(((AWTA3Audio)audio).getSource(), audio.toString(), AudioCue.LoadType.STREAM, 1);
+            }
+            else {
+                for (final A3Audio a : keys.keySet()) {
                     if (((AWTA3Audio)a).matchMD5((AWTA3Audio)audio)) {
-                        track = AudioCue.makeStereoCue(((AudioCue)keys.get(a)).getCue(), audio.toString(), 1);
+                        audioCue = AudioCue.makeStereoCue(keys.get(a).getCue(), audio.toString(), 1);
                         break;
                     }
                 }
-                if (track == null) track = AudioCue.makeStereoCue(((AWTA3Audio)audio).getStream(), audio.toString(), 1);
-                values.put((AudioCue) track, ((AudioCue) track).obtainInstance());
+                if (audioCue == null) audioCue = AudioCue.makeStereoCue(((AWTA3Audio)audio).getStream(), audio.toString(), 1);
             }
-            else {
-                track = new StreamedAudioMixerTrack(((AWTA3Audio)audio).getStream());
-            }
+            values.put(audioCue, audioCue.obtainInstance());
         } catch (UnsupportedAudioFileException | IOException e) {
             return false;
         }
-        if (track instanceof AudioCue) ((AudioCue) track).addAudioCueListener(this);
-        keys.put(audio, track);
+        audioCue.addAudioCueListener(this);
+        keys.put(audio, audioCue);
         for (final A3AudioListener listener : audioListeners) {
             listener.audioLoaded();
         }
@@ -78,69 +77,45 @@ public class AWTA3MediaPlayer implements A3MediaPlayer, AudioCueListener {
                 return;
             }
         }
-        final AudioMixerTrack track = keys.get(audio);
-        if (track == null) return;
-        if (track instanceof AudioCue) {
-            final AudioCue audioCue = (AudioCue) track;
-            final int instanceID = values.get(audioCue);
-            if (!audioCue.isRunning()) audioCue.open(mixer);
-            if (!audioCue.isPlaying(instanceID)) {
-                apply(audio, audioCue, instanceID);
-                audioCue.start(instanceID);
-            }
-        }
-        else if (track instanceof StreamedAudioMixerTrack) {
-            final StreamedAudioMixerTrack mixerTrack = (StreamedAudioMixerTrack) track;
-            if (!mixerTrack.isRunning()) mixerTrack.open(mixer);
-            if (!mixerTrack.isPlaying()) {
-                mixerTrack.start();
-            }
+        final AudioCue audioCue = keys.get(audio);
+        if (audioCue == null) return;
+        final int instanceID = values.get(audioCue);
+        if (!audioCue.isRunning()) audioCue.open(mixer);
+        if (!audioCue.isPlaying(instanceID)) {
+            apply(audio, audioCue, instanceID);
+            audioCue.start(instanceID);
         }
     }
 
     @Override
     public void pauseAudio(final A3Audio audio) {
         checkArgNotNull(audio, "audio");
-        final AudioMixerTrack track = keys.get(audio);
-        if (track == null) return;
-        if (track instanceof AudioCue) {
-            final AudioCue audioCue = (AudioCue) track;
-            final int instanceID = values.get(audioCue);
-            if (audioCue.isPlaying(instanceID)) audioCue.stop(instanceID);
-        }
-        else if (track instanceof StreamedAudioMixerTrack) {
-            final StreamedAudioMixerTrack mixerTrack = (StreamedAudioMixerTrack) track;
-            if (mixerTrack.isPlaying()) mixerTrack.stop();
-        }
+        final AudioCue audioCue = keys.get(audio);
+        if (audioCue == null) return;
+        final int instanceID = values.get(audioCue);
+        if (audioCue.isPlaying(instanceID)) audioCue.stop(instanceID);
     }
 
     @Override
     public void stopAudio(final A3Audio audio) {
         checkArgNotNull(audio, "audio");
-        final AudioMixerTrack track = keys.get(audio);
-        if (track == null) return;
-        if (track instanceof AudioCue) {
-            final AudioCue audioCue = (AudioCue) track;
-            int instanceID = values.get(audioCue);
-            if (audioCue.isPlaying(instanceID)) audioCue.stop(instanceID);
-            if (audioCue.isRunning()) {
-                final float volume = audioCue.getVolume(instanceID);
-                final float pan = audioCue.getPan(instanceID);
-                final double speed = audioCue.getSpeed(instanceID);
-                final int looping = audioCue.getLooping(instanceID);
-                audioCue.close();
-                audioCue.releaseInstance(instanceID);
-                instanceID = audioCue.obtainInstance();
-                values.put(audioCue, instanceID);
-                audioCue.setVolume(instanceID, volume);
-                audioCue.setPan(instanceID, pan);
-                audioCue.setSpeed(instanceID, speed);
-                audioCue.setLooping(instanceID, looping);
-            }
-        }
-        else if (track instanceof StreamedAudioMixerTrack) {
-            ((StreamedAudioMixerTrack) track).close();
-            keys.put(audio, new StreamedAudioMixerTrack(((AWTA3Audio)audio).getStream()));
+        final AudioCue audioCue = keys.get(audio);
+        if (audioCue == null) return;
+        int instanceID = values.get(audioCue);
+        if (audioCue.isPlaying(instanceID)) audioCue.stop(instanceID);
+        if (audioCue.isRunning()) {
+            final float volume = audioCue.getVolume(instanceID);
+            final float pan = audioCue.getPan(instanceID);
+            final double speed = audioCue.getSpeed(instanceID);
+            final int looping = audioCue.getLooping(instanceID);
+            audioCue.close();
+            audioCue.releaseInstance(instanceID);
+            instanceID = audioCue.obtainInstance();
+            values.put(audioCue, instanceID);
+            audioCue.setVolume(instanceID, volume);
+            audioCue.setPan(instanceID, pan);
+            audioCue.setSpeed(instanceID, speed);
+            audioCue.setLooping(instanceID, looping);
         }
         if (mixer.getTrackCacheCount() < 1) {
             if (mixer.isRunning()) mixer.stop();
@@ -171,21 +146,12 @@ public class AWTA3MediaPlayer implements A3MediaPlayer, AudioCueListener {
     }
 
     private void mUnloadAudio(final A3Audio audio) {
-        final AudioMixerTrack track = keys.get(audio);
-        if (track == null) return;
+        final AudioCue audioCue = keys.get(audio);
+        if (audioCue == null) return;
         keys.remove(audio);
-        if (track instanceof AudioCue) {
-            final AudioCue audioCue = (AudioCue) track;
-            values.remove(audioCue);
-            if (audioCue.isRunning()) {
-                audioCue.close();
-            }
-        }
-        else if (track instanceof StreamedAudioMixerTrack) {
-            final StreamedAudioMixerTrack mixerTrack = (StreamedAudioMixerTrack) track;
-            if (mixerTrack.isRunning()) {
-                mixerTrack.close();
-            }
+        values.remove(audioCue);
+        if (audioCue.isRunning()) {
+            audioCue.close();
         }
         if (mixer.getTrackCacheCount() < 1) {
             if (mixer.isRunning()) mixer.stop();

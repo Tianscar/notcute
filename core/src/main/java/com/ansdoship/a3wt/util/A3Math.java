@@ -25,6 +25,8 @@
 
 package com.ansdoship.a3wt.util;
 
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
+
 public class A3Math {
 
     private A3Math(){}
@@ -111,6 +113,86 @@ public class A3Math {
             return max;
         }
         return value;
+    }
+    
+    public static int min(final int... args) {
+        checkArgNotEmpty(args, "args");
+        if (args.length < 2) throw new IllegalArgumentException("at least 2 numbers");
+        int min = args[0];
+        for (int i = 1; i < args.length; i ++) {
+            min = Math.min(min, args[i]);
+        }
+        return min;
+    }
+
+    public static long min(final long... args) {
+        checkArgNotEmpty(args, "args");
+        if (args.length < 2) throw new IllegalArgumentException("at least 2 numbers");
+        long min = args[0];
+        for (int i = 1; i < args.length; i ++) {
+            min = Math.min(min, args[i]);
+        }
+        return min;
+    }
+
+    public static float min(final float... args) {
+        checkArgNotEmpty(args, "args");
+        if (args.length < 2) throw new IllegalArgumentException("at least 2 numbers");
+        float min = args[0];
+        for (int i = 1; i < args.length; i ++) {
+            min = Math.min(min, args[i]);
+        }
+        return min;
+    }
+
+    public static double min(final double... args) {
+        checkArgNotEmpty(args, "args");
+        if (args.length < 2) throw new IllegalArgumentException("at least 2 numbers");
+        double min = args[0];
+        for (int i = 1; i < args.length; i ++) {
+            min = Math.min(min, args[i]);
+        }
+        return min;
+    }
+
+    public static int max(final int... args) {
+        checkArgNotEmpty(args, "args");
+        if (args.length < 2) throw new IllegalArgumentException("at least 2 numbers");
+        int max = args[0];
+        for (int i = 1; i < args.length; i ++) {
+            max = Math.max(max, args[i]);
+        }
+        return max;
+    }
+
+    public static long max(final long... args) {
+        checkArgNotEmpty(args, "args");
+        if (args.length < 2) throw new IllegalArgumentException("at least 2 numbers");
+        long max = args[0];
+        for (int i = 1; i < args.length; i ++) {
+            max = Math.max(max, args[i]);
+        }
+        return max;
+    }
+
+    public static float max(final float... args) {
+        checkArgNotEmpty(args, "args");
+        if (args.length < 2) throw new IllegalArgumentException("at least 2 numbers");
+        float max = args[0];
+        for (int i = 1; i < args.length; i ++) {
+            max = Math.max(max, args[i]);
+        }
+        return max;
+    }
+
+    public static double max(final double... args) {
+        checkArgNotEmpty(args, "args");
+        if (args.length < 2) throw new IllegalArgumentException("at least 2 numbers");
+        double max = args[0];
+        for (int i = 1; i < args.length; i ++) {
+            max = Math.max(max, args[i]);
+        }
+        return max;
     }
 
 }

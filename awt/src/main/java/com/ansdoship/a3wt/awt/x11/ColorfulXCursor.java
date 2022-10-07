@@ -6,6 +6,7 @@ import jnr.ffi.Runtime;
 import sun.awt.AWTAccessor;
 import sun.awt.CustomCursor;
 import sun.awt.X11.XToolkit;
+import sun.misc.Unsafe;
 
 import java.awt.Point;
 import java.awt.Image;
@@ -20,7 +21,7 @@ public class ColorfulXCursor extends CustomCursor {
     protected void createNativeCursor(final Image im, final int[] pixels, final int width, final int height, final int xHotSpot, final int yHotSpot) {
         XToolkit.awtLock();
         try {
-            sun.misc.Unsafe UNSAFE = A3Unsafe.getUnsafe();
+            Unsafe UNSAFE = A3Unsafe.getUnsafe();
             final long pNativePixels = UNSAFE.allocateMemory(pixels.length * 4L);
             final Pointer nativePixels = Pointer.wrap(Runtime.getSystemRuntime(), pNativePixels);
             nativePixels.put(0, pixels, 0, pixels.length);

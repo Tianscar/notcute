@@ -12,12 +12,15 @@ import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.app.A3Container;
+import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
+import com.ansdoship.a3wt.media.A3MediaKit;
+import com.ansdoship.a3wt.media.A3MediaPlayer;
 
 import java.io.File;
 import java.util.List;
@@ -25,7 +28,7 @@ import java.util.ArrayList;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Container,
         View.OnLayoutChangeListener, PopupWindow.OnDismissListener, View.OnFocusChangeListener {
@@ -43,6 +46,16 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         }
 
         @Override
+        public A3MediaKit getMediaKit() {
+            return null;
+        }
+
+        @Override
+        public A3MediaPlayer getMediaPlayer() {
+            return null;
+        }
+
+        @Override
         public int getScreenWidth() {
             return popupWindow.surfaceView.handle.getScreenWidth();
         }
@@ -50,6 +63,26 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         @Override
         public int getScreenHeight() {
             return popupWindow.surfaceView.handle.getScreenHeight();
+        }
+
+        @Override
+        public int getMinScreenWidth() {
+            return 0;
+        }
+
+        @Override
+        public int getMinScreenHeight() {
+            return 0;
+        }
+
+        @Override
+        public int getMaxScreenWidth() {
+            return 0;
+        }
+
+        @Override
+        public int getMaxScreenHeight() {
+            return 0;
         }
 
         @Override
@@ -129,11 +162,6 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         }
 
         @Override
-        public A3Image snapshotBuffer() {
-            return popupWindow.surfaceView.handle.snapshotBuffer();
-        }
-
-        @Override
         public List<A3ContextListener> getContextListeners() {
             return popupWindow.surfaceView.handle.getContextListeners();
         }
@@ -141,6 +169,16 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         @Override
         public void addContextListener(final A3ContextListener listener) {
             popupWindow.surfaceView.handle.addContextListener(listener);
+        }
+
+        @Override
+        public void setIconImages(List<A3Image> images) {
+
+        }
+
+        @Override
+        public List<A3Image> getIconImages() {
+            return null;
         }
 
         @Override
@@ -227,6 +265,21 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         @Override
         public A3Clipboard getClipboard() {
             return popupWindow.surfaceView.handle.getClipboard();
+        }
+
+        @Override
+        public A3Clipboard getSelection() {
+            return null;
+        }
+
+        @Override
+        public void setCursor(A3Cursor cursor) {
+
+        }
+
+        @Override
+        public A3Cursor getCursor() {
+            return null;
         }
     }
 

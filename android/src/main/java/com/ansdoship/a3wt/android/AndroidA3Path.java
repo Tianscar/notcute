@@ -5,7 +5,7 @@ import android.graphics.RectF;
 import android.graphics.Region;
 import com.ansdoship.a3wt.graphics.A3Path;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AndroidA3Path implements A3Path {
 

@@ -16,9 +16,9 @@ import com.ansdoship.a3wt.input.A3InputListener;
 import com.ansdoship.a3wt.media.A3MediaKit;
 import com.ansdoship.a3wt.media.A3MediaPlayer;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GraphicsConfiguration;
-import java.awt.Graphics;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
@@ -48,7 +48,9 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseWheelMoved;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyTyped;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyPressed;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyReleased;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.A3Images2BufferedImages;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.AWTImages2A3Images;
 
 public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener,
         MouseInputListener, MouseWheelListener, KeyListener {
@@ -110,38 +112,68 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
     protected static class A3AWTDialogHandle implements A3Context.Handle, A3Container.Handle {
 
         @Override
+        public void setIconImages(final List<A3Image> images) {
+            dialog.setIconImages(A3Images2BufferedImages(images));
+        }
+
+        @Override
+        public List<A3Image> getIconImages() {
+            return AWTImages2A3Images(dialog.getIconImages());
+        }
+
+        @Override
         public A3Platform getPlatform() {
-            return dialog.component.handle.getPlatform();
+            return dialog.canvas.handle.getPlatform();
         }
 
         @Override
         public A3GraphicsKit getGraphicsKit() {
-            return dialog.component.handle.getGraphicsKit();
+            return dialog.canvas.handle.getGraphicsKit();
         }
 
         @Override
         public A3MediaKit getMediaKit() {
-            return dialog.component.handle.getMediaKit();
+            return dialog.canvas.handle.getMediaKit();
         }
 
         @Override
         public A3MediaPlayer getMediaPlayer() {
-            return dialog.component.handle.getMediaPlayer();
+            return dialog.canvas.handle.getMediaPlayer();
         }
 
         @Override
         public int getScreenWidth() {
-            return dialog.component.handle.getScreenWidth();
+            return dialog.canvas.handle.getScreenWidth();
         }
 
         @Override
         public int getScreenHeight() {
-            return dialog.component.handle.getScreenHeight();
+            return dialog.canvas.handle.getScreenHeight();
+        }
+
+        @Override
+        public int getMinScreenWidth() {
+            return dialog.canvas.handle.getMinScreenWidth();
+        }
+
+        @Override
+        public int getMinScreenHeight() {
+            return dialog.canvas.handle.getMinScreenHeight();
+        }
+
+        @Override
+        public int getMaxScreenWidth() {
+            return dialog.canvas.handle.getMaxScreenWidth();
+        }
+
+        @Override
+        public int getMaxScreenHeight() {
+            return dialog.canvas.handle.getMaxScreenHeight();
         }
 
         @Override
         public int getPPI() {
-            return dialog.component.handle.getPPI();
+            return dialog.canvas.handle.getPPI();
         }
 
         @Override
@@ -172,68 +204,63 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
         @Override
         public A3Graphics getGraphics() {
-            return dialog.component.handle.getGraphics();
+            return dialog.canvas.handle.getGraphics();
         }
 
         @Override
         public int getWidth() {
-            return dialog.component.getWidth();
+            return dialog.canvas.getWidth();
         }
 
         @Override
         public int getHeight() {
-            return dialog.component.getHeight();
+            return dialog.canvas.getHeight();
         }
 
         @Override
         public int getBackgroundColor() {
-            return dialog.component.handle.getBackgroundColor();
+            return dialog.canvas.handle.getBackgroundColor();
         }
 
         @Override
         public void setBackgroundColor(int color) {
-            dialog.component.handle.setBackgroundColor(color);
+            dialog.canvas.handle.setBackgroundColor(color);
         }
 
         @Override
         public long elapsed() {
-            return dialog.component.handle.elapsed();
+            return dialog.canvas.handle.elapsed();
         }
 
         @Override
         public void update() {
             dialog.checkDisposed("Can't call update() on a disposed A3Container");
-            dialog.component.handle.update();
+            dialog.canvas.handle.update();
         }
 
         @Override
         public A3Image snapshot() {
-            return dialog.component.handle.snapshot();
-        }
-
-        @Override
-        public A3Image snapshotBuffer() {
-            return dialog.component.handle.snapshotBuffer();
+            return dialog.canvas.handle.snapshot();
         }
 
         @Override
         public List<A3ContextListener> getContextListeners() {
-            return dialog.component.handle.getContextListeners();
+            return dialog.canvas.handle.getContextListeners();
         }
 
         @Override
         public void addContextListener(A3ContextListener listener) {
-            dialog.component.handle.addContextListener(listener);
+            dialog.canvas.handle.addContextListener(listener);
         }
 
         @Override
         public List<A3InputListener> getContextInputListeners() {
-            return dialog.component.handle.inputListeners;
+            return dialog.canvas.handle.inputListeners;
         }
 
         @Override
         public void addContextInputListener(A3InputListener listener) {
-            dialog.component.handle.inputListeners.add(listener);
+            dialog.canvas.handle.inputListeners.add(listener);
         }
 
         @Override
@@ -248,47 +275,47 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
         @Override
         public void paint(A3Graphics graphics) {
-            dialog.component.handle.paint(graphics);
+            dialog.canvas.handle.paint(graphics);
         }
 
         @Override
         public A3Preferences getPreferences(String name) {
-            return dialog.component.handle.getPreferences(name);
+            return dialog.canvas.handle.getPreferences(name);
         }
 
         @Override
         public boolean deletePreferences(String name) {
-            return dialog.component.handle.deletePreferences(name);
+            return dialog.canvas.handle.deletePreferences(name);
         }
 
         @Override
         public A3Assets getAssets() {
-            return dialog.component.handle.getAssets();
+            return dialog.canvas.handle.getAssets();
         }
 
         @Override
         public File getCacheDir() {
-            return dialog.component.handle.getCacheDir();
+            return dialog.canvas.handle.getCacheDir();
         }
 
         @Override
         public File getConfigDir() {
-            return dialog.component.handle.getConfigDir();
+            return dialog.canvas.handle.getConfigDir();
         }
 
         @Override
         public File getFilesDir(String type) {
-            return dialog.component.handle.getFilesDir(type);
+            return dialog.canvas.handle.getFilesDir(type);
         }
 
         @Override
         public File getHomeDir() {
-            return dialog.component.handle.getHomeDir();
+            return dialog.canvas.handle.getHomeDir();
         }
 
         @Override
         public File getTmpDir() {
-            return dialog.component.handle.getTmpDir();
+            return dialog.canvas.handle.getTmpDir();
         }
 
         @Override
@@ -318,22 +345,22 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
         @Override
         public A3Clipboard getClipboard() {
-            return dialog.component.handle.getClipboard();
+            return dialog.canvas.handle.getClipboard();
         }
 
         @Override
         public A3Clipboard getSelection() {
-            return dialog.component.handle.getSelection();
+            return dialog.canvas.handle.getSelection();
         }
 
         @Override
         public A3Cursor getCursor() {
-            return dialog.component.handle.getCursor();
+            return dialog.canvas.handle.getCursor();
         }
 
         @Override
         public void setCursor(final A3Cursor cursor) {
-            dialog.component.handle.setCursor(cursor);
+            dialog.canvas.handle.setCursor(cursor);
         }
 
     }
@@ -342,7 +369,7 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
     @Override
     public A3Context.Handle getContextHandle() {
-        return component.handle;
+        return canvas.handle;
     }
 
     @Override
@@ -350,7 +377,7 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         return handle;
     }
 
-    protected final A3AWTComponent component;
+    protected final A3AWTCanvas canvas;
 
     public A3AWTDialog(Frame owner) {
         this(owner, "", false);
@@ -402,9 +429,10 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
     public A3AWTDialog(Window owner, String title, ModalityType modalityType) {
         super(owner, title, modalityType);
+        setLocationByPlatform(true);
         enableInputMethods(false);
-        component = new A3AWTComponent();
-        add(component);
+        canvas = new A3AWTCanvas();
+        add(canvas);
         addComponentListener(this);
         addWindowListener(this);
         addWindowFocusListener(this);
@@ -412,12 +440,14 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         addMouseMotionListener(this);
         addMouseWheelListener(this);
         handle = new A3AWTDialogHandle(this);
+        setMinimumSize(new Dimension(handle.getMinScreenWidth(), handle.getMinScreenHeight()));
     }
 
     public A3AWTDialog(Window owner, String title, ModalityType modalityType, GraphicsConfiguration gc) {
         super(owner, title, modalityType, gc);
-        component = new A3AWTComponent();
-        add(component);
+        setLocationByPlatform(true);
+        canvas = new A3AWTCanvas();
+        add(canvas);
         addComponentListener(this);
         addWindowListener(this);
         addWindowFocusListener(this);
@@ -425,41 +455,27 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         addMouseMotionListener(this);
         addMouseWheelListener(this);
         handle = new A3AWTDialogHandle(this);
+        setMinimumSize(new Dimension(handle.getMinScreenWidth(), handle.getMinScreenHeight()));
     }
 
     @Override
     public String getCompanyName() {
-        return component.getCompanyName();
+        return canvas.getCompanyName();
     }
 
     @Override
     public String getAppName() {
-        return component.getAppName();
+        return canvas.getAppName();
     }
 
     @Override
     public void setCompanyName(String companyName) {
-        component.setCompanyName(companyName);
+        canvas.setCompanyName(companyName);
     }
 
     @Override
     public void setAppName(String appName) {
-        component.setAppName(appName);
-    }
-
-    @Override
-    public void paint(Graphics g) {
-        component.paint(component.getGraphics());
-    }
-
-    @Override
-    public void update(Graphics g) {
-        component.paint(component.getGraphics());
-    }
-
-    @Override
-    public void repaint(long tm, int x, int y, int width, int height) {
-        component.repaint(tm, x, y, width, height);
+        canvas.setAppName(appName);
     }
 
     @Override
@@ -554,28 +570,28 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
     @Override
     public File getPreferencesFile(String name) {
-        return component.getPreferencesFile(name);
+        return canvas.getPreferencesFile(name);
     }
 
     @Override
     public void setPPIScale(float scale) {
-        component.setPPIScale(scale);
+        canvas.setPPIScale(scale);
     }
 
     @Override
     public float getPPIScale() {
-        return component.getPPIScale();
+        return canvas.getPPIScale();
     }
 
     @Override
     public boolean isDisposed() {
-        return component.isDisposed();
+        return canvas.isDisposed();
     }
 
     @Override
     public void dispose() {
         if (isDisposed()) return;
-        component.dispose();
+        canvas.dispose();
         super.dispose();
     }
 

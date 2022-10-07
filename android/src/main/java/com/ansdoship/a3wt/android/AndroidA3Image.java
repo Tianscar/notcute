@@ -4,8 +4,8 @@ import android.graphics.Bitmap;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgRangeMin;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgRangeMin;
 
 public class AndroidA3Image implements A3Image {
 

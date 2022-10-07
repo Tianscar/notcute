@@ -5,14 +5,17 @@ import com.ansdoship.a3wt.awt.x11.ColorfulXCursor;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
+import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3InputListener;
 import com.ansdoship.a3wt.media.A3Audio;
+import com.ansdoship.a3wt.util.A3Math;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import java.awt.Image;
+import java.awt.DisplayMode;
 import java.awt.Toolkit;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -43,11 +46,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotEmpty;
+import static com.ansdoship.a3wt.util.A3Arrays.copy;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Files.files2URIs;
 
 public class A3AWTUtils {
@@ -69,9 +74,13 @@ public class A3AWTUtils {
         source.flush();
         final BufferedImage result = new BufferedImage(source.getWidth(null), source.getHeight(null),
                 getColorModel(source).hasAlpha() ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
-        final Graphics2D g = result.createGraphics();
-        g.drawImage(source, 0, 0, null);
-        g.dispose();
+        final Graphics2D g2d = result.createGraphics();
+        try {
+            g2d.drawImage(source, 0, 0, null);
+        }
+        finally {
+            g2d.dispose();
+        }
         return result;
     }
 
@@ -722,9 +731,13 @@ public class A3AWTUtils {
         checkArgNotNull(source, "source");
         if (source.getWidth() == width && source.getHeight() == height) return source;
         final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        final Graphics2D g = result.createGraphics();
-        g.drawImage(source, alignX, alignY, null);
-        g.dispose();
+        final Graphics2D g2d = result.createGraphics();
+        try {
+            g2d.drawImage(source, alignX, alignY, null);
+        }
+        finally {
+            g2d.dispose();
+        }
         return result;
     }
 
@@ -732,9 +745,13 @@ public class A3AWTUtils {
         checkArgNotNull(source, "source");
         if (source.getType() == type) return source;
         final BufferedImage result = new BufferedImage(source.getWidth(), source.getHeight(), type);
-        final Graphics2D g = result.createGraphics();
-        g.drawImage(source, 0, 0, null);
-        g.dispose();
+        final Graphics2D g2d = result.createGraphics();
+        try {
+            g2d.drawImage(source, 0, 0, null);
+        }
+        finally {
+            g2d.dispose();
+        }
         return result;
     }
 
@@ -748,6 +765,89 @@ public class A3AWTUtils {
 
     public static BufferedImage getBGRImage(final BufferedImage source) {
         return getImage(source, BufferedImage.TYPE_INT_BGR);
+    }
+
+    public static List<BufferedImage> A3Images2BufferedImages(final List<A3Image> images) {
+        checkArgNotEmpty(images, "images");
+        final List<BufferedImage> result = new ArrayList<>(images.size());
+        for (final A3Image image : images) {
+            result.add(((AWTA3Image)image).bufferedImage);
+        }
+        return result;
+    }
+
+    public static List<A3Image> AWTImages2A3Images(final List<Image> images) {
+        checkArgNotEmpty(images, "images");
+        final List<A3Image> result = new ArrayList<>(images.size());
+        for (final Image image : images) {
+            result.add(new AWTA3Image(getBufferedImage(image)));
+        }
+        return result;
+    }
+
+    public static BufferedImage getBufferedImage(final Image image) {
+        checkArgNotNull(image, "image");
+        if (image instanceof BufferedImage) return (BufferedImage) image;
+        else return copyImage(image);
+    }
+
+    public static int[][] getScreenSizes(final GraphicsDevice device) {
+        checkArgNotNull(device, "device");
+        final DisplayMode[] modes = device.getDisplayModes();
+        final int[][] result = new int[2][modes.length];
+        for (int i = 0; i < modes.length; i ++) {
+            result[0][i] = modes[i].getWidth();
+            result[1][i] = modes[i].getHeight();
+        }
+        return result;
+    }
+
+    public static int[] getMinScreenSize(final GraphicsDevice device) {
+        final int[][] screenSizes = getScreenSizes(device);
+        return new int[] { A3Math.min(screenSizes[0]), A3Math.min(screenSizes[1]) };
+    }
+
+    public static int[] getMaxScreenSize(final GraphicsDevice device) {
+        final int[][] screenSizes = getScreenSizes(device);
+        return new int[] { A3Math.max(screenSizes[0]), A3Math.max(screenSizes[1]) };
+    }
+
+    private static final int[][] SCREEN_SIZES = getScreenSizes(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice());
+    private static final int[] MIN_SCREEN_SIZE = getMinScreenSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice());
+    private static final int[] MAX_SCREEN_SIZE = getMaxScreenSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice());
+
+    public static int[][] getScreenSizes() {
+        return copy(SCREEN_SIZES);
+    }
+
+    public static int[] getMinScreenSize() {
+        return copy(MIN_SCREEN_SIZE);
+    }
+
+    public static int getMinScreenWidth() {
+        return MIN_SCREEN_SIZE[0];
+    }
+
+    public static int getMinScreenHeight() {
+        return MIN_SCREEN_SIZE[1];
+    }
+
+    public static int[] getMaxScreenSize() {
+        return copy(MAX_SCREEN_SIZE);
+    }
+
+    public static int getMaxScreenWidth() {
+        return MAX_SCREEN_SIZE[0];
+    }
+
+    public static int getMaxScreenHeight() {
+        return MAX_SCREEN_SIZE[1];
+    }
+
+    private static final Font DEFAULT_FONT = Font.decode(null);
+
+    public static Font getDefaultFont() {
+        return DEFAULT_FONT;
     }
 
 }

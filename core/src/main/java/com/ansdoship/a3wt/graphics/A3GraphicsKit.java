@@ -49,6 +49,8 @@ public interface A3GraphicsKit {
     A3Font readFont(A3Assets assets, String input);
     A3Font readFont(String familyName, int style);
 
+    A3Font getDefaultFont();
+
     A3Cursor createCursor(int type);
     A3Cursor createCursor(A3Image image);
 

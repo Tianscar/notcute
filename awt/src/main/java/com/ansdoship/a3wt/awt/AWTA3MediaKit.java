@@ -21,7 +21,7 @@ import java.util.Set;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.audioFormat2AWTAudioFormat;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getAudioFileTypeFromExtension;
-import static com.ansdoship.a3wt.util.A3Asserts.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3MediaKit implements A3MediaKit {
 

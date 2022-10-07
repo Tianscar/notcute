@@ -16,9 +16,9 @@ import com.ansdoship.a3wt.input.A3InputListener;
 import com.ansdoship.a3wt.media.A3MediaKit;
 import com.ansdoship.a3wt.media.A3MediaPlayer;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GraphicsConfiguration;
-import java.awt.Graphics;
 import java.awt.HeadlessException;
 import java.awt.Frame;
 import java.awt.event.ComponentListener;
@@ -47,6 +47,8 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseWheelMoved;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyTyped;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyPressed;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyReleased;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.A3Images2BufferedImages;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.AWTImages2A3Images;
 
 public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener,
         MouseInputListener, MouseWheelListener, KeyListener {
@@ -108,38 +110,68 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
     protected static class A3AWTFrameHandle implements A3Context.Handle, A3Container.Handle {
 
         @Override
+        public void setIconImages(final List<A3Image> images) {
+            frame.setIconImages(A3Images2BufferedImages(images));
+        }
+
+        @Override
+        public List<A3Image> getIconImages() {
+            return AWTImages2A3Images(frame.getIconImages());
+        }
+
+        @Override
         public A3Platform getPlatform() {
-            return frame.component.handle.getPlatform();
+            return frame.canvas.handle.getPlatform();
         }
 
         @Override
         public A3GraphicsKit getGraphicsKit() {
-            return frame.component.handle.getGraphicsKit();
+            return frame.canvas.handle.getGraphicsKit();
         }
 
         @Override
         public A3MediaKit getMediaKit() {
-            return frame.component.handle.getMediaKit();
+            return frame.canvas.handle.getMediaKit();
         }
 
         @Override
         public A3MediaPlayer getMediaPlayer() {
-            return frame.component.handle.getMediaPlayer();
+            return frame.canvas.handle.getMediaPlayer();
         }
 
         @Override
         public int getScreenWidth() {
-            return frame.component.handle.getScreenWidth();
+            return frame.canvas.handle.getScreenWidth();
         }
 
         @Override
         public int getScreenHeight() {
-            return frame.component.handle.getScreenHeight();
+            return frame.canvas.handle.getScreenHeight();
+        }
+
+        @Override
+        public int getMinScreenWidth() {
+            return frame.canvas.handle.getMinScreenWidth();
+        }
+
+        @Override
+        public int getMinScreenHeight() {
+            return frame.canvas.handle.getMinScreenHeight();
+        }
+
+        @Override
+        public int getMaxScreenWidth() {
+            return frame.canvas.handle.getMaxScreenWidth();
+        }
+
+        @Override
+        public int getMaxScreenHeight() {
+            return frame.canvas.handle.getMaxScreenHeight();
         }
 
         @Override
         public int getPPI() {
-            return frame.component.handle.getPPI();
+            return frame.canvas.handle.getPPI();
         }
 
         @Override
@@ -168,68 +200,63 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
 
         @Override
         public A3Graphics getGraphics() {
-            return frame.component.handle.getGraphics();
+            return frame.canvas.handle.getGraphics();
         }
 
         @Override
         public int getWidth() {
-            return frame.component.getWidth();
+            return frame.canvas.getWidth();
         }
 
         @Override
         public int getHeight() {
-            return frame.component.getHeight();
+            return frame.canvas.getHeight();
         }
 
         @Override
         public int getBackgroundColor() {
-            return frame.component.handle.getBackgroundColor();
+            return frame.canvas.handle.getBackgroundColor();
         }
 
         @Override
         public void setBackgroundColor(int color) {
-            frame.component.handle.setBackgroundColor(color);
+            frame.canvas.handle.setBackgroundColor(color);
         }
 
         @Override
         public long elapsed() {
-            return frame.component.handle.elapsed();
+            return frame.canvas.handle.elapsed();
         }
 
         @Override
         public void update() {
             frame.checkDisposed("Can't call update() on a disposed A3Container");
-            frame.component.handle.update();
+            frame.canvas.handle.update();
         }
 
         @Override
         public A3Image snapshot() {
-            return frame.component.handle.snapshot();
-        }
-
-        @Override
-        public A3Image snapshotBuffer() {
-            return frame.component.handle.snapshotBuffer();
+            return frame.canvas.handle.snapshot();
         }
 
         @Override
         public List<A3ContextListener> getContextListeners() {
-            return frame.component.handle.getContextListeners();
+            return frame.canvas.handle.getContextListeners();
         }
 
         @Override
         public void addContextListener(A3ContextListener listener) {
-            frame.component.handle.addContextListener(listener);
+            frame.canvas.handle.addContextListener(listener);
         }
 
         @Override
         public List<A3InputListener> getContextInputListeners() {
-            return frame.component.handle.inputListeners;
+            return frame.canvas.handle.inputListeners;
         }
 
         @Override
         public void addContextInputListener(A3InputListener listener) {
-            frame.component.handle.inputListeners.add(listener);
+            frame.canvas.handle.inputListeners.add(listener);
         }
 
         @Override
@@ -244,47 +271,47 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
 
         @Override
         public void paint(A3Graphics graphics) {
-            frame.component.handle.paint(graphics);
+            frame.canvas.handle.paint(graphics);
         }
 
         @Override
         public A3Preferences getPreferences(String name) {
-            return frame.component.handle.getPreferences(name);
+            return frame.canvas.handle.getPreferences(name);
         }
 
         @Override
         public boolean deletePreferences(String name) {
-            return frame.component.handle.deletePreferences(name);
+            return frame.canvas.handle.deletePreferences(name);
         }
 
         @Override
         public A3Assets getAssets() {
-            return frame.component.handle.getAssets();
+            return frame.canvas.handle.getAssets();
         }
 
         @Override
         public File getCacheDir() {
-            return frame.component.handle.getCacheDir();
+            return frame.canvas.handle.getCacheDir();
         }
 
         @Override
         public File getConfigDir() {
-            return frame.component.handle.getConfigDir();
+            return frame.canvas.handle.getConfigDir();
         }
 
         @Override
         public File getFilesDir(String type) {
-            return frame.component.handle.getFilesDir(type);
+            return frame.canvas.handle.getFilesDir(type);
         }
 
         @Override
         public File getHomeDir() {
-            return frame.component.handle.getHomeDir();
+            return frame.canvas.handle.getHomeDir();
         }
 
         @Override
         public File getTmpDir() {
-            return frame.component.handle.getTmpDir();
+            return frame.canvas.handle.getTmpDir();
         }
 
         @Override
@@ -314,22 +341,22 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
 
         @Override
         public A3Clipboard getClipboard() {
-            return frame.component.handle.getClipboard();
+            return frame.canvas.handle.getClipboard();
         }
 
         @Override
         public A3Clipboard getSelection() {
-            return frame.component.handle.getSelection();
+            return frame.canvas.handle.getSelection();
         }
 
         @Override
         public A3Cursor getCursor() {
-            return frame.component.handle.getCursor();
+            return frame.canvas.handle.getCursor();
         }
 
         @Override
         public void setCursor(final A3Cursor cursor) {
-            frame.component.handle.setCursor(cursor);
+            frame.canvas.handle.setCursor(cursor);
         }
 
     }
@@ -338,7 +365,7 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
 
     @Override
     public A3Context.Handle getContextHandle() {
-        return component.handle;
+        return canvas.handle;
     }
 
     @Override
@@ -346,7 +373,7 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
         return handle;
     }
 
-    protected final A3AWTComponent component;
+    protected final A3AWTCanvas canvas;
 
     public A3AWTFrame() throws HeadlessException {
         this("");
@@ -358,9 +385,10 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
 
     public A3AWTFrame(String title) throws HeadlessException {
         super(title);
+        setLocationByPlatform(true);
         enableInputMethods(false);
-        component = new A3AWTComponent();
-        add(component);
+        canvas = new A3AWTCanvas();
+        add(canvas);
         addComponentListener(this);
         addWindowListener(this);
         addWindowFocusListener(this);
@@ -369,13 +397,15 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
         addMouseWheelListener(this);
         addKeyListener(this);
         handle = new A3AWTFrameHandle(this);
+        setMinimumSize(new Dimension(handle.getMinScreenWidth(), handle.getMinScreenHeight()));
     }
 
     public A3AWTFrame(String title, GraphicsConfiguration gc) {
         super(title, gc);
+        setLocationByPlatform(true);
         enableInputMethods(false);
-        component = new A3AWTComponent();
-        add(component);
+        canvas = new A3AWTCanvas();
+        add(canvas);
         addComponentListener(this);
         addWindowListener(this);
         addWindowFocusListener(this);
@@ -384,41 +414,27 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
         addMouseWheelListener(this);
         addKeyListener(this);
         handle = new A3AWTFrameHandle(this);
+        setMinimumSize(new Dimension(handle.getMinScreenWidth(), handle.getMinScreenHeight()));
     }
 
     @Override
     public String getCompanyName() {
-        return component.getCompanyName();
+        return canvas.getCompanyName();
     }
 
     @Override
     public String getAppName() {
-        return component.getAppName();
+        return canvas.getAppName();
     }
 
     @Override
     public void setCompanyName(String companyName) {
-        component.setCompanyName(companyName);
+        canvas.setCompanyName(companyName);
     }
 
     @Override
     public void setAppName(String appName) {
-        component.setAppName(appName);
-    }
-
-    @Override
-    public void paint(Graphics g) {
-        component.paint(component.getGraphics());
-    }
-
-    @Override
-    public void update(Graphics g) {
-        component.paint(component.getGraphics());
-    }
-
-    @Override
-    public void repaint(long tm, int x, int y, int width, int height) {
-        component.repaint(tm, x, y, width, height);
+        canvas.setAppName(appName);
     }
 
     @Override
@@ -513,28 +529,28 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
 
     @Override
     public File getPreferencesFile(String name) {
-        return component.getPreferencesFile(name);
+        return canvas.getPreferencesFile(name);
     }
 
     @Override
     public void setPPIScale(float scale) {
-        component.setPPIScale(scale);
+        canvas.setPPIScale(scale);
     }
 
     @Override
     public float getPPIScale() {
-        return component.getPPIScale();
+        return canvas.getPPIScale();
     }
 
     @Override
     public boolean isDisposed() {
-        return component.isDisposed();
+        return canvas.isDisposed();
     }
 
     @Override
     public void dispose() {
         if (isDisposed()) return;
-        component.dispose();
+        canvas.dispose();
         super.dispose();
     }
 
