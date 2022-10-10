@@ -170,6 +170,13 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
         return new AndroidA3Font(Typeface.create(familyName, fontStyle2TypefaceStyle(style)));
     }
 
+    protected static final AndroidA3Font DEFAULT_FONT = new AndroidA3Font(Typeface.DEFAULT);
+
+    @Override
+    public A3Font getDefaultFont() {
+        return DEFAULT_FONT;
+    }
+
     @Override
     public A3Cursor createCursor(int type) {
         return null;
@@ -177,11 +184,6 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
 
     @Override
     public A3Cursor createCursor(A3Image image) {
-        return null;
-    }
-
-    @Override
-    public A3Image screenshot(int left, int top, int right, int bottom) {
         return null;
     }
 

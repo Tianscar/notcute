@@ -230,7 +230,7 @@ public interface A3Audio extends A3Disposable {
         setVolume(1.0f);
         setPan(0);
         setSpeed(1.0f);
-        setLooping(0);
+        setLooping(1);
         setFramePos(0);
     }
 

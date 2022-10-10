@@ -135,7 +135,11 @@ public class AWTA3Image implements A3Image {
     @Override
     public A3Image copy() {
         checkDisposed("Can't call copy() on a disposed A3Image");
-        return new AWTA3Image(A3AWTUtils.copyBufferedImage(bufferedImage));
+        final AWTA3Image result = new AWTA3Image(A3AWTUtils.copyBufferedImage(bufferedImage));
+        result.time = time;
+        result.hotSpotX = hotSpotX;
+        result.hotSpotY = hotSpotY;
+        return result;
     }
 
 }

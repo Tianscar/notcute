@@ -35,9 +35,9 @@ import java.nio.ByteBuffer;
 /**
  * A factory class providing functions to encode Android Bitmap to Windows Bitmap (*.bmp).
  */
-final class BitmapBMPEncoder {
+final class BmpEncoder {
 
-    private BitmapBMPEncoder(){}
+    private BmpEncoder(){}
 
     public final static short BF_TYPE = 0x4D42;
 

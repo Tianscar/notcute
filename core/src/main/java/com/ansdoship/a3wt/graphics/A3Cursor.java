@@ -5,7 +5,7 @@ public interface A3Cursor {
     class Type {
         public static final int DEFAULT = 0;
         public static final int CROSSHAIR = 1;
-        public static final int TEXT = 2;
+        public static final int IBEAM = 2;
         public static final int WAIT = 3;
         public static final int HAND = 4;
         public static final int MOVE = 5;

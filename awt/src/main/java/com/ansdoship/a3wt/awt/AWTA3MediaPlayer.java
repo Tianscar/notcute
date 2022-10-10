@@ -34,7 +34,7 @@ public class AWTA3MediaPlayer implements A3MediaPlayer, AudioCueListener {
         audioCue.setVolume(instanceID, audio.getVolume());
         audioCue.setPan(instanceID, audio.getPan());
         audioCue.setSpeed(instanceID, audio.getSpeed());
-        audioCue.setLooping(instanceID, audio.getLooping());
+        audioCue.setLooping(instanceID, audio.getLooping() - 1);
         audioCue.setFramePosition(instanceID, audio.getFramePos());
     }
 

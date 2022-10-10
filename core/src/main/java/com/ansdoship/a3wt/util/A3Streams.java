@@ -16,13 +16,13 @@ public class A3Streams {
 
     private A3Streams(){}
 
-    private static final int BUFFER_SIZE = 8192;
-    private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
+    public static final int DEFAULT_BUFFER_SIZE = 8192;
+    public static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
 
     public static void transferTo(final InputStream source, final OutputStream target) throws IOException {
         checkArgNotNull(source, "source");
         checkArgNotNull(target, "target");
-        byte[] buffer = new byte[BUFFER_SIZE];
+        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         int length;
         while ((length = source.read(buffer)) != -1) {
             target.write(buffer, 0, length);
@@ -33,7 +33,7 @@ public class A3Streams {
         checkArgNotNull(stream, "stream");
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-            final byte[] buffer = new byte[BUFFER_SIZE];
+            final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
             int count;
             while ((count = stream.read(buffer)) != -1) {
                 output.write(buffer, 0, count);
@@ -69,7 +69,7 @@ public class A3Streams {
         int remaining = len;
         int n;
         do {
-            byte[] buf = new byte[Math.min(remaining, BUFFER_SIZE)];
+            byte[] buf = new byte[Math.min(remaining, DEFAULT_BUFFER_SIZE)];
             int nread = 0;
 
             // read to EOF which may read more or less than buffer size

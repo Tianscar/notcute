@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -19,8 +20,11 @@ import android.view.MotionEvent;
 import android.view.KeyEvent;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.graphics.A3Font;
+import com.ansdoship.a3wt.graphics.A3FramedImage;
 import com.ansdoship.a3wt.graphics.A3Graphics;
+import com.ansdoship.a3wt.graphics.DefaultA3FramedImage;
 import com.ansdoship.a3wt.input.A3InputListener;
+import pl.droidsonroids.gif.GifDrawable;
 
 import java.io.File;
 import java.io.IOException;
@@ -403,6 +407,44 @@ public class A3AndroidUtils {
             }
         }
         return downResult || upResult;
+    }
+
+    public static Bitmap getBitmap(final Bitmap source, final Bitmap.Config config) {
+        checkArgNotNull(source, "source");
+        checkArgNotNull(config, "config");
+        if (source.getConfig().equals(config)) return source;
+        else {
+            final Bitmap result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), config);
+            final Canvas canvas = new Canvas(result);
+            canvas.drawBitmap(source, 0, 0, null);
+            if (!source.isRecycled()) source.recycle();
+            return result;
+        }
+    }
+
+    public static Bitmap getAlignedBitmap(final Bitmap source, final int alignX, final int alignY, final int width, final int height) {
+        checkArgNotNull(source, "source");
+        if (source.getWidth() == width && source.getHeight() == height) return source;
+        final Bitmap result = Bitmap.createBitmap(width, height, source.getConfig());
+        final Canvas canvas = new Canvas(source);
+        canvas.drawBitmap(source, alignX, alignY, null);
+        if (!source.isRecycled()) source.recycle();
+        return result;
+    }
+
+    public static A3FramedImage gifDrawable2FramedImage(final GifDrawable drawable, final Bitmap.Config config) {
+        try {
+            AndroidA3Image[] frames = new AndroidA3Image[drawable.getNumberOfFrames()];
+            for (int i = 0; i < frames.length; i ++) {
+                frames[i] = new AndroidA3Image(getBitmap(drawable.seekToFrameAndGet(i), config), drawable.getFrameDuration(i), 0, 0);
+            }
+            A3FramedImage result = new DefaultA3FramedImage(frames);
+            result.setLooping(drawable.getLoopCount());
+            return result;
+        }
+        finally {
+            if (!drawable.isRecycled()) drawable.recycle();
+        }
     }
 
 }

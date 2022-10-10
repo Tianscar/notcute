@@ -2,7 +2,6 @@ package com.ansdoship.a3wt.android;
 
 import android.os.Build;
 import com.ansdoship.a3wt.app.A3Platform;
-import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.util.A3I18NBundle;
 import com.ansdoship.a3wt.util.A3Logger;
 import com.ansdoship.a3wt.util.DefaultA3I18NBundle;
@@ -10,7 +9,6 @@ import com.ansdoship.a3wt.util.DefaultA3I18NBundle;
 public class AndroidA3Platform implements A3Platform {
 
     protected static final AndroidA3Logger logger = new AndroidA3Logger();
-    protected static final AndroidA3GraphicsKit graphicsKit = new AndroidA3GraphicsKit();
     protected static final DefaultA3I18NBundle i18NBundle = new DefaultA3I18NBundle();
 
     public static final String BACKEND_NAME = "Android Native GUI";

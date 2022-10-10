@@ -14,7 +14,7 @@ public class DefaultA3FramedImage implements A3FramedImage {
     protected volatile List<A3Image> frames = new ArrayList<>();
     protected volatile int index = 0;
     protected volatile boolean disposed = false;
-    protected volatile int loops = 0;
+    protected volatile int loops = 1;
 
     public DefaultA3FramedImage(final Collection<A3Image> frames) {
         for (A3Image frame : frames) {

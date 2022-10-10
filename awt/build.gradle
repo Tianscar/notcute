@@ -1,11 +1,7 @@
 dependencies {
     implementation project(':core')
 
-    implementation 'com.madgag:animated-gif-lib:1.4'
     implementation 'com.twelvemonkeys.imageio:imageio-tiff:3.8.3'
-    implementation 'com.twelvemonkeys.imageio:imageio-bmp:3.8.3'
-    implementation 'com.twelvemonkeys.imageio:imageio-jpeg:3.8.3'
-    implementation 'com.twelvemonkeys.imageio:imageio-icns:3.8.3'
 
     implementation 'com.googlecode.soundlibs:mp3spi:1.9.5.4'
     implementation 'com.googlecode.soundlibs:vorbisspi:1.0.3.3'

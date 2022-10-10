@@ -134,7 +134,11 @@ public class AndroidA3Image implements A3Image {
     @Override
     public A3Image copy() {
         checkDisposed("Can't call copy() on a disposed A3Image");
-        return new AndroidA3Image(A3AndroidUtils.copyBitmap(bitmap));
+        final AndroidA3Image result = new AndroidA3Image(A3AndroidUtils.copyBitmap(bitmap));
+        result.time = time;
+        result.hotSpotX = hotSpotX;
+        result.hotSpotY = hotSpotY;
+        return result;
     }
 
 }

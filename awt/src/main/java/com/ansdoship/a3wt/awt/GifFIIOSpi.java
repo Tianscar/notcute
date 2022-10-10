@@ -7,12 +7,15 @@ import com.ansdoship.a3wt.util.A3Math;
 import com.madgag.gif.fmsware.AnimatedGifEncoder;
 import com.madgag.gif.fmsware.GifDecoder;
 
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getAlignedImage;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.getImage;
+import static com.ansdoship.a3wt.util.A3Arrays.containsIgnoreCase;
 import static com.ansdoship.a3wt.util.A3Arrays.copy;
 import static com.madgag.gif.fmsware.GifDecoder.STATUS_OK;
 
@@ -24,8 +27,14 @@ public final class GifFIIOSpi implements FIIOServiceProvider {
     private static final String[] WRITER_FORMAT_NAMES = new String[]{"gif"};
 
     @Override
-    public A3FramedImage read(final InputStream stream) throws IOException {
-        if (!stream.markSupported()) throw new IOException("stream should support mark!");
+    public A3FramedImage read(final ImageInputStream stream) throws IOException {
+        stream.mark();
+        try {
+            if (!isGif(stream)) return null;
+        }
+        finally {
+            stream.reset();
+        }
         final GifDecoder decoder = new GifDecoder();
         final int status = decoder.read(stream);
         if (status == STATUS_OK) {
@@ -33,28 +42,19 @@ public final class GifFIIOSpi implements FIIOServiceProvider {
             for (int i = 0; i < decoder.getFrameCount(); i++) {
                 images[i] = new AWTA3Image(decoder.getFrame(i), decoder.getDelay(i), 0, 0);
             }
-            return new DefaultA3FramedImage(images);
+            final A3FramedImage result = new DefaultA3FramedImage(images);
+            result.setLooping(decoder.getLoopCount());
+            return result;
         }
         return null;
     }
 
     @Override
-    public boolean canRead(final InputStream stream) throws IOException {
-        if (!stream.markSupported()) throw new IOException("stream should support mark!");
-        stream.mark(Integer.MAX_VALUE);
-        try {
-            return isGif(stream);
-        }
-        finally {
-            stream.reset();
-        }
-    }
-
-    @Override
-    public boolean write(final A3FramedImage im, final String formatName, final float quality, final OutputStream output) throws IOException {
+    public boolean write(final A3FramedImage im, final String formatName, final float quality, final ImageOutputStream output) throws IOException {
+        if (!containsIgnoreCase(WRITER_FORMAT_NAMES, formatName)) return false;
         final AnimatedGifEncoder encoder = new AnimatedGifEncoder();
         encoder.start(output);
-        encoder.setRepeat(im.getLooping() + 1);
+        encoder.setRepeat(im.getLooping());
         encoder.setQuality((int) (A3Math.clamp((1 - quality) * 19, 1, 19) + 1));
         encoder.setBackground(Color.BLACK);
         encoder.setTransparent(null);
@@ -67,7 +67,8 @@ public final class GifFIIOSpi implements FIIOServiceProvider {
         for (final A3Image i : im) {
             image = (AWTA3Image) i;
             encoder.setDelay((int) A3Math.clamp(image.time, Integer.MIN_VALUE, Integer.MAX_VALUE));
-            if (!encoder.addFrame(getAlignedImage(image.bufferedImage, 0, 0, width, height))) return false;
+            if (!encoder.addFrame(getAlignedImage(getImage(image.bufferedImage, BufferedImage.TYPE_3BYTE_BGR),
+                    0, 0, width, height))) return false;
         }
         encoder.finish();
         return true;
@@ -83,7 +84,7 @@ public final class GifFIIOSpi implements FIIOServiceProvider {
         return copy(WRITER_FORMAT_NAMES);
     }
 
-    private static boolean isGif(final InputStream stream) throws IOException {
+    private static boolean isGif(final ImageInputStream stream) throws IOException {
         final StringBuilder id = new StringBuilder();
         for (int i = 0; i < 6; i ++) {
             id.append((char) stream.read());

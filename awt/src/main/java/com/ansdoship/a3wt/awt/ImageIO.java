@@ -45,6 +45,7 @@ import java.awt.image.RenderedImage;
 import java.net.URL;
 
 import static com.ansdoship.a3wt.util.A3Arrays.containsIgnoreCase;
+import static com.ansdoship.a3wt.util.A3Math.clamp;
 
 public final class ImageIO {
 
@@ -379,6 +380,7 @@ public final class ImageIO {
         Iterator<ImageWriter> it = getImageWriters(ImageTypeSpecifier.createFromRenderedImage(im), formatName);
         ImageWriter writer;
         String compressionType = null;
+        float quality0 = clamp(quality, 0, 1);
         if (it.hasNext()) {
             writer = it.next();
             ImageWriteParam params = writer.getDefaultWriteParam();
@@ -392,7 +394,7 @@ public final class ImageIO {
             if (compressionType != null && params.canWriteCompressed()) {
                 params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 params.setCompressionType(compressionType);
-                params.setCompressionQuality(quality);
+                params.setCompressionQuality(quality0);
             }
             writer.setOutput(output);
             writer.write(im);

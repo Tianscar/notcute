@@ -13,18 +13,20 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.FileOutputStream;
 import java.net.URI;
 import java.net.URL;
 
+import static com.ansdoship.a3wt.util.A3Arrays.containsIgnoreCase;
 import static com.ansdoship.a3wt.util.A3Arrays.copy;
 import static com.ansdoship.a3wt.util.A3Math.clamp;
+import static com.ansdoship.a3wt.util.A3Streams.MAX_BUFFER_SIZE;
 
 public final class BasicBIOSpi implements BIOServiceProvider {
 
@@ -33,11 +35,24 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     @Override
     public Bitmap read(InputStream stream, Bitmap.Config config) throws IOException {
+        if (!stream.markSupported()) throw new IllegalArgumentException("stream should support mark!");
+        Bitmap bitmap;
+        stream.mark(MAX_BUFFER_SIZE);
+        try {
+            bitmap = mRead(stream, config);
+        }
+        finally {
+            stream.reset();
+        }
+        if (bitmap != null) stream.close();
+        return bitmap;
+    }
+
+    private Bitmap mRead(InputStream stream, Bitmap.Config config) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;
         options.inPreferredConfig = config;
         Bitmap bitmap = BitmapFactory.decodeStream(stream, null, options);
-        stream.close();
         if (bitmap != null) {
             if (!bitmap.hasAlpha()) {
                 bitmap.setHasAlpha(true);
@@ -48,6 +63,20 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     @Override
     public Bitmap read(InputStream stream, Rect region, Bitmap.Config config) throws IOException {
+        if (!stream.markSupported()) throw new IllegalArgumentException("stream should support mark!");
+        Bitmap bitmap;
+        stream.mark(MAX_BUFFER_SIZE);
+        try {
+            bitmap = mRead(stream, region, config);
+        }
+        finally {
+            stream.reset();
+        }
+        if (bitmap != null) stream.close();
+        return bitmap;
+    }
+
+    private Bitmap mRead(InputStream stream, Rect region, Bitmap.Config config) throws IOException {
         BitmapRegionDecoder decoder;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             decoder = BitmapRegionDecoder.newInstance(stream);
@@ -59,11 +88,8 @@ public final class BasicBIOSpi implements BIOServiceProvider {
         options.inMutable = true;
         options.inPreferredConfig = config;
         Bitmap bitmap = decoder.decodeRegion(region, options);
-        stream.close();
-        if (decoder != null) {
-            if (!decoder.isRecycled()) {
-                decoder.recycle();
-            }
+        if (!decoder.isRecycled()) {
+            decoder.recycle();
         }
         if (bitmap != null) {
             if (!bitmap.hasAlpha()) {
@@ -78,12 +104,23 @@ public final class BasicBIOSpi implements BIOServiceProvider {
         if (!file.exists() || !file.isFile()) {
             return null;
         }
-        FileInputStream stream = new FileInputStream(file);
+        return read(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY), config);
+    }
+
+    @Override
+    public Bitmap read(File file, Rect region, Bitmap.Config config) throws IOException {
+        if (!file.exists() || !file.isFile()) {
+            return null;
+        }
+        return read(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY), region, config);
+    }
+
+    @Override
+    public Bitmap read(ParcelFileDescriptor descriptor, Bitmap.Config config) throws IOException {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;
         options.inPreferredConfig = config;
-        Bitmap bitmap = BitmapFactory.decodeFileDescriptor(stream.getFD(), null, options);
-        stream.close();
+        Bitmap bitmap = BitmapFactory.decodeFileDescriptor(descriptor.getFileDescriptor(), null, options);
         if (bitmap != null) {
             if (!bitmap.hasAlpha()) {
                 bitmap.setHasAlpha(true);
@@ -93,20 +130,18 @@ public final class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public Bitmap read(File file, Rect region, Bitmap.Config config) throws IOException {
-        FileInputStream stream = new FileInputStream(file);
+    public Bitmap read(ParcelFileDescriptor descriptor, Rect region, Bitmap.Config config) throws IOException {
         BitmapRegionDecoder decoder;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            decoder = BitmapRegionDecoder.newInstance(stream);
+            decoder = BitmapRegionDecoder.newInstance(descriptor);
         }
         else {
-            decoder = BitmapRegionDecoder.newInstance(stream, false);
+            decoder = BitmapRegionDecoder.newInstance(descriptor.getFileDescriptor(), false);
         }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;
         options.inPreferredConfig = config;
         Bitmap bitmap = decoder.decodeRegion(region, options);
-        stream.close();
         if (decoder != null) {
             if (!decoder.isRecycled()) {
                 decoder.recycle();
@@ -170,19 +205,23 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     @Override
     public Bitmap read(AssetManager assets, String asset, Bitmap.Config config) throws IOException {
-        return read(assets.open(asset), config);
+        try (InputStream stream = assets.open(asset)) {
+            return mRead(stream, config);
+        }
     }
 
     @Override
     public Bitmap read(AssetManager assets, String asset, Rect region, Bitmap.Config config) throws IOException {
-        return read(assets.open(asset), region, config);
+        try (InputStream stream = assets.open(asset)) {
+            return mRead(stream, region, config);
+        }
     }
 
     @Override
     public Bitmap read(Resources res, int id, Bitmap.Config config) throws IOException {
         Bitmap bitmap;
-        try {
-            bitmap = read(res.openRawResource(id), config);
+        try (InputStream stream = res.openRawResource(id)) {
+            bitmap = mRead(stream, config);
         }
         catch (Resources.NotFoundException e) {
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -195,7 +234,9 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     @Override
     public Bitmap read(Resources res, int id, Rect region, Bitmap.Config config) throws IOException {
-        return read(res.openRawResource(id), region, config);
+        try (InputStream stream = res.openRawResource(id)) {
+            return mRead(stream, region, config);
+        }
     }
 
     @Override
@@ -249,12 +290,16 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     @Override
     public Bitmap read(ContentResolver resolver, Uri uri, Bitmap.Config config) throws IOException {
-        return read(resolver.openInputStream(uri), config);
+        try (InputStream stream = resolver.openInputStream(uri)) {
+            return mRead(stream, config);
+        }
     }
 
     @Override
     public Bitmap read(ContentResolver resolver, Uri uri, Rect region, Bitmap.Config config) throws IOException {
-        return read(resolver.openInputStream(uri), region, config);
+        try (InputStream stream = resolver.openInputStream(uri)) {
+            return mRead(stream, region, config);
+        }
     }
 
     @Override
@@ -269,16 +314,21 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     @Override
     public Bitmap read(URL url, Bitmap.Config config) throws IOException {
-        return read(url.openStream(), config);
+        try (InputStream stream = url.openStream()) {
+            return mRead(stream, config);
+        }
     }
 
     @Override
     public Bitmap read(URL url, Rect region, Bitmap.Config config) throws IOException {
-        return read(url.openStream(), region, config);
+        try (InputStream stream = url.openStream()) {
+            return mRead(stream, region, config);
+        }
     }
 
     @Override
     public boolean write(File output, Bitmap bitmap, String formatName, int quality) throws IOException {
+        if (!containsIgnoreCase(WRITER_FORMAT_NAMES, formatName)) return false;
         if (output.exists()) {
             if (!output.delete()) return false;
         }
@@ -290,6 +340,7 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     @Override
     public boolean write(OutputStream output, Bitmap bitmap, String formatName, int quality) throws IOException {
+        if (!containsIgnoreCase(WRITER_FORMAT_NAMES, formatName)) return false;
         quality = clamp(quality, 0, 100);
         boolean result = false;
         String format = formatName.trim().toLowerCase();
@@ -315,7 +366,7 @@ public final class BasicBIOSpi implements BIOServiceProvider {
             }
         }
         else if (format.equals("bmp")) {
-            result = BitmapBMPEncoder.compress(bitmap, output);
+            result = BmpEncoder.compress(bitmap, output);
         }
         output.flush();
         //output.close();

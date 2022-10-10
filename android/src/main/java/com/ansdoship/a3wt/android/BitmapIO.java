@@ -33,16 +33,20 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.BufferedInputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.ansdoship.a3wt.util.A3Streams.closeQuietly;
 
 /**
  * A factory class that providing functions to decode and encode Android Bitmap.
@@ -52,11 +56,13 @@ public final class BitmapIO {
     private BitmapIO(){}
 
     public static Bitmap read(InputStream stream, Bitmap.Config config) throws IOException {
+        if (!stream.markSupported()) stream = new BufferedInputStream(stream);
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(stream, config);
             if (bitmap != null) break;
         }
+        closeQuietly(stream);
         return bitmap;
     }
 
@@ -65,11 +71,13 @@ public final class BitmapIO {
     }
 
     public static Bitmap read(InputStream stream, Rect region, Bitmap.Config config) throws IOException {
+        if (!stream.markSupported()) stream = new BufferedInputStream(stream);
         Bitmap bitmap = null;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
             bitmap = provider.read(stream, region, config);
             if (bitmap != null) break;
         }
+        closeQuietly(stream);
         return bitmap;
     }
 
@@ -101,6 +109,32 @@ public final class BitmapIO {
 
     public static Bitmap read(File file, Rect region) throws IOException {
         return read(file, region, null);
+    }
+
+    public static Bitmap read(ParcelFileDescriptor descriptor, Bitmap.Config config) throws IOException {
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
+            bitmap = provider.read(descriptor, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
+    }
+
+    public static Bitmap read(ParcelFileDescriptor descriptor) throws IOException {
+        return read(descriptor, (Bitmap.Config) null);
+    }
+
+    public static Bitmap read(ParcelFileDescriptor descriptor, Rect region, Bitmap.Config config) throws IOException {
+        Bitmap bitmap = null;
+        for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
+            bitmap = provider.read(descriptor, region, config);
+            if (bitmap != null) break;
+        }
+        return bitmap;
+    }
+
+    public static Bitmap read(ParcelFileDescriptor descriptor, Rect region) throws IOException {
+        return read(descriptor, region, null);
     }
 
     public static Bitmap read(String pathname, Bitmap.Config config) throws IOException {

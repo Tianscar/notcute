@@ -563,7 +563,7 @@ public class A3AWTUtils {
             case Cursor.CROSSHAIR_CURSOR:
                 return A3Cursor.Type.CROSSHAIR;
             case Cursor.TEXT_CURSOR:
-                return A3Cursor.Type.TEXT;
+                return A3Cursor.Type.IBEAM;
             case Cursor.WAIT_CURSOR:
                 return A3Cursor.Type.WAIT;
             case Cursor.SW_RESIZE_CURSOR:
@@ -597,7 +597,7 @@ public class A3AWTUtils {
                 return Cursor.DEFAULT_CURSOR;
             case A3Cursor.Type.CROSSHAIR:
                 return Cursor.CROSSHAIR_CURSOR;
-            case A3Cursor.Type.TEXT:
+            case A3Cursor.Type.IBEAM:
                 return Cursor.TEXT_CURSOR;
             case A3Cursor.Type.WAIT:
                 return Cursor.WAIT_CURSOR;
@@ -730,7 +730,7 @@ public class A3AWTUtils {
     public static BufferedImage getAlignedImage(final BufferedImage source, final int alignX, final int alignY, final int width, final int height) {
         checkArgNotNull(source, "source");
         if (source.getWidth() == width && source.getHeight() == height) return source;
-        final BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage result = new BufferedImage(width, height, source.getType());
         final Graphics2D g2d = result.createGraphics();
         try {
             g2d.drawImage(source, alignX, alignY, null);

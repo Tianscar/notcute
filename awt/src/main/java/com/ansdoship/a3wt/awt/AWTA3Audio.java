@@ -18,6 +18,7 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.getDecodedAudioInputStreamData;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getDecodedAudioInputStreamDataAndClose;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.AWTAudioFormat2AudioFormat;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Streams.MAX_BUFFER_SIZE;
 
 public class AWTA3Audio implements A3Audio {
 
@@ -78,7 +79,7 @@ public class AWTA3Audio implements A3Audio {
         if (!stream.markSupported()) {
             stream = new BufferedInputStream(stream);
         }
-        stream.mark(Integer.MAX_VALUE);
+        stream.mark(MAX_BUFFER_SIZE);
         source = stream;
         reset();
         try (final AudioInputStream tmp = mGetStream()) {
@@ -104,7 +105,7 @@ public class AWTA3Audio implements A3Audio {
             format = AWTAudioFormat2AudioFormat(audioFormat);
             if (result.getFrameLength() == -1) {
                 if (result.markSupported()) {
-                    result.mark(Integer.MAX_VALUE);
+                    result.mark(MAX_BUFFER_SIZE);
                     final Object[] tuple = getDecodedAudioInputStreamData(result, "md5");
                     fileLength = (long) tuple[0];
                     md5 = (byte[]) tuple[1];
@@ -126,7 +127,7 @@ public class AWTA3Audio implements A3Audio {
             format = AWTAudioFormat2AudioFormat(audioFormat);
             if (result.getFrameLength() == -1) {
                 if (result.markSupported()) {
-                    result.mark(Integer.MAX_VALUE);
+                    result.mark(MAX_BUFFER_SIZE);
                     final Object[] tuple = getDecodedAudioInputStreamData(result, "md5");
                     fileLength = (long) tuple[0];
                     md5 = (byte[]) tuple[1];
@@ -149,7 +150,7 @@ public class AWTA3Audio implements A3Audio {
             format = AWTAudioFormat2AudioFormat(audioFormat);
             if (result.getFrameLength() == -1) {
                 if (result.markSupported()) {
-                    result.mark(Integer.MAX_VALUE);
+                    result.mark(MAX_BUFFER_SIZE);
                     final Object[] tuple = getDecodedAudioInputStreamData(result, "md5");
                     fileLength = (long) tuple[0];
                     md5 = (byte[]) tuple[1];

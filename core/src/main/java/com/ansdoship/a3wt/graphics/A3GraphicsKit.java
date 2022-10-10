@@ -54,6 +54,4 @@ public interface A3GraphicsKit {
     A3Cursor createCursor(int type);
     A3Cursor createCursor(A3Image image);
 
-    A3Image screenshot(int left, int top, int right, int bottom);
-
 }

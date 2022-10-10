@@ -29,6 +29,7 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.getDecodedAudioInputStreamLength
 import static com.ansdoship.a3wt.util.A3Streams.closeQuietly;
 import static com.ansdoship.a3wt.util.A3Streams.readNBytes;
 import static com.ansdoship.a3wt.util.A3Streams.skipNBytes;
+import static com.ansdoship.a3wt.util.A3Streams.MAX_BUFFER_SIZE;
 
 /**
  * The {@code AudioCue} class functions as a data line, where the
@@ -188,7 +189,7 @@ public class AudioCue implements AudioMixerTrack
 			final AudioInputStream result = getDecodedAudioInputStream(AudioSystem.getAudioInputStream((File) source));
 			if (result.getFrameLength() == -1) {
 				if (result.markSupported()) {
-					result.mark(Integer.MAX_VALUE);
+					result.mark(MAX_BUFFER_SIZE);
 					fileLength = getDecodedAudioInputStreamLength(result);
 					result.reset();
 				}
@@ -204,7 +205,7 @@ public class AudioCue implements AudioMixerTrack
 			final AudioInputStream result = getDecodedAudioInputStream(AudioSystem.getAudioInputStream((URL) source));
 			if (result.getFrameLength() == -1) {
 				if (result.markSupported()) {
-					result.mark(Integer.MAX_VALUE);
+					result.mark(MAX_BUFFER_SIZE);
 					fileLength = getDecodedAudioInputStreamLength(result);
 					result.reset();
 				}
@@ -221,7 +222,7 @@ public class AudioCue implements AudioMixerTrack
 			final AudioInputStream result = getDecodedAudioInputStream(AudioSystem.getAudioInputStream((InputStream) source));
 			if (result.getFrameLength() == -1) {
 				if (result.markSupported()) {
-					result.mark(Integer.MAX_VALUE);
+					result.mark(MAX_BUFFER_SIZE);
 					fileLength = getDecodedAudioInputStreamLength(result);
 					result.reset();
 				}
@@ -525,7 +526,7 @@ public class AudioCue implements AudioMixerTrack
 			if (!stream.markSupported()) {
 				stream = new BufferedInputStream(stream);
 			}
-			stream.mark(Integer.MAX_VALUE);
+			stream.mark(MAX_BUFFER_SIZE);
 
 			return new AudioCue(null, name, stream, polyphony);
 		}
