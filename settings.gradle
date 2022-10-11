@@ -1,4 +1,8 @@
 rootProject.name = 'a3wt'
 include ':core'
-include ':android'
+
+if(!System.getProperty("user.name").endsWith("浩")){
+    include ':android'
+}
+
 include ':awt'
