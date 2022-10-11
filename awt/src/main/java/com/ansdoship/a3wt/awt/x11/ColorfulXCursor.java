@@ -10,6 +10,7 @@ import sun.misc.Unsafe;
 
 import java.awt.Point;
 import java.awt.Image;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class ColorfulXCursor extends CustomCursor {
@@ -21,13 +22,12 @@ public class ColorfulXCursor extends CustomCursor {
     @Override
     protected void createNativeCursor(final Image im, final int[] pixels, final int width, final int height, final int xHotSpot, final int yHotSpot) {
         try {
-            Class<?> xToolkit = Class.forName("sun.awt.X11.XToolkit");
-
-            Method awtLock = xToolkit.getMethod("awtLock");
+            final Class<?> xToolkit = Class.forName("sun.awt.X11.XToolkit");
+            final Method awtLock = xToolkit.getMethod("awtLock");
             awtLock.invoke(null);
-//            XToolkit.awtLock();
+            //XToolkit.awtLock();
             try {
-                Unsafe UNSAFE = A3Unsafe.getUnsafe();
+                final Unsafe UNSAFE = A3Unsafe.getUnsafe();
                 final long pNativePixels = UNSAFE.allocateMemory(pixels.length * 4L);
                 final Pointer nativePixels = Pointer.wrap(Runtime.getSystemRuntime(), pNativePixels);
                 nativePixels.put(0, pixels, 0, pixels.length);
@@ -37,27 +37,23 @@ public class ColorfulXCursor extends CustomCursor {
                 xCursorImage.setYhot(yHotSpot);
                 xCursorImage.setPixels(nativePixels);
 
-                Method getDisplay = xToolkit.getMethod("getDisplay");
-                Object dpy = getDisplay.invoke(null);
+                final Method getDisplay = xToolkit.getMethod("getDisplay");
+                final long dpy = (long) getDisplay.invoke(null);
 
-//                final long pData = XCURSOR.XcursorImageLoadCursor(XToolkit.getDisplay(), xCursorImage);
-                final long pData = XCURSOR.XcursorImageLoadCursor((Long) dpy, xCursorImage);
+                final long pData = XCURSOR.XcursorImageLoadCursor(dpy, xCursorImage);
+                //final long pData = XCURSOR.XcursorImageLoadCursor(XToolkit.getDisplay(), xCursorImage);
                 XCURSOR.XcursorImageDestroy(xCursorImage);
                 UNSAFE.freeMemory(pNativePixels);
                 AWTAccessor.getCursorAccessor().setPData(this, pData);
             }
             finally {
-                Method awtUnlock = xToolkit.getMethod("awtUnlock");
+                final Method awtUnlock = xToolkit.getMethod("awtUnlock");
                 awtUnlock.invoke(null);
-//                XToolkit.awtUnlock();
+                //XToolkit.awtUnlock();
             }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            e.printStackTrace();
         }
-
-
-
     }
 
 }
