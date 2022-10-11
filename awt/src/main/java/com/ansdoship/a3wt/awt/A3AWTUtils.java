@@ -1,7 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Clipboard;
-import com.ansdoship.a3wt.awt.x11.ColorfulXCursor;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -105,45 +104,53 @@ public class A3AWTUtils {
 
     public static int strokeJoin2BasicStrokeJoin(final int join) {
         switch (join) {
-            case A3Graphics.Join.MITER: default:
+            case A3Graphics.Join.MITER:
                 return BasicStroke.JOIN_MITER;
             case A3Graphics.Join.ROUND:
                 return BasicStroke.JOIN_ROUND;
             case A3Graphics.Join.BEVEL:
                 return BasicStroke.JOIN_BEVEL;
+            default:
+                return -1;
         }
     }
 
     public static int strokeCap2BasicStrokeCap(final int cap) {
         switch (cap) {
-            case A3Graphics.Cap.BUTT: default:
+            case A3Graphics.Cap.BUTT:
                 return BasicStroke.CAP_BUTT;
             case A3Graphics.Cap.ROUND:
                 return BasicStroke.CAP_ROUND;
             case A3Graphics.Cap.SQUARE:
                 return BasicStroke.CAP_SQUARE;
+            default:
+                return -1;
         }
     }
 
     public static int basicStrokeJoin2StrokeJoin(final int join) {
         switch (join) {
-            case BasicStroke.JOIN_MITER: default:
+            case BasicStroke.JOIN_MITER:
                 return A3Graphics.Join.MITER;
             case BasicStroke.JOIN_ROUND:
                 return A3Graphics.Join.ROUND;
             case BasicStroke.JOIN_BEVEL:
                 return A3Graphics.Join.BEVEL;
+            default:
+                return -1;
         }
     }
 
     public static int basicStrokeCap2StrokeCap(final int cap) {
         switch (cap) {
-            case BasicStroke.CAP_BUTT: default:
+            case BasicStroke.CAP_BUTT:
                 return A3Graphics.Cap.BUTT;
             case BasicStroke.CAP_ROUND:
                 return A3Graphics.Cap.ROUND;
             case BasicStroke.CAP_SQUARE:
                 return A3Graphics.Cap.SQUARE;
+            default:
+                return -1;
         }
     }
 
@@ -161,7 +168,7 @@ public class A3AWTUtils {
 
     public static int fontStyle2AWTFontStyle(final int style) {
         switch (style) {
-            case A3Font.Style.NORMAL: default:
+            case A3Font.Style.NORMAL:
                 return Font.PLAIN;
             case A3Font.Style.BOLD:
                 return Font.BOLD;
@@ -169,6 +176,8 @@ public class A3AWTUtils {
                 return Font.ITALIC;
             case A3Font.Style.BOLD_ITALIC:
                 return Font.BOLD | Font.ITALIC;
+            default:
+                return -1;
         }
     }
 
@@ -202,12 +211,14 @@ public class A3AWTUtils {
 
     public static int mouseEventButton2Button(final int button) {
         switch (button) {
-            case MouseEvent.BUTTON1: default:
+            case MouseEvent.BUTTON1:
                 return A3InputListener.Button.LEFT;
             case MouseEvent.BUTTON2:
                 return A3InputListener.Button.MIDDLE;
             case MouseEvent.BUTTON3:
                 return A3InputListener.Button.RIGHT;
+            default:
+                return -1;
         }
     }
 
@@ -552,14 +563,14 @@ public class A3AWTUtils {
         checkArgNotNull(image, "image");
         checkArgNotNull(name, "name");
         final Point hotSpot = new Point(hotSpotX, hotSpotY);
-        return AWTA3Platform.isX11() ? new ColorfulXCursor(image, hotSpot, name) :
+        return AWTA3Platform.isX11() ? new com.ansdoship.a3wt.awt.x11.ColorfulXCursor(image, hotSpot, name) :
                 Toolkit.getDefaultToolkit().createCustomCursor(image, hotSpot, name);
     }
 
     public static int AWTCursorType2CursorType(final int type) {
         switch (type) {
             case Cursor.DEFAULT_CURSOR:
-                return A3Cursor.Type.DEFAULT;
+                return A3Cursor.Type.ARROW;
             case Cursor.CROSSHAIR_CURSOR:
                 return A3Cursor.Type.CROSSHAIR;
             case Cursor.TEXT_CURSOR:
@@ -593,7 +604,7 @@ public class A3AWTUtils {
 
     public static int cursorType2AWTCursorType(final int type) {
         switch (type) {
-            case A3Cursor.Type.DEFAULT:
+            case A3Cursor.Type.ARROW:
                 return Cursor.DEFAULT_CURSOR;
             case A3Cursor.Type.CROSSHAIR:
                 return Cursor.CROSSHAIR_CURSOR;

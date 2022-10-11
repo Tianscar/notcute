@@ -18,7 +18,9 @@ import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
+import android.view.PointerIcon;
 import com.ansdoship.a3wt.app.A3Clipboard;
+import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3FramedImage;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -79,51 +81,59 @@ public class A3AndroidUtils {
 
     public static Paint.Join strokeJoin2PaintStrokeJoin(final int join) {
         switch (join) {
-            case A3Graphics.Join.MITER: default:
+            case A3Graphics.Join.MITER:
                 return Paint.Join.MITER;
             case A3Graphics.Join.ROUND:
                 return Paint.Join.ROUND;
             case A3Graphics.Join.BEVEL:
                 return Paint.Join.BEVEL;
+            default:
+                return null;
         }
     }
 
     public static Paint.Cap strokeCap2PaintStrokeCap(final int cap) {
         switch (cap) {
-            case A3Graphics.Cap.BUTT: default:
+            case A3Graphics.Cap.BUTT:
                 return Paint.Cap.BUTT;
             case A3Graphics.Cap.ROUND:
                 return Paint.Cap.ROUND;
             case A3Graphics.Cap.SQUARE:
                 return Paint.Cap.SQUARE;
+            default:
+                return null;
         }
     }
 
     public static int paintStrokeJoin2StrokeJoin(final Paint.Join join) {
         switch (join) {
-            case MITER: default:
+            case MITER:
                 return A3Graphics.Join.MITER;
             case ROUND:
                 return A3Graphics.Join.ROUND;
             case BEVEL:
                 return A3Graphics.Join.BEVEL;
+            default:
+                return -1;
         }
     }
 
     public static int paintStrokeCap2StrokeCap(final Paint.Cap cap) {
         switch (cap) {
-            case BUTT: default:
+            case BUTT:
                 return A3Graphics.Cap.BUTT;
             case ROUND:
                 return A3Graphics.Cap.ROUND;
             case SQUARE:
                 return A3Graphics.Cap.SQUARE;
+            default:
+                return -1;
         }
     }
 
     public static int typefaceStyle2FontStyle(final int style) {
         switch (style) {
-            case Typeface.NORMAL: default:
+            case Typeface.NORMAL:
                 return A3Font.Style.NORMAL;
             case Typeface.BOLD:
                 return A3Font.Style.BOLD;
@@ -131,12 +141,14 @@ public class A3AndroidUtils {
                 return A3Font.Style.ITALIC;
             case Typeface.BOLD_ITALIC:
                 return A3Font.Style.BOLD_ITALIC;
+            default:
+                return -1;
         }
     }
 
     public static int fontStyle2TypefaceStyle(final int style) {
         switch (style) {
-            case A3Font.Style.NORMAL: default:
+            case A3Font.Style.NORMAL:
                 return Typeface.NORMAL;
             case A3Font.Style.BOLD:
                 return Typeface.BOLD;
@@ -144,15 +156,19 @@ public class A3AndroidUtils {
                 return Typeface.ITALIC;
             case A3Font.Style.BOLD_ITALIC:
                 return Typeface.BOLD_ITALIC;
+            default:
+                return -1;
         }
     }
 
     public static Paint.Style style2PaintStyle(final int style) {
         switch (style) {
-            case A3Graphics.Style.STROKE: default:
+            case A3Graphics.Style.STROKE:
                 return Paint.Style.STROKE;
             case A3Graphics.Style.FILL:
                 return Paint.Style.FILL;
+            default:
+                return null;
         }
     }
 
@@ -225,6 +241,39 @@ public class A3AndroidUtils {
         }
     }
 
+    public static int buttonState2Button(final int buttonState) {
+        if (buttonState == 0 || (buttonState & MotionEvent.BUTTON_PRIMARY) != 0) return A3InputListener.Button.LEFT;
+        else if ((buttonState & MotionEvent.BUTTON_SECONDARY) != 0) return A3InputListener.Button.RIGHT;
+        else if ((buttonState & MotionEvent.BUTTON_TERTIARY) != 0) return A3InputListener.Button.MIDDLE;
+        else return -1;
+    }
+
+    public static int motionEventButton2Button(final int button) {
+        switch (button) {
+            case MotionEvent.BUTTON_PRIMARY:
+                return A3InputListener.Button.LEFT;
+            case MotionEvent.BUTTON_SECONDARY:
+                return A3InputListener.Button.RIGHT;
+            case MotionEvent.BUTTON_TERTIARY:
+                return A3InputListener.Button.MIDDLE;
+            default:
+                return -1;
+        }
+    }
+
+    public static int button2MotionEventButton(final int button) {
+        switch (button) {
+            case A3InputListener.Button.LEFT:
+                return MotionEvent.BUTTON_PRIMARY;
+            case A3InputListener.Button.RIGHT:
+                return MotionEvent.BUTTON_SECONDARY;
+            case A3InputListener.Button.MIDDLE:
+                return MotionEvent.BUTTON_TERTIARY;
+            default:
+                return -1;
+        }
+    }
+
     public static boolean commonOnTouchEvent(final List<A3InputListener> listeners, final MotionEvent event) {
         checkArgNotNull(listeners, "listeners");
         checkArgNotNull(event, "event");
@@ -234,22 +283,49 @@ public class A3AndroidUtils {
         final int pointerIndex = event.getPointerCount() - 1;
         final float x = event.getX(pointerIndex);
         final float y = event.getY(pointerIndex);
-        for (A3InputListener listener : listeners) {
-            switch (event.getAction()) {
+        final int buttonState = event.getButtonState();
+        for (final A3InputListener listener : listeners) {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_BUTTON_PRESS:
                 case MotionEvent.ACTION_DOWN:
                 case MotionEvent.ACTION_POINTER_DOWN:
-                    if (!downResult) downResult = listener.pointerDown(x, y, pointerIndex, A3InputListener.Button.LEFT);
+                    if (!downResult) downResult = listener.pointerDown(x, y, pointerIndex, buttonState2Button(buttonState));
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (!moveResult) moveResult = listener.pointerDragged(x, y, pointerIndex);
                     break;
+                case MotionEvent.ACTION_BUTTON_RELEASE:
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_POINTER_UP:
-                    if (!upResult) upResult = listener.pointerUp(x, y, pointerIndex, A3InputListener.Button.LEFT);
+                    if (!upResult) upResult = listener.pointerUp(x, y, pointerIndex, buttonState2Button(buttonState));
                     break;
             }
         }
         return downResult || moveResult || upResult;
+    }
+
+    public static boolean commonOnHoverEvent(final List<A3InputListener> listeners, final MotionEvent event) {
+        checkArgNotNull(listeners, "listeners");
+        checkArgNotNull(event, "event");
+        boolean enterResult = false;
+        boolean moveResult = false;
+        boolean exitResult = false;
+        final float x = event.getX();
+        final float y = event.getY();
+        for (final A3InputListener listener : listeners) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_HOVER_ENTER:
+                    if (!enterResult) enterResult = listener.mouseEntered(x, y);
+                    break;
+                case MotionEvent.ACTION_HOVER_MOVE:
+                    if (!moveResult) moveResult = listener.mouseMoved(x, y);
+                    break;
+                case MotionEvent.ACTION_HOVER_EXIT:
+                    if (!exitResult) exitResult = listener.mouseExited(x, y);
+                    break;
+            }
+        }
+        return enterResult || moveResult || exitResult;
     }
 
     public static int getScreenWidth(final Resources resources) {
@@ -444,6 +520,114 @@ public class A3AndroidUtils {
         }
         finally {
             if (!drawable.isRecycled()) drawable.recycle();
+        }
+    }
+
+    public static int cursorType2PointerIconType(int type) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            switch (type) {
+                case A3Cursor.Type.GONE:
+                    return PointerIcon.TYPE_NULL;
+                case A3Cursor.Type.ARROW:
+                    return PointerIcon.TYPE_ARROW;
+                case A3Cursor.Type.CROSSHAIR:
+                    return PointerIcon.TYPE_CROSSHAIR;
+                case A3Cursor.Type.IBEAM:
+                    return PointerIcon.TYPE_TEXT;
+                case A3Cursor.Type.WAIT:
+                    return PointerIcon.TYPE_WAIT;
+                case A3Cursor.Type.RESIZE_NS:
+
+                case A3Cursor.Type.RESIZE_N://FIXME
+                case A3Cursor.Type.RESIZE_S://FIXME
+
+                    return PointerIcon.TYPE_VERTICAL_DOUBLE_ARROW;
+                case A3Cursor.Type.RESIZE_WE:
+
+                case A3Cursor.Type.RESIZE_W://FIXME
+                case A3Cursor.Type.RESIZE_E://FIXME
+
+                    return PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW;
+                case A3Cursor.Type.RESIZE_NWSE:
+
+                case A3Cursor.Type.RESIZE_NW://FIXME
+                case A3Cursor.Type.RESIZE_SE://FIXME
+
+                    return PointerIcon.TYPE_TOP_LEFT_DIAGONAL_DOUBLE_ARROW;
+                case A3Cursor.Type.RESIZE_NESW:
+
+                case A3Cursor.Type.RESIZE_NE://FIXME
+                case A3Cursor.Type.RESIZE_SW://FIXME
+
+                    return PointerIcon.TYPE_TOP_RIGHT_DIAGONAL_DOUBLE_ARROW;
+                case A3Cursor.Type.HAND:
+                    return PointerIcon.TYPE_HAND;
+                case A3Cursor.Type.MOVE:
+                    return PointerIcon.TYPE_ALL_SCROLL;
+                case A3Cursor.Type.GRAB:
+                    return PointerIcon.TYPE_GRAB;
+                case A3Cursor.Type.GRABBING:
+                    return PointerIcon.TYPE_GRABBING;
+                case A3Cursor.Type.HELP:
+                    return PointerIcon.TYPE_HELP;
+                case A3Cursor.Type.NO:
+                    return PointerIcon.TYPE_NO_DROP;
+                case A3Cursor.Type.ZOOM_IN:
+                    return PointerIcon.TYPE_ZOOM_IN;
+                case A3Cursor.Type.ZOOM_OUT:
+                    return PointerIcon.TYPE_ZOOM_OUT;
+                default:
+                    return -1;
+            }
+        }
+        else {
+            return -1;
+        }
+    }
+
+    public static int pointerIconType2CursorType(int type) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            switch (type) {
+                case PointerIcon.TYPE_NULL:
+                    return A3Cursor.Type.GONE;
+                case PointerIcon.TYPE_ARROW:
+                    return A3Cursor.Type.ARROW;
+                case PointerIcon.TYPE_CROSSHAIR:
+                    return A3Cursor.Type.CROSSHAIR;
+                case PointerIcon.TYPE_TEXT:
+                    return A3Cursor.Type.IBEAM;
+                case PointerIcon.TYPE_WAIT:
+                    return A3Cursor.Type.WAIT;
+                case PointerIcon.TYPE_VERTICAL_DOUBLE_ARROW:
+                    return A3Cursor.Type.RESIZE_NS;
+                case PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW:
+                    return A3Cursor.Type.RESIZE_WE;
+                case PointerIcon.TYPE_TOP_LEFT_DIAGONAL_DOUBLE_ARROW:
+                    return A3Cursor.Type.RESIZE_NWSE;
+                case PointerIcon.TYPE_TOP_RIGHT_DIAGONAL_DOUBLE_ARROW:
+                    return A3Cursor.Type.RESIZE_NESW;
+                case PointerIcon.TYPE_HAND:
+                    return A3Cursor.Type.HAND;
+                case PointerIcon.TYPE_ALL_SCROLL:
+                    return A3Cursor.Type.MOVE;
+                case PointerIcon.TYPE_GRAB:
+                    return A3Cursor.Type.GRAB;
+                case PointerIcon.TYPE_GRABBING:
+                    return A3Cursor.Type.GRABBING;
+                case PointerIcon.TYPE_HELP:
+                    return A3Cursor.Type.HELP;
+                case PointerIcon.TYPE_NO_DROP:
+                    return A3Cursor.Type.NO;
+                case PointerIcon.TYPE_ZOOM_IN:
+                    return A3Cursor.Type.ZOOM_IN;
+                case PointerIcon.TYPE_ZOOM_OUT:
+                    return A3Cursor.Type.ZOOM_OUT;
+                default:
+                    return -1;
+            }
+        }
+        else {
+            return -1;
         }
     }
 

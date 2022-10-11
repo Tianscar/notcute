@@ -31,7 +31,7 @@ import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3GraphicsKit implements A3GraphicsKit {
 
-    public static BufferedImage getSupportedImage(final BufferedImage source, final String format) {
+    protected static BufferedImage getSupportedImage(final BufferedImage source, final String format) {
         checkArgNotNull(source, "source");
         checkArgNotNull(format, "format");
         if (format.equalsIgnoreCase("jpg") || format.equalsIgnoreCase("jpeg")) {
@@ -265,6 +265,11 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     public A3Cursor createCursor(final A3Image image) {
         if (image instanceof A3FramedImage) return new AWTA3Cursor((AWTA3Image) ((A3FramedImage)image).get());
         return new AWTA3Cursor((AWTA3Image) image);
+    }
+
+    @Override
+    public A3Cursor getDefaultCursor() {
+        return AWTA3Cursor.getDefaultCursor();
     }
 
 }

@@ -36,6 +36,7 @@ import static com.ansdoship.a3wt.android.A3AndroidUtils.getSharedPreferencesDir;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.isExternalStorageWriteable;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.getStorageDir;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnHoverEvent;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
@@ -43,11 +44,16 @@ import static com.ansdoship.a3wt.util.A3Colors.WHITE;
 import static com.ansdoship.a3wt.util.A3Files.createDirIfNotExist;
 
 public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Context, SurfaceHolder.Callback,
-        View.OnLayoutChangeListener, View.OnTouchListener, View.OnKeyListener {
+        View.OnLayoutChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnKeyListener {
 
     @Override
     public boolean onTouch(final View v, final MotionEvent event) {
         return commonOnTouchEvent(handle.inputListeners, event);
+    }
+
+    @Override
+    public boolean onHover(final View v, final MotionEvent event) {
+        return commonOnHoverEvent(handle.inputListeners, event);
     }
 
     @Override
@@ -377,6 +383,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         handle.surfaceHolder.addCallback(this);
         addOnLayoutChangeListener(this);
         setOnTouchListener(this);
+        setOnHoverListener(this);
         setOnKeyListener(this);
     }
 

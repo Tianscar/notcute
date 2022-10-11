@@ -77,7 +77,7 @@ public class AWTA3Graphics implements A3Graphics {
     public void drawColor() {
         checkDisposed("Can't call clearColor() on a disposed A3Graphics");
         switch (data.getStyle()) {
-            case Style.STROKE: default:
+            case Style.STROKE:
                 graphics2D.drawRect(0, 0, width, height);
                 break;
             case Style.FILL:
@@ -93,7 +93,7 @@ public class AWTA3Graphics implements A3Graphics {
 
     private void mDrawShape(final Shape shape) {
         switch (data.getStyle()) {
-            case Style.STROKE: default:
+            case Style.STROKE:
                 graphics2D.draw(shape);
                 break;
             case Style.FILL:

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnHoverEvent;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
@@ -310,6 +311,10 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
             @Override
             public boolean onTouchEvent(final MotionEvent event) {
                 return commonOnTouchEvent(handle.inputListeners, event) || performClick() || super.onTouchEvent(event);
+            }
+            @Override
+            public boolean onHoverEvent(final MotionEvent event) {
+                return commonOnHoverEvent(handle.inputListeners, event) || super.onHoverEvent(event);
             }
             @Override
             public boolean performClick() {

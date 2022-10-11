@@ -32,7 +32,10 @@ public class AWTA3Cursor implements A3Cursor {
         if (type == Type.GONE) {
             cursor = A3AWTUtils.getGoneCursor();
         }
-        else cursor = Cursor.getPredefinedCursor(cursorType2AWTCursorType(type));
+        else {
+            final int type0 = cursorType2AWTCursorType(type);
+            cursor = Cursor.getPredefinedCursor(type0 == -1 ? Cursor.DEFAULT_CURSOR : type0);
+        }
     }
 
     public AWTA3Cursor(final AWTA3Image image) {

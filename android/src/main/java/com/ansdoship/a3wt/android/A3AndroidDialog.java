@@ -28,15 +28,21 @@ import java.util.List;
 import java.util.ArrayList;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnHoverEvent;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class A3AndroidDialog extends Dialog implements AndroidA3Container,
-        View.OnLayoutChangeListener, DialogInterface.OnDismissListener, DialogInterface.OnKeyListener {
+        View.OnLayoutChangeListener, View.OnHoverListener, DialogInterface.OnDismissListener, DialogInterface.OnKeyListener {
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         return commonOnTouchEvent(handle.inputListeners, event) || super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onHover(final View v, final MotionEvent event) {
+        return commonOnHoverEvent(handle.inputListeners, event);
     }
 
     @Override
@@ -327,6 +333,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         if (surfaceView == null) surfaceView = new A3AndroidSurfaceView(getOwnerActivity());
         setContentView(surfaceView);
         getWindow().getDecorView().addOnLayoutChangeListener(this);
+        getWindow().getDecorView().setOnHoverListener(this);
         setOnDismissListener(this);
         setOnKeyListener(this);
         if (handle == null) handle = new A3AndroidDialogHandle(this);

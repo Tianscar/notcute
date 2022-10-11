@@ -187,4 +187,9 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
         return null;
     }
 
+    @Override
+    public A3Cursor getDefaultCursor() {
+        return null;
+    }
+
 }

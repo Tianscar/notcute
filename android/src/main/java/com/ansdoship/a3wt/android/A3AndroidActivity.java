@@ -27,14 +27,20 @@ import java.util.List;
 import java.util.ArrayList;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnHoverEvent;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
-public class A3AndroidActivity extends Activity implements AndroidA3Container, View.OnLayoutChangeListener {
+public class A3AndroidActivity extends Activity implements AndroidA3Container, View.OnLayoutChangeListener, View.OnHoverListener {
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         return commonOnTouchEvent(handle.inputListeners, event) || super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean onHover(final View v, final MotionEvent event) {
+        return commonOnHoverEvent(handle.inputListeners, event);
     }
 
     @Override
@@ -323,6 +329,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         if (surfaceView == null) surfaceView = new A3AndroidSurfaceView(this);
         setContentView(surfaceView);
         getWindow().getDecorView().addOnLayoutChangeListener(this);
+        getWindow().getDecorView().setOnHoverListener(this);
         if (handle == null) handle = new A3AndroidActivityHandle(this);
         handle.postRunnable(new Runnable() {
             @Override
@@ -369,12 +376,12 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     @Override
     public void onWindowFocusChanged(final boolean hasFocus) {
         if (hasFocus) {
-            for (A3ContainerListener listener : handle.containerListeners) {
+            for (final A3ContainerListener listener : handle.containerListeners) {
                 listener.containerFocusGained();
             }
         }
         else {
-            for (A3ContainerListener listener : handle.containerListeners) {
+            for (final A3ContainerListener listener : handle.containerListeners) {
                 listener.containerFocusLost();
             }
         }
@@ -396,7 +403,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         if (isFinishing()) {
             dispose();
             super.onDestroy();
-            for (A3ContainerListener listener : handle.containerListeners) {
+            for (final A3ContainerListener listener : handle.containerListeners) {
                 listener.containerDisposed();
             }
             handle = null;
@@ -411,10 +418,10 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
                                final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
         final int width = right - left;
         final int height = bottom - top;
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (final A3ContainerListener listener : handle.containerListeners) {
             listener.containerResized(width, height);
         }
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (final A3ContainerListener listener : handle.containerListeners) {
             listener.containerMoved(left, top);
         }
     }
@@ -422,7 +429,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     @Override
     public void finish() {
         boolean close = true;
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (final A3ContainerListener listener : handle.containerListeners) {
             close = close && listener.containerCloseRequested();
         }
         if (close) super.finish();
