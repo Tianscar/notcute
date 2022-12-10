@@ -16,38 +16,41 @@ import java.util.List;
 public interface A3Context extends A3Disposable {
 
     interface Handle {
+
+        A3Context getContext();
+
         A3Platform getPlatform();
         A3GraphicsKit getGraphicsKit();
         A3MediaKit getMediaKit();
         A3MediaPlayer getMediaPlayer();
 
-        void postRunnable(Runnable runnable);
+        void postRunnable(final Runnable runnable);
 
         A3Graphics getGraphics();
 
         int getWidth();
         int getHeight();
         int getBackgroundColor();
-        void setBackgroundColor(int color);
+        void setBackgroundColor(final int color);
 
         long elapsed();
-        void paint(A3Graphics graphics);
+        void paint(final A3Graphics graphics, final boolean snapshot);
         void update();
 
-        A3Image snapshot();
+        A3Image updateAndSnapshot();
 
         List<A3ContextListener> getContextListeners();
-        void addContextListener(A3ContextListener listener);
+        void addContextListener(final A3ContextListener listener);
 
         List<A3InputListener> getContextInputListeners();
-        void addContextInputListener(A3InputListener listener);
+        void addContextInputListener(final A3InputListener listener);
 
-        A3Preferences getPreferences(String name);
-        boolean deletePreferences(String name);
+        A3Preferences getPreferences(final String name);
+        boolean deletePreferences(final String name);
         A3Assets getAssets();
         File getConfigDir();
         File getCacheDir();
-        File getFilesDir(String type);
+        File getFilesDir(final String type);
         File getHomeDir();
         File getTmpDir();
 
@@ -60,22 +63,22 @@ public interface A3Context extends A3Disposable {
         int getPPI();
         float getDensity();
         float getScaledDensity();
-        default float px2dp(float px) {
+        default float px2dp(final float px) {
             return px / getDensity();
         }
-        default float dp2px(float dp) {
+        default float dp2px(final float dp) {
             return dp * getDensity();
         }
-        default float px2sp(float px) {
+        default float px2sp(final float px) {
             return px / getScaledDensity();
         }
-        default float sp2px(float sp) {
+        default float sp2px(final float sp) {
             return sp * getScaledDensity();
         }
         A3Clipboard getClipboard();
         A3Clipboard getSelection();
 
-        void setCursor(A3Cursor cursor);
+        void setCursor(final A3Cursor cursor);
         A3Cursor getCursor();
     }
 

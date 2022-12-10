@@ -43,12 +43,12 @@ public abstract class A3ContainerAdapter implements A3ContainerListener {
     }
 
     @Override
-    public void containerResized(int width, int height) {
+    public void containerResized(final int width, final int height) {
 
     }
 
     @Override
-    public void containerMoved(int x, int y) {
+    public void containerMoved(final int x, final int y) {
 
     }
 

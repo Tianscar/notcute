@@ -28,6 +28,7 @@ import java.util.ArrayList;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnHoverEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnMouseWheelMotion;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
@@ -270,17 +271,17 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
 
         @Override
         public A3Clipboard getSelection() {
-            return null;
+            return popupWindow.surfaceView.handle.getSelection();
         }
 
         @Override
-        public void setCursor(A3Cursor cursor) {
-
+        public void setCursor(final A3Cursor cursor) {
+            popupWindow.surfaceView.handle.setCursor(cursor);
         }
 
         @Override
         public A3Cursor getCursor() {
-            return null;
+            return popupWindow.surfaceView.handle.getCursor();
         }
     }
 
@@ -315,6 +316,10 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
             @Override
             public boolean onHoverEvent(final MotionEvent event) {
                 return commonOnHoverEvent(handle.inputListeners, event) || super.onHoverEvent(event);
+            }
+            @Override
+            public boolean onGenericMotionEvent(final MotionEvent event) {
+                return commonOnMouseWheelMotion(handle.inputListeners, event) || super.onGenericMotionEvent(event);
             }
             @Override
             public boolean performClick() {

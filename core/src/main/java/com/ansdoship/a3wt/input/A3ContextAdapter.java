@@ -15,12 +15,12 @@ public abstract class A3ContextAdapter implements A3ContextListener {
     }
 
     @Override
-    public void contextResized(int width, int height) {
+    public void contextResized(final int width, final int height) {
 
     }
 
     @Override
-    public void contextMoved(int x, int y) {
+    public void contextMoved(final int x, final int y) {
 
     }
 
@@ -35,7 +35,7 @@ public abstract class A3ContextAdapter implements A3ContextListener {
     }
 
     @Override
-    public void contextPainted(A3Graphics graphics) {
+    public void contextPainted(final A3Graphics graphics, final boolean snapshot) {
 
     }
 

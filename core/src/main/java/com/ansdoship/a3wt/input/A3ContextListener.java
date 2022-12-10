@@ -6,11 +6,11 @@ public interface A3ContextListener {
 
     void contextCreated();
     void contextDisposed();
-    void contextResized(int width, int height);
-    void contextMoved(int x, int y);
+    void contextResized(final int width, final int height);
+    void contextMoved(final int x, final int y);
     void contextShown();
     void contextHidden();
-    void contextPainted(A3Graphics graphics);
+    void contextPainted(final A3Graphics graphics, final boolean snapshot);
     void contextFocusGained();
     void contextFocusLost();
 

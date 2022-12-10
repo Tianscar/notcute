@@ -36,22 +36,24 @@ public interface A3Audio extends A3Disposable {
     }
 
     interface Format extends A3Copyable<Format> {
-        void setEncoding(String encoding);
+        void setEncoding(final String encoding);
         String getEncoding();
-        void setSampleRate(float sampleRate);
+        void setSampleRate(final float sampleRate);
         float getSampleRate();
-        void setSampleSizeInBits(int sampleSizeInBits);
+        void setSampleSizeInBits(final int sampleSizeInBits);
         int getSampleSizeInBits();
-        void setChannels(int channels);
+        void setChannels(final int channels);
         int getChannels();
-        void setFrameSize(int frameSize);
+        void setFrameSize(final int frameSize);
         int getFrameSize();
-        void setFrameRate(float frameRate);
+        void setFrameRate(final float frameRate);
         float getFrameRate();
-        void setBigEndian(boolean bigEndian);
+        void setBigEndian(final boolean bigEndian);
         boolean isBigEndian();
         Map<String, Object> properties();
-        boolean matches(Format format);
+        boolean matches(final Format format);
+
+        void reset();
     }
 
     class DefaultFormat implements Format {
@@ -65,6 +67,10 @@ public interface A3Audio extends A3Disposable {
         protected int sampleSizeInBits;
 
         private final Map<String, Object> properties = new HashMap<>();
+
+        public DefaultFormat() {
+            reset();
+        }
 
         public DefaultFormat(final String encoding,
                              final float sampleRate,
@@ -114,7 +120,7 @@ public interface A3Audio extends A3Disposable {
         }
 
         @Override
-        public void setEncoding(String encoding) {
+        public void setEncoding(final String encoding) {
             this.encoding = encoding;
         }
 
@@ -124,7 +130,7 @@ public interface A3Audio extends A3Disposable {
         }
 
         @Override
-        public void setSampleRate(float sampleRate) {
+        public void setSampleRate(final float sampleRate) {
             this.sampleRate = sampleRate;
         }
 
@@ -134,7 +140,7 @@ public interface A3Audio extends A3Disposable {
         }
 
         @Override
-        public void setSampleSizeInBits(int sampleSizeInBits) {
+        public void setSampleSizeInBits(final int sampleSizeInBits) {
             this.sampleSizeInBits = sampleSizeInBits;
         }
 
@@ -144,7 +150,7 @@ public interface A3Audio extends A3Disposable {
         }
 
         @Override
-        public void setChannels(int channels) {
+        public void setChannels(final int channels) {
             this.channels = channels;
         }
 
@@ -154,7 +160,7 @@ public interface A3Audio extends A3Disposable {
         }
 
         @Override
-        public void setFrameSize(int frameSize) {
+        public void setFrameSize(final int frameSize) {
             this.frameSize = frameSize;
         }
 
@@ -164,7 +170,7 @@ public interface A3Audio extends A3Disposable {
         }
 
         @Override
-        public void setFrameRate(float frameRate) {
+        public void setFrameRate(final float frameRate) {
             this.frameRate = frameRate;
         }
 
@@ -174,7 +180,7 @@ public interface A3Audio extends A3Disposable {
         }
 
         @Override
-        public void setBigEndian(boolean bigEndian) {
+        public void setBigEndian(final boolean bigEndian) {
             this.bigEndian = bigEndian;
         }
 
@@ -213,18 +219,51 @@ public interface A3Audio extends A3Disposable {
         }
 
         @Override
+        public void reset() {
+            encoding = Encoding.PCM_SIGNED;
+            sampleRate = 44100;
+            sampleSizeInBits = 16;
+            channels = 2;
+            frameSize = 4;
+            frameRate = 44100;
+            bigEndian = false;
+            properties.clear();
+        }
+
+        @Override
         public Format copy() {
             return new DefaultFormat(encoding, sampleRate, sampleSizeInBits, channels, frameSize, frameRate, bigEndian, properties);
         }
-        
+
+        @Override
+        public void to(final Format dst) {
+            checkArgNotNull(dst, "dst");
+            dst.setEncoding(encoding);
+            dst.setSampleRate(sampleRate);
+            dst.setSampleSizeInBits(sampleSizeInBits);
+            dst.setChannels(channels);
+            dst.setFrameSize(frameSize);
+            dst.setFrameRate(frameRate);
+            dst.setBigEndian(bigEndian);
+            final Map<String, Object> properties = dst.properties();
+            properties.clear();
+            properties.putAll(this.properties);
+        }
+
+        @Override
+        public void from(final Format src) {
+            checkArgNotNull(src, "src");
+            src.to(this);
+        }
+
     }
 
     float getFrameRate();
 
-    void setVolume(float volume);
-    void setPan(float pan);
-    void setSpeed(float speed);
-    void setLooping(int loops);
+    void setVolume(final float volume);
+    void setPan(final float pan);
+    void setSpeed(final float speed);
+    void setLooping(final int loops);
 
     default void reset() {
         setVolume(1.0f);
@@ -234,11 +273,11 @@ public interface A3Audio extends A3Disposable {
         setFramePos(0);
     }
 
-    void setFramePos(long pos);
-    default void setMillisecondPos(long pos) {
+    void setFramePos(final long pos);
+    default void setMillisecondPos(final long pos) {
         setFramePos((long) A3Math.clamp((getFrameRate() * pos) / 1_000.0, 0, getFrameCount()));
     }
-    default void setFractionalPos(float pos) {
+    default void setFractionalPos(final float pos) {
         setFramePos((long) (getFrameCount() * A3Math.clamp(pos, 0, 1)));
     }
 

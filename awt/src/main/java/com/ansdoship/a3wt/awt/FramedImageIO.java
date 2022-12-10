@@ -19,24 +19,27 @@ public final class FramedImageIO {
 
     private FramedImageIO(){}
 
-    public static A3FramedImage read(final File input) throws IOException {
-        return read(ImageIO.createImageInputStream(input));
+    public static A3FramedImage read(final File input, final int type) throws IOException {
+        return read(ImageIO.createImageInputStream(input), type);
     }
 
-    public static A3FramedImage read(final URL input) throws IOException {
-        return read(ImageIO.createImageInputStream(input));
+    public static A3FramedImage read(final URL input, final int type) throws IOException {
+        return read(ImageIO.createImageInputStream(input), type);
     }
 
-    public static A3FramedImage read(final InputStream input) throws IOException {
-        return read(ImageIO.createImageInputStream(input));
+    public static A3FramedImage read(final InputStream input, final int type) throws IOException {
+        return read(ImageIO.createImageInputStream(input), type);
     }
 
-    public static A3FramedImage read(final ImageInputStream input) throws IOException {
+    public static A3FramedImage read(final ImageInputStream input, final int type) throws IOException {
         if (input == null) throw new IllegalArgumentException("input source cannot be NULL");
         A3FramedImage image = null;
         for (final FIIOServiceProvider provider : FIIORegistry.getServiceProviders()) {
             image = provider.read(input);
-            if (image != null) break;
+            if (image != null) {
+                image.setTypeAll(type);
+                break;
+            }
         }
         return image;
     }

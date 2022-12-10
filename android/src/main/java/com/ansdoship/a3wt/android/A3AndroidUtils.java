@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
 import android.view.PointerIcon;
@@ -359,10 +360,34 @@ public class A3AndroidUtils {
         manager.setPrimaryClip(ClipData.newPlainText(null, plainText));
     }
 
+    public static void putPlainTextToClipboard(final Clipboard clipboard, final CharSequence plainText) {
+        checkArgNotNull(clipboard, "clipboard");
+        checkArgNotNull(plainText, "plainText");
+        clipboard.setPrimaryClip(ClipData.newPlainText(null, plainText));
+    }
+
     public static CharSequence getPlainTextFromClipboard(final ClipboardManager manager) {
         checkArgNotNull(manager, "manager");
         if (!manager.hasPrimaryClip()) return null;
         final ClipData clipData = manager.getPrimaryClip();
+        if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) return null;
+        final StringBuilder builder = new StringBuilder();
+        CharSequence text;
+        final int itemCount = clipData.getItemCount();
+        for (int i = 0; i < itemCount; i ++) {
+            text = clipData.getItemAt(i).getText();
+            if (text != null) {
+                builder.append(text);
+                if (i + 1 < itemCount) builder.append('\n');
+            }
+        }
+        return builder;
+    }
+
+    public static CharSequence getPlainTextFromClipboard(final Clipboard clipboard) {
+        checkArgNotNull(clipboard, "clipboard");
+        if (!clipboard.hasPrimaryClip()) return null;
+        final ClipData clipData = clipboard.getPrimaryClip();
         if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) return null;
         final StringBuilder builder = new StringBuilder();
         CharSequence text;
@@ -383,10 +408,34 @@ public class A3AndroidUtils {
         manager.setPrimaryClip(ClipData.newHtmlText(null, HTMLText, HTMLText));
     }
 
+    public static void putHTMLTextToClipboard(final Clipboard clipboard, final String HTMLText) {
+        checkArgNotNull(clipboard, "clipboard");
+        checkArgNotNull(HTMLText, "HTMLText");
+        clipboard.setPrimaryClip(ClipData.newHtmlText(null, HTMLText, HTMLText));
+    }
+
     public static String getHTMLTextFromClipboard(final ClipboardManager manager) {
         checkArgNotNull(manager, "manager");
         if (!manager.hasPrimaryClip()) return null;
         final ClipData clipData = manager.getPrimaryClip();
+        if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) return null;
+        final StringBuilder builder = new StringBuilder();
+        String text;
+        final int itemCount = clipData.getItemCount();
+        for (int i = 0; i < itemCount; i ++) {
+            text = clipData.getItemAt(i).getHtmlText();
+            if (text != null) {
+                builder.append(text);
+                if (i + 1 < itemCount) builder.append('\n');
+            }
+        }
+        return builder.toString();
+    }
+
+    public static String getHTMLTextFromClipboard(final Clipboard clipboard) {
+        checkArgNotNull(clipboard, "clipboard");
+        if (!clipboard.hasPrimaryClip()) return null;
+        final ClipData clipData = clipboard.getPrimaryClip();
         if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) return null;
         final StringBuilder builder = new StringBuilder();
         String text;
@@ -414,10 +463,37 @@ public class A3AndroidUtils {
         else manager.setPrimaryClip(ClipData.newPlainText(null, ""));
     }
 
+    public static void putURIsToClipboard(final Clipboard clipboard, final URI[] uris) {
+        checkArgNotNull(clipboard, "clipboard");
+        checkArgNotNull(uris, "uris");
+        if (uris.length > 0) {
+            final ClipData clipData = ClipData.newRawUri(null, Uri.parse(Uri.decode(uris[0].toString())));
+            for (int i = 1; i < uris.length; i ++) {
+                clipData.addItem(new ClipData.Item(Uri.parse(uris[i].toString())));
+            }
+            clipboard.setPrimaryClip(clipData);
+        }
+        else clipboard.setPrimaryClip(ClipData.newPlainText(null, ""));
+    }
+
     public static URI[] getURIsFromClipboard(final ClipboardManager manager) {
         checkArgNotNull(manager, "manager");
         if (!manager.hasPrimaryClip()) return null;
         final ClipData clipData = manager.getPrimaryClip();
+        if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) return null;
+        final List<URI> uris = new ArrayList<>();
+        Uri uri;
+        for (int i = 0; i < clipData.getItemCount(); i ++) {
+            uri = clipData.getItemAt(i).getUri();
+            if (uri != null) uris.add(URI.create(uri.toString()));
+        }
+        return uris.toArray(new URI[0]);
+    }
+
+    public static URI[] getURIsFromClipboard(final Clipboard clipboard) {
+        checkArgNotNull(clipboard, "clipboard");
+        if (!clipboard.hasPrimaryClip()) return null;
+        final ClipData clipData = clipboard.getPrimaryClip();
         if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) return null;
         final List<URI> uris = new ArrayList<>();
         Uri uri;
@@ -441,6 +517,19 @@ public class A3AndroidUtils {
         else manager.setPrimaryClip(ClipData.newPlainText(null, ""));
     }
 
+    public static void putUrisToClipboard(final Clipboard clipboard, final Uri[] uris) {
+        checkArgNotNull(clipboard, "clipboard");
+        checkArgNotNull(uris, "uris");
+        if (uris.length > 0) {
+            final ClipData clipData = ClipData.newRawUri(null, uris[0]);
+            for (int i = 1; i < uris.length; i ++) {
+                clipData.addItem(new ClipData.Item(uris[i]));
+            }
+            clipboard.setPrimaryClip(clipData);
+        }
+        else clipboard.setPrimaryClip(ClipData.newPlainText(null, ""));
+    }
+
     public static Uri[] getUrisFromClipboard(final ClipboardManager manager) {
         checkArgNotNull(manager, "manager");
         if (!manager.hasPrimaryClip()) return null;
@@ -455,10 +544,35 @@ public class A3AndroidUtils {
         return uris.toArray(new Uri[0]);
     }
 
+    public static Uri[] getUrisFromClipboard(final Clipboard clipboard) {
+        checkArgNotNull(clipboard, "clipboard");
+        if (!clipboard.hasPrimaryClip()) return null;
+        final ClipData clipData = clipboard.getPrimaryClip();
+        if (!clipData.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) return null;
+        final List<Uri> uris = new ArrayList<>();
+        Uri uri;
+        for (int i = 0; i < clipData.getItemCount(); i ++) {
+            uri = clipData.getItemAt(i).getUri();
+            if (uri != null) uris.add(uri);
+        }
+        return uris.toArray(new Uri[0]);
+    }
+
     public static int getClipboardContentType(final ClipboardManager manager) {
         checkArgNotNull(manager, "manager");
         if (!manager.hasPrimaryClip()) return -1;
         final ClipData clipData = manager.getPrimaryClip();
+        final ClipDescription description = clipData.getDescription();
+        if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) return A3Clipboard.ContentType.HTML_TEXT;
+        else if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) return A3Clipboard.ContentType.PLAIN_TEXT;
+        else if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_URILIST)) return A3Clipboard.ContentType.URI_LIST;
+        else return -1;
+    }
+
+    public static int getClipboardContentType(final Clipboard clipboard) {
+        checkArgNotNull(clipboard, "clipboard");
+        if (!clipboard.hasPrimaryClip()) return -1;
+        final ClipData clipData = clipboard.getPrimaryClip();
         final ClipDescription description = clipData.getDescription();
         if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) return A3Clipboard.ContentType.HTML_TEXT;
         else if (description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) return A3Clipboard.ContentType.PLAIN_TEXT;
@@ -485,10 +599,24 @@ public class A3AndroidUtils {
         return downResult || upResult;
     }
 
+    public static boolean commonOnMouseWheelMotion(final List<A3InputListener> listeners, final MotionEvent event) {
+        checkArgNotNull(listeners, "listeners");
+        checkArgNotNull(event, "event");
+        if ((event.getSource() & InputDevice.SOURCE_MOUSE) == 0) return false;
+        boolean result = false;
+        for (final A3InputListener listener : listeners) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_SCROLL:
+                    if (!result) result = listener.mouseWheelScrolled(event.getAxisValue(MotionEvent.AXIS_VSCROLL), A3InputListener.ScrollType.UNIT);
+                    break;
+            }
+        }
+        return result;
+    }
+
     public static Bitmap getBitmap(final Bitmap source, final Bitmap.Config config) {
         checkArgNotNull(source, "source");
-        checkArgNotNull(config, "config");
-        if (source.getConfig().equals(config)) return source;
+        if (config == null || source.getConfig().equals(config)) return source;
         else {
             final Bitmap result = Bitmap.createBitmap(source.getWidth(), source.getHeight(), config);
             final Canvas canvas = new Canvas(result);
@@ -509,6 +637,7 @@ public class A3AndroidUtils {
     }
 
     public static A3FramedImage gifDrawable2FramedImage(final GifDrawable drawable, final Bitmap.Config config) {
+        checkArgNotNull(drawable, "drawable");
         try {
             AndroidA3Image[] frames = new AndroidA3Image[drawable.getNumberOfFrames()];
             for (int i = 0; i < frames.length; i ++) {
@@ -630,5 +759,6 @@ public class A3AndroidUtils {
             return -1;
         }
     }
+
 
 }

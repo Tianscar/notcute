@@ -1,8 +1,10 @@
 package com.ansdoship.a3wt.awt;
 
+import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Clipboard;
+import com.ansdoship.a3wt.graphics.A3Color;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -126,6 +128,11 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         protected static final AWTA3GraphicsKit graphicsKit = new AWTA3GraphicsKit();
         protected static final AWTA3MediaKit mediaKit = new AWTA3MediaKit();
         protected static final AWTA3MediaPlayer mediaPlayer = new AWTA3MediaPlayer();
+
+        @Override
+        public A3Context getContext() {
+            return canvas;
+        }
 
         @Override
         public A3Platform getPlatform() {
@@ -291,29 +298,30 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         }
 
         @Override
-        public void paint(final A3Graphics graphics) {
+        public void paint(final A3Graphics graphics, final boolean snapshot) {
             checkArgNotNull(graphics, "graphics");
             for (A3ContextListener listener : contextListeners) {
-                listener.contextPainted(graphics);
+                listener.contextPainted(graphics, snapshot);
             }
         }
 
         @Override
-        public int getBackgroundColor() {
-            return canvas.getBackground().getRGB();
+        public A3Color getBackgroundColor() {
+            return new AWTA3Color(canvas.getBackground());
         }
 
         @Override
-        public void setBackgroundColor(final int color) {
-            canvas.setBackground(new Color(color));
+        public void setBackgroundColor(final A3Color color) {
+            checkArgNotNull(color, "color");
+            canvas.setBackground(((AWTA3Color)color).color);
         }
 
-        private void renderOffscreen(final Graphics g) {
+        private void renderOffscreen(final Graphics g, final boolean snapshot) {
             g.setColor(canvas.getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
             g.setColor(Color.BLACK);
             ((A3CanvasGraphics)graphics).setGraphics((Graphics2D) g, getWidth(), getHeight());
-            paint(graphics);
+            paint(graphics, snapshot);
             ((A3CanvasGraphics)graphics).setGraphics(null, -1, -1);
         }
 
@@ -329,7 +337,7 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
                     do {
                         final Graphics g = bufferStrategy.getDrawGraphics();
                         try {
-                            renderOffscreen(g);
+                            renderOffscreen(g, false);
                         }
                         finally {
                             g.dispose();
@@ -354,19 +362,44 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         }
 
         @Override
-        public A3Image snapshot() {
+        public A3Image updateAndSnapshot() {
             canvas.checkDisposed("Can't call snapshot() on a disposed A3Context");
-            final BufferedImage bufferedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-            final Graphics2D g2d = bufferedImage.createGraphics();
             bufferLock.lock();
             try {
-                renderOffscreen(g2d);
+                final long time = System.currentTimeMillis();
+                final BufferedImage bufferedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+                final Graphics2D g2d = bufferedImage.createGraphics();
+                renderOffscreen(g2d, true);
+                g2d.dispose();
+                if (!canvas.isDisposed() && canvas.getBufferStrategy() == null) canvas.createBufferStrategy(2);
+                final BufferStrategy bufferStrategy = canvas.getBufferStrategy();
+                if (bufferStrategy != null) do {
+                    do {
+                        final Graphics g = bufferStrategy.getDrawGraphics();
+                        try {
+                            g.drawImage(bufferedImage, 0, 0, null);
+                        }
+                        finally {
+                            g.dispose();
+                        }
+                        try {
+                            bufferStrategy.show();
+                        }
+                        catch (final Exception e) {
+                            break;
+                        }
+                        finally {
+                            Toolkit.getDefaultToolkit().sync();
+                        }
+                    } while (bufferStrategy.contentsRestored());
+                } while (bufferStrategy.contentsLost());
+                final long now = System.currentTimeMillis();
+                elapsed = now - time;
+                return new AWTA3Image(bufferedImage);
             }
             finally {
                 bufferLock.unlock();
             }
-            g2d.dispose();
-            return new AWTA3Image(bufferedImage);
         }
 
         @Override

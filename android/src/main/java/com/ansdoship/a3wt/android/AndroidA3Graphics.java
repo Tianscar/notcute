@@ -5,10 +5,8 @@ import android.graphics.Paint;
 import android.graphics.Bitmap;
 import android.graphics.Path;
 import android.graphics.RectF;
-import com.ansdoship.a3wt.graphics.A3Font;
-import com.ansdoship.a3wt.graphics.A3Graphics;
-import com.ansdoship.a3wt.graphics.A3Image;
-import com.ansdoship.a3wt.graphics.A3Path;
+import android.graphics.Rect;
+import com.ansdoship.a3wt.graphics.*;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.paintStyle2Style;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.style2PaintStyle;
@@ -17,6 +15,7 @@ import static com.ansdoship.a3wt.android.A3AndroidUtils.strokeJoin2PaintStrokeJo
 import static com.ansdoship.a3wt.android.A3AndroidUtils.paintStrokeCap2StrokeCap;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.strokeCap2PaintStrokeCap;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3CharSequences.getChars;
 
 public class AndroidA3Graphics implements A3Graphics {
 
@@ -160,13 +159,33 @@ public class AndroidA3Graphics implements A3Graphics {
     }
 
     @Override
-    public A3Font.Metrics getTextLayout(CharSequence text) {
-        return null;
+    public A3Font.Metrics getTextLayout(final CharSequence text) {
+        checkArgNotNull(text, "text");
+        checkDisposed("Can't call getTextLayout() on a disposed A3Graphics");
+        final Paint.FontMetrics metrics = paint.getFontMetrics();
+        final Rect bounds = new Rect();
+        paint.getTextBounds(getChars(text), 0, text.length(), bounds);
+        return new A3Font.DefaultMetrics(0, 0 - metrics.ascent, metrics.descent, metrics.leading,
+                bounds.left, bounds.top, bounds.right, bounds.bottom);
     }
 
     @Override
-    public A3Font.Metrics getTextLayout(char[] text, int offset, int length) {
-        return null;
+    public A3Font.Metrics getTextLayout(final char[] text, final int offset, final int length) {
+        checkArgNotNull(text, "text");
+        checkDisposed("Can't call getTextLayout() on a disposed A3Graphics");
+        final Paint.FontMetrics metrics = paint.getFontMetrics();
+        final Rect bounds = new Rect();
+        paint.getTextBounds(text, offset, length, bounds);
+        return new A3Font.DefaultMetrics(0, 0 - metrics.ascent, metrics.descent, metrics.leading,
+                bounds.left, bounds.top, bounds.right, bounds.bottom);
+    }
+
+    @Override
+    public A3Font.Metrics getLineFeedTextLayout() {
+        checkDisposed("Can't call getLineFeedTextLayout() on a disposed A3Graphics");
+        final Paint.FontMetrics metrics = paint.getFontMetrics();
+        return new A3Font.DefaultMetrics(0, 0 - metrics.ascent, metrics.descent, metrics.leading,
+                0, 0, 0, 0);
     }
 
     @Override
@@ -190,6 +209,20 @@ public class AndroidA3Graphics implements A3Graphics {
         else clip.reset();
         clip.addRect(left, top, right, bottom);
         canvas.clipRect(left, top, right, bottom);
+    }
+
+    @Override
+    public A3Transform getTransform() {
+        checkDisposed("Can't call getTransform() on a disposed A3Graphics");
+        return data.getTransform();
+    }
+
+    @Override
+    public void setTransform(final A3Transform transform) {
+        checkDisposed("Can't call setTransform() on a disposed A3Graphics");
+        if (transform == null) canvas.setMatrix(null);
+        else canvas.setMatrix(((AndroidA3Transform)transform).matrix);
+        data.setTransform(transform);
     }
 
     @Override
@@ -422,6 +455,9 @@ public class AndroidA3Graphics implements A3Graphics {
         paint.setUnderlineText(data.isUnderlineText());
         paint.setStrikeThruText(data.isStrikeThroughText());
         paint.setDither(data.isDither());
+        final A3Transform a3Transform = data.getTransform();
+        if (a3Transform == null) canvas.setMatrix(null);
+        else canvas.setMatrix(((AndroidA3Transform)data.getTransform()).matrix);
     }
 
     @Override

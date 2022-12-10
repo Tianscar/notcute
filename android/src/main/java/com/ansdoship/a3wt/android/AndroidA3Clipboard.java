@@ -19,59 +19,67 @@ import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AndroidA3Clipboard implements A3Clipboard {
 
-    protected final ClipboardManager manager;
+    protected final Clipboard clipboard;
+    protected final int selectionType;
 
     public AndroidA3Clipboard(final ClipboardManager manager) {
         checkArgNotNull(manager);
-        this.manager = manager;
+        selectionType = SelectionType.CLIPBOARD;
+        this.clipboard = new Clipboard(manager);
+    }
+
+    public AndroidA3Clipboard(final int selectionType) {
+        if (selectionType == SelectionType.CLIPBOARD) throw new IllegalArgumentException("Invalid selectionType: " + selectionType);
+        this.selectionType = selectionType;
+        clipboard = new Clipboard();
     }
 
     @Override
     public int getContentType() {
-        return getClipboardContentType(manager);
+        return getClipboardContentType(clipboard);
     }
 
     @Override
     public int getSelectionType() {
-        return 0;
+        return selectionType;
     }
 
     @Override
     public void setPlainText(final CharSequence text) {
-        putPlainTextToClipboard(manager, text);
+        putPlainTextToClipboard(clipboard, text);
     }
 
     @Override
     public CharSequence getPlainText() {
-        return getPlainTextFromClipboard(manager);
+        return getPlainTextFromClipboard(clipboard);
     }
 
     @Override
     public void setHTMLText(final String html) {
-        putHTMLTextToClipboard(manager, html);
+        putHTMLTextToClipboard(clipboard, html);
     }
 
     @Override
     public String getHTMLText() {
-        return getHTMLTextFromClipboard(manager);
+        return getHTMLTextFromClipboard(clipboard);
     }
 
     @Override
     public void setURIs(final URI[] uris) {
-        putURIsToClipboard(manager, uris);
+        putURIsToClipboard(clipboard, uris);
     }
 
     public void setUris(final Uri[] uris) {
-        putUrisToClipboard(manager, uris);
+        putUrisToClipboard(clipboard, uris);
     }
 
     @Override
     public URI[] getURIs() {
-        return getURIsFromClipboard(manager);
+        return getURIsFromClipboard(clipboard);
     }
 
     public Uri[] getUris() {
-        return getUrisFromClipboard(manager);
+        return getUrisFromClipboard(clipboard);
     }
 
 }

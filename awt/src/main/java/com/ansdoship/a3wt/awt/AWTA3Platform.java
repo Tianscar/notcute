@@ -1,9 +1,9 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Platform;
-import com.ansdoship.a3wt.util.A3I18NBundle;
+import com.ansdoship.a3wt.bundle.A3I18NBundle;
 import com.ansdoship.a3wt.util.A3Logger;
-import com.ansdoship.a3wt.util.DefaultA3I18NBundle;
+import com.ansdoship.a3wt.bundle.DefaultA3I18NBundle;
 
 public class AWTA3Platform implements A3Platform {
 
@@ -49,7 +49,7 @@ public class AWTA3Platform implements A3Platform {
         return isAix;
     }
 
-    public static boolean isIsUnix() {
+    public static boolean isUnix() {
         return isUnix;
     }
 

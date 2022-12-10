@@ -21,7 +21,7 @@ import static com.madgag.gif.fmsware.GifDecoder.STATUS_OK;
 
 public final class GifFIIOSpi implements FIIOServiceProvider {
 
-    //private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
+    private static final Color TRANSPARENT = new Color(0, 0, 0, 0);
 
     private static final String[] READER_FORMAT_NAMES = new String[]{"gif"};
     private static final String[] WRITER_FORMAT_NAMES = new String[]{"gif"};
@@ -56,17 +56,21 @@ public final class GifFIIOSpi implements FIIOServiceProvider {
         encoder.start(output);
         encoder.setRepeat(im.getLooping());
         encoder.setQuality((int) (A3Math.clamp((1 - quality) * 19, 1, 19) + 1));
-        encoder.setBackground(Color.BLACK);
-        encoder.setTransparent(null);
-        //encoder.setBackground(TRANSPARENT);
-        //encoder.setTransparent(TRANSPARENT, true);
         final int width = im.getGeneralWidth();
         final int height = im.getGeneralHeight();
         encoder.setSize(width, height);
         AWTA3Image image;
         for (final A3Image i : im) {
             image = (AWTA3Image) i;
-            encoder.setDelay((int) A3Math.clamp(image.time, Integer.MIN_VALUE, Integer.MAX_VALUE));
+            if (image.hasAlpha()) {
+                encoder.setBackground(TRANSPARENT);
+                encoder.setTransparent(TRANSPARENT, true);
+            }
+            else {
+                encoder.setBackground(Color.BLACK);
+                encoder.setTransparent(null);
+            }
+            encoder.setDelay((int) A3Math.clamp(image.duration, Integer.MIN_VALUE, Integer.MAX_VALUE));
             if (!encoder.addFrame(getAlignedImage(getImage(image.bufferedImage, BufferedImage.TYPE_3BYTE_BGR),
                     0, 0, width, height))) return false;
         }

@@ -3,6 +3,9 @@ package com.ansdoship.a3wt.awt;
 import com.ansdoship.a3wt.graphics.A3Path;
 
 import java.awt.geom.Arc2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.QuadCurve2D;
+import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
@@ -12,9 +15,9 @@ import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3Path implements A3Path {
 
-    protected final Path2D path2D;
+    protected final Path2D.Float path2D;
 
-    public AWTA3Path(final Path2D path2D) {
+    public AWTA3Path(final Path2D.Float path2D) {
         checkArgNotNull(path2D, "path2D");
         this.path2D = path2D;
     }
@@ -65,6 +68,22 @@ public class AWTA3Path implements A3Path {
     }
 
     @Override
+    public void addLine(final float startX, final float startY, final float endX, final float endY) {
+        path2D.append(new Line2D.Float(startX, startY, endX, endY), false);
+    }
+
+    @Override
+    public void addQuadCurve(final float startX, final float startY, final float endX, final float endY, final float ctrlX, final float ctrlY) {
+        path2D.append(new QuadCurve2D.Float(startX, startY, endX, endY, ctrlX, ctrlY), false);
+    }
+
+    @Override
+    public void addCubicCurve(final float startX, final float startY, final float endX, final float endY,
+                              final float ctrlX1, final float ctrlY1, final float ctrlX2, final float ctrlY2) {
+        path2D.append(new CubicCurve2D.Float(startX, startY, endX, endY, ctrlX1, ctrlY1, ctrlX2, ctrlY2), false);
+    }
+
+    @Override
     public void addOval(final float left, final float top, final float right, final float bottom) {
         path2D.append(new Ellipse2D.Float(left, top, right - left, bottom - top), false);
     }
@@ -86,7 +105,20 @@ public class AWTA3Path implements A3Path {
 
     @Override
     public A3Path copy() {
-        return new AWTA3Path((Path2D) path2D.clone());
+        return new AWTA3Path((Path2D.Float) path2D.clone());
+    }
+
+    @Override
+    public void to(final A3Path dst) {
+        checkArgNotNull(dst, "dst");
+        ((AWTA3Path)dst).path2D.reset();
+        ((AWTA3Path)dst).path2D.append(path2D, false);
+    }
+
+    @Override
+    public void from(final A3Path src) {
+        checkArgNotNull(src, "src");
+        src.to(this);
     }
 
 }

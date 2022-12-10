@@ -63,7 +63,7 @@ public class GifFBIOSpi implements FBIOServiceProvider {
     }
 
     @Override
-    public A3FramedImage read(final File file, final Bitmap.Config config) throws IOException {
+    public A3FramedImage read(File file, Bitmap.Config config) throws IOException {
         try (FileInputStream stream = new FileInputStream(file)) {
             return gifDrawable2FramedImage(new GifDrawable(stream.getFD()), config);
         }

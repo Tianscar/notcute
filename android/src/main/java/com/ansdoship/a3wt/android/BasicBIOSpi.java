@@ -78,7 +78,7 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     private Bitmap mRead(InputStream stream, Rect region, Bitmap.Config config) throws IOException {
         BitmapRegionDecoder decoder;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             decoder = BitmapRegionDecoder.newInstance(stream);
         }
         else {
@@ -132,7 +132,7 @@ public final class BasicBIOSpi implements BIOServiceProvider {
     @Override
     public Bitmap read(ParcelFileDescriptor descriptor, Rect region, Bitmap.Config config) throws IOException {
         BitmapRegionDecoder decoder;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             decoder = BitmapRegionDecoder.newInstance(descriptor);
         }
         else {

@@ -32,7 +32,6 @@ dependencies {
 
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.15'
 
-    //implementation 'io.github.beyka:Android-TiffBitmapFactory:0.9.9.0'
     //implementation 'androidx.appcompat:appcompat:1.5.1'
 
     testImplementation 'junit:junit:4.13.2'

@@ -6,6 +6,40 @@ public class A3Preconditions {
 
     private A3Preconditions(){}
 
+    public static void checkArgRangeStartEnd(final long start, final long end) {
+        if (end < start) throw new IllegalArgumentException(start + " (start) > " + end + "(end) !");
+    }
+
+    public static void checkArgRangeStartEnd(final double start, final double end) {
+        if (end < start) throw new IllegalArgumentException(start + " (start) > " + end + "(end) !");
+    }
+
+    public static void checkArgRangeLeftRight(final long left, final long right) {
+        if (right < left) throw new IllegalArgumentException(left + " (left) > " + right + "(right) !");
+    }
+
+    public static void checkArgRangeLeftRight(final double left, final double right) {
+        if (right < left) throw new IllegalArgumentException(left + " (left) > " + right + "(right) !");
+    }
+
+    public static void checkArgRangeTopBottom(final long top, final long bottom) {
+        if (bottom < top) throw new IllegalArgumentException(top + " (top) > " + bottom + "(bottom) !");
+    }
+
+    public static void checkArgRangeTopBottom(final double top, final double bottom) {
+        if (bottom < top) throw new IllegalArgumentException(top + " (top) > " + bottom + "(bottom) !");
+    }
+
+    public static void checkArgRangeBounds(final long left, final long top, final long right, final long bottom) {
+        checkArgRangeLeftRight(left, right);
+        checkArgRangeTopBottom(top, bottom);
+    }
+
+    public static void checkArgRangeBounds(final double left, final double top, final double right, final double bottom) {
+        checkArgRangeLeftRight(left, right);
+        checkArgRangeTopBottom(top, bottom);
+    }
+
     public static void checkArgRangeMin(final long arg, final long min, final boolean allowEquals, final String msg) {
         if (!allowEquals) if (arg < min) throw msg == null ?
                 new IllegalArgumentException(arg + "<" + min + "!") : new IllegalArgumentException(msg + " < " + min + "!");

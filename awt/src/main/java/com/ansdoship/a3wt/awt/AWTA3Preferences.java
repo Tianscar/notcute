@@ -1,6 +1,7 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Preferences;
+import com.ansdoship.a3wt.util.A3Strings;
 
 import java.awt.EventQueue;
 import java.io.File;
@@ -11,6 +12,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,6 +45,9 @@ public class AWTA3Preferences implements A3Preferences {
                 try (FileInputStream fileInputStream = new FileInputStream(file);
                      BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream)) {
                     properties.loadFromXML(bufferedInputStream);
+                }
+                catch (final IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -133,6 +138,12 @@ public class AWTA3Preferences implements A3Preferences {
         return put(key, value.toPlainString());
     }
 
+    @Override
+    public A3Preferences putByteArray(final String key, final byte[] value) {
+        checkArgNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
     protected String get(final String key, final String defValue) {
         checkArgNotNull(key, "key");
         return (String) properties.getOrDefault(key, defValue);
@@ -169,6 +180,11 @@ public class AWTA3Preferences implements A3Preferences {
     }
 
     @Override
+    public boolean getBoolean(final String key, final boolean defValue) {
+        return Boolean.parseBoolean(get(key, Boolean.toString(defValue)));
+    }
+
+    @Override
     public char getChar(final String key, final char defValue) {
         return get(key, Character.toString(defValue)).charAt(0);
     }
@@ -189,6 +205,11 @@ public class AWTA3Preferences implements A3Preferences {
     }
 
     @Override
+    public byte[] getByteArray(final String key, final byte[] defValue) {
+        return A3Strings.parseByteArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
     public boolean contains(final String key) {
         checkArgNotNull(key, "key");
         return properties.contains(key);
@@ -202,9 +223,8 @@ public class AWTA3Preferences implements A3Preferences {
     }
 
     @Override
-    public A3Preferences clear() {
+    public void clear() {
         cache.clear();
-        return this;
     }
 
     @Override

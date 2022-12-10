@@ -2,9 +2,9 @@ package com.ansdoship.a3wt.android;
 
 import android.os.Build;
 import com.ansdoship.a3wt.app.A3Platform;
-import com.ansdoship.a3wt.util.A3I18NBundle;
+import com.ansdoship.a3wt.bundle.A3I18NBundle;
 import com.ansdoship.a3wt.util.A3Logger;
-import com.ansdoship.a3wt.util.DefaultA3I18NBundle;
+import com.ansdoship.a3wt.bundle.DefaultA3I18NBundle;
 
 public class AndroidA3Platform implements A3Platform {
 

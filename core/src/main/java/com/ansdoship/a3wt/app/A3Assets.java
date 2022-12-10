@@ -5,7 +5,7 @@ import java.net.URL;
 
 public interface A3Assets {
 
-    InputStream readAsset(String asset);
-    URL getAssetURL(String asset);
+    InputStream readAsset(final String asset);
+    URL getAssetURL(final String asset);
 
 }

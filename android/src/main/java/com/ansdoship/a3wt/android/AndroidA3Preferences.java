@@ -161,6 +161,12 @@ public class AndroidA3Preferences implements A3Preferences {
     }
 
     @Override
+    public boolean getBoolean(final String key, final boolean defValue) {
+        checkArgNotNull(key, "key");
+        return sharedPreferences.getBoolean(key, defValue);
+    }
+
+    @Override
     public char getChar(final String key, final char defValue) {
         checkArgNotNull(key, "key");
         return (char) sharedPreferences.getInt(key, defValue);

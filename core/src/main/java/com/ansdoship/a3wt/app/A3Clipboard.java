@@ -15,18 +15,19 @@ public interface A3Clipboard {
         private SelectionType(){}
         public static final int CLIPBOARD = 0;
         public static final int SELECTION = 1;
+        public static final int APPLICATION = 2;
     }
 
     int getContentType();
     int getSelectionType();
 
-    void setPlainText(CharSequence text);
+    void setPlainText(final CharSequence text);
     CharSequence getPlainText();
 
-    void setHTMLText(String html);
+    void setHTMLText(final String html);
     String getHTMLText();
 
-    void setURIs(URI[] uris);
+    void setURIs(final URI[] uris);
     URI[] getURIs();
 
 }

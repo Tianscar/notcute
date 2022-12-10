@@ -25,10 +25,26 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.getContentsFromClipboard;
 
 public class AWTA3Clipboard implements A3Clipboard {
     
-    private final int selectionType;
+    protected final int selectionType;
+    protected final Clipboard clipboard;
 
     public AWTA3Clipboard(final int selectionType) {
         this.selectionType = selectionType;
+        switch (selectionType) {
+            case CLIPBOARD:
+                clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                break;
+            case SELECTION:
+                clipboard = Toolkit.getDefaultToolkit().getSystemSelection();
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal selectionType: " + selectionType);
+        }
+    }
+
+    public AWTA3Clipboard(final String name) {
+        this.selectionType = SelectionType.APPLICATION;
+        clipboard = new Clipboard(name);
     }
 
     @Override
@@ -42,14 +58,7 @@ public class AWTA3Clipboard implements A3Clipboard {
     }
     
     private Clipboard getClipboard() {
-        switch (selectionType) {
-            case CLIPBOARD:
-                return getClipboard();
-            case SELECTION:
-                return Toolkit.getDefaultToolkit().getSystemSelection();
-            default:
-                return null;
-        }
+        return clipboard;
     }
 
     public DataFlavor getDataFlavor() {

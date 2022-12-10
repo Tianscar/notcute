@@ -6,12 +6,15 @@ import java.util.RandomAccess;
 public interface A3FramedImage extends A3Image, List<A3Image>, RandomAccess {
 
     int getIndex();
-    void setIndex(int index);
+    void setIndex(final int index);
+
     int getLooping();
-    void setLooping(int loops);
+    void setLooping(final int loops);
 
     int getGeneralWidth();
     int getGeneralHeight();
+
+    void setTypeAll(final int type);
 
     A3Image get();
 

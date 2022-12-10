@@ -1,9 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.graphics.A3Font;
-import com.ansdoship.a3wt.graphics.A3Graphics;
-import com.ansdoship.a3wt.graphics.A3Image;
-import com.ansdoship.a3wt.graphics.A3Path;
+import com.ansdoship.a3wt.graphics.*;
 import com.ansdoship.a3wt.util.A3CharSegment;
 
 import java.awt.RenderingHints;
@@ -20,7 +17,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import java.awt.geom.Point2D;
+import java.awt.geom.QuadCurve2D;
+import java.awt.geom.CubicCurve2D;
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.text.AttributedCharacterIterator;
@@ -30,15 +28,26 @@ import java.util.HashMap;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.strokeCap2BasicStrokeCap;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.strokeJoin2BasicStrokeJoin;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
 
 public class AWTA3Graphics implements A3Graphics {
+
+    protected final AffineTransform mImageTransform = new AffineTransform();
+    protected final Line2D.Float mPointLine = new Line2D.Float();
+    protected final Arc2D.Float mArc2D = new Arc2D.Float();
+    protected final Line2D.Float mLine2D = new Line2D.Float();
+    protected final QuadCurve2D.Float mQuadCurve2D = new QuadCurve2D.Float();
+    protected final CubicCurve2D.Float mCubicCurve2D = new CubicCurve2D.Float();
+    protected final Ellipse2D.Float mEllipse2D = new Ellipse2D.Float();
+    protected final Rectangle2D.Float mRectangle2D = new Rectangle2D.Float();
+    protected final RoundRectangle2D.Float mRoundRectangle2D = new RoundRectangle2D.Float();
 
     protected volatile Graphics2D graphics2D;
     protected volatile boolean disposed = false;
     protected volatile int width;
     protected volatile int height;
-    protected volatile Data data;
-    protected volatile Data cacheData;
+    protected final Data data = new DefaultData();
+    protected final Data cacheData = new DefaultData();
     protected final RenderingHints hints = new RenderingHints(null);
     protected static final RenderingHints DEFAULT_HINTS = new RenderingHints(null);
     static {
@@ -75,7 +84,7 @@ public class AWTA3Graphics implements A3Graphics {
 
     @Override
     public void drawColor() {
-        checkDisposed("Can't call clearColor() on a disposed A3Graphics");
+        checkDisposed("Can't call drawColor() on a disposed A3Graphics");
         switch (data.getStyle()) {
             case Style.STROKE:
                 graphics2D.drawRect(0, 0, width, height);
@@ -110,56 +119,142 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawImage(final A3Image image, final int x, final int y) {
+    public void drawImage(final A3Image image, final float x, final float y) {
         checkArgNotNull(image, "image");
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
-        graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(),
-                x - image.getHotSpotX(), y - image.getHotSpotY(),
-                image.getWidth(), image.getHeight(), null);
+        mImageTransform.setToTranslation(x - image.getHotSpotX(), y - image.getHotSpotY());
+        graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(), mImageTransform, null);
+    }
+
+    @Override
+    public void drawImage(final A3Image image, final A3Point point) {
+        checkArgNotNull(image, "image");
+        checkArgNotNull(point, "point");
+        checkDisposed("Can't call drawImage() on a disposed A3Graphics");
+        mImageTransform.setToTranslation(point.getX() - image.getHotSpotX(), point.getY() - image.getHotSpotY());
+        graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(), mImageTransform, null);
     }
 
     @Override
     public void drawPoint(final float x, final float y) {
         checkDisposed("Can't call drawPoint() on a disposed A3Graphics");
-        Point2D point2D = new Point2D.Float(x, y);
-        mDrawShape(new Line2D.Float(point2D, point2D));
+        mPointLine.setLine(x, y, x, y);
+        mDrawShape(mPointLine);
+    }
+
+    @Override
+    public void drawPoint(final A3Point point) {
+        checkArgNotNull(point, "point");
+        checkDisposed("Can't call drawPoint() on a disposed A3Graphics");
+        mPointLine.setLine(((AWTA3Point)point).point2D, ((AWTA3Point)point).point2D);
+        mDrawShape(mPointLine);
     }
 
     @Override
     public void drawArc(final float left, final float top, final float right, final float bottom,
                         final float startAngle, final float sweepAngle, final boolean useCenter) {
         checkDisposed("Can't call drawArc() on a disposed A3Graphics");
-        mDrawShape(new Arc2D.Float(new Rectangle2D.Float(left, top, right - left, bottom - top), startAngle, sweepAngle,
-                useCenter ? Arc2D.PIE : Arc2D.OPEN));
+        mArc2D.setArc(left, top, right - left, bottom - top, startAngle, sweepAngle, useCenter ? Arc2D.PIE : Arc2D.OPEN);
+        mDrawShape(mArc2D);
     }
 
     @Override
-    public void drawLine(final float startX, final float startY, final float stopX, final float stopY) {
+    public void drawArc(final A3Arc arc) {
+        checkArgNotNull(arc, "arc");
+        checkDisposed("Can't call drawArc() on a disposed A3Graphics");
+        mDrawShape(((AWTA3Arc)arc).arc2D);
+    }
+
+    @Override
+    public void drawLine(final float startX, final float startY, final float endX, final float endY) {
         checkDisposed("Can't call drawLine() on a disposed A3Graphics");
-        mDrawShape(new Line2D.Float(startX, startY, stopX, stopY));
+        mLine2D.setLine(startX, startY, endX, endY);
+        mDrawShape(mLine2D);
+    }
+
+    @Override
+    public void drawLine(final A3Line line) {
+        checkArgNotNull(line, "line");
+        checkDisposed("Can't call drawLine() on a disposed A3Graphics");
+        mDrawShape(((AWTA3Line)line).line2D);
+    }
+
+    @Override
+    public void drawQuadCurve(final float startX, final float startY, final float endX, final float endY, final float ctrlX, final float ctrlY) {
+        checkDisposed("Can't call drawQuadCurve() on a disposed A3Graphics");
+        mQuadCurve2D.setCurve(startX, startY, endX, endY, ctrlX, ctrlY);
+        mDrawShape(mQuadCurve2D);
+    }
+
+    @Override
+    public void drawQuadCurve(final A3QuadCurve quadCurve) {
+        checkArgNotNull(quadCurve, "quadCurve");
+        checkDisposed("Can't call drawQuadCurve() on a disposed A3Graphics");
+        mDrawShape(((AWTA3QuadCurve)quadCurve).quadCurve2D);
+    }
+
+    @Override
+    public void drawCubicCurve(final float startX, final float startY, final float endX, final float endY,
+                               final float ctrlX1, final float ctrlY1, final float ctrlX2, final float ctrlY2) {
+        checkDisposed("Can't call drawCubicCurve() on a disposed A3Graphics");
+        mCubicCurve2D.setCurve(startX, startY, endX, endY, ctrlX1, ctrlY1, ctrlX2, ctrlY2);
+        mDrawShape(mQuadCurve2D);
+    }
+
+    @Override
+    public void drawCubicCurve(final A3CubicCurve cubicCurve) {
+        checkArgNotNull(cubicCurve, "cubicCurve");
+        checkDisposed("Can't call drawCubicCurve() on a disposed A3Graphics");
+        mDrawShape(((AWTA3CubicCurve)cubicCurve).cubicCurve2D);
     }
 
     @Override
     public void drawOval(final float left, final float top, final float right, final float bottom) {
         checkDisposed("Can't call drawOval() on a disposed A3Graphics");
-        mDrawShape(new Ellipse2D.Float(left, top, right - left, bottom - top));
+        mEllipse2D.setFrame(left, top, right - left, bottom - top);
+        mDrawShape(mEllipse2D);
+    }
+
+    @Override
+    public void drawOval(final A3Oval oval) {
+        checkArgNotNull(oval, "oval");
+        checkDisposed("Can't call drawOval() on a disposed A3Graphics");
+        mDrawShape(((AWTA3Oval)oval).ellipse2D);
     }
 
     @Override
     public void drawRect(final float left, final float top, final float right, final float bottom) {
         checkDisposed("Can't call drawRect() on a disposed A3Graphics");
-        mDrawShape(new Rectangle2D.Float(left, top, right - left, bottom - top));
+        mRectangle2D.setRect(left, top, right - left, bottom - top);
+        mDrawShape(mRectangle2D);
+    }
+
+    @Override
+    public void drawRect(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        checkDisposed("Can't call drawRect() on a disposed A3Graphics");
+        mDrawShape(((AWTA3Rect)rect).rectangle2D);
     }
 
     @Override
     public void drawRoundRect(final float left, final float top, final float right, final float bottom, final float rx, final float ry) {
         checkDisposed("Can't call drawRoundRect() on a disposed A3Graphics");
-        mDrawShape(new RoundRectangle2D.Float(left, top, right - left, bottom - top, rx, ry));
+        mRoundRectangle2D.setFrame(left, top, right - left, bottom - top);
+        mRoundRectangle2D.arcwidth = rx;
+        mRoundRectangle2D.archeight = ry;
+        mDrawShape(mRoundRectangle2D);
+    }
+
+    @Override
+    public void drawRoundRect(final A3RoundRect roundRect) {
+        checkArgNotNull(roundRect, "roundRect");
+        checkDisposed("Can't call drawRoundRect() on a disposed A3Graphics");
+        mDrawShape(((AWTA3RoundRect)roundRect).roundRectangle2D);
     }
 
     @Override
     public void drawText(final CharSequence text, final float x, final float y) {
-        checkArgNotNull(text, "text");
+        checkArgNotEmpty(text, "text");
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
         final Runnable[] cleanup = new Runnable[1];
         final AttributedCharacterIterator iterator = mGetAttributedCharacterIterator(text, cleanup);
@@ -227,7 +322,7 @@ public class AWTA3Graphics implements A3Graphics {
 
     @Override
     public void drawText(final char[] text, final int offset, final int length, final float x, final float y) {
-        checkArgNotNull(text, "text");
+        checkArgNotEmpty(text, "text");
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
         mDrawText(mGetAttributedCharacterIterator(text, offset, length), x, y);
     }
@@ -236,6 +331,7 @@ public class AWTA3Graphics implements A3Graphics {
     public A3Font.Metrics getTextLayout(final CharSequence text) {
         checkArgNotNull(text, "text");
         checkDisposed("Can't call getTextLayout() on a disposed A3Graphics");
+        if (text.length() < 1) return getLineFeedTextLayout();
         final Runnable[] cleanup = new Runnable[1];
         final AttributedCharacterIterator iterator = mGetAttributedCharacterIterator(text, cleanup);
         final Runnable cleanupRunnable = cleanup[0];
@@ -256,8 +352,9 @@ public class AWTA3Graphics implements A3Graphics {
 
     @Override
     public A3Font.Metrics getTextLayout(final char[] text, final int offset, final int length) {
-        checkArgNotNull(text, "text");
+        checkArgNotEmpty(text, "text");
         checkDisposed("Can't call getTextLayout() on a disposed A3Graphics");
+        if (text.length < 1) return getLineFeedTextLayout();
         final AttributedCharacterIterator iterator = mGetAttributedCharacterIterator(text, offset, length);
         final TextLayout textLayout = new TextLayout(iterator, graphics2D.getFontRenderContext());
         final Rectangle2D bounds = textLayout.getBounds();
@@ -267,6 +364,16 @@ public class AWTA3Graphics implements A3Graphics {
         final double bottom = top + bounds.getHeight();
         return new A3Font.DefaultMetrics(textLayout.getBaseline(), textLayout.getAscent(), textLayout.getDescent(),
                 textLayout.getLeading(), (float) left, (float) top, (float) right, (float) bottom);
+    }
+
+    @Override
+    public A3Font.Metrics getLineFeedTextLayout() {
+        final A3Font.Metrics metrics = getTextLayout(" ");
+        metrics.setLeft(0);
+        metrics.setRight(0);
+        metrics.setTop(0);
+        metrics.setBottom(0);
+        return metrics;
     }
 
     @Override
@@ -285,11 +392,25 @@ public class AWTA3Graphics implements A3Graphics {
     @Override
     public void setClip(float left, float top, float right, float bottom) {
         checkDisposed("Can't call setClip() on a disposed A3Graphics");
-        Path2D path2D = new Path2D.Float();
+        Path2D.Float path2D = new Path2D.Float();
         path2D.append(new Rectangle2D.Float(left, top, right - left, bottom - top), false);
         AWTA3Path clip = new AWTA3Path(path2D);
         data.setClip(clip);
         graphics2D.setClip(path2D);
+    }
+
+    @Override
+    public A3Transform getTransform() {
+        checkDisposed("Can't call getTransform() on a disposed A3Graphics");
+        return data.getTransform();
+    }
+
+    @Override
+    public void setTransform(final A3Transform transform) {
+        checkDisposed("Can't call setTransform() on a disposed A3Graphics");
+        if (transform == null) graphics2D.setTransform(AWTA3Transform.DEFAULT_TRANSFORM);
+        else graphics2D.setTransform(((AWTA3Transform)transform).affineTransform);
+        data.setTransform(transform);
     }
 
     @Override
@@ -498,23 +619,20 @@ public class AWTA3Graphics implements A3Graphics {
     @Override
     public void reset() {
         checkDisposed("Can't call reset() on a disposed A3Graphics");
-        if (data == null) data = new DefaultData();
-        else data.reset();
+        data.reset();
         apply();
     }
 
     @Override
     public void save() {
         checkDisposed("Can't call save() on a disposed A3Graphics");
-        if (!data.equals(cacheData)) cacheData = data.copy();
+        data.to(cacheData);
     }
 
     @Override
     public void restore() {
         checkDisposed("Can't call restore() on a disposed A3Graphics");
-        if (cacheData == null) return;
-        data = cacheData;
-        cacheData = null;
+        data.from(cacheData);
         apply();
     }
 
@@ -527,7 +645,7 @@ public class AWTA3Graphics implements A3Graphics {
         graphics2D.setColor(new Color(data.getColor(), true));
         graphics2D.setStroke(new BasicStroke(data.getStrokeWidth(), strokeCap2BasicStrokeCap(data.getStrokeCap()),
                 strokeJoin2BasicStrokeJoin(data.getStrokeJoin()), data.getStrokeMiter()));
-        A3Font a3Font = data.getFont();
+        final A3Font a3Font = data.getFont();
         Font font = a3Font == null ? (graphics2D.getFont() == null ? null : graphics2D.getFont()) : ((AWTA3Font)a3Font).getFont();
         if (font != null) {
             font = font.deriveFont(data.getTextSize());
@@ -545,12 +663,14 @@ public class AWTA3Graphics implements A3Graphics {
         hints.put(RenderingHints.KEY_DITHERING,
                 data.isDither() ? RenderingHints.VALUE_DITHER_ENABLE : RenderingHints.VALUE_DITHER_DISABLE);
         graphics2D.setRenderingHints(hints);
+        final A3Transform a3Transform = data.getTransform();
+        if (a3Transform == null) graphics2D.getTransform().setToIdentity();
+        else graphics2D.getTransform().setTransform(((AWTA3Transform)data.getTransform()).affineTransform);
     }
 
     @Override
     public Data getData() {
         checkDisposed("Can't call getData() on a disposed A3Graphics");
-        if (data == null) data = new DefaultData();
         data.setColor(getColor());
         data.setStyle(getStyle());
         data.setStrokeWidth(getStrokeWidth());
@@ -571,7 +691,8 @@ public class AWTA3Graphics implements A3Graphics {
     @Override
     public void setData(final Data data) {
         checkDisposed("Can't call setData() on a disposed A3Graphics");
-        this.data = data;
+        checkArgNotNull(data, "data");
+        data.to(this.data);
         apply();
     }
 
@@ -584,8 +705,6 @@ public class AWTA3Graphics implements A3Graphics {
     public void dispose() {
         if (isDisposed()) return;
         disposed = true;
-        data = null;
-        cacheData = null;
         graphics2D.dispose();
         graphics2D = null;
     }

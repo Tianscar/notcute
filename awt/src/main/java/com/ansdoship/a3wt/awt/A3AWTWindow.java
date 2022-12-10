@@ -6,6 +6,7 @@ import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.graphics.A3Color;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -110,6 +111,11 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
     protected static class A3AWTWindowHandle implements A3Context.Handle, A3Container.Handle {
 
         @Override
+        public A3Container getContainer() {
+            return window;
+        }
+
+        @Override
         public void setIconImages(final List<A3Image> images) {
             window.setIconImages(A3Images2BufferedImages(images));
         }
@@ -117,6 +123,11 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         @Override
         public List<A3Image> getIconImages() {
             return AWTImages2A3Images(window.getIconImages());
+        }
+
+        @Override
+        public A3Context getContext() {
+            return window.canvas.handle.getContext();
         }
 
         @Override
@@ -214,12 +225,12 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         }
 
         @Override
-        public int getBackgroundColor() {
+        public A3Color getBackgroundColor() {
             return window.canvas.handle.getBackgroundColor();
         }
 
         @Override
-        public void setBackgroundColor(int color) {
+        public void setBackgroundColor(final A3Color color) {
             window.canvas.handle.setBackgroundColor(color);
         }
 
@@ -235,8 +246,8 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         }
 
         @Override
-        public A3Image snapshot() {
-            return window.canvas.handle.snapshot();
+        public A3Image updateAndSnapshot() {
+            return window.canvas.handle.updateAndSnapshot();
         }
 
         @Override
@@ -265,22 +276,22 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         }
 
         @Override
-        public void addContainerInputListener(A3InputListener listener) {
+        public void addContainerInputListener(final A3InputListener listener) {
             inputListeners.add(listener);
         }
 
         @Override
-        public void paint(A3Graphics graphics) {
-            window.canvas.handle.paint(graphics);
+        public void paint(final A3Graphics graphics, final boolean snapshot) {
+            window.canvas.handle.paint(graphics, snapshot);
         }
 
         @Override
-        public A3Preferences getPreferences(String name) {
+        public A3Preferences getPreferences(final String name) {
             return window.canvas.handle.getPreferences(name);
         }
 
         @Override
-        public boolean deletePreferences(String name) {
+        public boolean deletePreferences(final String name) {
             return window.canvas.handle.deletePreferences(name);
         }
 
@@ -300,7 +311,7 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         }
 
         @Override
-        public File getFilesDir(String type) {
+        public File getFilesDir(final String type) {
             return window.canvas.handle.getFilesDir(type);
         }
 
@@ -320,12 +331,12 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         }
 
         @Override
-        public void addContainerListener(A3ContainerListener listener) {
+        public void addContainerListener(final A3ContainerListener listener) {
             containerListeners.add(listener);
         }
 
         @Override
-        public void setFullscreen(boolean fullscreen) {
+        public void setFullscreen(final boolean fullscreen) {
             if (fullscreen) {
                 setFullscreenWindow(window);
             }

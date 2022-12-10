@@ -29,11 +29,17 @@ import java.util.ArrayList;
 
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnHoverEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnMouseWheelMotion;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         View.OnLayoutChangeListener, View.OnHoverListener, DialogInterface.OnDismissListener, DialogInterface.OnKeyListener {
+
+    @Override
+    public boolean onGenericMotionEvent(final MotionEvent event) {
+        return commonOnMouseWheelMotion(handle.inputListeners, event) || super.onGenericMotionEvent(event);
+    }
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
@@ -286,17 +292,17 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
         @Override
         public A3Clipboard getSelection() {
-            return null;
+            return dialog.surfaceView.handle.getSelection();
         }
 
         @Override
-        public void setCursor(A3Cursor cursor) {
-
+        public void setCursor(final A3Cursor cursor) {
+            dialog.surfaceView.handle.setCursor(cursor);
         }
 
         @Override
         public A3Cursor getCursor() {
-            return null;
+            return dialog.surfaceView.handle.getCursor();
         }
 
     }

@@ -6,6 +6,7 @@ import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.graphics.A3Color;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -112,6 +113,11 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
     protected static class A3AWTDialogHandle implements A3Context.Handle, A3Container.Handle {
 
         @Override
+        public A3Container getContainer() {
+            return dialog;
+        }
+
+        @Override
         public void setIconImages(final List<A3Image> images) {
             dialog.setIconImages(A3Images2BufferedImages(images));
         }
@@ -119,6 +125,11 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         @Override
         public List<A3Image> getIconImages() {
             return AWTImages2A3Images(dialog.getIconImages());
+        }
+
+        @Override
+        public A3Context getContext() {
+            return dialog.canvas.handle.getContext();
         }
 
         @Override
@@ -218,12 +229,12 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
-        public int getBackgroundColor() {
+        public A3Color getBackgroundColor() {
             return dialog.canvas.handle.getBackgroundColor();
         }
 
         @Override
-        public void setBackgroundColor(int color) {
+        public void setBackgroundColor(final A3Color color) {
             dialog.canvas.handle.setBackgroundColor(color);
         }
 
@@ -239,8 +250,8 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
-        public A3Image snapshot() {
-            return dialog.canvas.handle.snapshot();
+        public A3Image updateAndSnapshot() {
+            return dialog.canvas.handle.updateAndSnapshot();
         }
 
         @Override
@@ -249,7 +260,7 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
-        public void addContextListener(A3ContextListener listener) {
+        public void addContextListener(final A3ContextListener listener) {
             dialog.canvas.handle.addContextListener(listener);
         }
 
@@ -259,7 +270,7 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
-        public void addContextInputListener(A3InputListener listener) {
+        public void addContextInputListener(final A3InputListener listener) {
             dialog.canvas.handle.inputListeners.add(listener);
         }
 
@@ -269,22 +280,22 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
-        public void addContainerInputListener(A3InputListener listener) {
+        public void addContainerInputListener(final A3InputListener listener) {
             inputListeners.add(listener);
         }
 
         @Override
-        public void paint(A3Graphics graphics) {
-            dialog.canvas.handle.paint(graphics);
+        public void paint(final A3Graphics graphics, final boolean snapshot) {
+            dialog.canvas.handle.paint(graphics, snapshot);
         }
 
         @Override
-        public A3Preferences getPreferences(String name) {
+        public A3Preferences getPreferences(final String name) {
             return dialog.canvas.handle.getPreferences(name);
         }
 
         @Override
-        public boolean deletePreferences(String name) {
+        public boolean deletePreferences(final String name) {
             return dialog.canvas.handle.deletePreferences(name);
         }
 
@@ -304,7 +315,7 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
-        public File getFilesDir(String type) {
+        public File getFilesDir(final String type) {
             return dialog.canvas.handle.getFilesDir(type);
         }
 
@@ -324,12 +335,12 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
-        public void addContainerListener(A3ContainerListener listener) {
+        public void addContainerListener(final A3ContainerListener listener) {
             containerListeners.add(listener);
         }
 
         @Override
-        public void setFullscreen(boolean fullscreen) {
+        public void setFullscreen(final boolean fullscreen) {
             if (fullscreen) {
                 setFullscreenWindow(dialog);
             }

@@ -69,16 +69,7 @@ public class A3Arrays {
         return result;
     }
 
-    public static <E extends A3Copyable<?>> E[] deepCopy(final E[] array) {
-        checkArgNotNull(array, "array");
-        final E[] result = array.clone();
-        for (int i = 0; i < array.length; i ++) {
-            result[i] = (E) array[i].copy();
-        }
-        return result;
-    }
-
-    public static <E extends A3Copyable<E>> E[] deepCopyStrict(final E[] array) {
+    public static <E extends A3Copyable<E>> E[] deepCopy(final E[] array) {
         checkArgNotNull(array, "array");
         final E[] result = array.clone();
         for (int i = 0; i < array.length; i ++) {

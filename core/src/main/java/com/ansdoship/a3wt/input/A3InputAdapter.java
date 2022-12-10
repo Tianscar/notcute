@@ -3,42 +3,52 @@ package com.ansdoship.a3wt.input;
 public abstract class A3InputAdapter implements A3InputListener {
 
     @Override
-    public boolean keyDown(int keyCode, int keyLocation) {
+    public boolean keyDown(final int keyCode, final int keyLocation) {
         return false;
     }
 
     @Override
-    public boolean keyUp(int keyCode, int keyLocation) {
+    public boolean keyUp(final int keyCode, final int keyLocation) {
         return false;
     }
 
     @Override
-    public boolean keyTyped(char character) {
+    public boolean keyTyped(final char keyChar) {
         return false;
     }
 
     @Override
-    public boolean pointerDown(float x, float y, int pointer, int button) {
+    public boolean pointerDown(final float x, final float y, final int pointer, final int button) {
         return false;
     }
 
     @Override
-    public boolean pointerUp(float x, float y, int pointer, int button) {
+    public boolean pointerUp(final float x, final float y, final int pointer, final int button) {
         return false;
     }
 
     @Override
-    public boolean pointerDragged(float x, float y, int pointer) {
+    public boolean pointerDragged(final float x, final float y, final int pointer) {
         return false;
     }
 
     @Override
-    public boolean mouseMoved(float x, float y) {
+    public boolean mouseMoved(final float x, final float y) {
         return false;
     }
 
     @Override
-    public boolean mouseWheelScrolled(float amount, int scrollType) {
+    public boolean mouseEntered(final float x, final float y) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseExited(final float x, final float y) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseWheelScrolled(final float amount, final int scrollType) {
         return false;
     }
 

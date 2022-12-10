@@ -317,6 +317,7 @@ public class A3AWTUtils {
         if (scrollType == A3InputListener.ScrollType.UNIT) {
             amount = (float) (Math.abs(e.getUnitsToScroll()) * e.getPreciseWheelRotation());
         }
+        amount = -amount;
         for (A3InputListener listener : listeners) {
             result = listener.mouseWheelScrolled(amount, scrollType);
             if (result) break;
@@ -766,16 +767,12 @@ public class A3AWTUtils {
         return result;
     }
 
-    public static BufferedImage getRGBImage(final BufferedImage source) {
-        return getImage(source, BufferedImage.TYPE_INT_RGB);
-    }
-
-    public static BufferedImage getARGBImage(final BufferedImage source) {
+    public static BufferedImage getARGB8888Image(final BufferedImage source) {
         return getImage(source, BufferedImage.TYPE_INT_ARGB);
     }
 
-    public static BufferedImage getBGRImage(final BufferedImage source) {
-        return getImage(source, BufferedImage.TYPE_INT_BGR);
+    public static BufferedImage getRGB565Image(final BufferedImage source) {
+        return getImage(source, BufferedImage.TYPE_USHORT_565_RGB);
     }
 
     public static List<BufferedImage> A3Images2BufferedImages(final List<A3Image> images) {
@@ -859,6 +856,28 @@ public class A3AWTUtils {
 
     public static Font getDefaultFont() {
         return DEFAULT_FONT;
+    }
+
+    public static int bufferedImageType2ImageType(final int type) {
+        switch (type) {
+            case BufferedImage.TYPE_INT_ARGB:
+                return A3Image.Type.ARGB_8888;
+            case BufferedImage.TYPE_USHORT_565_RGB:
+                return A3Image.Type.RGB_565;
+            default:
+                return -1;
+        }
+    }
+
+    public static int imageType2BufferedImageType(final int type) {
+        switch (type) {
+            case A3Image.Type.ARGB_8888:
+                return BufferedImage.TYPE_INT_ARGB;
+            case A3Image.Type.RGB_565:
+                return BufferedImage.TYPE_USHORT_565_RGB;
+            default:
+                return -1;
+        }
     }
 
 }

@@ -5,7 +5,6 @@ import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
 import sun.awt.AWTAccessor;
 import sun.awt.CustomCursor;
-//import sun.awt.X11.XToolkit;
 import sun.misc.Unsafe;
 
 import java.awt.Point;
@@ -51,6 +50,7 @@ public class ColorfulXCursor extends CustomCursor {
                 awtUnlock.invoke(null);
                 //XToolkit.awtUnlock();
             }
+
         } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             e.printStackTrace();
         }

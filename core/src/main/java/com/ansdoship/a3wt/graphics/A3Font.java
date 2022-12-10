@@ -2,25 +2,32 @@ package com.ansdoship.a3wt.graphics;
 
 import com.ansdoship.a3wt.util.A3Copyable;
 
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+
 public interface A3Font {
 
     interface Metrics extends A3Copyable<Metrics> {
-        void setBaseline(float baseline);
+        void setBaseline(final float baseline);
         float getBaseline();
-        void setAscent(float ascent);
+        void setAscent(final float ascent);
         float getAscent();
-        void setDescent(float descent);
+        void setDescent(final float descent);
         float getDescent();
-        void setLeading(float leading);
+        void setLeading(final float leading);
         float getLeading();
-        void setLeft(float left);
-        float getLeft();
-        void setTop(float top);
+        void setTop(final float top);
         float getTop();
-        void setRight(float right);
-        float getRight();
-        void setBottom(float bottom);
+        void setBottom(final float bottom);
         float getBottom();
+
+        void reset();
+
+        default float getHeight() {
+            return getBottom() + getTop();
+        }
+        default float getLineHeight() {
+            return getHeight() + getLeading();
+        }
     }
 
     class DefaultMetrics implements Metrics {
@@ -29,22 +36,21 @@ public interface A3Font {
         protected float ascent;
         protected float descent;
         protected float leading;
-        protected float left;
         protected float top;
-        protected float right;
         protected float bottom;
+
+        public DefaultMetrics() {
+            reset();
+        }
 
         public DefaultMetrics(final float baseline, final float ascent,
                               final float descent, final float leading,
-                              final float left, final float top,
-                              final float right, final float bottom) {
+                              final float top, final float bottom) {
             this.baseline = baseline;
             this.ascent = ascent;
             this.descent = descent;
             this.leading = leading;
-            this.left = left;
             this.top = top;
-            this.right = right;
             this.bottom = bottom;
         }
 
@@ -89,16 +95,6 @@ public interface A3Font {
         }
 
         @Override
-        public void setLeft(float left) {
-            this.left = left;
-        }
-
-        @Override
-        public float getLeft() {
-            return left;
-        }
-
-        @Override
         public void setTop(float top) {
             this.top = top;
         }
@@ -106,16 +102,6 @@ public interface A3Font {
         @Override
         public float getTop() {
             return top;
-        }
-
-        @Override
-        public void setRight(float right) {
-            this.right = right;
-        }
-
-        @Override
-        public float getRight() {
-            return right;
         }
 
         @Override
@@ -129,8 +115,30 @@ public interface A3Font {
         }
 
         @Override
+        public void reset() {
+            baseline = ascent = descent = leading = top = bottom = 0;
+        }
+
+        @Override
         public Metrics copy() {
-            return new DefaultMetrics(getBaseline(), getAscent(), getDescent(), getLeading(), getLeft(), getTop(), getRight(), getBottom());
+            return new DefaultMetrics(baseline, ascent, descent, leading, top, bottom);
+        }
+
+        @Override
+        public void to(final Metrics dst) {
+            checkArgNotNull(dst, "dst");
+            dst.setBaseline(baseline);
+            dst.setAscent(ascent);
+            dst.setDescent(descent);
+            dst.setLeading(leading);
+            dst.setTop(top);
+            dst.setBottom(bottom);
+        }
+
+        @Override
+        public void from(final Metrics src) {
+            checkArgNotNull(src, "src");
+            src.to(this);
         }
 
     }

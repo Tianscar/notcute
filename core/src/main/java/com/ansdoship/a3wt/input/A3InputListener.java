@@ -695,17 +695,17 @@ public interface A3InputListener {
         public static final int NUMPAD   = 4;
     }
 
-    boolean keyDown(int keyCode, int keyLocation);
-    boolean keyUp(int keyCode, int keyLocation);
-    boolean keyTyped(char keyChar);
+    boolean keyDown(final int keyCode, final int keyLocation);
+    boolean keyUp(final int keyCode, final int keyLocation);
+    boolean keyTyped(final char keyChar);
 
-    boolean pointerDown(float x, float y, int pointer, int button);
-    boolean pointerUp(float x, float y, int pointer, int button);
-    boolean pointerDragged(float x, float y, int pointer);
+    boolean pointerDown(final float x, final float y, final int pointer, final int button);
+    boolean pointerUp(final float x, final float y, final int pointer, final int button);
+    boolean pointerDragged(final float x, final float y, final int pointer);
 
-    boolean mouseMoved(float x, float y);
-    boolean mouseEntered(float x, float y);
-    boolean mouseExited(float x, float y);
-    boolean mouseWheelScrolled(float amount, int scrollType);
+    boolean mouseMoved(final float x, final float y);
+    boolean mouseEntered(final float x, final float y);
+    boolean mouseExited(final float x, final float y);
+    boolean mouseWheelScrolled(final float amount, final int scrollType);
 
 }

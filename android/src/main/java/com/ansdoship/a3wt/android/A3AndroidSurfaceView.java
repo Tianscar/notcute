@@ -5,12 +5,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
+import android.view.PointerIcon;
 import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.app.A3Clipboard;
@@ -38,13 +40,14 @@ import static com.ansdoship.a3wt.android.A3AndroidUtils.getStorageDir;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnTouchEvent;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnHoverEvent;
 import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnKeyEvent;
+import static com.ansdoship.a3wt.android.A3AndroidUtils.commonOnMouseWheelMotion;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3Colors.WHITE;
 import static com.ansdoship.a3wt.util.A3Files.createDirIfNotExist;
 
 public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Context, SurfaceHolder.Callback,
-        View.OnLayoutChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnKeyListener {
+        View.OnLayoutChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnKeyListener, View.OnGenericMotionListener {
 
     @Override
     public boolean onTouch(final View v, final MotionEvent event) {
@@ -59,6 +62,11 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     @Override
     public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
         return commonOnKeyEvent(handle.inputListeners, event);
+    }
+
+    @Override
+    public boolean onGenericMotion(final View v, final MotionEvent event) {
+        return commonOnMouseWheelMotion(handle.inputListeners, event);
     }
 
     protected static class A3AndroidSurfaceViewHandle implements Handle {
@@ -144,8 +152,11 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         public A3AndroidSurfaceViewHandle(final A3AndroidSurfaceView surfaceView) {
             checkArgNotNull(surfaceView, "surfaceView");
             this.surfaceView = surfaceView;
+            graphicsKit.attach(surfaceView.getContext());
+            cursor = (AndroidA3Cursor) graphicsKit.getDefaultCursor();
             assetsRef.compareAndSet(null, new AndroidA3Assets(surfaceView.getContext().getAssets()));
             clipboardRef.compareAndSet(null, new AndroidA3Clipboard((ClipboardManager) surfaceView.getContext().getSystemService(Context.CLIPBOARD_SERVICE)));
+            selectionRef.compareAndSet(null, new AndroidA3Clipboard(A3Clipboard.SelectionType.SELECTION));
         }
 
         public static final File TMPDIR;
@@ -155,8 +166,9 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
             else TMPDIR = new File(tmpDirPath);
         }
         
-        protected static final AtomicReference<AndroidA3Assets> assetsRef = new AtomicReference<>(null);
-        protected static final AtomicReference<AndroidA3Clipboard> clipboardRef = new AtomicReference<>(null);
+        protected static final AtomicReference<AndroidA3Assets> assetsRef = new AtomicReference<>();
+        protected static final AtomicReference<AndroidA3Clipboard> clipboardRef = new AtomicReference<>();
+        protected static final AtomicReference<AndroidA3Clipboard> selectionRef = new AtomicReference<>();
         
         protected volatile long elapsed = 0;
         protected final AndroidA3Graphics graphics = new A3SurfaceViewGraphics();
@@ -333,17 +345,23 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
         @Override
         public A3Clipboard getSelection() {
-            return null;
+            return selectionRef.get();
         }
 
-        @Override
-        public void setCursor(A3Cursor cursor) {
+        protected volatile AndroidA3Cursor cursor;
 
+        @Override
+        public void setCursor(final A3Cursor cursor) {
+            checkArgNotNull(cursor, "cursor");
+            this.cursor = (AndroidA3Cursor) cursor;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                surfaceView.setPointerIcon((PointerIcon) this.cursor.pointerIcon);
+            }
         }
 
         @Override
         public A3Cursor getCursor() {
-            return null;
+            return cursor;
         }
 
     }
@@ -384,6 +402,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         addOnLayoutChangeListener(this);
         setOnTouchListener(this);
         setOnHoverListener(this);
+        setOnGenericMotionListener(this);
         setOnKeyListener(this);
     }
 

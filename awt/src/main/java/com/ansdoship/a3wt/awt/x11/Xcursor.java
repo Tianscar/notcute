@@ -54,13 +54,13 @@ public final class Xcursor {
     public final static class XCursorImage extends Struct {
 
         private final Unsigned32     version = new Unsigned32();	/* version of the image data */
-        private final Unsigned32     size = new Unsigned32();	/* nominal size for matching */
-        private final Unsigned32     width = new Unsigned32();	/* actual width */
-        private final Unsigned32     height = new Unsigned32();	/* actual height */
-        private final Unsigned32     xhot = new Unsigned32();	/* hot spot x (must be inside image) */
-        private final Unsigned32     yhot = new Unsigned32();	/* hot spot y (must be inside image) */
-        private final Unsigned32     delay = new Unsigned32();	/* animation delay to next frame (ms) */
-        private final Pointer        pixels = new Pointer();	/* pointer to pixels */
+        private final Unsigned32     size    = new Unsigned32();   	/* nominal size for matching */
+        private final Unsigned32     width   = new Unsigned32();  	/* actual width */
+        private final Unsigned32     height  = new Unsigned32();  	/* actual height */
+        private final Unsigned32     xhot    = new Unsigned32();	/* hot spot x (must be inside image) */
+        private final Unsigned32     yhot    = new Unsigned32();   	/* hot spot y (must be inside image) */
+        private final Unsigned32     delay   = new Unsigned32();  	/* animation delay to next frame (ms) */
+        private final Pointer        pixels  = new Pointer();    	/* pointer to pixels */
 
         public XCursorImage(Runtime runtime) {
             super(runtime);

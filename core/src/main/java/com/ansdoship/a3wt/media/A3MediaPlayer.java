@@ -12,13 +12,13 @@ public interface A3MediaPlayer extends A3Disposable {
         public static final int STREAM = 1;
     }
 
-    boolean loadAudio(A3Audio audio, int mode);
-    void playAudio(A3Audio audio);
-    void pauseAudio(A3Audio audio);
-    void stopAudio(A3Audio audio);
-    void unloadAudio(A3Audio audio);
+    boolean loadAudio(final A3Audio audio, final int mode);
+    void playAudio(final A3Audio audio);
+    void pauseAudio(final A3Audio audio);
+    void stopAudio(final A3Audio audio);
+    void unloadAudio(final A3Audio audio);
 
-    void addAudioListener(A3AudioListener listener);
+    void addAudioListener(final A3AudioListener listener);
     List<A3AudioListener> getAudioListeners();
 
 }

@@ -11,7 +11,7 @@ import static com.ansdoship.a3wt.util.A3Collections.deepCopy;
 
 public class DefaultA3FramedImage implements A3FramedImage {
 
-    protected volatile List<A3Image> frames = new ArrayList<>();
+    protected final List<A3Image> frames = new ArrayList<>();
     protected volatile int index = 0;
     protected volatile boolean disposed = false;
     protected volatile int loops = 1;
@@ -44,15 +44,15 @@ public class DefaultA3FramedImage implements A3FramedImage {
     }
 
     @Override
-    public long getTime() {
-        checkDisposed("Can't call getTime() on a disposed A3FramedImage");
-        return get().getTime();
+    public long getDuration() {
+        checkDisposed("Can't call getDuration() on a disposed A3FramedImage");
+        return get().getDuration();
     }
 
     @Override
-    public void setTime(final long time) {
-        checkDisposed("Can't call setTime() on a disposed A3FramedImage");
-        get().setTime(time);
+    public void setDuration(final long duration) {
+        checkDisposed("Can't call setDuration() on a disposed A3FramedImage");
+        get().setDuration(duration);
     }
 
     @Override
@@ -77,6 +77,26 @@ public class DefaultA3FramedImage implements A3FramedImage {
     public void setHotSpotY(final int hotSpotY) {
         checkDisposed("Can't call setHotSpotY() on a disposed A3FramedImage");
         get().setHotSpotY(hotSpotY);
+    }
+
+    @Override
+    public int getType() {
+        checkDisposed("Can't call setHotSpotY() on a disposed A3FramedImage");
+        return get().getType();
+    }
+
+    @Override
+    public void setType(final int type) {
+        checkDisposed("Can't call setHotSpotY() on a disposed A3FramedImage");
+        get().setType(type);
+    }
+
+    @Override
+    public void setTypeAll(final int type) {
+        checkDisposed("Can't call setHotSpotY() on a disposed A3FramedImage");
+        for (final A3Image frame : frames) {
+            frame.setType(type);
+        }
     }
 
     @Override
@@ -170,8 +190,25 @@ public class DefaultA3FramedImage implements A3FramedImage {
     @Override
     public A3Image copy() {
         checkDisposed("Can't call copy() on a disposed A3FramedImage");
-        final Collection<A3Image> frames = deepCopy(this.frames);
-        return new DefaultA3FramedImage(frames);
+        final DefaultA3FramedImage copy = new DefaultA3FramedImage();
+        to(copy);
+        return copy;
+    }
+
+    @Override
+    public void to(final A3Image dst) {
+        checkDisposed("Can't call set() on a disposed A3FramedImage");
+        checkArgNotNull(dst, "dst");
+        final Collection<A3Image> frames = ((DefaultA3FramedImage)dst).frames;
+        frames.clear();
+        frames.addAll(deepCopy(this.frames));
+    }
+
+    @Override
+    public void from(final A3Image src) {
+        checkDisposed("Can't call from() on a disposed A3FramedImage");
+        checkArgNotNull(src, "src");
+        src.to(this);
     }
 
     @Override
@@ -187,7 +224,6 @@ public class DefaultA3FramedImage implements A3FramedImage {
             frame.dispose();
         }
         frames.clear();
-        frames = null;
     }
 
     @Override
