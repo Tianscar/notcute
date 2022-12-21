@@ -1,12 +1,14 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.graphics.A3Point;
+import com.ansdoship.a3wt.graphics.A3Rect;
 import com.ansdoship.a3wt.graphics.A3RoundRect;
 import com.ansdoship.a3wt.graphics.A3Size;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.RoundRectangle2D;
 
+import static com.ansdoship.a3wt.awt.A3AWTUtils.floatRectangle2D;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgRangeBounds;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgRangeLeftRight;
@@ -61,6 +63,12 @@ public class AWTA3RoundRect implements A3RoundRect {
     }
 
     @Override
+    public void getPos(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(roundRectangle2D.x, roundRectangle2D.y);
+    }
+
+    @Override
     public float getWidth() {
         return roundRectangle2D.width;
     }
@@ -73,6 +81,12 @@ public class AWTA3RoundRect implements A3RoundRect {
     @Override
     public A3Size getSize() {
         return new AWTA3Size(new Dimension2D.Float(roundRectangle2D.width, roundRectangle2D.height));
+    }
+
+    @Override
+    public void getSize(final A3Point size) {
+        checkArgNotNull(size, "size");
+        size.set(roundRectangle2D.width, roundRectangle2D.height);
     }
 
     @Override
@@ -91,116 +105,160 @@ public class AWTA3RoundRect implements A3RoundRect {
     }
 
     @Override
-    public void setLeft(final float left) {
+    public void getCorner(final A3Size size) {
+        checkArgNotNull(size, "size");
+        size.set(roundRectangle2D.arcwidth, roundRectangle2D.archeight);
+    }
+
+    @Override
+    public A3RoundRect setLeft(final float left) {
         checkArgRangeLeftRight(left, getRight());
         roundRectangle2D.width += roundRectangle2D.x - left;
         roundRectangle2D.x = left;
+        return this;
     }
 
     @Override
-    public void setTop(final float top) {
+    public A3RoundRect setTop(final float top) {
         checkArgRangeTopBottom(top, getBottom());
         roundRectangle2D.height += roundRectangle2D.y - top;
         roundRectangle2D.y = top;
+        return this;
     }
 
     @Override
-    public void setRight(final float right) {
+    public A3RoundRect setRight(final float right) {
         checkArgRangeLeftRight(getLeft(), right);
         roundRectangle2D.width = right - roundRectangle2D.x;
+        return this;
     }
 
     @Override
-    public void setBottom(final float bottom) {
+    public A3RoundRect setBottom(final float bottom) {
         checkArgRangeTopBottom(getTop(), bottom);
         roundRectangle2D.height = bottom - roundRectangle2D.y;
+        return this;
     }
 
     @Override
-    public void setBounds(final float left, final float top, final float right, final float bottom) {
+    public A3RoundRect setBounds(final float left, final float top, final float right, final float bottom) {
         checkArgRangeBounds(left, top, right, bottom);
         roundRectangle2D.x = left;
         roundRectangle2D.y = top;
         roundRectangle2D.width = right - left;
         roundRectangle2D.height = bottom - top;
+        return this;
     }
 
     @Override
-    public void setX(final float x) {
+    public A3RoundRect setX(final float x) {
         roundRectangle2D.x = x;
+        return this;
     }
 
     @Override
-    public void setY(final float y) {
+    public A3RoundRect setY(final float y) {
         roundRectangle2D.y = y;
+        return this;
     }
 
     @Override
-    public void setPos(final A3Point pos) {
+    public A3RoundRect setPos(final A3Point pos) {
         checkArgNotNull(pos, "pos");
         roundRectangle2D.x = pos.getX();
         roundRectangle2D.y = pos.getY();
+        return this;
     }
 
     @Override
-    public void setWidth(final float width) {
+    public A3RoundRect setWidth(final float width) {
         roundRectangle2D.width = width;
+        return this;
     }
 
     @Override
-    public void setHeight(final float height) {
+    public A3RoundRect setHeight(final float height) {
         roundRectangle2D.height = height;
+        return this;
     }
 
     @Override
-    public void setSize(final A3Size size) {
+    public A3RoundRect setSize(final A3Size size) {
         checkArgNotNull(size, "size");
         roundRectangle2D.width = size.getWidth();
         roundRectangle2D.height = size.getHeight();
+        return this;
     }
 
     @Override
-    public void setPos(final float x, final float y) {
+    public A3RoundRect setPos(final float x, final float y) {
         roundRectangle2D.x = x;
         roundRectangle2D.y = y;
+        return this;
     }
 
     @Override
-    public void setSize(final float width, final float height) {
+    public A3RoundRect setSize(final float width, final float height) {
         roundRectangle2D.width = width;
         roundRectangle2D.height = height;
+        return this;
     }
 
     @Override
-    public void setRect(final float x, final float y, final float width, final float height) {
+    public A3RoundRect setRect(final float x, final float y, final float width, final float height) {
         roundRectangle2D.setFrame(x, y, width, height);
+        return this;
     }
 
     @Override
-    public void setRect(final A3Point pos, final A3Size size) {
+    public A3RoundRect setRect(final A3Point pos, final A3Size size) {
         checkArgNotNull(pos, "pos");
         checkArgNotNull(size, "size");
         roundRectangle2D.x = pos.getX();
         roundRectangle2D.y = pos.getY();
         roundRectangle2D.width = size.getWidth();
         roundRectangle2D.height = size.getHeight();
+        return this;
     }
 
     @Override
-    public void setArcWidth(final float arcWidth) {
+    public A3RoundRect setArcWidth(final float arcWidth) {
         roundRectangle2D.arcwidth = arcWidth;
+        return this;
     }
 
     @Override
-    public void setArcHeight(final float arcHeight) {
+    public A3RoundRect setArcHeight(final float arcHeight) {
         roundRectangle2D.archeight = arcHeight;
+        return this;
     }
 
     @Override
-    public void setCorner(final A3Size corner) {
+    public A3RoundRect setCorner(final A3Size corner) {
         checkArgNotNull(corner, "corner");
         roundRectangle2D.arcwidth = corner.getWidth();
         roundRectangle2D.archeight = corner.getHeight();
+        return this;
+    }
+
+    @Override
+    public void set(final float x, final float y, final float width, final float height, final float rx, final float ry) {
+        roundRectangle2D.setRoundRect(x, y, width, height, rx, ry);
+    }
+
+    @Override
+    public void set(final A3Point pos, final A3Size size, final A3Size corner) {
+        checkArgNotNull(pos, "pos");
+        checkArgNotNull(size, "size");
+        checkArgNotNull(corner, "corner");
+        roundRectangle2D.setRoundRect(pos.getX(), pos.getY(), size.getWidth(), size.getHeight(), corner.getWidth(), corner.getHeight());
+    }
+
+    @Override
+    public void set(final A3Rect rect, final A3Size corner) {
+        checkArgNotNull(rect, "rect");
+        checkArgNotNull(corner, "corner");
+        roundRectangle2D.setRoundRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), corner.getWidth(), corner.getHeight());
     }
 
     @Override
@@ -218,5 +276,43 @@ public class AWTA3RoundRect implements A3RoundRect {
         checkArgNotNull(src, "src");
         src.to(this);
     }
-    
+
+    @Override
+    public A3Rect getBounds() {
+        return new AWTA3Rect(floatRectangle2D(roundRectangle2D.getBounds2D()));
+    }
+
+    @Override
+    public void getBounds(final A3Rect bounds) {
+        checkArgNotNull(bounds, "bounds");
+        ((AWTA3Rect)bounds).rectangle2D.setRect(roundRectangle2D.getBounds2D());
+    }
+
+    @Override
+    public boolean contains(final float x, final float y) {
+        return roundRectangle2D.contains(x, y);
+    }
+
+    @Override
+    public boolean contains(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        return roundRectangle2D.contains(((AWTA3Point)pos).point2D);
+    }
+
+    @Override
+    public boolean contains(final float x, final float y, final float width, final float height) {
+        return roundRectangle2D.contains(x, y, width, height);
+    }
+
+    @Override
+    public boolean contains(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return roundRectangle2D.contains(((AWTA3Rect)rect).rectangle2D);
+    }
+
+    @Override
+    public void reset() {
+        roundRectangle2D.setRoundRect(0, 0, 0, 0, 0, 0);
+    }
+
 }

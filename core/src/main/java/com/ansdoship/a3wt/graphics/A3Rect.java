@@ -1,5 +1,7 @@
 package com.ansdoship.a3wt.graphics;
 
+import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+
 public interface A3Rect extends A3Shape<A3Rect> {
 
     float getLeft();
@@ -9,11 +11,11 @@ public interface A3Rect extends A3Shape<A3Rect> {
     float getX();
     float getY();
     A3Point getPos();
+    void getPos(final A3Point pos);
     float getWidth();
     float getHeight();
     A3Size getSize();
-
-    void get(final float[] values);
+    void getSize(final A3Size size);
 
     A3Rect setLeft(final float left);
     A3Rect setTop(final float top);
@@ -29,12 +31,30 @@ public interface A3Rect extends A3Shape<A3Rect> {
     A3Rect setSize(final float width, final float height);
     A3Rect setSize(final A3Size size);
 
-    void set(final float[] values);
     void set(final float x, final float y, final float width, final float height);
     void set(final A3Point pos, final A3Size size);
 
     default boolean isSquare() {
         return getWidth() == getHeight();
+    }
+
+    String KEY_X = "x";
+    String KEY_Y = "y";
+    String KEY_WIDTH = "width";
+    String KEY_HEIGHT = "height";
+
+    @Override
+    default void save(final A3ExtensiveBundle.Saver saver) {
+        saver.putFloat(KEY_X, getX());
+        saver.putFloat(KEY_Y, getY());
+        saver.putFloat(KEY_WIDTH, getWidth());
+        saver.putFloat(KEY_HEIGHT, getHeight());
+    }
+
+    @Override
+    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+        set(restorer.getFloat(KEY_X, 0), restorer.getFloat(KEY_Y, 0),
+                restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0));
     }
 
 }

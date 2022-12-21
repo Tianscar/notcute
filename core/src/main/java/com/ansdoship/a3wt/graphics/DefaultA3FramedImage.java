@@ -81,22 +81,18 @@ public class DefaultA3FramedImage implements A3FramedImage {
 
     @Override
     public int getType() {
-        checkDisposed("Can't call setHotSpotY() on a disposed A3FramedImage");
+        checkDisposed("Can't call getType() on a disposed A3FramedImage");
         return get().getType();
     }
 
     @Override
-    public void setType(final int type) {
-        checkDisposed("Can't call setHotSpotY() on a disposed A3FramedImage");
-        get().setType(type);
-    }
-
-    @Override
-    public void setTypeAll(final int type) {
-        checkDisposed("Can't call setHotSpotY() on a disposed A3FramedImage");
+    public A3Image copy(final int type) {
+        checkDisposed("Can't call copy() on a disposed A3FramedImage");
+        final DefaultA3FramedImage copy = new DefaultA3FramedImage();
         for (final A3Image frame : frames) {
-            frame.setType(type);
+            copy.add(frame.copy(type));
         }
+        return copy;
     }
 
     @Override
@@ -146,9 +142,9 @@ public class DefaultA3FramedImage implements A3FramedImage {
     }
 
     @Override
-    public A3Graphics getGraphics() {
-        checkDisposed("Can't call getGraphics() on a disposed A3FramedImage");
-        return get().getGraphics();
+    public A3Graphics createGraphics() {
+        checkDisposed("Can't call createGraphics() on a disposed A3FramedImage");
+        return get().createGraphics();
     }
 
     @Override

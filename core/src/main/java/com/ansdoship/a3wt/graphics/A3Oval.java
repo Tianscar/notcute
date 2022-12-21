@@ -1,5 +1,7 @@
 package com.ansdoship.a3wt.graphics;
 
+import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+
 public interface A3Oval extends A3Shape<A3Oval> {
 
     float getLeft();
@@ -12,8 +14,7 @@ public interface A3Oval extends A3Shape<A3Oval> {
     float getWidth();
     float getHeight();
     A3Size getSize();
-
-    void get(final float[] values);
+    void getSize(final A3Size size);
 
     A3Oval setLeft(float left);
     A3Oval setTop(float top);
@@ -29,12 +30,30 @@ public interface A3Oval extends A3Shape<A3Oval> {
     A3Oval setSize(float width, float height);
     A3Oval setSize(A3Size size);
 
-    void set(final float[] values);
     void set(float x, float y, float width, float height);
     void set(A3Point pos, A3Size size);
 
     default boolean isCircle() {
         return getWidth() == getHeight();
+    }
+
+    String KEY_X = "x";
+    String KEY_Y = "y";
+    String KEY_WIDTH = "width";
+    String KEY_HEIGHT = "height";
+
+    @Override
+    default void save(final A3ExtensiveBundle.Saver saver) {
+        saver.putFloat(KEY_X, getX());
+        saver.putFloat(KEY_Y, getY());
+        saver.putFloat(KEY_WIDTH, getWidth());
+        saver.putFloat(KEY_HEIGHT, getHeight());
+    }
+
+    @Override
+    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+        set(restorer.getFloat(KEY_X, 0), restorer.getFloat(KEY_Y, 0),
+                restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0));
     }
 
 }

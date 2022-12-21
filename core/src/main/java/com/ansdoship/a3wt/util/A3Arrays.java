@@ -1,10 +1,46 @@
 package com.ansdoship.a3wt.util;
 
+import java.math.BigDecimal;
+
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class A3Arrays {
     
     private A3Arrays(){}
+
+    public static String toPlainString(final BigDecimal[] array) {
+        if (array == null)
+            return "null";
+
+        int iMax = array.length - 1;
+        if (iMax == -1)
+            return "[]";
+
+        StringBuilder b = new StringBuilder();
+        b.append('[');
+        for (int i = 0; ; i++) {
+            b.append(array[i].toPlainString());
+            if (i == iMax)
+                return b.append(']').toString();
+            b.append(", ");
+        }
+    }
+
+    public static float[] double2float(final double[] array) {
+        final float[] result = new float[array.length];
+        for (int i = 0; i < result.length; i ++) {
+            result[i] = (float) array[i];
+        }
+        return result;
+    }
+
+    public static double[] float2double(final float[] array) {
+        final double[] result = new double[array.length];
+        for (int i = 0; i < result.length; i ++) {
+            result[i] = array[i];
+        }
+        return result;
+    }
 
     public static byte[] copy(final byte[] array) {
         checkArgNotNull(array, "array");

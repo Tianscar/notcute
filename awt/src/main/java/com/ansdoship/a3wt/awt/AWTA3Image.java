@@ -25,7 +25,6 @@ public class AWTA3Image implements A3Image {
         checkArgNotNull(bufferedImage, "bufferedImage");
         checkArgRangeMin(duration, 0, true, "duration");
         this.bufferedImage = bufferedImage;
-        this.graphics = new AWTA3Graphics(bufferedImage);
         this.duration = duration;
         this.hotSpotX = hotSpotX;
         this.hotSpotY = hotSpotY;
@@ -40,7 +39,8 @@ public class AWTA3Image implements A3Image {
     }
 
     @Override
-    public A3Graphics getGraphics() {
+    public A3Graphics createGraphics() {
+        if (graphics == null) graphics = new AWTA3Graphics(bufferedImage);
         return graphics;
     }
 
@@ -85,13 +85,6 @@ public class AWTA3Image implements A3Image {
     public int getType() {
         checkDisposed("Can't call getType() on a disposed A3Image");
         return bufferedImageType2ImageType(bufferedImage.getType());
-    }
-
-    @Override
-    public void setType(final int type) {
-        checkDisposed("Can't call setType() on a disposed A3Image");
-        final BufferedImage newImage = getImage(bufferedImage, imageType2BufferedImageType(type));
-        if (newImage != bufferedImage) setBufferedImage(newImage);
     }
 
     @Override
@@ -141,8 +134,10 @@ public class AWTA3Image implements A3Image {
     public void dispose() {
         if (isDisposed()) return;
         disposed = true;
-        graphics.dispose();
-        graphics = null;
+        if (graphics != null) {
+            graphics.dispose();
+            graphics = null;
+        }
         bufferedImage.flush();
         bufferedImage = null;
         duration = -1;
@@ -156,6 +151,12 @@ public class AWTA3Image implements A3Image {
         copy.hotSpotX = hotSpotX;
         copy.hotSpotY = hotSpotY;
         return copy;
+    }
+
+    @Override
+    public A3Image copy(final int type) {
+        checkDisposed("Can't call setType() on a disposed A3Image");
+        return new AWTA3Image(getImage(bufferedImage, imageType2BufferedImageType(type)));
     }
 
     public void setBufferedImage(final BufferedImage bufferedImage) {
@@ -175,7 +176,7 @@ public class AWTA3Image implements A3Image {
         checkArgNotNull(dst, "dst");
         final AWTA3Image dst0 = (AWTA3Image) dst;
         dst0.bufferedImage = A3AWTUtils.copyBufferedImage(bufferedImage);
-        setGraphics(new AWTA3Graphics(dst0.bufferedImage));
+        if (graphics != null) dst0.createGraphics().setData(graphics.data);
         dst0.duration = duration;
         dst0.hotSpotX = hotSpotX;
         dst0.hotSpotY = hotSpotY;

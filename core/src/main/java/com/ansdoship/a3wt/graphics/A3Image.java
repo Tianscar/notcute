@@ -14,7 +14,7 @@ public interface A3Image extends A3Disposable, A3Copyable<A3Image> {
         return getType() == Type.ARGB_8888;
     }
 
-    A3Graphics getGraphics();
+    A3Graphics createGraphics();
     int getWidth();
     int getHeight();
     int getPixel(final int x, final int y);
@@ -31,6 +31,7 @@ public interface A3Image extends A3Disposable, A3Copyable<A3Image> {
     void setHotSpotY(final int hotSpotY);
 
     int getType();
-    void setType(final int type);
+
+    A3Image copy(final int type);
 
 }

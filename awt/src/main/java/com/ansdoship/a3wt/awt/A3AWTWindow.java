@@ -6,7 +6,6 @@ import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.app.A3Context;
-import com.ansdoship.a3wt.graphics.A3Color;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -225,12 +224,12 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         }
 
         @Override
-        public A3Color getBackgroundColor() {
+        public int getBackgroundColor() {
             return window.canvas.handle.getBackgroundColor();
         }
 
         @Override
-        public void setBackgroundColor(final A3Color color) {
+        public void setBackgroundColor(final int color) {
             window.canvas.handle.setBackgroundColor(color);
         }
 

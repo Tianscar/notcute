@@ -1,5 +1,7 @@
 package com.ansdoship.a3wt.graphics;
 
+import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+
 public interface A3Arc extends A3Shape<A3Arc> {
 
     float getLeft();
@@ -9,9 +11,13 @@ public interface A3Arc extends A3Shape<A3Arc> {
     float getX();
     float getY();
     A3Point getPos();
+    void getPos(final A3Point pos);
     float getWidth();
     float getHeight();
     A3Size getSize();
+    void getSize(final A3Size size);
+    A3Rect getRect();
+    void getRect(final A3Rect rect);
     float getStartAngle();
     float getSweepAngle();
     boolean isUseCenter();
@@ -31,6 +37,7 @@ public interface A3Arc extends A3Shape<A3Arc> {
     A3Arc setSize(final A3Size size);
     A3Arc setRect(final float x, final float y, final float width, final float height);
     A3Arc setRect(final A3Point pos, final A3Size size);
+    A3Arc setRect(final A3Rect rect);
     A3Arc setStartAngle(final float startAngle);
     A3Arc setSweepAngle(final float sweepAngle);
     A3Arc setUseCenter(final boolean useCenter);
@@ -38,5 +45,32 @@ public interface A3Arc extends A3Shape<A3Arc> {
     void set(final float x, final float y, final float width, final float height, final float startAngle, final float sweepAngle, final boolean useCenter);
     void set(final A3Point pos, final A3Size size, final float startAngle, final float sweepAngle, final boolean useCenter);
     void set(final A3Rect rect, final float startAngle, final float sweepAngle, final boolean useCenter);
-    
+
+    String KEY_X = "x";
+    String KEY_Y = "y";
+    String KEY_WIDTH = "width";
+    String KEY_HEIGHT = "height";
+    String KEY_START_ANGLE = "startAngle";
+    String KEY_SWEEP_ANGLE = "sweepAngle";
+    String KEY_USE_CENTER = "useCenter";
+
+    @Override
+    default void save(final A3ExtensiveBundle.Saver saver) {
+        saver.putFloat(KEY_X, getX());
+        saver.putFloat(KEY_Y, getY());
+        saver.putFloat(KEY_WIDTH, getWidth());
+        saver.putFloat(KEY_HEIGHT, getHeight());
+        saver.putFloat(KEY_START_ANGLE, getStartAngle());
+        saver.putFloat(KEY_SWEEP_ANGLE, getSweepAngle());
+        saver.putBoolean(KEY_USE_CENTER, isUseCenter());
+    }
+
+    @Override
+    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+        set(restorer.getFloat(KEY_X, 0), restorer.getFloat(KEY_Y, 0),
+                restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0),
+                restorer.getFloat(KEY_START_ANGLE, 0), restorer.getFloat(KEY_SWEEP_ANGLE, 0),
+                restorer.getBoolean(KEY_USE_CENTER, false));
+    }
+
 }

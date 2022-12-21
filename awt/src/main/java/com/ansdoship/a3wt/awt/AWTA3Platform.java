@@ -1,14 +1,11 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Platform;
-import com.ansdoship.a3wt.bundle.A3I18NBundle;
 import com.ansdoship.a3wt.util.A3Logger;
-import com.ansdoship.a3wt.bundle.DefaultA3I18NBundle;
 
 public class AWTA3Platform implements A3Platform {
 
     protected static final AWTA3Logger logger = new AWTA3Logger();
-    protected static final DefaultA3I18NBundle i18NBundle = new DefaultA3I18NBundle();
 
     public static final String BACKEND_NAME = "AWT (Java2D)";
 
@@ -82,11 +79,6 @@ public class AWTA3Platform implements A3Platform {
     @Override
     public String getPlatformArch() {
         return OS_ARCH;
-    }
-
-    @Override
-    public A3I18NBundle getI18NBundle() {
-        return i18NBundle;
     }
 
     @Override

@@ -53,6 +53,7 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.imageType2BufferedImageType;
 
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgArrayLengthMin;
 
 public class AWTA3GraphicsKit implements A3GraphicsKit {
 
@@ -252,8 +253,32 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
+    public A3Transform createTransform(final float[] matrix) {
+        checkArgArrayLengthMin(matrix, AWTA3Transform.MATRIX_LENGTH, true);
+        return new AWTA3Transform(new AffineTransform(matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]));
+    }
+
+    @Override
+    public A3Transform createTransform(final float sx, final float kx, final float dx, final float ky, final float sy, final float dy) {
+        return new AWTA3Transform(new AffineTransform(sx, ky, kx, sy, dx, dy));
+    }
+
+    @Override
+    public A3Transform createTransform(final A3Point scale, final A3Point skew, final A3Point transform) {
+        checkArgNotNull(scale, "scale");
+        checkArgNotNull(skew, "skew");
+        checkArgNotNull(transform, "transform");
+        return new AWTA3Transform(new AffineTransform(scale.getX(), skew.getY(), skew.getX(), scale.getY(), transform.getX(), transform.getY()));
+    }
+
+    @Override
     public A3Coordinate createCoordinate() {
         return new AWTA3Coordinate(new Point());
+    }
+
+    @Override
+    public A3Coordinate createCoordinate(final int x, final int y) {
+        return new AWTA3Coordinate(new Point(x, y));
     }
 
     @Override
@@ -262,8 +287,25 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
+    public A3Dimension createDimension(final int width, final int height) {
+        return new AWTA3Dimension(new Dimension(width, height));
+    }
+
+    @Override
     public A3Area createArea() {
         return new AWTA3Area(new Rectangle());
+    }
+
+    @Override
+    public A3Area createArea(final int x, final int y, final int width, final int height) {
+        return new AWTA3Area(new Rectangle(x, y, width, height));
+    }
+
+    @Override
+    public A3Area createArea(final A3Coordinate pos, final A3Dimension size) {
+        checkArgNotNull(pos, "pos");
+        checkArgNotNull(size, "size");
+        return new AWTA3Area(new Rectangle(((AWTA3Coordinate)pos).point, ((AWTA3Dimension)size).dimension));
     }
 
     @Override
@@ -277,8 +319,45 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
+    public A3Arc createArc(final boolean useCenter) {
+        return new AWTA3Arc(new Arc2D.Float(useCenter ? Arc2D.PIE : Arc2D.OPEN));
+    }
+
+    @Override
+    public A3Arc createArc(final float x, final float y, final float width, final float height,
+                           final float startAngle, final float sweepAngle, final boolean useCenter) {
+        return new AWTA3Arc(new Arc2D.Float(x, y, width, height, startAngle, sweepAngle, useCenter ? Arc2D.PIE : Arc2D.OPEN));
+    }
+
+    @Override
+    public A3Arc createArc(final A3Point pos, final A3Size size, final float startAngle, final float sweepAngle, final boolean useCenter) {
+        checkArgNotNull(pos, "pos");
+        checkArgNotNull(size, "size");
+        return new AWTA3Arc(new Arc2D.Float(pos.getX(), pos.getY(), size.getWidth(), size.getHeight(),
+                startAngle, sweepAngle, useCenter ? Arc2D.PIE : Arc2D.OPEN));
+    }
+
+    @Override
+    public A3Arc createArc(final A3Rect rect, final float startAngle, final float sweepAngle, final boolean useCenter) {
+        checkArgNotNull(rect, "rect");
+        return new AWTA3Arc(new Arc2D.Float(((AWTA3Rect)rect).rectangle2D, startAngle, sweepAngle, useCenter ? Arc2D.PIE : Arc2D.OPEN));
+    }
+
+    @Override
     public A3Line createLine() {
         return new AWTA3Line(new Line2D.Float());
+    }
+
+    @Override
+    public A3Line createLine(final float startX, final float startY, final float endX, final float endY) {
+        return new AWTA3Line(new Line2D.Float(startX, startY, endX, endY));
+    }
+
+    @Override
+    public A3Line createLine(final A3Point startPos, final A3Point endPos) {
+        checkArgNotNull(startPos, "startPos");
+        checkArgNotNull(endPos, "endPos");
+        return new AWTA3Line(new Line2D.Float(((AWTA3Point)startPos).point2D, ((AWTA3Point)endPos).point2D));
     }
 
     @Override
@@ -287,8 +366,37 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
+    public A3QuadCurve createQuadCurve(final float startX, final float startY, final float ctrlX, final float ctrlY, final float endX, final float endY) {
+        return new AWTA3QuadCurve(new QuadCurve2D.Float(startX, startY, ctrlX, ctrlY, endX, endY));
+    }
+
+    @Override
+    public A3QuadCurve createQuadCurve(final A3Point startPos, final A3Point ctrlPos, final A3Point endPos) {
+        checkArgNotNull(startPos, "startPos");
+        checkArgNotNull(ctrlPos, "ctrlPos");
+        checkArgNotNull(endPos, "endPos");
+        return new AWTA3QuadCurve(new QuadCurve2D.Float(startPos.getX(), startPos.getY(), ctrlPos.getX(), ctrlPos.getY(), endPos.getX(), endPos.getY()));
+    }
+
+    @Override
     public A3CubicCurve createCubicCurve() {
         return new AWTA3CubicCurve(new CubicCurve2D.Float());
+    }
+
+    @Override
+    public A3CubicCurve createCubicCurve(final float startX, final float startY, final float ctrlX1, final float ctrlY1,
+                                         final float ctrlX2, final float ctrlY2, final float endX, final float endY) {
+        return new AWTA3CubicCurve(new CubicCurve2D.Float(startX, startY, ctrlX1, ctrlY1, ctrlX2, ctrlY2, endX, endY));
+    }
+
+    @Override
+    public A3CubicCurve createCubicCurve(final A3Point startPos, final A3Point ctrlPos1, final A3Point ctrlPos2, final A3Point endPos) {
+        checkArgNotNull(startPos, "startPos");
+        checkArgNotNull(ctrlPos1, "ctrlPos1");
+        checkArgNotNull(ctrlPos2, "ctrlPos2");
+        checkArgNotNull(endPos, "endPos");
+        return new AWTA3CubicCurve(new CubicCurve2D.Float(startPos.getX(), startPos.getY(), ctrlPos1.getX(), ctrlPos1.getY(),
+                ctrlPos2.getX(), ctrlPos2.getY(), endPos.getX(), endPos.getY()));
     }
 
     @Override
@@ -297,8 +405,31 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
+    public A3Point createPoint(final float x, final float y) {
+        return new AWTA3Point(new Point2D.Float(x, y));
+    }
+
+    @Override
     public A3Oval createOval() {
         return new AWTA3Oval(new Ellipse2D.Float());
+    }
+
+    @Override
+    public A3Oval createOval(final float x, final float y, final float width, final float height) {
+        return new AWTA3Oval(new Ellipse2D.Float(x, y, width, height));
+    }
+
+    @Override
+    public A3Oval createOval(final A3Point pos, final A3Size size) {
+        checkArgNotNull(pos, "pos");
+        checkArgNotNull(size, "size");
+        return new AWTA3Oval(new Ellipse2D.Float(pos.getX(), pos.getY(), size.getWidth(), size.getHeight()));
+    }
+
+    @Override
+    public A3Oval createOval(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return new AWTA3Oval(new Ellipse2D.Float(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight()));
     }
 
     @Override
@@ -307,13 +438,50 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
+    public A3Rect createRect(final float x, final float y, final float width, final float height) {
+        return new AWTA3Rect(new Rectangle2D.Float(x, y, width, height));
+    }
+
+    @Override
+    public A3Rect createRect(final A3Point pos, final A3Size size) {
+        checkArgNotNull(pos, "pos");
+        checkArgNotNull(size, "size");
+        return new AWTA3Rect(new Rectangle2D.Float(pos.getX(), pos.getY(), size.getWidth(), size.getHeight()));
+    }
+
+    @Override
     public A3RoundRect createRoundRect() {
         return new AWTA3RoundRect(new RoundRectangle2D.Float());
     }
 
     @Override
+    public A3RoundRect createRoundRect(final float x, final float y, final float width, final float height, final float rx, final float ry) {
+        return new AWTA3RoundRect(new RoundRectangle2D.Float(x, y, width, height, rx, ry));
+    }
+
+    @Override
+    public A3RoundRect createRoundRect(final A3Point pos, final A3Size size, final A3Size corner) {
+        checkArgNotNull(pos, "pos");
+        checkArgNotNull(size, "size");
+        checkArgNotNull(corner, "corner");
+        return new AWTA3RoundRect(new RoundRectangle2D.Float(pos.getX(), pos.getY(), size.getWidth(), size.getHeight(), corner.getWidth(), corner.getHeight()));
+    }
+
+    @Override
+    public A3RoundRect createRoundRect(final A3Rect rect, final A3Size corner) {
+        checkArgNotNull(rect, "rect");
+        checkArgNotNull(corner, "corner");
+        return new AWTA3RoundRect(new RoundRectangle2D.Float(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), corner.getWidth(), corner.getHeight()));
+    }
+
+    @Override
     public A3Size createSize() {
         return new AWTA3Size(new Dimension2D.Float());
+    }
+
+    @Override
+    public A3Size createSize(final float width, final float height) {
+        return new AWTA3Size(new Dimension2D.Float(width, height));
     }
 
     @Override

@@ -30,17 +30,19 @@ public class AWTA3Coordinate implements A3Coordinate {
     }
 
     @Override
-    public void setX(final int x) {
+    public A3Coordinate setX(final int x) {
         point.x = x;
+        return this;
     }
 
     @Override
-    public void setY(final int y) {
+    public A3Coordinate setY(final int y) {
         point.y = y;
+        return this;
     }
 
     @Override
-    public void setPos(final int x, final int y) {
+    public void set(final int x, final int y) {
         point.setLocation(x, y);
     }
 
@@ -59,6 +61,11 @@ public class AWTA3Coordinate implements A3Coordinate {
     public void from(final A3Coordinate src) {
         checkArgNotNull(src, "src");
         src.to(this);
+    }
+
+    @Override
+    public void reset() {
+        point.x = point.y = 0;
     }
 
 }

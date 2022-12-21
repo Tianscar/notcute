@@ -1,6 +1,7 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Preferences;
+import com.ansdoship.a3wt.util.A3Arrays;
 import com.ansdoship.a3wt.util.A3Strings;
 
 import java.awt.EventQueue;
@@ -18,6 +19,7 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgElementsNotNull;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3Files.createFileIfNotExist;
 import static com.ansdoship.a3wt.util.A3Files.copyTo;
@@ -125,16 +127,18 @@ public class AWTA3Preferences implements A3Preferences {
 
     @Override
     public A3Preferences putString(final String key, final String value) {
-        return put(key, value);
+        return put(key, value == null ? "null" : value);
     }
 
     @Override
     public A3Preferences putBigInteger(final String key, final BigInteger value) {
+        checkArgNotNull(value, "value");
         return put(key, value.toString());
     }
 
     @Override
     public A3Preferences putBigDecimal(final String key, final BigDecimal value) {
+        checkArgNotNull(value, "value");
         return put(key, value.toPlainString());
     }
 
@@ -142,6 +146,66 @@ public class AWTA3Preferences implements A3Preferences {
     public A3Preferences putByteArray(final String key, final byte[] value) {
         checkArgNotNull(value, "value");
         return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putShortArray(final String key, final short[] value) {
+        checkArgNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putIntArray(final String key, final int[] value) {
+        checkArgNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putLongArray(final String key, final long[] value) {
+        checkArgNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putFloatArray(final String key, final float[] value) {
+        checkArgNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putDoubleArray(final String key, final double[] value) {
+        checkArgNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putBooleanArray(final String key, final boolean[] value) {
+        checkArgNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putCharArray(final String key, final char[] value) {
+        checkArgNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putStringArray(final String key, final String[] value) {
+        checkArgNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putBigIntegerArray(final String key, final BigInteger[] value) {
+        checkArgElementsNotNull(value, "value");
+        return put(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3Preferences putBigDecimalArray(final String key, final BigDecimal[] value) {
+        checkArgElementsNotNull(value, "value");
+        return put(key, A3Arrays.toPlainString(value));
     }
 
     protected String get(final String key, final String defValue) {
@@ -196,17 +260,69 @@ public class AWTA3Preferences implements A3Preferences {
 
     @Override
     public BigInteger getBigInteger(final String key, final BigInteger defValue) {
+        checkArgNotNull(defValue, "defValue");
         return new BigInteger(get(key, defValue.toString()));
     }
 
     @Override
     public BigDecimal getBigDecimal(final String key, final BigDecimal defValue) {
+        checkArgNotNull(defValue, "defValue");
         return new BigDecimal(get(key, defValue.toPlainString()));
     }
 
     @Override
     public byte[] getByteArray(final String key, final byte[] defValue) {
         return A3Strings.parseByteArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public short[] getShortArray(final String key, final short[] defValue) {
+        return A3Strings.parseShortArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public int[] getIntArray(String key, int[] defValue) {
+        return A3Strings.parseIntArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public long[] getLongArray(String key, long[] defValue) {
+        return A3Strings.parseLongArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public float[] getFloatArray(String key, float[] defValue) {
+        return A3Strings.parseFloatArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public double[] getDoubleArray(String key, double[] defValue) {
+        return A3Strings.parseDoubleArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public boolean[] getBooleanArray(String key, boolean[] defValue) {
+        return A3Strings.parseBooleanArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public char[] getCharArray(String key, char[] defValue) {
+        return A3Strings.parseCharArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public String[] getStringArray(String key, String[] defValue) {
+        return A3Strings.parseStringArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public BigInteger[] getBigIntegerArray(String key, BigInteger[] defValue) {
+        return A3Strings.parseBigIntegerArray(get(key, Arrays.toString(defValue)));
+    }
+
+    @Override
+    public BigDecimal[] getBigDecimalArray(String key, BigDecimal[] defValue) {
+        return A3Strings.parseBigDecimalArray(get(key, Arrays.toString(defValue)));
     }
 
     @Override

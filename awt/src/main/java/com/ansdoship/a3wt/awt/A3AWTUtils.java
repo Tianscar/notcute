@@ -30,6 +30,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
@@ -878,6 +880,19 @@ public class A3AWTUtils {
             default:
                 return -1;
         }
+    }
+
+    public static Rectangle2D.Float floatRectangle2D(final Rectangle2D rectangle2D) {
+        checkArgNotNull(rectangle2D, "rectangle2D");
+        if (rectangle2D instanceof Rectangle2D.Float) return (Rectangle2D.Float) rectangle2D;
+        else return new Rectangle2D.Float((float) rectangle2D.getX(), (float) rectangle2D.getY(),
+                (float) rectangle2D.getWidth(), (float) rectangle2D.getHeight());
+    }
+
+    public static Path2D.Float floatPath2D(final Path2D path2D) {
+        checkArgNotNull(path2D, "path2D");
+        if (path2D instanceof Path2D.Float) return (Path2D.Float) path2D;
+        else return new Path2D.Float(path2D);
     }
 
 }

@@ -53,25 +53,49 @@ public interface A3GraphicsKit {
     }
 
     A3Transform createTransform();
+    A3Transform createTransform(final float[] matrix);
+    A3Transform createTransform(final float sx, final float kx, final float dx,
+                                final float ky, final float sy, final float dy);
+    A3Transform createTransform(final A3Point scale, final A3Point skew, final A3Point transform);
+    A3Coordinate createCoordinate();
     A3Coordinate createCoordinate(final int x, final int y);
+    A3Dimension createDimension();
     A3Dimension createDimension(final int width, final int height);
-    A3Area createArea(final int left, final int top, final int right, final int bottom);
+    A3Area createArea();
+    A3Area createArea(final int x, final int y, final int width, final int height);
+    A3Area createArea(final A3Coordinate pos, final A3Dimension size);
     A3Path createPath();
+    A3Arc createArc();
+    A3Arc createArc(final boolean useCenter);
     A3Arc createArc(final float x, final float y, final float width, final float height, final float startAngle, final float sweepAngle, final boolean useCenter);
+    A3Arc createArc(final A3Point pos, final A3Size size, final float startAngle, final float sweepAngle, final boolean useCenter);
     A3Arc createArc(final A3Rect rect, final float startAngle, final float sweepAngle, final boolean useCenter);
+    A3Line createLine();
     A3Line createLine(final float startX, final float startY, final float endX, final float endY);
     A3Line createLine(final A3Point startPos, final A3Point endPos);
-    A3QuadCurve createQuadCurve(final float startX, final float startY, final float endX, final float endY, final float ctrlX, final float ctrlY);
-    A3QuadCurve createQuadCurve(final A3Point startPos, final A3Point endPos, final A3Point ctrlPos);
-    A3CubicCurve createCubicCurve(final float startX, final float startY, final float endX, final float endY,
-                                  final float ctrlX1, final float ctrlY1, final float ctrlX2, final float ctrlY2);
-    A3QuadCurve createQuadCurve(final A3Point startPos, final A3Point endPos, final A3Point ctrlPos1, final A3Point ctrlPos2);
+    A3QuadCurve createQuadCurve();
+    A3QuadCurve createQuadCurve(final float startX, final float startY, final float ctrlX, final float ctrlY, final float endX, final float endY);
+    A3QuadCurve createQuadCurve(final A3Point startPos, final A3Point ctrlPos, final A3Point endPos);
+    A3CubicCurve createCubicCurve();
+    A3CubicCurve createCubicCurve(final float startX, final float startY,
+                                  final float ctrlX1, final float ctrlY1,
+                                  final float ctrlX2, final float ctrlY2,
+                                  final float endX, final float endY);
+    A3CubicCurve createCubicCurve(final A3Point startPos, final A3Point ctrlPos1, final A3Point ctrlPos2, final A3Point endPos);
+    A3Point createPoint();
     A3Point createPoint(final float x, final float y);
+    A3Oval createOval();
     A3Oval createOval(final float x, final float y, final float width, final float height);
+    A3Oval createOval(final A3Point pos, final A3Size size);
     A3Oval createOval(final A3Rect rect);
+    A3Rect createRect();
     A3Rect createRect(final float x, final float y, final float width, final float height);
+    A3Rect createRect(final A3Point pos, final A3Size size);
+    A3RoundRect createRoundRect();
     A3RoundRect createRoundRect(final float x, final float y, final float width, final float height, final float rx, final float ry);
+    A3RoundRect createRoundRect(final A3Point pos, final A3Size size, final A3Size corner);
     A3RoundRect createRoundRect(final A3Rect rect, final A3Size corner);
+    A3Size createSize();
     A3Size createSize(final float width, final float height);
 
     A3Font readFont(final File input);

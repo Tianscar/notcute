@@ -1,5 +1,7 @@
 package com.ansdoship.a3wt.graphics;
 
+import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+
 public interface A3RoundRect extends A3Shape<A3RoundRect> {
 
     float getLeft();
@@ -9,14 +11,15 @@ public interface A3RoundRect extends A3Shape<A3RoundRect> {
     float getX();
     float getY();
     A3Point getPos();
+    void getPos(final A3Point pos);
     float getWidth();
     float getHeight();
     A3Size getSize();
+    void getSize(final A3Point size);
     float getArcWidth();
     float getArcHeight();
     A3Size getCorner();
-
-    void get(final float[] values);
+    void getCorner(final A3Size size);
 
     A3RoundRect setLeft(final float left);
     A3RoundRect setTop(final float top);
@@ -37,17 +40,39 @@ public interface A3RoundRect extends A3Shape<A3RoundRect> {
     A3RoundRect setArcHeight(final float ry);
     A3RoundRect setCorner(final A3Size corner);
 
-    void set(final float[] values);
     void set(final float x, final float y, final float width, final float height, final float rx, final float ry);
     void set(final A3Point pos, final A3Size size, final A3Size corner);
-
+    void set(final A3Rect rect, final A3Size corner);
 
     default boolean isSquareSize() {
         return getWidth() == getHeight();
     }
-
     default boolean isSquareCorner() {
         return getArcWidth() == getArcHeight();
+    }
+
+    String KEY_X = "x";
+    String KEY_Y = "y";
+    String KEY_WIDTH = "width";
+    String KEY_HEIGHT = "height";
+    String KEY_ARC_WIDTH = "arcWidth";
+    String KEY_ARC_HEIGHT = "arcHeight";
+
+    @Override
+    default void save(final A3ExtensiveBundle.Saver saver) {
+        saver.putFloat(KEY_X, getX());
+        saver.putFloat(KEY_Y, getY());
+        saver.putFloat(KEY_WIDTH, getWidth());
+        saver.putFloat(KEY_HEIGHT, getHeight());
+        saver.putFloat(KEY_ARC_WIDTH, getArcWidth());
+        saver.putFloat(KEY_ARC_HEIGHT, getArcHeight());
+    }
+
+    @Override
+    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+        set(restorer.getFloat(KEY_X, 0), restorer.getFloat(KEY_Y, 0),
+                restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0),
+                restorer.getFloat(KEY_ARC_WIDTH, 0), restorer.getFloat(KEY_ARC_HEIGHT, 0));
     }
     
 }

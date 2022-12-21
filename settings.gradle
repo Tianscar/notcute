@@ -1,4 +1,5 @@
 rootProject.name = 'a3wt'
+
 include ':core'
 include ':android'
 include ':awt'

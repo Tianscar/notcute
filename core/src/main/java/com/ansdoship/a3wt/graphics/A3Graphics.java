@@ -2,21 +2,26 @@ package com.ansdoship.a3wt.graphics;
 
 import com.ansdoship.a3wt.util.A3Copyable;
 import com.ansdoship.a3wt.util.A3Disposable;
+import com.ansdoship.a3wt.util.A3Resetable;
 
 import static com.ansdoship.a3wt.util.A3Colors.BLACK;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
-public interface A3Graphics extends A3Disposable {
+public interface A3Graphics extends A3Disposable, A3Resetable {
 
-    interface Data extends A3Copyable<Data> {
+    interface Data extends A3Copyable<Data>, A3Resetable {
         A3Rect getClipBounds();
+        void getClipBounds(final A3Rect bounds);
 
         A3Rect getClipRect();
+        void getClipRect(final A3Rect rect);
         A3Path getClipPath();
+        void getClipPath(final A3Path path);
         void setClipRect(final A3Rect rect);
         void setClipPath(final A3Path path);
 
         A3Transform getTransform();
+        void getTransform(final A3Transform transform);
         void setTransform(final A3Transform transform);
 
         int getColor();
@@ -54,8 +59,6 @@ public interface A3Graphics extends A3Disposable {
         boolean isStrikeThroughText();
         void setDither(final boolean dither);
         boolean isDither();
-
-        void reset();
     }
 
     class DefaultData implements Data {
@@ -90,13 +93,24 @@ public interface A3Graphics extends A3Disposable {
         }
 
         @Override
+        public void getClipBounds(final A3Rect bounds) {
+            if (clipRect != null) clipRect.getBounds(bounds);
+            else if (clipPath != null) clipPath.getBounds(bounds);
+        }
+
+        @Override
         public A3Path getClipPath() {
             return clipPath;
         }
 
         @Override
-        public void setClipPath(final A3Path clipPath) {
-            this.clipPath = clipPath;
+        public void getClipPath(final A3Path path) {
+            if (clipPath != null) clipPath.to(path);
+        }
+
+        @Override
+        public void setClipPath(final A3Path path) {
+            this.clipPath = path == null ? null : path.copy();
             this.clipRect = null;
         }
 
@@ -106,8 +120,13 @@ public interface A3Graphics extends A3Disposable {
         }
 
         @Override
-        public void setClipRect(final A3Rect clipRect) {
-            this.clipRect = clipRect;
+        public void getClipRect(final A3Rect rect) {
+            if (clipRect != null) clipRect.to(rect);
+        }
+
+        @Override
+        public void setClipRect(final A3Rect rect) {
+            this.clipRect = rect == null ? null : rect.copy();
             this.clipPath = null;
         }
 
@@ -117,8 +136,13 @@ public interface A3Graphics extends A3Disposable {
         }
 
         @Override
+        public void getTransform(final A3Transform transform) {
+            if (this.transform != null) this.transform.to(transform);
+        }
+
+        @Override
         public void setTransform(final A3Transform transform) {
-            this.transform = transform;
+            this.transform = transform == null ? null : transform.copy();
         }
 
         @Override
@@ -292,9 +316,9 @@ public interface A3Graphics extends A3Disposable {
         @Override
         public void to(final Data dst) {
             checkArgNotNull(dst, "dst");
-            dst.setClipPath(clipPath == null ? null : clipPath.copy());
-            dst.setClipRect(clipRect == null ? null : clipRect.copy());
-            dst.setTransform(transform == null ? null : transform.copy());
+            dst.setClipPath(clipPath == null ? null : clipPath);
+            dst.setClipRect(clipRect == null ? null : clipRect);
+            dst.setTransform(transform == null ? null : transform);
             dst.setColor(color);
             dst.setStyle(style);
             dst.setStrokeWidth(strokeWidth);
@@ -349,19 +373,33 @@ public interface A3Graphics extends A3Disposable {
     void drawPoint(final float x, final float y);
     void drawPoint(final A3Point point);
     void drawArc(final float x, final float y, final float width, final float height, final float startAngle, final float sweepAngle, final boolean useCenter);
+    void drawArc(final A3Point pos, final A3Size size, final float startAngle, final float sweepAngle, final boolean useCenter);
+    void drawArc(final A3Rect rect, final float startAngle, final float sweepAngle, final boolean useCenter);
     void drawArc(final A3Arc arc);
     void drawLine(final float startX, final float startY, final float endX, final float endY);
+    void drawLine(final A3Point startPos, final A3Point endPos);
     void drawLine(final A3Line line);
-    void drawQuadCurve(final float startX, final float startY, final float endX, final float endY, final float ctrlX, final float ctrlY);
+    void drawQuadCurve(final float startX, final float startY,
+                       final float ctrlX, final float ctrlY,
+                       final float endX, final float endY);
+    void drawQuadCurve(final A3Point startPos, final A3Point ctrlPos, final A3Point endPos);
     void drawQuadCurve(final A3QuadCurve quadCurve);
-    void drawCubicCurve(final float startX, final float startY, final float endX, final float endY,
-                        final float ctrlX1, final float ctrlY1, final float ctrlX2, final float ctrlY2);
+    void drawCubicCurve(final float startX, final float startY,
+                        final float ctrlX1, final float ctrlY1,
+                        final float ctrlX2, final float ctrlY2,
+                        final float endX, final float endY);
+    void drawCubicCurve(final A3Point startPos, final A3Point ctrlPos1, final A3Point ctrlPos2, final A3Point endPos);
     void drawCubicCurve(final A3CubicCurve cubicCurve);
     void drawOval(final float x, final float y, final float width, final float height);
+    void drawOval(final A3Point pos, final A3Size size);
+    void drawOval(final A3Rect rect);
     void drawOval(final A3Oval oval);
     void drawRect(final float x, final float y, final float width, final float height);
+    void drawRect(final A3Point pos, final A3Size size);
     void drawRect(final A3Rect rect);
     void drawRoundRect(final float x, final float y, final float width, final float height, final float rx, final float ry);
+    void drawRoundRect(final A3Point pos, final A3Size size, final A3Size corner);
+    void drawRoundRect(final A3Rect rect, final A3Size corner);
     void drawRoundRect(final A3RoundRect roundRect);
     void drawText(final CharSequence text, final float x, final float y);
     void drawText(final char[] text, final int offset, final int length, final float x, final float y);
@@ -369,19 +407,29 @@ public interface A3Graphics extends A3Disposable {
     default float measureText(final CharSequence text) {
         return measureText(text, 0, text.length());
     }
-    float measureText(final CharSequence text, final int start, final int end);
+    float measureText(final CharSequence text, final int offset, final int length);
     float measureText(final char[] text, final int offset, final int length);
     A3Font.Metrics getFontMetrics();
+    void getFontMetrics(final A3Font.Metrics metrics);
     A3Rect getTextBounds(final CharSequence text);
-    A3Rect getTextBounds(final char[] text, final int offset, final int length);
     void getTextBounds(final CharSequence text, final A3Rect bounds);
+    A3Rect getTextBounds(final char[] text, final int offset, final int length);
     void getTextBounds(final char[] text, final int offset, final int length, final A3Rect bounds);
 
     A3Rect getClipBounds();
-    void clipRect(final float x, final float y, final float width, final float height);
-    void clipRect(final A3Rect rect);
+    void getClipBounds(final A3Rect bounds);
+    A3Rect getClipRect();
+    void getClipRect(final A3Rect rect);
+    A3Path getClipPath();
+    void getClipPath(final A3Path path);
+
+    void setClipRect(final float x, final float y, final float width, final float height);
+    void setClipRect(final A3Point pos, final A3Size size);
+    void setClipRect(final A3Rect rect);
+    void setClipPath(final A3Path path);
 
     A3Transform getTransform();
+    void getTransform(final A3Transform transform);
     void setTransform(final A3Transform transform);
 
     int getColor();
@@ -419,8 +467,6 @@ public interface A3Graphics extends A3Disposable {
     boolean isStrikeThroughText();
     void setDither(final boolean dither);
     boolean isDither();
-
-    void reset();
 
     void save();
     void restore();

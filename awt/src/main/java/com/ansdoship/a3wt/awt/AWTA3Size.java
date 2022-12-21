@@ -28,17 +28,19 @@ public class AWTA3Size implements A3Size {
     }
 
     @Override
-    public void setWidth(final float width) {
+    public A3Size setWidth(final float width) {
         dimension2D.width = width;
+        return this;
     }
 
     @Override
-    public void setHeight(final float height) {
+    public A3Size setHeight(final float height) {
         dimension2D.height = height;
+        return this;
     }
 
     @Override
-    public void setSize(final float width, final float height) {
+    public void set(final float width, final float height) {
         dimension2D.setSize(width, height);
     }
 
@@ -57,6 +59,11 @@ public class AWTA3Size implements A3Size {
     public void from(final A3Size src) {
         checkArgNotNull(src, "src");
         src.to(this);
+    }
+
+    @Override
+    public void reset() {
+        dimension2D.setSize(0, 0);
     }
 
 }

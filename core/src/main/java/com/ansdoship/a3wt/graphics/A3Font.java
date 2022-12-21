@@ -1,12 +1,13 @@
 package com.ansdoship.a3wt.graphics;
 
 import com.ansdoship.a3wt.util.A3Copyable;
+import com.ansdoship.a3wt.util.A3Resetable;
 
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public interface A3Font {
 
-    interface Metrics extends A3Copyable<Metrics> {
+    interface Metrics extends A3Copyable<Metrics>, A3Resetable {
         void setBaseline(final float baseline);
         float getBaseline();
         void setAscent(final float ascent);
@@ -15,15 +16,14 @@ public interface A3Font {
         float getDescent();
         void setLeading(final float leading);
         float getLeading();
-        void setTop(final float top);
-        float getTop();
-        void setBottom(final float bottom);
-        float getBottom();
-
-        void reset();
+        void setMaxAscent(final float maxAscent);
+        float getMaxAscent();
+        void setMaxDescent(final float maxDescent);
+        float getMaxDescent();
+        void set(final float baseline, final float ascent, final float descent, final float leading, final float maxAscent, final float maxDescent);
 
         default float getHeight() {
-            return getBottom() + getTop();
+            return getMaxDescent() + getMaxAscent();
         }
         default float getLineHeight() {
             return getHeight() + getLeading();
@@ -36,8 +36,8 @@ public interface A3Font {
         protected float ascent;
         protected float descent;
         protected float leading;
-        protected float top;
-        protected float bottom;
+        protected float maxAscent;
+        protected float maxDescent;
 
         public DefaultMetrics() {
             reset();
@@ -45,17 +45,17 @@ public interface A3Font {
 
         public DefaultMetrics(final float baseline, final float ascent,
                               final float descent, final float leading,
-                              final float top, final float bottom) {
+                              final float maxAscent, final float maxDescent) {
             this.baseline = baseline;
             this.ascent = ascent;
             this.descent = descent;
             this.leading = leading;
-            this.top = top;
-            this.bottom = bottom;
+            this.maxAscent = maxAscent;
+            this.maxDescent = maxDescent;
         }
 
         @Override
-        public void setBaseline(float baseline) {
+        public void setBaseline(final float baseline) {
             this.baseline = baseline;
         }
 
@@ -65,7 +65,7 @@ public interface A3Font {
         }
 
         @Override
-        public void setAscent(float ascent) {
+        public void setAscent(final float ascent) {
             this.ascent = ascent;
         }
 
@@ -75,7 +75,7 @@ public interface A3Font {
         }
 
         @Override
-        public void setDescent(float descent) {
+        public void setDescent(final float descent) {
             this.descent = descent;
         }
 
@@ -85,7 +85,7 @@ public interface A3Font {
         }
 
         @Override
-        public void setLeading(float leading) {
+        public void setLeading(final float leading) {
             this.leading = leading;
         }
 
@@ -95,44 +95,51 @@ public interface A3Font {
         }
 
         @Override
-        public void setTop(float top) {
-            this.top = top;
+        public void setMaxAscent(final float maxAscent) {
+            this.maxAscent = maxAscent;
         }
 
         @Override
-        public float getTop() {
-            return top;
+        public float getMaxAscent() {
+            return maxAscent;
         }
 
         @Override
-        public void setBottom(float bottom) {
-            this.bottom = bottom;
+        public void setMaxDescent(final float maxDescent) {
+            this.maxDescent = maxDescent;
         }
 
         @Override
-        public float getBottom() {
-            return bottom;
+        public float getMaxDescent() {
+            return maxDescent;
+        }
+
+        @Override
+        public void set(final float baseline, final float ascent,
+                        final float descent, final float leading,
+                        final float maxAscent, final float maxDescent) {
+            this.baseline = baseline;
+            this.ascent = ascent;
+            this.descent = descent;
+            this.leading = leading;
+            this.maxAscent = maxAscent;
+            this.maxDescent = maxDescent;
         }
 
         @Override
         public void reset() {
-            baseline = ascent = descent = leading = top = bottom = 0;
+            baseline = ascent = descent = leading = maxAscent = maxDescent = 0;
         }
 
         @Override
         public Metrics copy() {
-            return new DefaultMetrics(baseline, ascent, descent, leading, top, bottom);
+            return new DefaultMetrics(baseline, ascent, descent, leading, maxAscent, maxDescent);
         }
 
         @Override
         public void to(final Metrics dst) {
             checkArgNotNull(dst, "dst");
-            dst.setBaseline(baseline);
-            dst.setAscent(ascent);
-            dst.setDescent(descent);
-            dst.setLeading(leading);
-            dst.setTop(top);
-            dst.setBottom(bottom);
+            dst.set(baseline, ascent, descent, leading, maxAscent, maxDescent);
         }
 
         @Override

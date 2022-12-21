@@ -30,17 +30,19 @@ public class AWTA3Dimension implements A3Dimension {
     }
 
     @Override
-    public void setWidth(final int width) {
+    public A3Dimension setWidth(final int width) {
         dimension.width = width;
+        return this;
     }
 
     @Override
-    public void setHeight(final int height) {
+    public A3Dimension setHeight(final int height) {
         dimension.height = height;
+        return this;
     }
 
     @Override
-    public void setSize(final int width, final int height) {
+    public void set(final int width, final int height) {
         dimension.setSize(width, height);
     }
 
@@ -59,6 +61,11 @@ public class AWTA3Dimension implements A3Dimension {
     public void from(final A3Dimension src) {
         checkArgNotNull(src, "src");
         src.to(this);
+    }
+
+    @Override
+    public void reset() {
+        dimension.setSize(0, 0);
     }
 
 }

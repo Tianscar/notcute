@@ -3,13 +3,14 @@ package com.ansdoship.a3wt.media;
 import com.ansdoship.a3wt.util.A3Copyable;
 import com.ansdoship.a3wt.util.A3Disposable;
 import com.ansdoship.a3wt.util.A3Math;
+import com.ansdoship.a3wt.util.A3Resetable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
-public interface A3Audio extends A3Disposable {
+public interface A3Audio extends A3Disposable, A3Resetable {
     
     class Encoding {
         private Encoding(){}
@@ -35,7 +36,7 @@ public interface A3Audio extends A3Disposable {
         public static final String ALAW = "ALAW";
     }
 
-    interface Format extends A3Copyable<Format> {
+    interface Format extends A3Copyable<Format>, A3Resetable {
         void setEncoding(final String encoding);
         String getEncoding();
         void setSampleRate(final float sampleRate);
@@ -52,8 +53,6 @@ public interface A3Audio extends A3Disposable {
         boolean isBigEndian();
         Map<String, Object> properties();
         boolean matches(final Format format);
-
-        void reset();
     }
 
     class DefaultFormat implements Format {
@@ -265,6 +264,7 @@ public interface A3Audio extends A3Disposable {
     void setSpeed(final float speed);
     void setLooping(final int loops);
 
+    @Override
     default void reset() {
         setVolume(1.0f);
         setPan(0);

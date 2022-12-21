@@ -4,7 +4,6 @@ import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Clipboard;
-import com.ansdoship.a3wt.graphics.A3Color;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -272,7 +271,7 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         }
 
         protected volatile long elapsed = 0;
-        protected final AWTA3Graphics graphics = new A3CanvasGraphics();
+        protected final AWTA3Graphics graphics = new AWTA3Graphics(null, -1, -1);
 
         protected final List<A3ContextListener> contextListeners = new CopyOnWriteArrayList<>();
         protected final List<A3InputListener> inputListeners = new CopyOnWriteArrayList<>();
@@ -306,23 +305,22 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         }
 
         @Override
-        public A3Color getBackgroundColor() {
-            return new AWTA3Color(canvas.getBackground());
+        public int getBackgroundColor() {
+            return canvas.getBackground().getRGB();
         }
 
         @Override
-        public void setBackgroundColor(final A3Color color) {
-            checkArgNotNull(color, "color");
-            canvas.setBackground(((AWTA3Color)color).color);
+        public void setBackgroundColor(final int color) {
+            canvas.setBackground(new Color(color));
         }
 
         private void renderOffscreen(final Graphics g, final boolean snapshot) {
             g.setColor(canvas.getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
             g.setColor(Color.BLACK);
-            ((A3CanvasGraphics)graphics).setGraphics((Graphics2D) g, getWidth(), getHeight());
+            graphics.setGraphics2D((Graphics2D) g, getWidth(), getHeight());
             paint(graphics, snapshot);
-            ((A3CanvasGraphics)graphics).setGraphics(null, -1, -1);
+            graphics.setGraphics2D(null, -1, -1);
         }
 
         @Override
@@ -521,19 +519,6 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
     }
 
     protected volatile boolean disposed = false;
-
-    private static class A3CanvasGraphics extends AWTA3Graphics {
-        public A3CanvasGraphics() {
-            super(null, -1, -1);
-        }
-        public void setGraphics(final Graphics2D graphics2D, final int width, final int height) {
-            save();
-            this.graphics2D = graphics2D;
-            this.width = width;
-            this.height = height;
-            restore();
-        }
-    }
 
     public A3AWTCanvas() {
         setIgnoreRepaint(true);

@@ -14,8 +14,6 @@ public interface A3FramedImage extends A3Image, List<A3Image>, RandomAccess {
     int getGeneralWidth();
     int getGeneralHeight();
 
-    void setTypeAll(final int type);
-
     A3Image get();
 
 }

@@ -6,6 +6,58 @@ public class A3Preconditions {
 
     private A3Preconditions(){}
 
+    public static void checkArgArrayLength(final long[] arg, final int length) {
+        checkArgNotNull(arg, "arg");
+        if (arg.length != length) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+    }
+
+    public static void checkArgArrayLengthMin(final long[] arg, final int min, final boolean allowEquals) {
+        checkArgNotNull(arg, "arg");
+        if (allowEquals) {
+            if (arg.length < min) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+        }
+        else if (arg.length <= min) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+    }
+
+    public static void checkArgArrayLength(final int[] arg, final int length) {
+        checkArgNotNull(arg, "arg");
+        if (arg.length != length) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+    }
+
+    public static void checkArgArrayLengthMin(final int[] arg, final int min, final boolean allowEquals) {
+        checkArgNotNull(arg, "arg");
+        if (allowEquals) {
+            if (arg.length < min) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+        }
+        else if (arg.length <= min) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+    }
+
+    public static void checkArgArrayLength(final double[] arg, final int length) {
+        checkArgNotNull(arg, "arg");
+        if (arg.length != length) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+    }
+
+    public static void checkArgArrayLengthMin(final double[] arg, final int min, final boolean allowEquals) {
+        checkArgNotNull(arg, "arg");
+        if (allowEquals) {
+            if (arg.length < min) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+        }
+        else if (arg.length <= min) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+    }
+
+    public static void checkArgArrayLength(final float[] arg, final int length) {
+        checkArgNotNull(arg, "arg");
+        if (arg.length != length) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+    }
+
+    public static void checkArgArrayLengthMin(final float[] arg, final int min, final boolean allowEquals) {
+        checkArgNotNull(arg, "arg");
+        if (allowEquals) {
+            if (arg.length < min) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+        }
+        else if (arg.length <= min) throw new IllegalArgumentException("Invalid array length: " + arg.length);
+    }
+
     public static void checkArgRangeStartEnd(final long start, final long end) {
         if (end < start) throw new IllegalArgumentException(start + " (start) > " + end + "(end) !");
     }
@@ -200,6 +252,46 @@ public class A3Preconditions {
         if (arg == null || arg.length < 1) {
             if (msg == null) throw new IllegalArgumentException();
             else throw new IllegalArgumentException(msg + " is empty!");
+        }
+    }
+
+    public static void checkArgElementsNotNull(final Collection<?> arg) {
+        checkArgElementsNotNull(arg, null);
+    }
+
+    public static void checkArgElementsNotNull(final Collection<?> arg, final String msg) {
+        if (arg == null || arg.isEmpty()) {
+            if (msg == null) throw new IllegalArgumentException();
+            else throw new IllegalArgumentException(msg + " is empty!");
+        }
+        else {
+            int i = 0;
+            for (Object o : arg) {
+                i ++;
+                if (o == null) {
+                    if (msg == null) throw new IllegalArgumentException();
+                    else throw new IllegalArgumentException(msg + " has null element at index: " + i + "!");
+                }
+            }
+        }
+    }
+
+    public static void checkArgElementsNotNull(final Object[] arg) {
+        checkArgElementsNotNull(arg, null);
+    }
+
+    public static void checkArgElementsNotNull(final Object[] arg, final String msg) {
+        if (arg == null || arg.length < 1) {
+            if (msg == null) throw new IllegalArgumentException();
+            else throw new IllegalArgumentException(msg + " is empty!");
+        }
+        else {
+            for (int i = 0; i < arg.length; i ++) {
+                if (arg[i] == null) {
+                    if (msg == null) throw new IllegalArgumentException();
+                    else throw new IllegalArgumentException(msg + " has null element at index: " + i + "!");
+                }
+            }
         }
     }
 

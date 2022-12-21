@@ -1,8 +1,10 @@
 package com.ansdoship.a3wt.graphics;
 
-public interface A3Path extends A3Shape<A3Path> {
+import com.ansdoship.a3wt.util.A3Copyable;
+import com.ansdoship.a3wt.util.A3Resetable;
 
-    void reset();
+public interface A3Path extends A3Copyable<A3Path>, A3Boundable, A3Resetable {
+
     void close();
 
     A3Path moveTo(final float x, final float y);
@@ -39,5 +41,11 @@ public interface A3Path extends A3Shape<A3Path> {
     A3Path addRoundRect(final float x, final float y, final float width, final float height, final float rx, final float ry);
     A3Path addRoundRect(final A3Point pos, final A3Size size, final A3Size corner);
     A3Path addRoundRect(final A3RoundRect roundRect);
+
+    boolean contains(final float x, final float y);
+    boolean contains(final A3Point pos);
+
+    boolean contains(final float x, final float y, final float width, final float height);
+    boolean contains(final A3Rect rect);
 
 }

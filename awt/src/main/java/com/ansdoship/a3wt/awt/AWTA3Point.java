@@ -30,17 +30,19 @@ public class AWTA3Point implements A3Point {
     }
 
     @Override
-    public void setX(final float x) {
+    public A3Point setX(final float x) {
         point2D.x = x;
+        return this;
     }
 
     @Override
-    public void setY(final float y) {
+    public A3Point setY(final float y) {
         point2D.y = y;
+        return this;
     }
 
     @Override
-    public void setPos(final float x, final float y) {
+    public void set(final float x, final float y) {
         point2D.setLocation(x, y);
     }
 
@@ -59,6 +61,11 @@ public class AWTA3Point implements A3Point {
     public void from(final A3Point src) {
         checkArgNotNull(src, "src");
         src.to(this);
+    }
+
+    @Override
+    public void reset() {
+        point2D.setLocation(0, 0);
     }
 
 }

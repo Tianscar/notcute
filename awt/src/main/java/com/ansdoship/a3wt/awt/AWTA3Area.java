@@ -56,6 +56,12 @@ public class AWTA3Area implements A3Area {
     }
 
     @Override
+    public void getPos(final A3Coordinate pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(rectangle.x, rectangle.y);
+    }
+
+    @Override
     public int getWidth() {
         return rectangle.width;
     }
@@ -71,91 +77,110 @@ public class AWTA3Area implements A3Area {
     }
 
     @Override
-    public void setLeft(final int left) {
+    public void getSize(final A3Dimension size) {
+        checkArgNotNull(size, "size");
+        size.set(rectangle.width, rectangle.height);
+    }
+
+    @Override
+    public A3Area setLeft(final int left) {
         checkArgRangeLeftRight(left, getRight());
         rectangle.width += rectangle.x - left;
         rectangle.x = left;
+        return this;
     }
 
     @Override
-    public void setTop(final int top) {
+    public A3Area setTop(final int top) {
         checkArgRangeTopBottom(top, getBottom());
         rectangle.height += rectangle.y - top;
         rectangle.y = top;
+        return this;
     }
 
     @Override
-    public void setRight(final int right) {
+    public A3Area setRight(final int right) {
         checkArgRangeLeftRight(getLeft(), right);
         rectangle.width = right - rectangle.x;
+        return this;
     }
 
     @Override
-    public void setBottom(final int bottom) {
+    public A3Area setBottom(final int bottom) {
         checkArgRangeTopBottom(getTop(), bottom);
         rectangle.height = bottom - rectangle.y;
+        return this;
     }
 
     @Override
-    public void setBounds(final int left, final int top, final int right, final int bottom) {
+    public A3Area setBounds(final int left, final int top, final int right, final int bottom) {
         checkArgRangeBounds(left, top, right, bottom);
         rectangle.x = left;
         rectangle.y = top;
         rectangle.width = right - left;
         rectangle.height = bottom - top;
+        return this;
     }
 
     @Override
-    public void setX(final int x) {
+    public A3Area setX(final int x) {
         rectangle.x = x;
+        return this;
     }
 
     @Override
-    public void setY(final int y) {
+    public A3Area setY(final int y) {
         rectangle.y = y;
+        return this;
     }
 
     @Override
-    public void setPos(final A3Coordinate pos) {
+    public A3Area setPos(final A3Coordinate pos) {
         checkArgNotNull(pos, "pos");
         rectangle.setLocation(((AWTA3Coordinate)pos).point);
+        return this;
     }
 
     @Override
-    public void setWidth(final int width) {
+    public A3Area setWidth(final int width) {
         rectangle.width = width;
+        return this;
     }
 
     @Override
-    public void setHeight(final int height) {
+    public A3Area setHeight(final int height) {
         rectangle.height = height;
+        return this;
     }
 
     @Override
-    public void setSize(A3Dimension size) {
+    public A3Area setSize(final A3Dimension size) {
         checkArgNotNull(size, "size");
         rectangle.setSize(((AWTA3Dimension)size).dimension);
+        return this;
     }
 
     @Override
-    public void setPos(final int x, final int y) {
+    public A3Area setPos(final int x, final int y) {
         rectangle.x = x;
         rectangle.y = y;
+        return this;
     }
 
     @Override
-    public void setSize(final int width, final int height) {
+    public A3Area setSize(final int width, final int height) {
         rectangle.width = width;
         rectangle.height = height;
+        return this;
     }
 
     @Override
-    public void setRect(final int x, final int y, final int width, final int height) {
+    public void set(final int x, final int y, final int width, final int height) {
         rectangle.setRect(x, y, width, height);
     }
 
     @Override
-    public void setRect(final A3Coordinate pos, final A3Dimension size) {
+    public void set(final A3Coordinate pos, final A3Dimension size) {
         checkArgNotNull(pos);
         checkArgNotNull(size);
         rectangle.setLocation(((AWTA3Coordinate)pos).point);
@@ -177,6 +202,11 @@ public class AWTA3Area implements A3Area {
     public void from(final A3Area src) {
         checkArgNotNull(src, "src");
         src.to(this);
+    }
+
+    @Override
+    public void reset() {
+        rectangle.x = rectangle.y = rectangle.width = rectangle.height = 0;
     }
 
 }
