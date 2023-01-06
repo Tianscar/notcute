@@ -46,7 +46,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.ansdoship.a3wt.awt.A3AWTUtils.fontStyle2AWTFontStyle;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.fontStyle2awtFontStyle;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getRGB565Image;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.getARGB8888Image;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.imageType2BufferedImageType;
@@ -253,9 +253,9 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public A3Transform createTransform(final float[] matrix) {
-        checkArgArrayLengthMin(matrix, AWTA3Transform.MATRIX_LENGTH, true);
-        return new AWTA3Transform(new AffineTransform(matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]));
+    public A3Transform createTransform(final float[] matrixValues) {
+        checkArgArrayLengthMin(matrixValues, AWTA3Transform.MATRIX_VALUES_LENGTH, true);
+        return new AWTA3Transform(new AffineTransform(matrixValues[0], matrixValues[3], matrixValues[1], matrixValues[4], matrixValues[2], matrixValues[5]));
     }
 
     @Override
@@ -264,11 +264,11 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public A3Transform createTransform(final A3Point scale, final A3Point skew, final A3Point transform) {
+    public A3Transform createTransform(final A3Point scale, final A3Point skew, final A3Point translate) {
         checkArgNotNull(scale, "scale");
         checkArgNotNull(skew, "skew");
-        checkArgNotNull(transform, "transform");
-        return new AWTA3Transform(new AffineTransform(scale.getX(), skew.getY(), skew.getX(), scale.getY(), transform.getX(), transform.getY()));
+        checkArgNotNull(translate, "translate");
+        return new AWTA3Transform(new AffineTransform(scale.getX(), skew.getY(), skew.getX(), scale.getY(), translate.getX(), translate.getY()));
     }
 
     @Override
@@ -510,7 +510,7 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
         checkArgNotEmpty(familyName, "familyName");
         final Font font = Font.decode(familyName);
         if (!familyName.equals(Font.DIALOG) && font.getFamily().equals(Font.DIALOG)) return null;
-        return new AWTA3Font(font.deriveFont(fontStyle2AWTFontStyle(style)));
+        return new AWTA3Font(font.deriveFont(fontStyle2awtFontStyle(style)));
     }
 
     protected static final AWTA3Font DEFAULT_FONT = new AWTA3Font(A3AWTUtils.getDefaultFont());

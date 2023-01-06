@@ -42,8 +42,9 @@ public class AWTA3Dimension implements A3Dimension {
     }
 
     @Override
-    public void set(final int width, final int height) {
+    public A3Dimension set(final int width, final int height) {
         dimension.setSize(width, height);
+        return this;
     }
 
     @Override
@@ -64,8 +65,9 @@ public class AWTA3Dimension implements A3Dimension {
     }
 
     @Override
-    public void reset() {
+    public A3Dimension reset() {
         dimension.setSize(0, 0);
+        return this;
     }
 
 }

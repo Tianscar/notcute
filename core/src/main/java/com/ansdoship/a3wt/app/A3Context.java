@@ -1,28 +1,27 @@
 package com.ansdoship.a3wt.app;
 
+import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
-import com.ansdoship.a3wt.media.A3MediaKit;
-import com.ansdoship.a3wt.media.A3MediaPlayer;
 import com.ansdoship.a3wt.util.A3Disposable;
+import com.ansdoship.a3wt.util.A3Paintable;
 
 import java.io.File;
 import java.util.List;
 
 public interface A3Context extends A3Disposable {
 
-    interface Handle {
+    interface Handle extends A3Paintable {
 
         A3Context getContext();
 
         A3Platform getPlatform();
         A3GraphicsKit getGraphicsKit();
-        A3MediaKit getMediaKit();
-        A3MediaPlayer getMediaPlayer();
+        A3BundleKit getBundleKit();
 
         void postRunnable(final Runnable runnable);
 
@@ -77,6 +76,7 @@ public interface A3Context extends A3Disposable {
         }
         A3Clipboard getClipboard();
         A3Clipboard getSelection();
+        A3Clipboard createClipboard(final String name);
 
         void setCursor(final A3Cursor cursor);
         A3Cursor getCursor();

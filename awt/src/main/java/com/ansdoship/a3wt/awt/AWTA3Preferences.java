@@ -2,7 +2,7 @@ package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.util.A3Arrays;
-import com.ansdoship.a3wt.util.A3Strings;
+import com.ansdoship.a3wt.util.A3StringUtils;
 
 import java.awt.EventQueue;
 import java.io.File;
@@ -192,7 +192,7 @@ public class AWTA3Preferences implements A3Preferences {
 
     @Override
     public A3Preferences putStringArray(final String key, final String[] value) {
-        checkArgNotNull(value, "value");
+        checkArgElementsNotNull(value, "value");
         return put(key, Arrays.toString(value));
     }
 
@@ -215,42 +215,50 @@ public class AWTA3Preferences implements A3Preferences {
 
     @Override
     public byte getByte(final String key, final byte defValue) {
-        return Byte.parseByte(get(key, Byte.toString(defValue)));
+        final String value = get(key, null);
+        return value == null ? defValue : Byte.parseByte(value);
     }
 
     @Override
     public short getShort(final String key, final short defValue) {
-        return Short.parseShort(get(key, Short.toString(defValue)));
+        final String value = get(key, null);
+        return value == null ? defValue : Short.parseShort(value);
     }
 
     @Override
     public int getInt(final String key, final int defValue) {
-        return Integer.parseInt(get(key, Integer.toString(defValue)));
+        final String value = get(key, null);
+        return value == null ? defValue : Integer.parseInt(value);
     }
 
     @Override
     public long getLong(final String key, final long defValue) {
-        return Long.parseLong(get(key, Long.toString(defValue)));
+        final String value = get(key, null);
+        return value == null ? defValue : Long.parseLong(value);
     }
 
     @Override
     public float getFloat(final String key, final float defValue) {
-        return Float.parseFloat(get(key, Float.toString(defValue)));
+        final String value = get(key, null);
+        return value == null ? defValue : Float.parseFloat(value);
     }
 
     @Override
     public double getDouble(final String key, final double defValue) {
-        return Double.parseDouble(get(key, Double.toString(defValue)));
+        final String value = get(key, null);
+        return value == null ? defValue : Double.parseDouble(value);
     }
 
     @Override
     public boolean getBoolean(final String key, final boolean defValue) {
-        return Boolean.parseBoolean(get(key, Boolean.toString(defValue)));
+        final String value = get(key, null);
+        return value == null ? defValue : Boolean.parseBoolean(value);
     }
 
     @Override
     public char getChar(final String key, final char defValue) {
-        return get(key, Character.toString(defValue)).charAt(0);
+        final String value = get(key, null);
+        return value == null ? defValue : value.charAt(0);
     }
 
     @Override
@@ -260,69 +268,80 @@ public class AWTA3Preferences implements A3Preferences {
 
     @Override
     public BigInteger getBigInteger(final String key, final BigInteger defValue) {
-        checkArgNotNull(defValue, "defValue");
-        return new BigInteger(get(key, defValue.toString()));
+        final String value = get(key, null);
+        return value == null ? defValue : new BigInteger(value);
     }
 
     @Override
     public BigDecimal getBigDecimal(final String key, final BigDecimal defValue) {
-        checkArgNotNull(defValue, "defValue");
-        return new BigDecimal(get(key, defValue.toPlainString()));
+        final String value = get(key, null);
+        return value == null ? defValue : new BigDecimal(value);
     }
 
     @Override
     public byte[] getByteArray(final String key, final byte[] defValue) {
-        return A3Strings.parseByteArray(get(key, Arrays.toString(defValue)));
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseByteArray(value);
     }
 
     @Override
     public short[] getShortArray(final String key, final short[] defValue) {
-        return A3Strings.parseShortArray(get(key, Arrays.toString(defValue)));
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseShortArray(value);
     }
 
     @Override
-    public int[] getIntArray(String key, int[] defValue) {
-        return A3Strings.parseIntArray(get(key, Arrays.toString(defValue)));
+    public int[] getIntArray(final String key, final int[] defValue) {
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseIntArray(value);
     }
 
     @Override
-    public long[] getLongArray(String key, long[] defValue) {
-        return A3Strings.parseLongArray(get(key, Arrays.toString(defValue)));
+    public long[] getLongArray(final String key, final long[] defValue) {
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseLongArray(value);
     }
 
     @Override
-    public float[] getFloatArray(String key, float[] defValue) {
-        return A3Strings.parseFloatArray(get(key, Arrays.toString(defValue)));
+    public float[] getFloatArray(final String key, final float[] defValue) {
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseFloatArray(value);
     }
 
     @Override
-    public double[] getDoubleArray(String key, double[] defValue) {
-        return A3Strings.parseDoubleArray(get(key, Arrays.toString(defValue)));
+    public double[] getDoubleArray(final String key, final double[] defValue) {
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseDoubleArray(value);
     }
 
     @Override
-    public boolean[] getBooleanArray(String key, boolean[] defValue) {
-        return A3Strings.parseBooleanArray(get(key, Arrays.toString(defValue)));
+    public boolean[] getBooleanArray(final String key, final boolean[] defValue) {
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseBooleanArray(value);
     }
 
     @Override
-    public char[] getCharArray(String key, char[] defValue) {
-        return A3Strings.parseCharArray(get(key, Arrays.toString(defValue)));
+    public char[] getCharArray(final String key, final char[] defValue) {
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseCharArray(value);
     }
 
     @Override
-    public String[] getStringArray(String key, String[] defValue) {
-        return A3Strings.parseStringArray(get(key, Arrays.toString(defValue)));
+    public String[] getStringArray(final String key, final String[] defValue) {
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseStringArray(value);
     }
 
     @Override
-    public BigInteger[] getBigIntegerArray(String key, BigInteger[] defValue) {
-        return A3Strings.parseBigIntegerArray(get(key, Arrays.toString(defValue)));
+    public BigInteger[] getBigIntegerArray(final String key, final BigInteger[] defValue) {
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseBigIntegerArray(value);
     }
 
     @Override
-    public BigDecimal[] getBigDecimalArray(String key, BigDecimal[] defValue) {
-        return A3Strings.parseBigDecimalArray(get(key, Arrays.toString(defValue)));
+    public BigDecimal[] getBigDecimalArray(final String key, final BigDecimal[] defValue) {
+        final String value = get(key, null);
+        return value == null ? defValue : A3StringUtils.parseBigDecimalArray(value);
     }
 
     @Override
@@ -339,8 +358,9 @@ public class AWTA3Preferences implements A3Preferences {
     }
 
     @Override
-    public void clear() {
+    public A3Preferences clear() {
         cache.clear();
+        return this;
     }
 
     @Override
@@ -350,7 +370,7 @@ public class AWTA3Preferences implements A3Preferences {
     }
 
     @Override
-    public void apply() {
+    public A3Preferences apply() {
         flush();
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -358,6 +378,7 @@ public class AWTA3Preferences implements A3Preferences {
                 write();
             }
         });
+        return this;
     }
 
     protected void flush() {

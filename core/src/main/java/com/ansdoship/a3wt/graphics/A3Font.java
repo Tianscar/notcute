@@ -7,20 +7,20 @@ import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public interface A3Font {
 
-    interface Metrics extends A3Copyable<Metrics>, A3Resetable {
-        void setBaseline(final float baseline);
+    interface Metrics extends A3Copyable<Metrics>, A3Resetable<Metrics> {
+        Metrics setBaseline(final float baseline);
         float getBaseline();
-        void setAscent(final float ascent);
+        Metrics setAscent(final float ascent);
         float getAscent();
-        void setDescent(final float descent);
+        Metrics setDescent(final float descent);
         float getDescent();
-        void setLeading(final float leading);
+        Metrics setLeading(final float leading);
         float getLeading();
-        void setMaxAscent(final float maxAscent);
+        Metrics setMaxAscent(final float maxAscent);
         float getMaxAscent();
-        void setMaxDescent(final float maxDescent);
+        Metrics setMaxDescent(final float maxDescent);
         float getMaxDescent();
-        void set(final float baseline, final float ascent, final float descent, final float leading, final float maxAscent, final float maxDescent);
+        Metrics set(final float baseline, final float ascent, final float descent, final float leading, final float maxAscent, final float maxDescent);
 
         default float getHeight() {
             return getMaxDescent() + getMaxAscent();
@@ -55,8 +55,9 @@ public interface A3Font {
         }
 
         @Override
-        public void setBaseline(final float baseline) {
+        public Metrics setBaseline(final float baseline) {
             this.baseline = baseline;
+            return this;
         }
 
         @Override
@@ -65,8 +66,9 @@ public interface A3Font {
         }
 
         @Override
-        public void setAscent(final float ascent) {
+        public Metrics setAscent(final float ascent) {
             this.ascent = ascent;
+            return this;
         }
 
         @Override
@@ -75,8 +77,9 @@ public interface A3Font {
         }
 
         @Override
-        public void setDescent(final float descent) {
+        public Metrics setDescent(final float descent) {
             this.descent = descent;
+            return this;
         }
 
         @Override
@@ -85,8 +88,9 @@ public interface A3Font {
         }
 
         @Override
-        public void setLeading(final float leading) {
+        public Metrics setLeading(final float leading) {
             this.leading = leading;
+            return this;
         }
 
         @Override
@@ -95,8 +99,9 @@ public interface A3Font {
         }
 
         @Override
-        public void setMaxAscent(final float maxAscent) {
+        public Metrics setMaxAscent(final float maxAscent) {
             this.maxAscent = maxAscent;
+            return this;
         }
 
         @Override
@@ -105,8 +110,9 @@ public interface A3Font {
         }
 
         @Override
-        public void setMaxDescent(final float maxDescent) {
+        public Metrics setMaxDescent(final float maxDescent) {
             this.maxDescent = maxDescent;
+            return this;
         }
 
         @Override
@@ -115,7 +121,7 @@ public interface A3Font {
         }
 
         @Override
-        public void set(final float baseline, final float ascent,
+        public Metrics set(final float baseline, final float ascent,
                         final float descent, final float leading,
                         final float maxAscent, final float maxDescent) {
             this.baseline = baseline;
@@ -124,11 +130,13 @@ public interface A3Font {
             this.leading = leading;
             this.maxAscent = maxAscent;
             this.maxDescent = maxDescent;
+            return this;
         }
 
         @Override
-        public void reset() {
+        public Metrics reset() {
             baseline = ascent = descent = leading = maxAscent = maxDescent = 0;
+            return this;
         }
 
         @Override

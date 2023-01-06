@@ -1,10 +1,11 @@
 package com.ansdoship.a3wt.bundle;
 
 import com.ansdoship.a3wt.app.A3Assets;
+import com.ansdoship.a3wt.util.A3Maps;
+import org.ini4j.Ini;
+import org.ini4j.Profile;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
@@ -12,7 +13,19 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public class DefaultA3ExtensiveBundle implements A3ExtensiveBundle {
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+
+public abstract class AbstractDefaultA3SecMapBundle implements A3SecMapBundle {
+
+    protected final Map<String, A3MapBundle> map;
+    protected String key = null;
+
+    protected AbstractDefaultA3SecMapBundle(final Map<String, A3MapBundle> map) {
+        checkArgNotNull(map, "map");
+        this.map = map;
+    }
+
+    protected abstract A3MapBundle createMapBundle();
 
     @Override
     public boolean save(File output, int format) {
@@ -20,18 +33,56 @@ public class DefaultA3ExtensiveBundle implements A3ExtensiveBundle {
     }
 
     @Override
-    public boolean save(OutputStream output, int format) {
-        return false;
+    public boolean save(final OutputStream output, final int format) {
+        checkArgNotNull(output, "output");
+        switch (format) {
+            case Format.INI:
+                final Ini ini = new Ini();
+                Profile.Section section;
+                for (final String key : map.keySet()) {
+                    section = ini.get(key);
+                    section.putAll(map.get(key));
+                }
+                try {
+                    ini.store(output);
+                    return true;
+                }
+                catch (final IOException e) {
+                    return false;
+                }
+            default:
+                return false;
+        }
     }
 
     @Override
-    public boolean restore(File input) {
-        return false;
+    public boolean restore(final File input) {
+        checkArgNotNull(input, "input");
+        try (final FileInputStream fileInputStream = new FileInputStream(input); final BufferedInputStream stream = new BufferedInputStream(fileInputStream)) {
+            return restore(stream);
+        }
+        catch (final IOException e) {
+            return false;
+        }
     }
 
     @Override
-    public boolean restore(InputStream input) {
-        return false;
+    public boolean restore(final InputStream input) {
+        checkArgNotNull(input, "input");
+        try {
+            final Ini ini = new Ini(input);
+            map.clear();
+            A3MapBundle mapBundle;
+            for (final String key : ini.keySet()) {
+                mapBundle = createMapBundle();
+                mapBundle.putAll(ini.get(key));
+                map.put(key, mapBundle);
+            }
+            return true;
+        }
+        catch (final IOException e) {
+            return false;
+        }
     }
 
     @Override
@@ -55,122 +106,112 @@ public class DefaultA3ExtensiveBundle implements A3ExtensiveBundle {
     }
 
     @Override
-    public A3ExtensiveBundle putByte(String key, byte value) {
+    public A3SecMapBundle putByte(String key, byte value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putShort(String key, short value) {
+    public A3SecMapBundle putShort(String key, short value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putInt(String key, int value) {
+    public A3SecMapBundle putInt(String key, int value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putLong(String key, long value) {
+    public A3SecMapBundle putLong(String key, long value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putFloat(String key, float value) {
+    public A3SecMapBundle putFloat(String key, float value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putDouble(String key, double value) {
+    public A3SecMapBundle putDouble(String key, double value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putBoolean(String key, boolean value) {
+    public A3SecMapBundle putBoolean(String key, boolean value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putChar(String key, char value) {
+    public A3SecMapBundle putChar(String key, char value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putString(String key, String value) {
+    public A3SecMapBundle putString(String key, String value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putBigInteger(String key, BigInteger value) {
+    public A3SecMapBundle putBigInteger(String key, BigInteger value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putBigDecimal(String key, BigDecimal value) {
+    public A3SecMapBundle putBigDecimal(String key, BigDecimal value) {
         return null;
     }
 
     @Override
-    public <T extends Delegate> A3ExtensiveBundle putDelegate(String key, T value) {
+    public A3SecMapBundle putByteArray(String key, byte[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putByteArray(String key, byte[] value) {
+    public A3SecMapBundle putShortArray(String key, short[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putShortArray(String key, short[] value) {
+    public A3SecMapBundle putIntArray(String key, int[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putIntArray(String key, int[] value) {
+    public A3SecMapBundle putLongArray(String key, long[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putLongArray(String key, long[] value) {
+    public A3SecMapBundle putFloatArray(String key, float[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putFloatArray(String key, float[] value) {
+    public A3SecMapBundle putDoubleArray(String key, double[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putDoubleArray(String key, double[] value) {
+    public A3SecMapBundle putBooleanArray(String key, boolean[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putBooleanArray(String key, boolean[] value) {
+    public A3SecMapBundle putCharArray(String key, char[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putCharArray(String key, char[] value) {
+    public A3SecMapBundle putStringArray(String key, String[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putStringArray(String key, String[] value) {
+    public A3SecMapBundle putBigIntegerArray(String key, BigInteger[] value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle putBigIntegerArray(String key, BigInteger[] value) {
-        return null;
-    }
-
-    @Override
-    public A3ExtensiveBundle putBigDecimalArray(String key, BigDecimal[] value) {
-        return null;
-    }
-
-    @Override
-    public <T extends Delegate> A3ExtensiveBundle putDelegateArray(String key, T[] value) {
+    public A3SecMapBundle putBigDecimalArray(String key, BigDecimal[] value) {
         return null;
     }
 
@@ -230,16 +271,6 @@ public class DefaultA3ExtensiveBundle implements A3ExtensiveBundle {
     }
 
     @Override
-    public A3ExtensiveBundle get(String key, A3ExtensiveBundle defValue) {
-        return null;
-    }
-
-    @Override
-    public <T extends Delegate> T getDelegate(String key, T defValue) {
-        return null;
-    }
-
-    @Override
     public byte[] getByteArray(String key, byte[] defValue) {
         return new byte[0];
     }
@@ -295,22 +326,12 @@ public class DefaultA3ExtensiveBundle implements A3ExtensiveBundle {
     }
 
     @Override
-    public A3ExtensiveBundle[] get(String key, A3ExtensiveBundle[] defValue) {
-        return new A3ExtensiveBundle[0];
-    }
-
-    @Override
-    public <T extends Delegate> T[] getDelegateArray(String key, T[] defValue) {
-        return null;
-    }
-
-    @Override
     public boolean contains(String key) {
         return false;
     }
 
     @Override
-    public A3ExtensiveBundle remove(String key) {
+    public A3SecMapBundle remove(String key) {
         return null;
     }
 
@@ -335,22 +356,22 @@ public class DefaultA3ExtensiveBundle implements A3ExtensiveBundle {
     }
 
     @Override
-    public A3ExtensiveBundle get(Object key) {
+    public A3MapBundle get(Object key) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle put(String key, A3ExtensiveBundle value) {
+    public A3MapBundle put(String key, A3MapBundle value) {
         return null;
     }
 
     @Override
-    public A3ExtensiveBundle remove(Object key) {
+    public A3MapBundle remove(Object key) {
         return null;
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends A3ExtensiveBundle> m) {
+    public void putAll(Map<? extends String, ? extends A3MapBundle> m) {
 
     }
 
@@ -365,28 +386,33 @@ public class DefaultA3ExtensiveBundle implements A3ExtensiveBundle {
     }
 
     @Override
-    public Collection<A3ExtensiveBundle> values() {
+    public Collection<A3MapBundle> values() {
         return null;
     }
 
     @Override
-    public Set<Entry<String, A3ExtensiveBundle>> entrySet() {
+    public Set<Entry<String, A3MapBundle>> entrySet() {
         return null;
     }
 
     @Override
     public String getKey() {
-        return null;
+        return key;
     }
 
     @Override
-    public void setKey(String key) {
-
+    public void setKey(final String key) {
+        this.key = key;
     }
 
     @Override
-    public A3ExtensiveBundle get() {
-        return null;
+    public A3MapBundle get(final String key, final A3MapBundle defValue) {
+        return A3Maps.getOrDefault(map, key, defValue);
+    }
+
+    @Override
+    public A3MapBundle get() {
+        return map.get(key);
     }
 
 }

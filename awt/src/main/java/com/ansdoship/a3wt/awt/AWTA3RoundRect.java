@@ -84,7 +84,7 @@ public class AWTA3RoundRect implements A3RoundRect {
     }
 
     @Override
-    public void getSize(final A3Point size) {
+    public void getSize(final A3Size size) {
         checkArgNotNull(size, "size");
         size.set(roundRectangle2D.width, roundRectangle2D.height);
     }
@@ -105,9 +105,9 @@ public class AWTA3RoundRect implements A3RoundRect {
     }
 
     @Override
-    public void getCorner(final A3Size size) {
-        checkArgNotNull(size, "size");
-        size.set(roundRectangle2D.arcwidth, roundRectangle2D.archeight);
+    public void getCorner(final A3Size corner) {
+        checkArgNotNull(corner, "corner");
+        corner.set(roundRectangle2D.arcwidth, roundRectangle2D.archeight);
     }
 
     @Override
@@ -242,23 +242,26 @@ public class AWTA3RoundRect implements A3RoundRect {
     }
 
     @Override
-    public void set(final float x, final float y, final float width, final float height, final float rx, final float ry) {
+    public A3RoundRect set(final float x, final float y, final float width, final float height, final float rx, final float ry) {
         roundRectangle2D.setRoundRect(x, y, width, height, rx, ry);
+        return this;
     }
 
     @Override
-    public void set(final A3Point pos, final A3Size size, final A3Size corner) {
+    public A3RoundRect set(final A3Point pos, final A3Size size, final A3Size corner) {
         checkArgNotNull(pos, "pos");
         checkArgNotNull(size, "size");
         checkArgNotNull(corner, "corner");
         roundRectangle2D.setRoundRect(pos.getX(), pos.getY(), size.getWidth(), size.getHeight(), corner.getWidth(), corner.getHeight());
+        return this;
     }
 
     @Override
-    public void set(final A3Rect rect, final A3Size corner) {
+    public A3RoundRect set(final A3Rect rect, final A3Size corner) {
         checkArgNotNull(rect, "rect");
         checkArgNotNull(corner, "corner");
         roundRectangle2D.setRoundRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), corner.getWidth(), corner.getHeight());
+        return this;
     }
 
     @Override
@@ -311,8 +314,9 @@ public class AWTA3RoundRect implements A3RoundRect {
     }
 
     @Override
-    public void reset() {
+    public A3RoundRect reset() {
         roundRectangle2D.setRoundRect(0, 0, 0, 0, 0, 0);
+        return this;
     }
 
 }

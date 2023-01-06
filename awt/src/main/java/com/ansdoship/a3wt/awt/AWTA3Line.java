@@ -106,15 +106,17 @@ public class AWTA3Line implements A3Line {
     }
 
     @Override
-    public void set(final float startX, final float startY, final float endX, final float endY) {
+    public A3Line set(final float startX, final float startY, final float endX, final float endY) {
         line2D.setLine(startX, startY, endX, endY);
+        return this;
     }
 
     @Override
-    public void set(final A3Point startPos, final A3Point endPos) {
+    public A3Line set(final A3Point startPos, final A3Point endPos) {
         checkArgNotNull(startPos, "startPos");
         checkArgNotNull(endPos, "endPos");
         line2D.setLine(((AWTA3Point)startPos).point2D, ((AWTA3Point)endPos).point2D);
+        return this;
     }
 
     @Override
@@ -168,8 +170,9 @@ public class AWTA3Line implements A3Line {
     }
 
     @Override
-    public void reset() {
+    public A3Line reset() {
         line2D.setLine(0, 0, 0, 0);
+        return this;
     }
 
 }

@@ -2,7 +2,7 @@ package com.ansdoship.a3wt.bundle;
 
 import java.util.Map;
 
-public interface A3SectionalMapBundle extends A3MapBundle, Map<String, A3MapBundle> {
+public interface A3SecMapBundle extends A3KeyValueBundle, Map<String, A3MapBundle> {
 
     String getKey();
     void setKey(final String key);

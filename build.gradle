@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath 'com.android.tools.build:gradle:7.3.0'
     }
 }
 
@@ -23,9 +23,9 @@ subprojects {
         libSourceCompatibility = JavaVersion.VERSION_1_8
         libTargetCompatibility = JavaVersion.VERSION_1_8
 
-        libAndroidCompileSdk = 31
+        libAndroidCompileSdk = 33
         libAndroidMinSdk = 16
-        libAndroidTargetSdk = 31
+        libAndroidTargetSdk = 33
     }
 
     repositories {
@@ -35,7 +35,7 @@ subprojects {
 
 }
 
-configure([project(':core'), project(':awt')]) {
+configure ([project(':core'), project(':awt')]) {
     apply plugin: 'java'
 
     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -57,8 +57,6 @@ configure([project(':core'), project(':awt')]) {
     }
 
     dependencies {
-        implementation 'com.github.jnr:jnr-ffi:2.2.12'
-
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     }

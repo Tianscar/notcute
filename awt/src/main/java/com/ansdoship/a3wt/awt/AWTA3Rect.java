@@ -8,10 +8,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.floatRectangle2D;
-import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
-import static com.ansdoship.a3wt.util.A3Preconditions.checkArgRangeBounds;
-import static com.ansdoship.a3wt.util.A3Preconditions.checkArgRangeLeftRight;
-import static com.ansdoship.a3wt.util.A3Preconditions.checkArgRangeTopBottom;
+import static com.ansdoship.a3wt.util.A3Preconditions.*;
 
 public class AWTA3Rect implements A3Rect {
 
@@ -179,18 +176,20 @@ public class AWTA3Rect implements A3Rect {
     }
 
     @Override
-    public void set(final float x, final float y, final float width, final float height) {
+    public A3Rect set(final float x, final float y, final float width, final float height) {
         rectangle2D.setRect(x, y, width, height);
+        return this;
     }
 
     @Override
-    public void set(final A3Point pos, final A3Size size) {
+    public A3Rect set(final A3Point pos, final A3Size size) {
         checkArgNotNull(pos, "pos");
         checkArgNotNull(size, "size");
         rectangle2D.x = pos.getX();
         rectangle2D.y = pos.getY();
         rectangle2D.width = size.getWidth();
         rectangle2D.height = size.getHeight();
+        return this;
     }
 
     @Override
@@ -244,8 +243,9 @@ public class AWTA3Rect implements A3Rect {
     }
 
     @Override
-    public void reset() {
+    public A3Rect reset() {
         rectangle2D.setRect(0, 0, 0, 0);
+        return this;
     }
 
 }

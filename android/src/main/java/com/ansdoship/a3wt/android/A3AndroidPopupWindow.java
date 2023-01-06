@@ -12,6 +12,7 @@ import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.app.A3Container;
+import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -19,8 +20,6 @@ import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
-import com.ansdoship.a3wt.media.A3MediaKit;
-import com.ansdoship.a3wt.media.A3MediaPlayer;
 
 import java.io.File;
 import java.util.List;
@@ -38,6 +37,11 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
     protected static class A3AndroidPopupWindowHandle implements A3Context.Handle, A3Container.Handle {
 
         @Override
+        public A3Context getContext() {
+            return popupWindow.surfaceView.handle.getContext();
+        }
+
+        @Override
         public A3Platform getPlatform() {
             return popupWindow.surfaceView.handle.getPlatform();
         }
@@ -48,13 +52,8 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         }
 
         @Override
-        public A3MediaKit getMediaKit() {
-            return null;
-        }
-
-        @Override
-        public A3MediaPlayer getMediaPlayer() {
-            return null;
+        public A3BundleKit getBundleKit() {
+            return popupWindow.surfaceView.handle.getBundleKit();
         }
 
         @Override
@@ -69,22 +68,22 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
 
         @Override
         public int getMinScreenWidth() {
-            return 0;
+            return popupWindow.surfaceView.handle.getMinScreenWidth();
         }
 
         @Override
         public int getMinScreenHeight() {
-            return 0;
+            return popupWindow.surfaceView.handle.getMinScreenHeight();
         }
 
         @Override
         public int getMaxScreenWidth() {
-            return 0;
+            return popupWindow.surfaceView.handle.getMaxScreenWidth();
         }
 
         @Override
         public int getMaxScreenHeight() {
-            return 0;
+            return popupWindow.surfaceView.handle.getMaxScreenHeight();
         }
 
         @Override
@@ -103,7 +102,7 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         }
 
         @Override
-        public void postRunnable(Runnable runnable) {
+        public void postRunnable(final Runnable runnable) {
             popupWindow.surfaceView.post(runnable);
         }
 
@@ -148,8 +147,8 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         }
 
         @Override
-        public void paint(final A3Graphics graphics) {
-            popupWindow.surfaceView.handle.paint(graphics);
+        public void paint(final A3Graphics graphics, final boolean snapshot) {
+            popupWindow.surfaceView.handle.paint(graphics, snapshot);
         }
 
         @Override
@@ -159,8 +158,8 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         }
 
         @Override
-        public A3Image snapshot() {
-            return popupWindow.surfaceView.handle.snapshot();
+        public A3Image updateAndSnapshot() {
+            return popupWindow.surfaceView.handle.updateAndSnapshot();
         }
 
         @Override
@@ -171,6 +170,11 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         @Override
         public void addContextListener(final A3ContextListener listener) {
             popupWindow.surfaceView.handle.addContextListener(listener);
+        }
+
+        @Override
+        public A3Container getContainer() {
+            return popupWindow;
         }
 
         @Override
@@ -272,6 +276,11 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         @Override
         public A3Clipboard getSelection() {
             return popupWindow.surfaceView.handle.getSelection();
+        }
+
+        @Override
+        public A3Clipboard createClipboard(final String name) {
+            return popupWindow.surfaceView.handle.createClipboard(name);
         }
 
         @Override

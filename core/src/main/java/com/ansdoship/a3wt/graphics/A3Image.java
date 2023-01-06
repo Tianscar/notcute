@@ -18,17 +18,19 @@ public interface A3Image extends A3Disposable, A3Copyable<A3Image> {
     int getWidth();
     int getHeight();
     int getPixel(final int x, final int y);
-    void setPixel(final int x, final int y, final int color);
+    A3Image setPixel(final int x, final int y, final int color);
     void getPixels(final int[] pixels, final int offset, final int stride, final int x, final int y, final int width, final int height);
-    void setPixels(final int[] pixels, final int offset, final int stride, final int x, final int y, final int width, final int height);
+    A3Image setPixels(final int[] pixels, final int offset, final int stride, final int x, final int y, final int width, final int height);
 
     long getDuration();
-    void setDuration(final long duration);
+    A3Image setDuration(final long duration);
 
     int getHotSpotX();
-    void setHotSpotX(final int hotSpotX);
+    A3Image setHotSpotX(final int hotSpotX);
     int getHotSpotY();
-    void setHotSpotY(final int hotSpotY);
+    A3Image setHotSpotY(final int hotSpotY);
+    A3Coordinate getHotSpot();
+    A3Image setHotSpot(final A3Coordinate hotSpot);
 
     int getType();
 

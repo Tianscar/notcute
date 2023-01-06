@@ -1,7 +1,7 @@
 package com.ansdoship.a3wt.util;
 
-public interface A3Resetable {
+public interface A3Resetable<T extends A3Resetable<T>> {
 
-    void reset();
+    T reset();
 
 }

@@ -158,7 +158,7 @@ public class GifFBIOSpi implements FBIOServiceProvider {
         AndroidA3Image image;
         for (final A3Image i : im) {
             image = (AndroidA3Image) i;
-            encoder.setDelay((int) clamp(image.time, Integer.MIN_VALUE, Integer.MAX_VALUE));
+            encoder.setDelay((int) clamp(image.duration, Integer.MIN_VALUE, Integer.MAX_VALUE));
             if (!encoder.addFrame(getAlignedBitmap(getBitmap(image.bitmap, Bitmap.Config.RGB_565),
                     0, 0, width, height))) return false;
         }

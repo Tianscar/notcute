@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.graphics;
 
-import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+import com.ansdoship.a3wt.bundle.A3ExtMapBundle;
 
 public interface A3RoundRect extends A3Shape<A3RoundRect> {
 
@@ -15,11 +15,11 @@ public interface A3RoundRect extends A3Shape<A3RoundRect> {
     float getWidth();
     float getHeight();
     A3Size getSize();
-    void getSize(final A3Point size);
+    void getSize(final A3Size size);
     float getArcWidth();
     float getArcHeight();
     A3Size getCorner();
-    void getCorner(final A3Size size);
+    void getCorner(final A3Size corner);
 
     A3RoundRect setLeft(final float left);
     A3RoundRect setTop(final float top);
@@ -40,9 +40,9 @@ public interface A3RoundRect extends A3Shape<A3RoundRect> {
     A3RoundRect setArcHeight(final float ry);
     A3RoundRect setCorner(final A3Size corner);
 
-    void set(final float x, final float y, final float width, final float height, final float rx, final float ry);
-    void set(final A3Point pos, final A3Size size, final A3Size corner);
-    void set(final A3Rect rect, final A3Size corner);
+    A3RoundRect set(final float x, final float y, final float width, final float height, final float rx, final float ry);
+    A3RoundRect set(final A3Point pos, final A3Size size, final A3Size corner);
+    A3RoundRect set(final A3Rect rect, final A3Size corner);
 
     default boolean isSquareSize() {
         return getWidth() == getHeight();
@@ -59,7 +59,7 @@ public interface A3RoundRect extends A3Shape<A3RoundRect> {
     String KEY_ARC_HEIGHT = "arcHeight";
 
     @Override
-    default void save(final A3ExtensiveBundle.Saver saver) {
+    default void save(final A3ExtMapBundle.Saver saver) {
         saver.putFloat(KEY_X, getX());
         saver.putFloat(KEY_Y, getY());
         saver.putFloat(KEY_WIDTH, getWidth());
@@ -69,7 +69,7 @@ public interface A3RoundRect extends A3Shape<A3RoundRect> {
     }
 
     @Override
-    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+    default void restore(final A3ExtMapBundle.Restorer restorer) {
         set(restorer.getFloat(KEY_X, 0), restorer.getFloat(KEY_Y, 0),
                 restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0),
                 restorer.getFloat(KEY_ARC_WIDTH, 0), restorer.getFloat(KEY_ARC_HEIGHT, 0));

@@ -13,7 +13,7 @@ import static com.ansdoship.a3wt.util.A3Preconditions.checkArgArrayLengthMin;
 
 public class AWTA3Transform implements A3Transform {
     
-    public static final int MATRIX_LENGTH = 6;
+    public static final int MATRIX_VALUES_LENGTH = 6;
 
     protected final AffineTransform affineTransform;
 
@@ -199,20 +199,20 @@ public class AWTA3Transform implements A3Transform {
     }
 
     @Override
-    public float[] getMatrix() {
-        final double[] matrix = new double[MATRIX_LENGTH];
-        affineTransform.getMatrix(matrix);
-        return double2float(matrix);
+    public float[] getMatrixValues() {
+        final double[] matrixValues = new double[MATRIX_VALUES_LENGTH];
+        affineTransform.getMatrix(matrixValues);
+        return double2float(matrixValues);
     }
 
     @Override
-    public void getMatrix(final float[] matrix) {
-        checkArgNotNull(matrix, "values");
-        checkArgArrayLengthMin(matrix, MATRIX_LENGTH, true);
-        final double[] matrix0 = new double[MATRIX_LENGTH];
-        affineTransform.getMatrix(matrix0);
-        for (int i = 0; i < matrix0.length; i ++) {
-            matrix[i] = (float) matrix0[i];
+    public void getMatrixValues(final float[] matrixValues) {
+        checkArgNotNull(matrixValues, "values");
+        checkArgArrayLengthMin(matrixValues, MATRIX_VALUES_LENGTH, true);
+        final double[] matrixValues0 = new double[MATRIX_VALUES_LENGTH];
+        affineTransform.getMatrix(matrixValues0);
+        for (int i = 0; i < matrixValues0.length; i ++) {
+            matrixValues[i] = (float) matrixValues0[i];
         }
     }
 
@@ -280,15 +280,16 @@ public class AWTA3Transform implements A3Transform {
     }
 
     @Override
-    public void set(final float sx, final float kx, final float dx, final float ky, final float sy, final float dy) {
+    public A3Transform set(final float sx, final float kx, final float dx, final float ky, final float sy, final float dy) {
         affineTransform.setTransform(sx, kx, dx, ky, sy, dy);
+        return this;
     }
 
     @Override
-    public void setMatrix(final float[] matrix) {
-        checkArgNotNull(matrix, "values");
-        checkArgArrayLengthMin(matrix, MATRIX_LENGTH, true);
-        affineTransform.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+    public A3Transform setMatrixValues(final float[] matrixValues) {
+        checkArgArrayLengthMin(matrixValues, MATRIX_VALUES_LENGTH, true);
+        affineTransform.setTransform(matrixValues[0], matrixValues[1], matrixValues[2], matrixValues[3], matrixValues[4], matrixValues[5]);
+        return this;
     }
 
     @Override
@@ -349,13 +350,23 @@ public class AWTA3Transform implements A3Transform {
     }
 
     @Override
+    public A3Transform set(final A3Point scale, final A3Point skew, final A3Point translate) {
+        checkArgNotNull(scale, "scale");
+        checkArgNotNull(skew, "skew");
+        checkArgNotNull(translate, "translate");
+        affineTransform.setTransform(scale.getX(), skew.getX(), translate.getX(), skew.getY(), scale.getY(), translate.getY());
+        return this;
+    }
+
+    @Override
     public boolean isIdentity() {
         return affineTransform.isIdentity();
     }
 
     @Override
-    public void reset() {
+    public A3Transform reset() {
         affineTransform.setTransform(DEFAULT_TRANSFORM);
+        return this;
     }
 
     @Override

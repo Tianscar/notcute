@@ -53,10 +53,10 @@ public interface A3GraphicsKit {
     }
 
     A3Transform createTransform();
-    A3Transform createTransform(final float[] matrix);
+    A3Transform createTransform(final float[] matrixValues);
     A3Transform createTransform(final float sx, final float kx, final float dx,
                                 final float ky, final float sy, final float dy);
-    A3Transform createTransform(final A3Point scale, final A3Point skew, final A3Point transform);
+    A3Transform createTransform(final A3Point scale, final A3Point skew, final A3Point translate);
     A3Coordinate createCoordinate();
     A3Coordinate createCoordinate(final int x, final int y);
     A3Dimension createDimension();

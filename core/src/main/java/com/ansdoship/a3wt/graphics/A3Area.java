@@ -1,10 +1,10 @@
 package com.ansdoship.a3wt.graphics;
 
-import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+import com.ansdoship.a3wt.bundle.A3ExtMapBundle;
 import com.ansdoship.a3wt.util.A3Copyable;
 import com.ansdoship.a3wt.util.A3Resetable;
 
-public interface A3Area extends A3Copyable<A3Area>, A3Resetable, A3ExtensiveBundle.Delegate {
+public interface A3Area extends A3Copyable<A3Area>, A3Resetable<A3Area>, A3ExtMapBundle.Delegate {
 
     int getLeft();
     int getTop();
@@ -32,9 +32,9 @@ public interface A3Area extends A3Copyable<A3Area>, A3Resetable, A3ExtensiveBund
     A3Area setPos(final A3Coordinate pos);
     A3Area setSize(final int width, final int height);
     A3Area setSize(final A3Dimension size);
-    
-    void set(final int x, final int y, final int width, final int height);
-    void set(final A3Coordinate pos, final A3Dimension size);
+
+    A3Area set(final int x, final int y, final int width, final int height);
+    A3Area set(final A3Coordinate pos, final A3Dimension size);
 
     default boolean isSquare() {
         return getWidth() == getHeight();
@@ -46,7 +46,7 @@ public interface A3Area extends A3Copyable<A3Area>, A3Resetable, A3ExtensiveBund
     String KEY_HEIGHT = "height";
 
     @Override
-    default void save(final A3ExtensiveBundle.Saver saver) {
+    default void save(final A3ExtMapBundle.Saver saver) {
         saver.putInt(KEY_X, getX());
         saver.putInt(KEY_Y, getY());
         saver.putInt(KEY_WIDTH, getWidth());
@@ -54,7 +54,7 @@ public interface A3Area extends A3Copyable<A3Area>, A3Resetable, A3ExtensiveBund
     }
 
     @Override
-    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+    default void restore(final A3ExtMapBundle.Restorer restorer) {
         set(restorer.getInt(KEY_X, 0), restorer.getInt(KEY_Y, 0),
                 restorer.getInt(KEY_WIDTH, 0), restorer.getInt(KEY_HEIGHT, 0));
     }

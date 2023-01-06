@@ -7,10 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Typeface;
+import android.graphics.*;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -21,11 +18,7 @@ import android.view.MotionEvent;
 import android.view.KeyEvent;
 import android.view.PointerIcon;
 import com.ansdoship.a3wt.app.A3Clipboard;
-import com.ansdoship.a3wt.graphics.A3Cursor;
-import com.ansdoship.a3wt.graphics.A3Font;
-import com.ansdoship.a3wt.graphics.A3FramedImage;
-import com.ansdoship.a3wt.graphics.A3Graphics;
-import com.ansdoship.a3wt.graphics.DefaultA3FramedImage;
+import com.ansdoship.a3wt.graphics.*;
 import com.ansdoship.a3wt.input.A3InputListener;
 import pl.droidsonroids.gif.GifDrawable;
 
@@ -66,6 +59,11 @@ public class A3AndroidUtils {
     public static Bitmap copyBitmap(final Bitmap source) {
         checkArgNotNull(source, "source");
         return source.copy(source.getConfig(), source.isMutable());
+    }
+
+    public static Bitmap copyBitmap(final Bitmap source, final Bitmap.Config config) {
+        checkArgNotNull(source, "source");
+        return source.copy(config, source.isMutable());
     }
 
     public static int getDisplayWidth(final Resources resources) {
@@ -760,5 +758,625 @@ public class A3AndroidUtils {
         }
     }
 
+    /**
+     * Calculates the number of times the line from (x0,y0) to (x1,y1)
+     * crosses the ray extending to the right from (px,py).
+     * If the point lies on the line, then no crossings are recorded.
+     * +1 is returned for a crossing where the Y coordinate is increasing
+     * -1 is returned for a crossing where the Y coordinate is decreasing
+     */
+    public static int pointCrossingsForLine(final double px, final double py,
+                                            final double x0, final double y0,
+                                            final double x1, final double y1) {
+        if (py <  y0 && py <  y1) return 0;
+        if (py >= y0 && py >= y1) return 0;
+        if (px >= x0 && px >= x1) return 0;
+        if (px <  x0 && px <  x1) return (y0 < y1) ? 1 : -1;
+        final double xintercept = x0 + (py - y0) * (x1 - x0) / (y1 - y0);
+        if (px >= xintercept) return 0;
+        return (y0 < y1) ? 1 : -1;
+    }
+
+    /**
+     * Calculates the number of times the quad from (x0,y0) to (x1,y1)
+     * crosses the ray extending to the right from (px,py).
+     * If the point lies on a part of the curve,
+     * then no crossings are counted for that intersection.
+     * the level parameter should be 0 at the top-level call and will count
+     * up for each recursion level to prevent infinite recursion
+     * +1 is added for each crossing where the Y coordinate is increasing
+     * -1 is added for each crossing where the Y coordinate is decreasing
+     */
+    public static int pointCrossingsForQuad(final double px, final double py,
+                                            final double x0, final double y0,
+                                            double xc, double yc,
+                                            final double x1, final double y1, final int level)
+    {
+        if (py <  y0 && py <  yc && py <  y1) return 0;
+        if (py >= y0 && py >= yc && py >= y1) return 0;
+        // Note y0 could equal y1...
+        if (px >= x0 && px >= xc && px >= x1) return 0;
+        if (px <  x0 && px <  xc && px <  x1) {
+            if (py >= y0) {
+                if (py < y1) return 1;
+            } else {
+                // py < y0
+                if (py >= y1) return -1;
+            }
+            // py outside of y01 range, and/or y0==y1
+            return 0;
+        }
+        // double precision only has 52 bits of mantissa
+        if (level > 52) return pointCrossingsForLine(px, py, x0, y0, x1, y1);
+        final double x0c = (x0 + xc) / 2;
+        final double y0c = (y0 + yc) / 2;
+        final double xc1 = (xc + x1) / 2;
+        final double yc1 = (yc + y1) / 2;
+        xc = (x0c + xc1) / 2;
+        yc = (y0c + yc1) / 2;
+        if (Double.isNaN(xc) || Double.isNaN(yc)) {
+            // [xy]c are NaN if any of [xy]0c or [xy]c1 are NaN
+            // [xy]0c or [xy]c1 are NaN if any of [xy][0c1] are NaN
+            // These values are also NaN if opposing infinities are added
+            return 0;
+        }
+        return (pointCrossingsForQuad(px, py,
+                x0, y0, x0c, y0c, xc, yc,
+                level+1) +
+                pointCrossingsForQuad(px, py,
+                        xc, yc, xc1, yc1, x1, y1,
+                        level+1));
+    }
+
+    /**
+     * Calculates the number of times the cubic from (x0,y0) to (x1,y1)
+     * crosses the ray extending to the right from (px,py).
+     * If the point lies on a part of the curve,
+     * then no crossings are counted for that intersection.
+     * the level parameter should be 0 at the top-level call and will count
+     * up for each recursion level to prevent infinite recursion
+     * +1 is added for each crossing where the Y coordinate is increasing
+     * -1 is added for each crossing where the Y coordinate is decreasing
+     */
+    public static int pointCrossingsForCubic(final double px, final double py,
+                                             final double x0, final double y0,
+                                             double xc0, double yc0,
+                                             double xc1, double yc1,
+                                             final double x1, final double y1, final int level)
+    {
+        if (py <  y0 && py <  yc0 && py <  yc1 && py <  y1) return 0;
+        if (py >= y0 && py >= yc0 && py >= yc1 && py >= y1) return 0;
+        // Note y0 could equal yc0...
+        if (px >= x0 && px >= xc0 && px >= xc1 && px >= x1) return 0;
+        if (px <  x0 && px <  xc0 && px <  xc1 && px <  x1) {
+            if (py >= y0) {
+                if (py < y1) return 1;
+            } else {
+                // py < y0
+                if (py >= y1) return -1;
+            }
+            // py outside of y01 range, and/or y0==yc0
+            return 0;
+        }
+        // double precision only has 52 bits of mantissa
+        if (level > 52) return pointCrossingsForLine(px, py, x0, y0, x1, y1);
+        double xmid = (xc0 + xc1) / 2;
+        double ymid = (yc0 + yc1) / 2;
+        xc0 = (x0 + xc0) / 2;
+        yc0 = (y0 + yc0) / 2;
+        xc1 = (xc1 + x1) / 2;
+        yc1 = (yc1 + y1) / 2;
+        double xc0m = (xc0 + xmid) / 2;
+        double yc0m = (yc0 + ymid) / 2;
+        double xmc1 = (xmid + xc1) / 2;
+        double ymc1 = (ymid + yc1) / 2;
+        xmid = (xc0m + xmc1) / 2;
+        ymid = (yc0m + ymc1) / 2;
+        if (Double.isNaN(xmid) || Double.isNaN(ymid)) {
+            // [xy]mid are NaN if any of [xy]c0m or [xy]mc1 are NaN
+            // [xy]c0m or [xy]mc1 are NaN if any of [xy][c][01] are NaN
+            // These values are also NaN if opposing infinities are added
+            return 0;
+        }
+        return (pointCrossingsForCubic(px, py,
+                x0, y0, xc0, yc0,
+                xc0m, yc0m, xmid, ymid, level+1) +
+                pointCrossingsForCubic(px, py,
+                        xmid, ymid, xmc1, ymc1,
+                        xc1, yc1, x1, y1, level+1));
+    }
+
+    /**
+     * The rectangle intersection test counts the number of times
+     * that the path crosses through the shadow that the rectangle
+     * projects to the right towards (x => +INFINITY).
+     *
+     * During processing of the path it actually counts every time
+     * the path crosses either or both of the top and bottom edges
+     * of that shadow.  If the path enters from the top, the count
+     * is incremented.  If it then exits back through the top, the
+     * same way it came in, the count is decremented and there is
+     * no impact on the winding count.  If, instead, the path exits
+     * out the bottom, then the count is incremented again and a
+     * full pass through the shadow is indicated by the winding count
+     * having been incremented by 2.
+     *
+     * Thus, the winding count that it accumulates is actually double
+     * the real winding count.  Since the path is continuous, the
+     * final answer should be a multiple of 2, otherwise there is a
+     * logic error somewhere.
+     *
+     * If the path ever has a direct hit on the rectangle, then a
+     * special value is returned.  This special value terminates
+     * all ongoing accumulation on up through the call chain and
+     * ends up getting returned to the calling function which can
+     * then produce an answer directly.  For intersection tests,
+     * the answer is always "true" if the path intersects the
+     * rectangle.  For containment tests, the answer is always
+     * "false" if the path intersects the rectangle.  Thus, no
+     * further processing is ever needed if an intersection occurs.
+     */
+    public static final int RECT_INTERSECTS = 0x80000000;
+
+    /**
+     * Accumulate the number of times the line crosses the shadow
+     * extending to the right of the rectangle.  See the comment
+     * for the RECT_INTERSECTS constant for more complete details.
+     */
+    public static int rectCrossingsForLine(int crossings,
+                                           final double rxmin, final double rymin,
+                                           final double rxmax, final double rymax,
+                                           final double x0, final double y0,
+                                           final double x1, final double y1)
+    {
+        if (y0 >= rymax && y1 >= rymax) return crossings;
+        if (y0 <= rymin && y1 <= rymin) return crossings;
+        if (x0 <= rxmin && x1 <= rxmin) return crossings;
+        if (x0 >= rxmax && x1 >= rxmax) {
+            // Line is entirely to the right of the rect
+            // and the vertical ranges of the two overlap by a non-empty amount
+            // Thus, this line segment is partially in the "right-shadow"
+            // Path may have done a complete crossing
+            // Or path may have entered or exited the right-shadow
+            if (y0 < y1) {
+                // y-increasing line segment...
+                // We know that y0 < rymax and y1 > rymin
+                if (y0 <= rymin) crossings++;
+                if (y1 >= rymax) crossings++;
+            } else if (y1 < y0) {
+                // y-decreasing line segment...
+                // We know that y1 < rymax and y0 > rymin
+                if (y1 <= rymin) crossings--;
+                if (y0 >= rymax) crossings--;
+            }
+            return crossings;
+        }
+        // Remaining case:
+        // Both x and y ranges overlap by a non-empty amount
+        // First do trivial INTERSECTS rejection of the cases
+        // where one of the endpoints is inside the rectangle.
+        if ((x0 > rxmin && x0 < rxmax && y0 > rymin && y0 < rymax) ||
+                (x1 > rxmin && x1 < rxmax && y1 > rymin && y1 < rymax))
+        {
+            return RECT_INTERSECTS;
+        }
+        // Otherwise calculate the y intercepts and see where
+        // they fall with respect to the rectangle
+        double xi0 = x0;
+        if (y0 < rymin) {
+            xi0 += ((rymin - y0) * (x1 - x0) / (y1 - y0));
+        } else if (y0 > rymax) {
+            xi0 += ((rymax - y0) * (x1 - x0) / (y1 - y0));
+        }
+        double xi1 = x1;
+        if (y1 < rymin) {
+            xi1 += ((rymin - y1) * (x0 - x1) / (y0 - y1));
+        } else if (y1 > rymax) {
+            xi1 += ((rymax - y1) * (x0 - x1) / (y0 - y1));
+        }
+        if (xi0 <= rxmin && xi1 <= rxmin) return crossings;
+        if (xi0 >= rxmax && xi1 >= rxmax) {
+            if (y0 < y1) {
+                // y-increasing line segment...
+                // We know that y0 < rymax and y1 > rymin
+                if (y0 <= rymin) crossings++;
+                if (y1 >= rymax) crossings++;
+            } else if (y1 < y0) {
+                // y-decreasing line segment...
+                // We know that y1 < rymax and y0 > rymin
+                if (y1 <= rymin) crossings--;
+                if (y0 >= rymax) crossings--;
+            }
+            return crossings;
+        }
+        return RECT_INTERSECTS;
+    }
+
+    /**
+     * Accumulate the number of times the quad crosses the shadow
+     * extending to the right of the rectangle.  See the comment
+     * for the RECT_INTERSECTS constant for more complete details.
+     */
+    public static int rectCrossingsForQuad(int crossings,
+                                           final double rxmin, final double rymin,
+                                           final double rxmax, final double rymax,
+                                           final double x0, final double y0,
+                                           double xc, double yc,
+                                           final double x1, final double y1,
+                                           final int level)
+    {
+        if (y0 >= rymax && yc >= rymax && y1 >= rymax) return crossings;
+        if (y0 <= rymin && yc <= rymin && y1 <= rymin) return crossings;
+        if (x0 <= rxmin && xc <= rxmin && x1 <= rxmin) return crossings;
+        if (x0 >= rxmax && xc >= rxmax && x1 >= rxmax) {
+            // Quad is entirely to the right of the rect
+            // and the vertical range of the 3 Y coordinates of the quad
+            // overlaps the vertical range of the rect by a non-empty amount
+            // We now judge the crossings solely based on the line segment
+            // connecting the endpoints of the quad.
+            // Note that we may have 0, 1, or 2 crossings as the control
+            // point may be causing the Y range intersection while the
+            // two endpoints are entirely above or below.
+            if (y0 < y1) {
+                // y-increasing line segment...
+                if (y0 <= rymin && y1 >  rymin) crossings++;
+                if (y0 <  rymax && y1 >= rymax) crossings++;
+            } else if (y1 < y0) {
+                // y-decreasing line segment...
+                if (y1 <= rymin && y0 >  rymin) crossings--;
+                if (y1 <  rymax && y0 >= rymax) crossings--;
+            }
+            return crossings;
+        }
+        // The intersection of ranges is more complicated
+        // First do trivial INTERSECTS rejection of the cases
+        // where one of the endpoints is inside the rectangle.
+        if ((x0 < rxmax && x0 > rxmin && y0 < rymax && y0 > rymin) ||
+                (x1 < rxmax && x1 > rxmin && y1 < rymax && y1 > rymin))
+        {
+            return RECT_INTERSECTS;
+        }
+        // Otherwise, subdivide and look for one of the cases above.
+        // double precision only has 52 bits of mantissa
+        if (level > 52) {
+            return rectCrossingsForLine(crossings,
+                    rxmin, rymin, rxmax, rymax,
+                    x0, y0, x1, y1);
+        }
+        double x0c = (x0 + xc) / 2;
+        double y0c = (y0 + yc) / 2;
+        double xc1 = (xc + x1) / 2;
+        double yc1 = (yc + y1) / 2;
+        xc = (x0c + xc1) / 2;
+        yc = (y0c + yc1) / 2;
+        if (Double.isNaN(xc) || Double.isNaN(yc)) {
+            // [xy]c are NaN if any of [xy]0c or [xy]c1 are NaN
+            // [xy]0c or [xy]c1 are NaN if any of [xy][0c1] are NaN
+            // These values are also NaN if opposing infinities are added
+            return 0;
+        }
+        crossings = rectCrossingsForQuad(crossings,
+                rxmin, rymin, rxmax, rymax,
+                x0, y0, x0c, y0c, xc, yc,
+                level+1);
+        if (crossings != RECT_INTERSECTS) {
+            crossings = rectCrossingsForQuad(crossings,
+                    rxmin, rymin, rxmax, rymax,
+                    xc, yc, xc1, yc1, x1, y1,
+                    level+1);
+        }
+        return crossings;
+    }
+
+    /**
+     * Accumulate the number of times the cubic crosses the shadow
+     * extending to the right of the rectangle.  See the comment
+     * for the RECT_INTERSECTS constant for more complete details.
+     */
+    public static int rectCrossingsForCubic(int crossings,
+                                            final double rxmin, final double rymin,
+                                            final double rxmax, final double rymax,
+                                            final double x0,  final double y0,
+                                            double xc0, double yc0,
+                                            double xc1, double yc1,
+                                            final double x1,  final double y1,
+                                            final int level)
+    {
+        if (y0 >= rymax && yc0 >= rymax && yc1 >= rymax && y1 >= rymax) {
+            return crossings;
+        }
+        if (y0 <= rymin && yc0 <= rymin && yc1 <= rymin && y1 <= rymin) {
+            return crossings;
+        }
+        if (x0 <= rxmin && xc0 <= rxmin && xc1 <= rxmin && x1 <= rxmin) {
+            return crossings;
+        }
+        if (x0 >= rxmax && xc0 >= rxmax && xc1 >= rxmax && x1 >= rxmax) {
+            // Cubic is entirely to the right of the rect
+            // and the vertical range of the 4 Y coordinates of the cubic
+            // overlaps the vertical range of the rect by a non-empty amount
+            // We now judge the crossings solely based on the line segment
+            // connecting the endpoints of the cubic.
+            // Note that we may have 0, 1, or 2 crossings as the control
+            // points may be causing the Y range intersection while the
+            // two endpoints are entirely above or below.
+            if (y0 < y1) {
+                // y-increasing line segment...
+                if (y0 <= rymin && y1 >  rymin) crossings++;
+                if (y0 <  rymax && y1 >= rymax) crossings++;
+            } else if (y1 < y0) {
+                // y-decreasing line segment...
+                if (y1 <= rymin && y0 >  rymin) crossings--;
+                if (y1 <  rymax && y0 >= rymax) crossings--;
+            }
+            return crossings;
+        }
+        // The intersection of ranges is more complicated
+        // First do trivial INTERSECTS rejection of the cases
+        // where one of the endpoints is inside the rectangle.
+        if ((x0 > rxmin && x0 < rxmax && y0 > rymin && y0 < rymax) ||
+                (x1 > rxmin && x1 < rxmax && y1 > rymin && y1 < rymax))
+        {
+            return RECT_INTERSECTS;
+        }
+        // Otherwise, subdivide and look for one of the cases above.
+        // double precision only has 52 bits of mantissa
+        if (level > 52) {
+            return rectCrossingsForLine(crossings,
+                    rxmin, rymin, rxmax, rymax,
+                    x0, y0, x1, y1);
+        }
+        double xmid = (xc0 + xc1) / 2;
+        double ymid = (yc0 + yc1) / 2;
+        xc0 = (x0 + xc0) / 2;
+        yc0 = (y0 + yc0) / 2;
+        xc1 = (xc1 + x1) / 2;
+        yc1 = (yc1 + y1) / 2;
+        double xc0m = (xc0 + xmid) / 2;
+        double yc0m = (yc0 + ymid) / 2;
+        double xmc1 = (xmid + xc1) / 2;
+        double ymc1 = (ymid + yc1) / 2;
+        xmid = (xc0m + xmc1) / 2;
+        ymid = (yc0m + ymc1) / 2;
+        if (Double.isNaN(xmid) || Double.isNaN(ymid)) {
+            // [xy]mid are NaN if any of [xy]c0m or [xy]mc1 are NaN
+            // [xy]c0m or [xy]mc1 are NaN if any of [xy][c][01] are NaN
+            // These values are also NaN if opposing infinities are added
+            return 0;
+        }
+        crossings = rectCrossingsForCubic(crossings,
+                rxmin, rymin, rxmax, rymax,
+                x0, y0, xc0, yc0,
+                xc0m, yc0m, xmid, ymid, level+1);
+        if (crossings != RECT_INTERSECTS) {
+            crossings = rectCrossingsForCubic(crossings,
+                    rxmin, rymin, rxmax, rymax,
+                    xmid, ymid, xmc1, ymc1,
+                    xc1, yc1, x1, y1, level+1);
+        }
+        return crossings;
+    }
+    /*
+     * Normalizes the specified angle into the range -180 to 180.
+     */
+    public static double normalizeDegrees(double angle) {
+        if (angle > 180.0) {
+            if (angle <= (180.0 + 360.0)) {
+                angle = angle - 360.0;
+            } else {
+                angle = Math.IEEEremainder(angle, 360.0);
+                // IEEEremainder can return -180 here for some input values...
+                if (angle == -180.0) {
+                    angle = 180.0;
+                }
+            }
+        } else if (angle <= -180.0) {
+            if (angle > (-180.0 - 360.0)) {
+                angle = angle + 360.0;
+            } else {
+                angle = Math.IEEEremainder(angle, 360.0);
+                // IEEEremainder can return -180 here for some input values...
+                if (angle == -180.0) {
+                    angle = 180.0;
+                }
+            }
+        }
+        return angle;
+    }
+
+    /**
+     * Returns an indicator of where the specified point
+     * {@code (px,py)} lies with respect to the line segment from
+     * {@code (x1,y1)} to {@code (x2,y2)}.
+     * The return value can be either 1, -1, or 0 and indicates
+     * in which direction the specified line must pivot around its
+     * first end point, {@code (x1,y1)}, in order to point at the
+     * specified point {@code (px,py)}.
+     * <p>A return value of 1 indicates that the line segment must
+     * turn in the direction that takes the positive X axis towards
+     * the negative Y axis.  In the default coordinate system used by
+     * Java 2D, this direction is counterclockwise.
+     * <p>A return value of -1 indicates that the line segment must
+     * turn in the direction that takes the positive X axis towards
+     * the positive Y axis.  In the default coordinate system, this
+     * direction is clockwise.
+     * <p>A return value of 0 indicates that the point lies
+     * exactly on the line segment.  Note that an indicator value
+     * of 0 is rare and not useful for determining collinearity
+     * because of floating point rounding issues.
+     * <p>If the point is colinear with the line segment, but
+     * not between the end points, then the value will be -1 if the point
+     * lies "beyond {@code (x1,y1)}" or 1 if the point lies
+     * "beyond {@code (x2,y2)}".
+     *
+     * @param x1 the X coordinate of the start point of the
+     *           specified line segment
+     * @param y1 the Y coordinate of the start point of the
+     *           specified line segment
+     * @param x2 the X coordinate of the end point of the
+     *           specified line segment
+     * @param y2 the Y coordinate of the end point of the
+     *           specified line segment
+     * @param px the X coordinate of the specified point to be
+     *           compared with the specified line segment
+     * @param py the Y coordinate of the specified point to be
+     *           compared with the specified line segment
+     * @return an integer that indicates the position of the third specified
+     *                  coordinates with respect to the line segment formed
+     *                  by the first two specified coordinates.
+     */
+    public static int relativeCCW(final double x1, final double y1,
+                                  double x2, double y2,
+                                  double px, double py)
+    {
+        x2 -= x1;
+        y2 -= y1;
+        px -= x1;
+        py -= y1;
+        double ccw = px * y2 - py * x2;
+        if (ccw == 0.0) {
+            // The point is colinear, classify based on which side of
+            // the segment the point falls on.  We can calculate a
+            // relative value using the projection of px,py onto the
+            // segment - a negative value indicates the point projects
+            // outside of the segment in the direction of the particular
+            // endpoint used as the origin for the projection.
+            ccw = px * x2 + py * y2;
+            if (ccw > 0.0) {
+                // Reverse the projection to be relative to the original x2,y2
+                // x2 and y2 are simply negated.
+                // px and py need to have (x2 - x1) or (y2 - y1) subtracted
+                //    from them (based on the original values)
+                // Since we really want to get a positive answer when the
+                //    point is "beyond (x2,y2)", then we want to calculate
+                //    the inverse anyway - thus we leave x2 & y2 negated.
+                px -= x2;
+                py -= y2;
+                ccw = px * x2 + py * y2;
+                if (ccw < 0.0) {
+                    ccw = 0.0;
+                }
+            }
+        }
+        return Double.compare(ccw, 0.0);
+    }
+
+    /**
+     * The bitmask that indicates that a point lies to the left of
+     * this {@code RectF}.
+     */
+    public static final int OUT_LEFT = 1;
+
+    /**
+     * The bitmask that indicates that a point lies above
+     * this {@code RectF}.
+     */
+    public static final int OUT_TOP = 2;
+
+    /**
+     * The bitmask that indicates that a point lies to the right of
+     * this {@code RectF}.
+     */
+    public static final int OUT_RIGHT = 4;
+
+    /**
+     * The bitmask that indicates that a point lies below
+     * this {@code RectF}.
+     */
+    public static final int OUT_BOTTOM = 8;
+
+    /**
+     * Tests if the specified line segment intersects the interior of this
+     * {@code RectF}.
+     *
+     * @param x1 the X coordinate of the start point of the specified
+     *           line segment
+     * @param y1 the Y coordinate of the start point of the specified
+     *           line segment
+     * @param x2 the X coordinate of the end point of the specified
+     *           line segment
+     * @param y2 the Y coordinate of the end point of the specified
+     *           line segment
+     * @return {@code true} if the specified line segment intersects
+     * the interior of this {@code RectF}; {@code false}
+     * otherwise.
+     */
+    public static boolean intersectsLine(final RectF rectF, double x1, double y1, double x2, double y2) {
+        int out1, out2;
+        if ((out2 = outcode(rectF, x2, y2)) == 0) {
+            return true;
+        }
+        while ((out1 = outcode(rectF, x1, y1)) != 0) {
+            if ((out1 & out2) != 0) {
+                return false;
+            }
+            if ((out1 & (OUT_LEFT | OUT_RIGHT)) != 0) {
+                double x = rectF.left;
+                if ((out1 & OUT_RIGHT) != 0) {
+                    x += rectF.width();
+                }
+                y1 = y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+                x1 = x;
+            } else {
+                double y = rectF.top;
+                if ((out1 & OUT_BOTTOM) != 0) {
+                    y += rectF.height();
+                }
+                x1 = x1 + (y - y1) * (x2 - x1) / (y2 - y1);
+                y1 = y;
+            }
+        }
+        return true;
+    }
+
+    public static int outcode(final RectF rectF, double x, double y) {
+        checkArgNotNull(rectF, "rectF");
+        /*
+         * Note on casts to double below.  If the arithmetic of
+         * x+w or y+h is done in float, then some bits may be
+         * lost if the binary exponents of x/y and w/h are not
+         * similar.  By converting to double before the addition
+         * we force the addition to be carried out in double to
+         * avoid rounding error in the comparison.
+         */
+        int out = 0;
+        if (rectF.width() <= 0) {
+            out |= OUT_LEFT | OUT_RIGHT;
+        } else if (x < rectF.left) {
+            out |= OUT_LEFT;
+        } else if (x > rectF.left + (double) rectF.width()) {
+            out |= OUT_RIGHT;
+        }
+        if (rectF.height() <= 0) {
+            out |= OUT_TOP | OUT_BOTTOM;
+        } else if (y < rectF.top) {
+            out |= OUT_TOP;
+        } else if (y > rectF.top + (double) rectF.height()) {
+            out |= OUT_BOTTOM;
+        }
+        return out;
+    }
+
+    public static int bitmapConfig2ImageType(final Bitmap.Config config) {
+        switch (config) {
+            case ARGB_8888:
+                return A3Image.Type.ARGB_8888;
+            case RGB_565:
+                return A3Image.Type.RGB_565;
+            default:
+                return -1;
+        }
+    }
+
+    public static Bitmap.Config imageType2BitmapConfig(final int type) {
+        switch (type) {
+            case A3Image.Type.ARGB_8888:
+                return Bitmap.Config.ARGB_8888;
+            case A3Image.Type.RGB_565:
+                return Bitmap.Config.RGB_565;
+            default:
+                return null;
+        }
+    }
 
 }

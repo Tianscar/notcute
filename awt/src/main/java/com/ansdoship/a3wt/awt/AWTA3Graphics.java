@@ -49,6 +49,7 @@ import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
 public class AWTA3Graphics implements A3Graphics {
 
     protected final AffineTransform mImageTransform = new AffineTransform();
+    protected final AWTA3Transform mTransform = new AWTA3Transform(new AffineTransform());
     protected final Line2D.Float mPointLine = new Line2D.Float();
     protected final Arc2D.Float mArc2D = new Arc2D.Float();
     protected final Line2D.Float mLine2D = new Line2D.Float();
@@ -101,6 +102,7 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     public void setGraphics2D(final Graphics2D graphics2D, final int width, final int height) {
+        checkDisposed("Can't call setGraphics2D() on a disposed AWTA3Graphics");
         this.graphics2D = graphics2D;
         this.width = width;
         this.height = height;
@@ -121,7 +123,7 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     public void drawShape(final Shape shape) {
-        checkDisposed("Can't call drawShape() on a disposed A3Graphics");
+        checkDisposed("Can't call drawShape() on a disposed AWTA3Graphics");
         mDrawShape(shape);
     }
 
@@ -370,20 +372,16 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void drawText(final CharSequence text, final float x, final float y) {
+    public void drawText(final CharSequence text, final int start, final int end, final float x, final float y) {
         checkArgNotEmpty(text, "text");
         checkDisposed("Can't call drawText() on a disposed A3Graphics");
         final Runnable[] cleanup = new Runnable[1];
-        final AttributedCharacterIterator iterator = mGetAttributedCharacterIterator(text, cleanup);
-        try {
-            mDrawText(iterator, x, y);
-        }
-        finally {
-            if (cleanup[0] != null) cleanup[0].run();
-        }
+        final AttributedCharacterIterator iterator = mGetAttributedCharacterIterator(text, start, end, cleanup);
+        mDrawText(iterator, x, y);
+        if (cleanup[0] != null) cleanup[0].run();
     }
 
-    private AttributedCharacterIterator mGetAttributedCharacterIterator(final String text) {
+    private AttributedCharacterIterator mGetAttributedCharacterIterator(final String text, final int start, final int end) {
         checkArgNotNull(text, "text");
         final Font font = getFont() == null ? null : ((AWTA3Font)getFont()).getFont();
         final HashMap<AttributedCharacterIterator.Attribute, Object> attributes = new HashMap<>();
@@ -392,11 +390,11 @@ public class AWTA3Graphics implements A3Graphics {
         if (data.isUnderlineText()) attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         if (data.isStrikeThroughText()) attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
         final AttributedString attributedString = new AttributedString(text);
-        attributedString.addAttributes(attributes, 0, text.length());
+        attributedString.addAttributes(attributes, start, end);
         return attributedString.getIterator();
     }
     
-    private AttributedCharacterIterator mGetAttributedCharacterIterator(final A3CharSegment text) {
+    private AttributedCharacterIterator mGetAttributedCharacterIterator(final A3CharSegment text, final int start, final int end) {
         checkArgNotNull(text, "text");
         final Font font = getFont() == null ? null : ((AWTA3Font)getFont()).getFont();
         final HashMap<AttributedCharacterIterator.Attribute, Object> attributes = new HashMap<>();
@@ -405,13 +403,13 @@ public class AWTA3Graphics implements A3Graphics {
         if (data.isUnderlineText()) attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
         if (data.isStrikeThroughText()) attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
         final AttributedA3CharSegment attributedSegment = new AttributedA3CharSegment(text);
-        attributedSegment.addAttributes(attributes, 0, text.length());
+        attributedSegment.addAttributes(attributes, start, end);
         return attributedSegment.getIterator();
     }
 
-    private AttributedCharacterIterator mGetAttributedCharacterIterator(final CharSequence text, final Runnable[] cleanup) {
-        if (text instanceof String) return mGetAttributedCharacterIterator((String) text);
-        else if (text instanceof A3CharSegment) return mGetAttributedCharacterIterator((A3CharSegment) text);
+    private AttributedCharacterIterator mGetAttributedCharacterIterator(final CharSequence text, final int start, final int end, final Runnable[] cleanup) {
+        if (text instanceof String) return mGetAttributedCharacterIterator((String) text, start, end);
+        else if (text instanceof A3CharSegment) return mGetAttributedCharacterIterator((A3CharSegment) text, start, end);
         else {
             final Font font = getFont() == null ? null : ((AWTA3Font)getFont()).getFont();
             final HashMap<AttributedCharacterIterator.Attribute, Object> attributes = new HashMap<>();
@@ -420,7 +418,7 @@ public class AWTA3Graphics implements A3Graphics {
             if (data.isUnderlineText()) attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
             if (data.isStrikeThroughText()) attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
             final AttributedCharSequence attributedCharSequence = new AttributedCharSequence(text);
-            attributedCharSequence.addAttributes(attributes, 0, text.length());
+            attributedCharSequence.addAttributes(attributes, start, end);
             if (attributedCharSequence.isNewArraySegment()) {
                 cleanup[0] = new Runnable() {
                     @Override
@@ -458,11 +456,11 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public float measureText(final CharSequence text, final int offset, final int length) {
+    public float measureText(final CharSequence text, final int start, final int end) {
         checkArgNotEmpty(text);
         checkDisposed("Can't call measureText() on a disposed A3Graphics");
         return (float) graphics2D.getFont().getStringBounds(new CharSequenceCharacterIterator(text),
-                offset, length, graphics2D.getFontRenderContext()).getWidth();
+                start, end, graphics2D.getFontRenderContext()).getWidth();
     }
 
     @Override
@@ -490,36 +488,37 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public A3Rect getTextBounds(final CharSequence text) {
+    public A3Rect getTextBounds(final CharSequence text, final int start, final int end) {
         checkArgNotEmpty(text);
         checkDisposed("Can't call getTextBounds() on a disposed A3Graphics");
         final Rectangle2D stringBounds;
         if (text instanceof String) {
-            stringBounds = graphics2D.getFont().getStringBounds((String) text, graphics2D.getFontRenderContext());
+            stringBounds = graphics2D.getFont().getStringBounds((String) text, start, end, graphics2D.getFontRenderContext());
         }
         else if (text instanceof A3CharSegment) {
-            stringBounds = graphics2D.getFont().getStringBounds(((A3CharSegment) text).array(), ((A3CharSegment) text).arrayOffset(), text.length(),
+            final int arrayOffset = ((A3CharSegment) text).arrayOffset();
+            stringBounds = graphics2D.getFont().getStringBounds(((A3CharSegment) text).array(), arrayOffset + start, arrayOffset + end,
                     graphics2D.getFontRenderContext());
         }
         else {
-            stringBounds = graphics2D.getFont().getStringBounds(new CharSequenceCharacterIterator(text), 0, text.length(),
+            stringBounds = graphics2D.getFont().getStringBounds(new CharSequenceCharacterIterator(text), start, end,
                     graphics2D.getFontRenderContext());
         }
         return new AWTA3Rect(floatRectangle2D(stringBounds));
     }
 
     @Override
-    public void getTextBounds(final CharSequence text, final A3Rect bounds) {
+    public void getTextBounds(final CharSequence text, final int start, final int end, final A3Rect bounds) {
         checkArgNotNull(bounds, "bounds");
         checkDisposed("Can't call getTextBounds() on a disposed A3Graphics");
-        getTextBounds(text).to(bounds);
+        getTextBounds(text, start, end).to(bounds);
     }
 
     @Override
     public A3Rect getTextBounds(final char[] text, final int offset, final int length) {
         checkArgNotEmpty(text);
         checkDisposed("Can't call getTextBounds() on a disposed A3Graphics");
-        return new AWTA3Rect(floatRectangle2D(graphics2D.getFont().getStringBounds(text, offset, length, graphics2D.getFontRenderContext())));
+        return new AWTA3Rect(floatRectangle2D(graphics2D.getFont().getStringBounds(text, offset, offset + length, graphics2D.getFontRenderContext())));
     }
 
     @Override
@@ -532,14 +531,16 @@ public class AWTA3Graphics implements A3Graphics {
     @Override
     public A3Rect getClipBounds() {
         checkDisposed("Can't call getClipBounds() on a disposed A3Graphics");
-        return new AWTA3Rect(floatRectangle2D(graphics2D.getClipBounds()));
+        final Rectangle2D clipBounds = graphics2D.getClipBounds();
+        if (clipBounds == null) return null;
+        else return new AWTA3Rect(floatRectangle2D(clipBounds));
     }
 
     @Override
     public void getClipBounds(final A3Rect bounds) {
         checkArgNotNull(bounds, "bounds");
-        checkDisposed("Can't call getClipBounds() on a disposed A3Graphics");
-        getClipBounds().to(bounds);
+        final A3Rect clipBounds = getClipBounds();
+        if (clipBounds != null) clipBounds.to(bounds);
     }
 
     @Override
@@ -553,16 +554,16 @@ public class AWTA3Graphics implements A3Graphics {
     @Override
     public void getClipPath(final A3Path path) {
         checkArgNotNull(path, "path");
-        checkDisposed("Can't call getClipPath() on a disposed A3Graphics");
         final A3Path clipPath = getClipPath();
         if (clipPath != null) clipPath.to(path);
     }
 
     @Override
-    public void setClipPath(final A3Path clip) {
+    public A3Graphics setClipPath(final A3Path clip) {
         checkDisposed("Can't call setClipPath() on a disposed A3Graphics");
         data.setClipPath(clip);
         graphics2D.setClip(clip == null ? null : ((AWTA3Path)clip).path2D);
+        return this;
     }
 
     @Override
@@ -576,33 +577,35 @@ public class AWTA3Graphics implements A3Graphics {
     @Override
     public void getClipRect(final A3Rect rect) {
         checkArgNotNull(rect, "rect");
-        checkDisposed("Can't call getClipRect() on a disposed A3Graphics");
         final A3Rect clipRect = getClipRect();
         if (clipRect != null) clipRect.to(rect);
     }
 
     @Override
-    public void setClipRect(final float x, final float y, final float width, final float height) {
+    public A3Graphics setClipRect(final float x, final float y, final float width, final float height) {
         checkDisposed("Can't call setClipRect() on a disposed A3Graphics");
         mClipRect.set(x, y, width, height);
         data.setClipRect(mClipRect);
         graphics2D.setClip(mClipRect.rectangle2D);
+        return this;
     }
 
     @Override
-    public void setClipRect(final A3Point pos, final A3Size size) {
+    public A3Graphics setClipRect(final A3Point pos, final A3Size size) {
         checkDisposed("Can't call setClipRect() on a disposed A3Graphics");
         mClipRect.set(pos, size);
         data.setClipRect(mClipRect);
         graphics2D.setClip(mClipRect.rectangle2D);
+        return this;
     }
 
     @Override
-    public void setClipRect(final A3Rect rect) {
+    public A3Graphics setClipRect(final A3Rect rect) {
         checkDisposed("Can't call setClipRect() on a disposed A3Graphics");
         checkArgNotNull(rect, "rect");
         data.setClipRect(rect);
         graphics2D.setClip(((AWTA3Rect)rect).rectangle2D);
+        return this;
     }
 
     @Override
@@ -619,11 +622,36 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setTransform(final A3Transform transform) {
+    public A3Graphics setTransform(final A3Transform transform) {
         checkDisposed("Can't call setTransform() on a disposed A3Graphics");
         if (transform == null) graphics2D.setTransform(AWTA3Transform.DEFAULT_TRANSFORM);
         else graphics2D.setTransform(((AWTA3Transform)transform).affineTransform);
         data.setTransform(transform);
+        return this;
+    }
+
+    @Override
+    public A3Graphics setTransform(final float[] matrixValues) {
+        checkDisposed("Can't call setTransform() on a disposed A3Graphics");
+        if (matrixValues == null) {
+            graphics2D.setTransform(AWTA3Transform.DEFAULT_TRANSFORM);
+            data.setTransform(null);
+        }
+        else {
+            mTransform.setMatrixValues(matrixValues);
+            graphics2D.setTransform(mTransform.affineTransform);
+            data.setTransform(mTransform);
+        }
+        return this;
+    }
+
+    @Override
+    public A3Graphics setTransform(final float sx, final float kx, final float dx, final float ky, final float sy, final float dy) {
+        checkDisposed("Can't call setTransform() on a disposed A3Graphics");
+        mTransform.set(sx, kx, dx, ky, sy, dy);
+        graphics2D.setTransform(mTransform.affineTransform);
+        data.setTransform(mTransform);
+        return this;
     }
 
     @Override
@@ -633,10 +661,11 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setColor(final int color) {
+    public A3Graphics setColor(final int color) {
         checkDisposed("Can't call setColor() on a disposed A3Graphics");
         data.setColor(color);
         graphics2D.setColor(new Color(color, true));
+        return this;
     }
 
     @Override
@@ -646,9 +675,10 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStyle(final int style) {
+    public A3Graphics setStyle(final int style) {
         checkDisposed("Can't call setStyle() on a disposed A3Graphics");
         data.setStyle(style);
+        return this;
     }
 
     @Override
@@ -658,11 +688,12 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrokeWidth(final float width) {
+    public A3Graphics setStrokeWidth(final float width) {
         checkDisposed("Can't call setStrokeWidth() on a disposed A3Graphics");
         data.setStrokeWidth(width);
         graphics2D.setStroke(new BasicStroke(width, strokeCap2BasicStrokeCap(data.getStrokeCap()),
                 strokeJoin2BasicStrokeJoin(data.getStrokeJoin()), data.getStrokeMiter()));
+        return this;
     }
 
     @Override
@@ -672,11 +703,12 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrokeJoin(final int join) {
+    public A3Graphics setStrokeJoin(final int join) {
         checkDisposed("Can't call setStrokeJoin() on a disposed A3Graphics");
         data.setStrokeJoin(join);
         graphics2D.setStroke(new BasicStroke(data.getStrokeWidth(), strokeCap2BasicStrokeCap(data.getStrokeCap()),
                 strokeJoin2BasicStrokeJoin(join), data.getStrokeMiter()));
+        return this;
     }
 
     @Override
@@ -686,11 +718,12 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrokeCap(final int cap) {
+    public A3Graphics setStrokeCap(final int cap) {
         checkDisposed("Can't call setStrokeCap() on a disposed A3Graphics");
         data.setStrokeCap(cap);
         graphics2D.setStroke(new BasicStroke(data.getStrokeWidth(), strokeCap2BasicStrokeCap(cap),
                 strokeJoin2BasicStrokeJoin(data.getStrokeJoin()), data.getStrokeMiter()));
+        return this;
     }
 
     @Override
@@ -700,11 +733,12 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrokeMiter(final float miter) {
+    public A3Graphics setStrokeMiter(final float miter) {
         checkDisposed("Can't call setStrokeMiter() on a disposed A3Graphics");
         data.setStrokeMiter(miter);
         graphics2D.setStroke(new BasicStroke(data.getStrokeWidth(), strokeCap2BasicStrokeCap(data.getStrokeCap()),
                 strokeJoin2BasicStrokeJoin(data.getStrokeJoin()), miter));
+        return this;
     }
 
     @Override
@@ -714,7 +748,7 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setFont(final A3Font font) {
+    public A3Graphics setFont(final A3Font font) {
         checkDisposed("Can't call setFont() on a disposed A3Graphics");
         if (font == null) {
             data.setFont(null);
@@ -724,6 +758,7 @@ public class AWTA3Graphics implements A3Graphics {
             data.setFont(font0);
             graphics2D.setFont(font0.getFont());
         }
+        return this;
     }
 
     @Override
@@ -733,9 +768,9 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setTextSize(final float size) {
+    public A3Graphics setTextSize(final float size) {
         checkDisposed("Can't call setTextSize() on a disposed A3Graphics");
-        if (data.getTextSize() == size) return;
+        if (data.getTextSize() == size) return this;
         data.setTextSize(size);
         A3Font a3Font = data.getFont();
         Font font = a3Font == null ? (graphics2D.getFont() == null ? null : graphics2D.getFont()) : ((AWTA3Font)a3Font).getFont();
@@ -744,6 +779,7 @@ public class AWTA3Graphics implements A3Graphics {
             data.setFont(new AWTA3Font(font));
             graphics2D.setFont(font);
         }
+        return this;
     }
 
     @Override
@@ -754,13 +790,14 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setAntiAlias(final boolean antiAlias) {
+    public A3Graphics setAntiAlias(final boolean antiAlias) {
         checkDisposed("Can't call setAntiAlias() on a disposed A3Graphics");
         hints.put(RenderingHints.KEY_ANTIALIASING,
                 antiAlias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
         hints.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                 antiAlias ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         if (graphics2D != null) graphics2D.setRenderingHints(hints);
+        return this;
     }
 
     @Override
@@ -770,11 +807,12 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setFilterImage(final boolean filterImage) {
+    public A3Graphics setFilterImage(final boolean filterImage) {
         checkDisposed("Can't call setFilterImage() on a disposed A3Graphics");
         hints.put(RenderingHints.KEY_INTERPOLATION,
                 filterImage ? RenderingHints.VALUE_INTERPOLATION_BILINEAR : RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
         if (graphics2D != null) graphics2D.setRenderingHints(hints);
+        return this;
     }
 
     @Override
@@ -784,11 +822,12 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setSubpixelText(final boolean subpixelText) {
+    public A3Graphics setSubpixelText(final boolean subpixelText) {
         checkDisposed("Can't call setSubpixelText() on a disposed A3Graphics");
         hints.put(RenderingHints.KEY_FRACTIONALMETRICS,
                 subpixelText ? RenderingHints.VALUE_FRACTIONALMETRICS_ON : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
         if (graphics2D != null) graphics2D.setRenderingHints(hints);
+        return this;
     }
 
     @Override
@@ -798,9 +837,10 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setUnderlineText(final boolean underlineText) {
+    public A3Graphics setUnderlineText(final boolean underlineText) {
         checkDisposed("Can't call setUnderlineText() on a disposed A3Graphics");
         data.setUnderlineText(underlineText);
+        return this;
     }
 
     @Override
@@ -810,9 +850,10 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setStrikeThroughText(final boolean strikeThroughText) {
+    public A3Graphics setStrikeThroughText(final boolean strikeThroughText) {
         checkDisposed("Can't call setStrikeThroughText() on a disposed A3Graphics");
         data.setStrikeThroughText(strikeThroughText);
+        return this;
     }
 
     @Override
@@ -822,18 +863,20 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setDither(final boolean dither) {
+    public A3Graphics setDither(final boolean dither) {
         checkDisposed("Can't call setDither() on a disposed A3Graphics");
         hints.put(RenderingHints.KEY_DITHERING,
                 dither ? RenderingHints.VALUE_DITHER_ENABLE : RenderingHints.VALUE_DITHER_DISABLE);
         if (graphics2D != null) graphics2D.setRenderingHints(hints);
+        return this;
     }
 
     @Override
-    public void reset() {
+    public A3Graphics reset() {
         checkDisposed("Can't call reset() on a disposed A3Graphics");
         data.reset();
         apply();
+        return this;
     }
 
     @Override
@@ -907,11 +950,12 @@ public class AWTA3Graphics implements A3Graphics {
     }
 
     @Override
-    public void setData(final Data data) {
+    public A3Graphics setData(final Data data) {
         checkDisposed("Can't call setData() on a disposed A3Graphics");
         checkArgNotNull(data, "data");
         data.to(this.data);
         apply();
+        return this;
     }
 
     @Override

@@ -37,8 +37,9 @@ public class AWTA3Path implements A3Path {
     }
 
     @Override
-    public void reset() {
+    public A3Path reset() {
         path2D.reset();
+        return this;
     }
 
     @Override

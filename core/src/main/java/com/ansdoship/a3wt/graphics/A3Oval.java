@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.graphics;
 
-import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+import com.ansdoship.a3wt.bundle.A3ExtMapBundle;
 
 public interface A3Oval extends A3Shape<A3Oval> {
 
@@ -11,6 +11,7 @@ public interface A3Oval extends A3Shape<A3Oval> {
     float getX();
     float getY();
     A3Point getPos();
+    void getPos(final A3Point pos);
     float getWidth();
     float getHeight();
     A3Size getSize();
@@ -30,8 +31,8 @@ public interface A3Oval extends A3Shape<A3Oval> {
     A3Oval setSize(float width, float height);
     A3Oval setSize(A3Size size);
 
-    void set(float x, float y, float width, float height);
-    void set(A3Point pos, A3Size size);
+    A3Oval set(float x, float y, float width, float height);
+    A3Oval set(A3Point pos, A3Size size);
 
     default boolean isCircle() {
         return getWidth() == getHeight();
@@ -43,7 +44,7 @@ public interface A3Oval extends A3Shape<A3Oval> {
     String KEY_HEIGHT = "height";
 
     @Override
-    default void save(final A3ExtensiveBundle.Saver saver) {
+    default void save(final A3ExtMapBundle.Saver saver) {
         saver.putFloat(KEY_X, getX());
         saver.putFloat(KEY_Y, getY());
         saver.putFloat(KEY_WIDTH, getWidth());
@@ -51,7 +52,7 @@ public interface A3Oval extends A3Shape<A3Oval> {
     }
 
     @Override
-    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+    default void restore(final A3ExtMapBundle.Restorer restorer) {
         set(restorer.getFloat(KEY_X, 0), restorer.getFloat(KEY_Y, 0),
                 restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0));
     }

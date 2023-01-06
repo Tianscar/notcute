@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 
-public interface A3ExtensiveBundle extends A3Bundle, Map<String, A3ExtensiveBundle> {
+public interface A3ExtMapBundle extends A3KeyValueBundle, Map<String, A3ExtMapBundle> {
 
     interface Delegate {
         void save(final Saver saver);
@@ -23,19 +23,19 @@ public interface A3ExtensiveBundle extends A3Bundle, Map<String, A3ExtensiveBund
         Saver putString(final String key, final String value);
         Saver putBigInteger(final String key, final BigInteger value);
         Saver putBigDecimal(final String key, final BigDecimal value);
-        Saver put(final String key, final A3ExtensiveBundle value);
+        Saver put(final String key, final A3ExtMapBundle value);
         <T extends Delegate> Saver putDelegate(final String key, final T value);
-        A3ExtensiveBundle putByteArray(final String key, final byte[] value);
-        A3ExtensiveBundle putShortArray(final String key, final short[] value);
-        A3ExtensiveBundle putIntArray(final String key, final int[] value);
-        A3ExtensiveBundle putLongArray(final String key, final long[] value);
-        A3ExtensiveBundle putFloatArray(final String key, final float[] value);
-        A3ExtensiveBundle putDoubleArray(final String key, final double[] value);
-        A3ExtensiveBundle putBooleanArray(final String key, final boolean[] value);
-        A3ExtensiveBundle putCharArray(final String key, final char[] value);
-        A3ExtensiveBundle putStringArray(final String key, final String[] value);
-        A3ExtensiveBundle putBigIntegerArray(final String key, final BigInteger[] value);
-        A3ExtensiveBundle putBigDecimalArray(final String key, final BigDecimal[] value);
+        A3ExtMapBundle putByteArray(final String key, final byte[] value);
+        A3ExtMapBundle putShortArray(final String key, final short[] value);
+        A3ExtMapBundle putIntArray(final String key, final int[] value);
+        A3ExtMapBundle putLongArray(final String key, final long[] value);
+        A3ExtMapBundle putFloatArray(final String key, final float[] value);
+        A3ExtMapBundle putDoubleArray(final String key, final double[] value);
+        A3ExtMapBundle putBooleanArray(final String key, final boolean[] value);
+        A3ExtMapBundle putCharArray(final String key, final char[] value);
+        A3ExtMapBundle putStringArray(final String key, final String[] value);
+        A3ExtMapBundle putBigIntegerArray(final String key, final BigInteger[] value);
+        A3ExtMapBundle putBigDecimalArray(final String key, final BigDecimal[] value);
         <T extends Delegate> T putDelegateArray(final String key, final T[] value);
     }
 
@@ -51,7 +51,7 @@ public interface A3ExtensiveBundle extends A3Bundle, Map<String, A3ExtensiveBund
         String getString(final String key, final String defValue);
         BigInteger getBigInteger(final String key, final BigInteger defValue);
         BigDecimal getBigDecimal(final String key, final BigDecimal defValue);
-        A3ExtensiveBundle get(final String key, final A3ExtensiveBundle defValue);
+        A3ExtMapBundle get(final String key, final A3ExtMapBundle defValue);
         <T extends Delegate> T getDelegate(final String key, final T defValue);
         byte[] getByteArray(final String key, final byte[] defValue);
         short[] getShortArray(final String key, final short[] defValue);
@@ -64,34 +64,34 @@ public interface A3ExtensiveBundle extends A3Bundle, Map<String, A3ExtensiveBund
         String[] getStringArray(final String key, final String[] defValue);
         BigInteger[] getBigIntegerArray(final String key, final BigInteger[] defValue);
         BigDecimal[] getBigDecimalArray(final String key, final BigDecimal[] defValue);
-        A3ExtensiveBundle[] get(final String key, final A3ExtensiveBundle[] defValue);
+        A3ExtMapBundle[] get(final String key, final A3ExtMapBundle[] defValue);
         <T extends Delegate> T[] getDelegateArray(final String key, final T[] defValue);
     }
 
-    A3ExtensiveBundle putByte(final String key, final byte value);
-    A3ExtensiveBundle putShort(final String key, final short value);
-    A3ExtensiveBundle putInt(final String key, final int value);
-    A3ExtensiveBundle putLong(final String key, final long value);
-    A3ExtensiveBundle putFloat(final String key, final float value);
-    A3ExtensiveBundle putDouble(final String key, final double value);
-    A3ExtensiveBundle putBoolean(final String key, final boolean value);
-    A3ExtensiveBundle putChar(final String key, final char value);
-    A3ExtensiveBundle putString(final String key, final String value);
-    A3ExtensiveBundle putBigInteger(final String key, final BigInteger value);
-    A3ExtensiveBundle putBigDecimal(final String key, final BigDecimal value);
-    <T extends Delegate> A3ExtensiveBundle putDelegate(final String key, final T value);
-    A3ExtensiveBundle putByteArray(final String key, final byte[] value);
-    A3ExtensiveBundle putShortArray(final String key, final short[] value);
-    A3ExtensiveBundle putIntArray(final String key, final int[] value);
-    A3ExtensiveBundle putLongArray(final String key, final long[] value);
-    A3ExtensiveBundle putFloatArray(final String key, final float[] value);
-    A3ExtensiveBundle putDoubleArray(final String key, final double[] value);
-    A3ExtensiveBundle putBooleanArray(final String key, final boolean[] value);
-    A3ExtensiveBundle putCharArray(final String key, final char[] value);
-    A3ExtensiveBundle putStringArray(final String key, final String[] value);
-    A3ExtensiveBundle putBigIntegerArray(final String key, final BigInteger[] value);
-    A3ExtensiveBundle putBigDecimalArray(final String key, final BigDecimal[] value);
-    <T extends Delegate> A3ExtensiveBundle putDelegateArray(final String key, final T[] value);
+    A3ExtMapBundle putByte(final String key, final byte value);
+    A3ExtMapBundle putShort(final String key, final short value);
+    A3ExtMapBundle putInt(final String key, final int value);
+    A3ExtMapBundle putLong(final String key, final long value);
+    A3ExtMapBundle putFloat(final String key, final float value);
+    A3ExtMapBundle putDouble(final String key, final double value);
+    A3ExtMapBundle putBoolean(final String key, final boolean value);
+    A3ExtMapBundle putChar(final String key, final char value);
+    A3ExtMapBundle putString(final String key, final String value);
+    A3ExtMapBundle putBigInteger(final String key, final BigInteger value);
+    A3ExtMapBundle putBigDecimal(final String key, final BigDecimal value);
+    <T extends Delegate> A3ExtMapBundle putDelegate(final String key, final T value);
+    A3ExtMapBundle putByteArray(final String key, final byte[] value);
+    A3ExtMapBundle putShortArray(final String key, final short[] value);
+    A3ExtMapBundle putIntArray(final String key, final int[] value);
+    A3ExtMapBundle putLongArray(final String key, final long[] value);
+    A3ExtMapBundle putFloatArray(final String key, final float[] value);
+    A3ExtMapBundle putDoubleArray(final String key, final double[] value);
+    A3ExtMapBundle putBooleanArray(final String key, final boolean[] value);
+    A3ExtMapBundle putCharArray(final String key, final char[] value);
+    A3ExtMapBundle putStringArray(final String key, final String[] value);
+    A3ExtMapBundle putBigIntegerArray(final String key, final BigInteger[] value);
+    A3ExtMapBundle putBigDecimalArray(final String key, final BigDecimal[] value);
+    <T extends Delegate> A3ExtMapBundle putDelegateArray(final String key, final T[] value);
 
     byte getByte(final String key, final byte defValue);
     short getShort(final String key, final short defValue);
@@ -104,7 +104,7 @@ public interface A3ExtensiveBundle extends A3Bundle, Map<String, A3ExtensiveBund
     String getString(final String key, final String defValue);
     BigInteger getBigInteger(final String key, final BigInteger defValue);
     BigDecimal getBigDecimal(final String key, final BigDecimal defValue);
-    A3ExtensiveBundle get(final String key, final A3ExtensiveBundle defValue);
+    A3ExtMapBundle get(final String key, final A3ExtMapBundle defValue);
     <T extends Delegate> T getDelegate(final String key, final T defValue);
     byte[] getByteArray(final String key, final byte[] defValue);
     short[] getShortArray(final String key, final short[] defValue);
@@ -117,16 +117,16 @@ public interface A3ExtensiveBundle extends A3Bundle, Map<String, A3ExtensiveBund
     String[] getStringArray(final String key, final String[] defValue);
     BigInteger[] getBigIntegerArray(final String key, final BigInteger[] defValue);
     BigDecimal[] getBigDecimalArray(final String key, final BigDecimal[] defValue);
-    A3ExtensiveBundle[] get(final String key, final A3ExtensiveBundle[] defValue);
+    A3ExtMapBundle[] get(final String key, final A3ExtMapBundle[] defValue);
     <T extends Delegate> T[] getDelegateArray(final String key, final T[] defValue);
 
     boolean contains(final String key);
-    A3ExtensiveBundle remove(final String key);
+    A3ExtMapBundle remove(final String key);
     void clear();
 
     String getKey();
     void setKey(final String key);
 
-    A3ExtensiveBundle get();
+    A3ExtMapBundle get();
 
 }

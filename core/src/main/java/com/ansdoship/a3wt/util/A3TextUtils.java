@@ -5,9 +5,9 @@ import java.util.List;
 
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
 
-public class A3CharSequences {
+public class A3TextUtils {
 
-    private A3CharSequences(){}
+    private A3TextUtils(){}
 
     public static char[] getChars(final CharSequence text) {
         return getChars(text, 0, text.length());
@@ -26,7 +26,7 @@ public class A3CharSequences {
         checkArgNotEmpty(text, "text");
         final List<CharSequence> lines = new ArrayList<>();
         int index = 0;
-        for (int i = 0; i < text.length(); i ++) {
+        for (int i = 0, length = text.length(); i < length; i ++) {
             if (text.charAt(i) == '\n') {
                 lines.add(text.subSequence(index, i));
                 if (i + 1 < text.length()) index = i + 1;
@@ -40,7 +40,7 @@ public class A3CharSequences {
         checkArgNotEmpty(text, "text");
         final List<char[]> lines = new ArrayList<>();
         int index = 0;
-        for (int i = 0; i < text.length(); i ++) {
+        for (int i = 0, length = text.length(); i < length; i ++) {
             if (text.charAt(i) == '\n') {
                 char[] line = new char[i - index];
                 for (int j = 0; j < line.length; j ++) {

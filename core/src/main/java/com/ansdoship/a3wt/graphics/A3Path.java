@@ -3,7 +3,7 @@ package com.ansdoship.a3wt.graphics;
 import com.ansdoship.a3wt.util.A3Copyable;
 import com.ansdoship.a3wt.util.A3Resetable;
 
-public interface A3Path extends A3Copyable<A3Path>, A3Boundable, A3Resetable {
+public interface A3Path extends A3Copyable<A3Path>, A3Boundable, A3Resetable<A3Path> {
 
     void close();
 
@@ -24,12 +24,13 @@ public interface A3Path extends A3Copyable<A3Path>, A3Boundable, A3Resetable {
     A3Path addLine(final float startX, final float startY, final float endX, final float endY);
     A3Path addLine(final A3Point startPos, final A3Point endPos);
     A3Path addLine(final A3Line line);
-    A3Path addQuadCurve(final float startX, final float startY, final float endX, final float endY, final float ctrlX, final float ctrlY);
-    A3Path addQuadCurve(final A3Point startPos, final A3Point endPos, final A3Point ctrlPos);
+    A3Path addQuadCurve(final float startX, final float startY, final float ctrlX, final float ctrlY, final float endX, final float endY);
+    A3Path addQuadCurve(final A3Point startPos, final A3Point ctrlPos, final A3Point endPos);
     A3Path addQuadCurve(final A3QuadCurve quadCurve);
-    A3Path addCubicCurve(final float startX, final float startY, final float endX, final float endY,
-                         final float ctrlX1, final float ctrlY1, final float ctrlX2, final float ctrlY2);
-    A3Path addCubicCurve(final A3Point startPos, final A3Point endPos, final A3Point ctrlPos1, final A3Point ctrlPos2);
+    A3Path addCubicCurve(final float startX, final float startY,
+                         final float ctrlX1, final float ctrlY1, final float ctrlX2, final float ctrlY2,
+                         final float endX, final float endY);
+    A3Path addCubicCurve(final A3Point startPos, final A3Point ctrlPos1, final A3Point ctrlPos2, final A3Point endPos);
     A3Path addCubicCurve(final A3CubicCurve cubicCurve);
     A3Path addOval(final float x, final float y, final float width, final float height);
     A3Path addOval(final A3Point pos, final A3Size size);

@@ -5,9 +5,9 @@ import java.math.BigInteger;
 
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
-public class A3Strings {
+public class A3StringUtils {
 
-    private A3Strings(){}
+    private A3StringUtils(){}
 
     public static byte[] parseByteArray(final String array) {
         final String[] strings = parseStringArray(array);

@@ -175,16 +175,18 @@ public class AWTA3Area implements A3Area {
     }
 
     @Override
-    public void set(final int x, final int y, final int width, final int height) {
+    public A3Area set(final int x, final int y, final int width, final int height) {
         rectangle.setRect(x, y, width, height);
+        return this;
     }
 
     @Override
-    public void set(final A3Coordinate pos, final A3Dimension size) {
+    public A3Area set(final A3Coordinate pos, final A3Dimension size) {
         checkArgNotNull(pos);
         checkArgNotNull(size);
         rectangle.setLocation(((AWTA3Coordinate)pos).point);
         rectangle.setSize(((AWTA3Dimension)size).dimension);
+        return this;
     }
 
     @Override
@@ -205,8 +207,9 @@ public class AWTA3Area implements A3Area {
     }
 
     @Override
-    public void reset() {
+    public A3Area reset() {
         rectangle.x = rectangle.y = rectangle.width = rectangle.height = 0;
+        return this;
     }
 
 }

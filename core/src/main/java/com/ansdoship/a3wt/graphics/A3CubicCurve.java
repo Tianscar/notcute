@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.graphics;
 
-import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+import com.ansdoship.a3wt.bundle.A3ExtMapBundle;
 
 public interface A3CubicCurve extends A3Shape<A3CubicCurve> {
 
@@ -34,8 +34,8 @@ public interface A3CubicCurve extends A3Shape<A3CubicCurve> {
     A3CubicCurve setCtrlPos1(final A3Point pos);
     A3CubicCurve setCtrlPos2(final A3Point pos);
 
-    void set(final A3Point startPos, final A3Point ctrlPos1, final A3Point ctrlPos2, final A3Point endPos);
-    void set(final float startX, final float startY,
+    A3CubicCurve set(final A3Point startPos, final A3Point ctrlPos1, final A3Point ctrlPos2, final A3Point endPos);
+    A3CubicCurve set(final float startX, final float startY,
              final float ctrlX1, final float ctrlY1,
              final float ctrlX2, final float ctrlY2,
              final float endX, final float endY);
@@ -50,7 +50,7 @@ public interface A3CubicCurve extends A3Shape<A3CubicCurve> {
     String KEY_END_Y = "endY";
 
     @Override
-    default void save(final A3ExtensiveBundle.Saver saver) {
+    default void save(final A3ExtMapBundle.Saver saver) {
         saver.putFloat(KEY_START_X, getStartX());
         saver.putFloat(KEY_START_Y, getStartY());
         saver.putFloat(KEY_CTRL_X1, getCtrlX1());
@@ -62,7 +62,7 @@ public interface A3CubicCurve extends A3Shape<A3CubicCurve> {
     }
 
     @Override
-    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+    default void restore(final A3ExtMapBundle.Restorer restorer) {
         set(restorer.getFloat(KEY_START_X, 0), restorer.getFloat(KEY_START_Y, 0),
                 restorer.getFloat(KEY_CTRL_X1, 0), restorer.getFloat(KEY_CTRL_Y1, 0),
                 restorer.getFloat(KEY_CTRL_X2, 0), restorer.getFloat(KEY_CTRL_Y2, 0),

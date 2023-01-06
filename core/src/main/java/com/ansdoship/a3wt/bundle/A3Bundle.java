@@ -9,6 +9,14 @@ import java.net.URL;
 
 public interface A3Bundle {
 
+    class Format {
+        private Format() {}
+        public static final int PROPERTIES = 0;
+        public static final int INI = 1;
+        public static final int XML = 2;
+        public static final int JSON = 3;
+    }
+
     boolean save(final File output, final int format);
     boolean save(final OutputStream output, final int format);
 
@@ -19,5 +27,7 @@ public interface A3Bundle {
 
     String[] getBundleReaderFormatNames();
     String[] getBundleWriterFormatNames();
+
+    boolean isConcurrent();
 
 }

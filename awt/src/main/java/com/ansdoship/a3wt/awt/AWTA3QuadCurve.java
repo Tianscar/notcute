@@ -147,16 +147,18 @@ public class AWTA3QuadCurve implements A3QuadCurve {
     }
 
     @Override
-    public void set(final float startX, final float startY, final float ctrlX, final float ctrlY, final float endX, final float endY) {
+    public A3QuadCurve set(final float startX, final float startY, final float ctrlX, final float ctrlY, final float endX, final float endY) {
         quadCurve2D.setCurve(startX, startY, ctrlX, ctrlY, endX, endY);
+        return this;
     }
 
     @Override
-    public void set(A3Point startPos, A3Point ctrlPos, A3Point endPos) {
+    public A3QuadCurve set(A3Point startPos, A3Point ctrlPos, A3Point endPos) {
         checkArgNotNull(startPos, "startPos");
         checkArgNotNull(ctrlPos, "ctrlPos");
         checkArgNotNull(endPos, "endPos");
         quadCurve2D.setCurve(((AWTA3Point)startPos).point2D, ((AWTA3Point)ctrlPos).point2D, ((AWTA3Point)endPos).point2D);
+        return this;
     }
 
     @Override
@@ -210,8 +212,9 @@ public class AWTA3QuadCurve implements A3QuadCurve {
     }
 
     @Override
-    public void reset() {
+    public A3QuadCurve reset() {
         quadCurve2D.setCurve(0, 0, 0, 0, 0, 0);
+        return this;
     }
 
 }

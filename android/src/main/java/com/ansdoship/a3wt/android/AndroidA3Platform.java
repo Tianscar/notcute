@@ -2,16 +2,13 @@ package com.ansdoship.a3wt.android;
 
 import android.os.Build;
 import com.ansdoship.a3wt.app.A3Platform;
-import com.ansdoship.a3wt.bundle.A3I18NBundle;
 import com.ansdoship.a3wt.util.A3Logger;
-import com.ansdoship.a3wt.bundle.DefaultA3I18NBundle;
 
 public class AndroidA3Platform implements A3Platform {
 
     protected static final AndroidA3Logger logger = new AndroidA3Logger();
-    protected static final DefaultA3I18NBundle i18NBundle = new DefaultA3I18NBundle();
 
-    public static final String BACKEND_NAME = "Android Native GUI";
+    public static final String BACKEND_NAME = "Android GUI";
 
     public static final int BASELINE_PPI = 160;
 
@@ -41,11 +38,6 @@ public class AndroidA3Platform implements A3Platform {
             return Build.SUPPORTED_ABIS[0];
         }
         else return Build.CPU_ABI;
-    }
-
-    @Override
-    public A3I18NBundle getI18NBundle() {
-        return i18NBundle;
     }
 
     @Override

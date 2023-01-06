@@ -50,9 +50,10 @@ public class DefaultA3FramedImage implements A3FramedImage {
     }
 
     @Override
-    public void setDuration(final long duration) {
+    public A3FramedImage setDuration(final long duration) {
         checkDisposed("Can't call setDuration() on a disposed A3FramedImage");
         get().setDuration(duration);
+        return this;
     }
 
     @Override
@@ -62,9 +63,10 @@ public class DefaultA3FramedImage implements A3FramedImage {
     }
 
     @Override
-    public void setHotSpotX(final int hotSpotX) {
+    public A3FramedImage setHotSpotX(final int hotSpotX) {
         checkDisposed("Can't call setHotSpotX() on a disposed A3FramedImage");
         get().setHotSpotX(hotSpotX);
+        return this;
     }
 
     @Override
@@ -74,9 +76,21 @@ public class DefaultA3FramedImage implements A3FramedImage {
     }
 
     @Override
-    public void setHotSpotY(final int hotSpotY) {
+    public A3FramedImage setHotSpotY(final int hotSpotY) {
         checkDisposed("Can't call setHotSpotY() on a disposed A3FramedImage");
         get().setHotSpotY(hotSpotY);
+        return this;
+    }
+
+    @Override
+    public A3Coordinate getHotSpot() {
+        return get().getHotSpot();
+    }
+
+    @Override
+    public A3FramedImage setHotSpot(final A3Coordinate hotSpot) {
+        get().setHotSpot(hotSpot);
+        return this;
     }
 
     @Override
@@ -86,25 +100,16 @@ public class DefaultA3FramedImage implements A3FramedImage {
     }
 
     @Override
-    public A3Image copy(final int type) {
-        checkDisposed("Can't call copy() on a disposed A3FramedImage");
-        final DefaultA3FramedImage copy = new DefaultA3FramedImage();
-        for (final A3Image frame : frames) {
-            copy.add(frame.copy(type));
-        }
-        return copy;
-    }
-
-    @Override
     public int getIndex() {
         checkDisposed("Can't call getIndex() on a disposed A3FramedImage");
         return index;
     }
 
     @Override
-    public void setIndex(final int index) {
+    public A3FramedImage setIndex(final int index) {
         checkDisposed("Can't call setIndex() on a disposed A3FramedImage");
         this.index = index;
+        return this;
     }
 
     @Override
@@ -113,8 +118,9 @@ public class DefaultA3FramedImage implements A3FramedImage {
     }
 
     @Override
-    public void setLooping(final int loops) {
+    public A3FramedImage setLooping(final int loops) {
         this.loops = loops;
+        return this;
     }
 
     @Override
@@ -166,9 +172,10 @@ public class DefaultA3FramedImage implements A3FramedImage {
     }
 
     @Override
-    public void setPixel(final int x, final int y, final int color) {
+    public A3FramedImage setPixel(final int x, final int y, final int color) {
         checkDisposed("Can't call setPixel() on a disposed A3FramedImage");
         get().setPixel(x, y, color);
+        return this;
     }
 
     @Override
@@ -178,16 +185,27 @@ public class DefaultA3FramedImage implements A3FramedImage {
     }
 
     @Override
-    public void setPixels(final int[] pixels, final int offset, final int stride, final int x, final int y, final int width, final int height) {
+    public A3FramedImage setPixels(final int[] pixels, final int offset, final int stride, final int x, final int y, final int width, final int height) {
         checkDisposed("Can't call setPixels() on a disposed A3FramedImage");
         get().setPixels(pixels, offset, stride, x, y, width, height);
+        return this;
     }
 
     @Override
-    public A3Image copy() {
+    public A3FramedImage copy() {
         checkDisposed("Can't call copy() on a disposed A3FramedImage");
         final DefaultA3FramedImage copy = new DefaultA3FramedImage();
         to(copy);
+        return copy;
+    }
+
+    @Override
+    public A3FramedImage copy(final int type) {
+        checkDisposed("Can't call copy() on a disposed A3FramedImage");
+        final DefaultA3FramedImage copy = new DefaultA3FramedImage();
+        for (final A3Image frame : frames) {
+            copy.add(frame.copy(type));
+        }
         return copy;
     }
 

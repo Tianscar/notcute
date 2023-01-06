@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.graphics;
 
-import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+import com.ansdoship.a3wt.bundle.A3ExtMapBundle;
 
 public interface A3Arc extends A3Shape<A3Arc> {
 
@@ -42,9 +42,9 @@ public interface A3Arc extends A3Shape<A3Arc> {
     A3Arc setSweepAngle(final float sweepAngle);
     A3Arc setUseCenter(final boolean useCenter);
 
-    void set(final float x, final float y, final float width, final float height, final float startAngle, final float sweepAngle, final boolean useCenter);
-    void set(final A3Point pos, final A3Size size, final float startAngle, final float sweepAngle, final boolean useCenter);
-    void set(final A3Rect rect, final float startAngle, final float sweepAngle, final boolean useCenter);
+    A3Arc set(final float x, final float y, final float width, final float height, final float startAngle, final float sweepAngle, final boolean useCenter);
+    A3Arc set(final A3Point pos, final A3Size size, final float startAngle, final float sweepAngle, final boolean useCenter);
+    A3Arc set(final A3Rect rect, final float startAngle, final float sweepAngle, final boolean useCenter);
 
     String KEY_X = "x";
     String KEY_Y = "y";
@@ -55,7 +55,7 @@ public interface A3Arc extends A3Shape<A3Arc> {
     String KEY_USE_CENTER = "useCenter";
 
     @Override
-    default void save(final A3ExtensiveBundle.Saver saver) {
+    default void save(final A3ExtMapBundle.Saver saver) {
         saver.putFloat(KEY_X, getX());
         saver.putFloat(KEY_Y, getY());
         saver.putFloat(KEY_WIDTH, getWidth());
@@ -66,7 +66,7 @@ public interface A3Arc extends A3Shape<A3Arc> {
     }
 
     @Override
-    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+    default void restore(final A3ExtMapBundle.Restorer restorer) {
         set(restorer.getFloat(KEY_X, 0), restorer.getFloat(KEY_Y, 0),
                 restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0),
                 restorer.getFloat(KEY_START_ANGLE, 0), restorer.getFloat(KEY_SWEEP_ANGLE, 0),

@@ -6,13 +6,8 @@ import com.ansdoship.a3wt.graphics.A3Font;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3InputListener;
-import com.ansdoship.a3wt.media.A3Audio;
 import com.ansdoship.a3wt.util.A3Math;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import java.awt.Image;
 import java.awt.DisplayMode;
 import java.awt.Toolkit;
@@ -43,8 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -156,7 +149,7 @@ public class A3AWTUtils {
         }
     }
 
-    public static int AWTFontStyle2FontStyle(final int style) {
+    public static int awtFontStyle2FontStyle(final int style) {
         if (style == 0) return Font.PLAIN;
         boolean bold = false;
         boolean italic = false;
@@ -168,7 +161,7 @@ public class A3AWTUtils {
         else return Font.PLAIN;
     }
 
-    public static int fontStyle2AWTFontStyle(final int style) {
+    public static int fontStyle2awtFontStyle(final int style) {
         switch (style) {
             case A3Font.Style.NORMAL:
                 return Font.PLAIN;
@@ -489,7 +482,7 @@ public class A3AWTUtils {
         }
     }
 
-    public static int AWTKeyLocation2KeyLocation(final int keyLocation) {
+    public static int awtKeyLocation2KeyLocation(final int keyLocation) {
         switch (keyLocation) {
             case KeyEvent.KEY_LOCATION_STANDARD:
                 return A3InputListener.KeyLocation.STANDARD;
@@ -504,7 +497,7 @@ public class A3AWTUtils {
         }
     }
 
-    public static int keyLocation2AWTKeyLocation(final int keyLocation) {
+    public static int keyLocation2awtKeyLocation(final int keyLocation) {
         switch (keyLocation) {
             case A3InputListener.KeyLocation.STANDARD:
                 return KeyEvent.KEY_LOCATION_STANDARD;
@@ -534,7 +527,7 @@ public class A3AWTUtils {
         checkArgNotNull(e, "event");
         boolean result;
         for (A3InputListener listener : listeners) {
-            result = listener.keyDown(e.getExtendedKeyCode(), AWTKeyLocation2KeyLocation(e.getKeyLocation()));
+            result = listener.keyDown(e.getExtendedKeyCode(), awtKeyLocation2KeyLocation(e.getKeyLocation()));
             if (result) break;
         }
     }
@@ -544,7 +537,7 @@ public class A3AWTUtils {
         checkArgNotNull(e, "event");
         boolean result;
         for (A3InputListener listener : listeners) {
-            result = listener.keyUp(e.getExtendedKeyCode(), AWTKeyLocation2KeyLocation(e.getKeyLocation()));
+            result = listener.keyUp(e.getExtendedKeyCode(), awtKeyLocation2KeyLocation(e.getKeyLocation()));
             if (result) break;
         }
     }
@@ -570,7 +563,7 @@ public class A3AWTUtils {
                 Toolkit.getDefaultToolkit().createCustomCursor(image, hotSpot, name);
     }
 
-    public static int AWTCursorType2CursorType(final int type) {
+    public static int awtCursorType2CursorType(final int type) {
         switch (type) {
             case Cursor.DEFAULT_CURSOR:
                 return A3Cursor.Type.ARROW;
@@ -605,7 +598,7 @@ public class A3AWTUtils {
         }
     }
 
-    public static int cursorType2AWTCursorType(final int type) {
+    public static int cursorType2awtCursorType(final int type) {
         switch (type) {
             case A3Cursor.Type.ARROW:
                 return Cursor.DEFAULT_CURSOR;
@@ -637,107 +630,6 @@ public class A3AWTUtils {
                 return Cursor.MOVE_CURSOR;
             default:
                 return -1;
-        }
-    }
-
-    public static AudioFileFormat.Type getAudioFileTypeFromExtension(final String extension) {
-        checkArgNotNull(extension, "extension");
-        for (AudioFileFormat.Type type : AudioSystem.getAudioFileTypes()) {
-            if (type.toString().equalsIgnoreCase(extension) || type.getExtension().equalsIgnoreCase(extension)) return type;
-        }
-        return null;
-    }
-
-    public static AudioFormat audioFormat2AWTAudioFormat(final A3Audio.Format format) {
-        checkArgNotNull(format, "format");
-        return new AudioFormat(new AudioFormat.Encoding(format.getEncoding()), format.getSampleRate(), format.getSampleSizeInBits(),
-                format.getChannels(), format.getFrameSize(), format.getFrameRate(), format.isBigEndian(), format.properties());
-    }
-
-    public static A3Audio.Format AWTAudioFormat2AudioFormat(final AudioFormat format) {
-        checkArgNotNull(format, "format");
-        return new A3Audio.DefaultFormat(format.getEncoding().toString(), format.getSampleRate(), format.getSampleSizeInBits(),
-                format.getChannels(), format.getFrameSize(), format.getFrameRate(), format.isBigEndian(), format.properties());
-    }
-
-    public static AudioInputStream getDecodedAudioInputStream(AudioInputStream stream) {
-        checkArgNotNull(stream, "stream");
-        final AudioFormat sourceFormat = stream.getFormat();
-        if (sourceFormat.getFrameSize() == -1 || sourceFormat.getSampleSizeInBits() == -1) {
-            final AudioFormat targetFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(),
-                    16, sourceFormat.getChannels(),
-                    sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
-            stream = AudioSystem.getAudioInputStream(targetFormat, stream);
-        }
-        return stream;
-    }
-
-    public static long getDecodedAudioInputStreamLength(AudioInputStream stream) {
-        checkArgNotNull(stream, "stream");
-        final AudioFormat sourceFormat = stream.getFormat();
-        if (sourceFormat.getFrameSize() == -1 || sourceFormat.getSampleSizeInBits() == -1) {
-            stream = getDecodedAudioInputStream(stream);
-        }
-        try {
-            long length = 0;
-            int n;
-            final byte[] buffer = new byte[8192];
-            while ((n = stream.read(buffer, 0, 8192)) != -1) {
-                length += n;
-            }
-            return length;
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static long getDecodedAudioInputStreamLengthAndClose(final AudioInputStream stream) {
-        try {
-            return getDecodedAudioInputStreamLength(stream);
-        }
-        finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static Object[] getDecodedAudioInputStreamData(AudioInputStream stream, final String algorithm) {
-        checkArgNotNull(stream, "stream");
-        checkArgNotNull(algorithm, "algorithm");
-        final AudioFormat sourceFormat = stream.getFormat();
-        if (sourceFormat.getFrameSize() == -1 || sourceFormat.getSampleSizeInBits() == -1) {
-            stream = getDecodedAudioInputStream(stream);
-        }
-        try {
-            final MessageDigest md = MessageDigest.getInstance(algorithm);
-            long length = 0;
-            int n;
-            final byte[] buffer = new byte[8192];
-            while ((n = stream.read(buffer, 0, 8192)) != -1) {
-                md.update(buffer, 0, n);
-                length += n;
-            }
-            return new Object[]{length, md.digest()};
-        }
-        catch (IOException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static Object[] getDecodedAudioInputStreamDataAndClose(final AudioInputStream stream, final String algorithm) {
-        try {
-            return getDecodedAudioInputStreamData(stream, algorithm);
-        }
-        finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -786,7 +678,7 @@ public class A3AWTUtils {
         return result;
     }
 
-    public static List<A3Image> AWTImages2A3Images(final List<Image> images) {
+    public static List<A3Image> awtImages2A3Images(final List<Image> images) {
         checkArgNotEmpty(images, "images");
         final List<A3Image> result = new ArrayList<>(images.size());
         for (final Image image : images) {

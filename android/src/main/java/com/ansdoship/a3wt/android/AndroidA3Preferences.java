@@ -2,12 +2,14 @@ package com.ansdoship.a3wt.android;
 
 import android.content.SharedPreferences;
 import com.ansdoship.a3wt.app.A3Preferences;
+import com.ansdoship.a3wt.util.A3Arrays;
+import com.ansdoship.a3wt.util.A3StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
 
-import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
-import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+import static com.ansdoship.a3wt.util.A3Preconditions.*;
 
 public class AndroidA3Preferences implements A3Preferences {
 
@@ -39,7 +41,6 @@ public class AndroidA3Preferences implements A3Preferences {
     @Override
     public A3Preferences putByte(final String key, final byte value) {
         checkArgNotNull(key, "key");
-        checkArgNotNull(value, "value");
         editor.putInt(key, value);
         return this;
     }
@@ -47,7 +48,6 @@ public class AndroidA3Preferences implements A3Preferences {
     @Override
     public A3Preferences putShort(final String key, final short value) {
         checkArgNotNull(key, "key");
-        checkArgNotNull(value, "value");
         editor.putInt(key, value);
         return this;
     }
@@ -55,7 +55,6 @@ public class AndroidA3Preferences implements A3Preferences {
     @Override
     public A3Preferences putInt(final String key, final int value) {
         checkArgNotNull(key, "key");
-        checkArgNotNull(value, "value");
         editor.putInt(key, value);
         return this;
     }
@@ -63,7 +62,6 @@ public class AndroidA3Preferences implements A3Preferences {
     @Override
     public A3Preferences putLong(final String key, final long value) {
         checkArgNotNull(key, "key");
-        checkArgNotNull(value, "value");
         editor.putLong(key, value);
         return this;
     }
@@ -71,7 +69,6 @@ public class AndroidA3Preferences implements A3Preferences {
     @Override
     public A3Preferences putFloat(final String key, final float value) {
         checkArgNotNull(key, "key");
-        checkArgNotNull(value, "value");
         editor.putFloat(key, value);
         return this;
     }
@@ -79,7 +76,6 @@ public class AndroidA3Preferences implements A3Preferences {
     @Override
     public A3Preferences putDouble(final String key, final double value) {
         checkArgNotNull(key, "key");
-        checkArgNotNull(value, "value");
         editor.putString(key, Double.toString(value));
         return this;
     }
@@ -87,7 +83,6 @@ public class AndroidA3Preferences implements A3Preferences {
     @Override
     public A3Preferences putBoolean(final String key, final boolean value) {
         checkArgNotNull(key, "key");
-        checkArgNotNull(value, "value");
         editor.putBoolean(key, value);
         return this;
     }
@@ -95,7 +90,6 @@ public class AndroidA3Preferences implements A3Preferences {
     @Override
     public A3Preferences putChar(final String key, final char value) {
         checkArgNotNull(key, "key");
-        checkArgNotNull(value, "value");
         editor.putInt(key, value);
         return this;
     }
@@ -121,6 +115,94 @@ public class AndroidA3Preferences implements A3Preferences {
         checkArgNotNull(key, "key");
         checkArgNotNull(value, "value");
         editor.putString(key, value.toPlainString());
+        return this;
+    }
+
+    @Override
+    public A3Preferences putByteArray(final String key, final byte[] value) {
+        checkArgNotNull(key, "key");
+        checkArgNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putShortArray(final String key, final short[] value) {
+        checkArgNotNull(key, "key");
+        checkArgNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putIntArray(final String key, final int[] value) {
+        checkArgNotNull(key, "key");
+        checkArgNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putLongArray(final String key, final long[] value) {
+        checkArgNotNull(key, "key");
+        checkArgNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putFloatArray(final String key, final float[] value) {
+        checkArgNotNull(key, "key");
+        checkArgNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putDoubleArray(final String key, final double[] value) {
+        checkArgNotNull(key, "key");
+        checkArgNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putBooleanArray(final String key, final boolean[] value) {
+        checkArgNotNull(key, "key");
+        checkArgNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putCharArray(final String key, final char[] value) {
+        checkArgNotNull(key, "key");
+        checkArgNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putStringArray(final String key, final String[] value) {
+        checkArgNotNull(key, "key");
+        checkArgElementsNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putBigIntegerArray(final String key, final BigInteger[] value) {
+        checkArgNotNull(key, "key");
+        checkArgElementsNotNull(value, "value");
+        editor.putString(key, Arrays.toString(value));
+        return this;
+    }
+
+    @Override
+    public A3Preferences putBigDecimalArray(final String key, final BigDecimal[] value) {
+        checkArgNotNull(key, "key");
+        checkArgElementsNotNull(value, "value");
+        editor.putString(key, A3Arrays.toPlainString(value));
         return this;
     }
 
@@ -187,8 +269,86 @@ public class AndroidA3Preferences implements A3Preferences {
 
     @Override
     public BigDecimal getBigDecimal(final String key, final BigDecimal defValue) {
+        checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
         return value == null ? defValue : new BigDecimal(value);
+    }
+
+    @Override
+    public byte[] getByteArray(final String key, final byte[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseByteArray(value);
+    }
+
+    @Override
+    public short[] getShortArray(final String key, final short[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseShortArray(value);
+    }
+
+    @Override
+    public int[] getIntArray(final String key, final int[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseIntArray(value);
+    }
+
+    @Override
+    public long[] getLongArray(final String key, final long[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseLongArray(value);
+    }
+
+    @Override
+    public float[] getFloatArray(final String key, final float[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseFloatArray(value);
+    }
+
+    @Override
+    public double[] getDoubleArray(final String key, final double[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseDoubleArray(value);
+    }
+
+    @Override
+    public boolean[] getBooleanArray(final String key, final boolean[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseBooleanArray(value);
+    }
+
+    @Override
+    public char[] getCharArray(final String key, final char[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseCharArray(value);
+    }
+
+    @Override
+    public String[] getStringArray(final String key, final String[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseStringArray(value);
+    }
+
+    @Override
+    public BigInteger[] getBigIntegerArray(final String key, final BigInteger[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseBigIntegerArray(value);
+    }
+
+    @Override
+    public BigDecimal[] getBigDecimalArray(final String key, final BigDecimal[] defValue) {
+        checkArgNotNull(key, "key");
+        final String value = sharedPreferences.getString(key, null);
+        return value == null ? defValue : A3StringUtils.parseBigDecimalArray(value);
     }
 
     @Override
@@ -216,8 +376,9 @@ public class AndroidA3Preferences implements A3Preferences {
     }
 
     @Override
-    public void apply() {
+    public A3Preferences apply() {
         editor.apply();
+        return this;
     }
 
 }

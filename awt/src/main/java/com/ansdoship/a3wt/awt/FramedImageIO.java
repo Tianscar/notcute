@@ -1,6 +1,7 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.graphics.A3FramedImage;
+import com.ansdoship.a3wt.graphics.A3Image;
 
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
@@ -37,7 +38,13 @@ public final class FramedImageIO {
         for (final FIIOServiceProvider provider : FIIORegistry.getServiceProviders()) {
             image = provider.read(input);
             if (image != null) {
-                image.setTypeAll(type);
+                A3Image frame;
+                for (int i = 0, size = image.size(); i < size; i ++) {
+                    frame = image.get(i);
+                    if (frame.getType() != type) {
+                        image.set(i, frame.copy(type));
+                    }
+                }
                 break;
             }
         }

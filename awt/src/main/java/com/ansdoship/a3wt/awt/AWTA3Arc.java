@@ -259,19 +259,22 @@ public class AWTA3Arc implements A3Arc {
     }
 
     @Override
-    public void set(final float x, final float y, final float width, final float height,
+    public A3Arc set(final float x, final float y, final float width, final float height,
                     final float startAngle, final float sweepAngle, final boolean useCenter) {
         arc2D.setArc(x, y, width, height, startAngle, sweepAngle, useCenter ? Arc2D.PIE : Arc2D.OPEN);
+        return this;
     }
 
     @Override
-    public void set(final A3Point pos, final A3Size size, final float startAngle, final float sweepAngle, final boolean useCenter) {
+    public A3Arc set(final A3Point pos, final A3Size size, final float startAngle, final float sweepAngle, final boolean useCenter) {
         arc2D.setArc(((AWTA3Point)pos).point2D, ((AWTA3Size)size).dimension2D, startAngle, sweepAngle, useCenter ? Arc2D.PIE : Arc2D.OPEN);
+        return this;
     }
 
     @Override
-    public void set(final A3Rect rect, final float startAngle, final float sweepAngle, final boolean useCenter) {
+    public A3Arc set(final A3Rect rect, final float startAngle, final float sweepAngle, final boolean useCenter) {
         arc2D.setArc(((AWTA3Rect)rect).rectangle2D, startAngle, sweepAngle, useCenter ? Arc2D.PIE : Arc2D.OPEN);
+        return this;
     }
 
     @Override
@@ -325,8 +328,9 @@ public class AWTA3Arc implements A3Arc {
     }
 
     @Override
-    public void reset() {
+    public A3Arc reset() {
         arc2D.setArc(0, 0, 0, 0, 0, 0, Arc2D.OPEN);
+        return this;
     }
 
 }

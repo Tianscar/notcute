@@ -4,6 +4,8 @@ import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Clipboard;
+import com.ansdoship.a3wt.bundle.A3BundleKit;
+import com.ansdoship.a3wt.bundle.DefaultA3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -35,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMousePressed;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonMouseReleased;
@@ -125,8 +126,7 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
 
         protected static final AWTA3Platform platform = new AWTA3Platform();
         protected static final AWTA3GraphicsKit graphicsKit = new AWTA3GraphicsKit();
-        protected static final AWTA3MediaKit mediaKit = new AWTA3MediaKit();
-        protected static final AWTA3MediaPlayer mediaPlayer = new AWTA3MediaPlayer();
+        protected static final DefaultA3BundleKit bundleKit = new DefaultA3BundleKit();
 
         @Override
         public A3Context getContext() {
@@ -144,13 +144,8 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         }
 
         @Override
-        public AWTA3MediaKit getMediaKit() {
-            return mediaKit;
-        }
-
-        @Override
-        public AWTA3MediaPlayer getMediaPlayer() {
-            return mediaPlayer;
+        public A3BundleKit getBundleKit() {
+            return bundleKit;
         }
 
         protected final Map<String, AWTA3Preferences> preferencesMap = new ConcurrentHashMap<>();
@@ -207,7 +202,6 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         }
 
         protected final A3AWTCanvas canvas;
-        protected final ReentrantLock bufferLock = new ReentrantLock(true);
 
         public A3AWTCanvasHandle(final A3AWTCanvas canvas) {
             checkArgNotNull(canvas, "canvas");
@@ -326,78 +320,44 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         @Override
         public void update() {
             canvas.checkDisposed("Can't call update() on a disposed A3Context");
-            bufferLock.lock();
-            try {
-                final long time = System.currentTimeMillis();
-                if (!canvas.isDisposed() && canvas.getBufferStrategy() == null) canvas.createBufferStrategy(2);
-                final BufferStrategy bufferStrategy = canvas.getBufferStrategy();
-                if (bufferStrategy != null) do {
-                    do {
-                        final Graphics g = bufferStrategy.getDrawGraphics();
-                        try {
-                            renderOffscreen(g, false);
-                        }
-                        finally {
-                            g.dispose();
-                        }
-                        try {
-                            bufferStrategy.show();
-                        }
-                        catch (final Exception e) {
-                            break;
-                        }
-                        finally {
-                            Toolkit.getDefaultToolkit().sync();
-                        }
-                    } while (bufferStrategy.contentsRestored());
-                } while (bufferStrategy.contentsLost());
-                final long now = System.currentTimeMillis();
-                elapsed = now - time;
-            }
-            finally {
-                bufferLock.unlock();
-            }
+            final long time = System.currentTimeMillis();
+            if (!canvas.isDisposed() && canvas.getBufferStrategy() == null) canvas.createBufferStrategy(2);
+            final BufferStrategy bufferStrategy = canvas.getBufferStrategy();
+            if (bufferStrategy != null) do {
+                do {
+                    final Graphics g = bufferStrategy.getDrawGraphics();
+                    renderOffscreen(g, false);
+                    g.dispose();
+                    bufferStrategy.show();
+                    Toolkit.getDefaultToolkit().sync();
+                } while (bufferStrategy.contentsRestored());
+            } while (bufferStrategy.contentsLost());
+            final long now = System.currentTimeMillis();
+            elapsed = now - time;
         }
 
         @Override
         public A3Image updateAndSnapshot() {
             canvas.checkDisposed("Can't call snapshot() on a disposed A3Context");
-            bufferLock.lock();
-            try {
-                final long time = System.currentTimeMillis();
-                final BufferedImage bufferedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-                final Graphics2D g2d = bufferedImage.createGraphics();
-                renderOffscreen(g2d, true);
-                g2d.dispose();
-                if (!canvas.isDisposed() && canvas.getBufferStrategy() == null) canvas.createBufferStrategy(2);
-                final BufferStrategy bufferStrategy = canvas.getBufferStrategy();
-                if (bufferStrategy != null) do {
-                    do {
-                        final Graphics g = bufferStrategy.getDrawGraphics();
-                        try {
-                            g.drawImage(bufferedImage, 0, 0, null);
-                        }
-                        finally {
-                            g.dispose();
-                        }
-                        try {
-                            bufferStrategy.show();
-                        }
-                        catch (final Exception e) {
-                            break;
-                        }
-                        finally {
-                            Toolkit.getDefaultToolkit().sync();
-                        }
-                    } while (bufferStrategy.contentsRestored());
-                } while (bufferStrategy.contentsLost());
-                final long now = System.currentTimeMillis();
-                elapsed = now - time;
-                return new AWTA3Image(bufferedImage);
-            }
-            finally {
-                bufferLock.unlock();
-            }
+            final long time = System.currentTimeMillis();
+            final BufferedImage bufferedImage = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+            final Graphics2D g2d = bufferedImage.createGraphics();
+            renderOffscreen(g2d, true);
+            g2d.dispose();
+            if (!canvas.isDisposed() && canvas.getBufferStrategy() == null) canvas.createBufferStrategy(2);
+            final BufferStrategy bufferStrategy = canvas.getBufferStrategy();
+            if (bufferStrategy != null) do {
+                do {
+                    final Graphics g = bufferStrategy.getDrawGraphics();
+                    g.drawImage(bufferedImage, 0, 0, null);
+                    g.dispose();
+                    bufferStrategy.show();
+                    Toolkit.getDefaultToolkit().sync();
+                } while (bufferStrategy.contentsRestored());
+            } while (bufferStrategy.contentsLost());
+            final long now = System.currentTimeMillis();
+            elapsed = now - time;
+            return new AWTA3Image(bufferedImage);
         }
 
         @Override
@@ -493,6 +453,14 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         @Override
         public A3Clipboard getSelection() {
             return selection;
+        }
+
+        protected static final Map<String, A3Clipboard> applicationClipboards = new ConcurrentHashMap<>();
+        @Override
+        public A3Clipboard createClipboard(final String name) {
+            checkArgNotEmpty(name, "name");
+            if (!applicationClipboards.containsKey(name)) applicationClipboards.putIfAbsent(name, new AWTA3Clipboard(name));
+            return applicationClipboards.get(name);
         }
 
         protected volatile AWTA3Cursor cursor = AWTA3Cursor.getDefaultCursor();

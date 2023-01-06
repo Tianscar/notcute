@@ -12,6 +12,7 @@ import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Context;
 import com.ansdoship.a3wt.app.A3Container;
+import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -19,8 +20,6 @@ import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3InputListener;
-import com.ansdoship.a3wt.media.A3MediaKit;
-import com.ansdoship.a3wt.media.A3MediaPlayer;
 
 import java.io.File;
 import java.util.List;
@@ -62,6 +61,11 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     protected static class A3AndroidActivityHandle implements A3Context.Handle, A3Container.Handle {
 
         @Override
+        public A3Context getContext() {
+            return activity.surfaceView.handle.getContext();
+        }
+
+        @Override
         public A3Platform getPlatform() {
             return activity.surfaceView.handle.getPlatform();
         }
@@ -72,13 +76,8 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public A3MediaKit getMediaKit() {
-            return null;
-        }
-
-        @Override
-        public A3MediaPlayer getMediaPlayer() {
-            return null;
+        public A3BundleKit getBundleKit() {
+            return activity.surfaceView.handle.getBundleKit();
         }
 
         @Override
@@ -93,22 +92,22 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
 
         @Override
         public int getMinScreenWidth() {
-            return 0;
+            return activity.surfaceView.handle.getMinScreenWidth();
         }
 
         @Override
         public int getMinScreenHeight() {
-            return 0;
+            return activity.surfaceView.handle.getMinScreenHeight();
         }
 
         @Override
         public int getMaxScreenWidth() {
-            return 0;
+            return activity.surfaceView.handle.getMaxScreenWidth();
         }
 
         @Override
         public int getMaxScreenHeight() {
-            return 0;
+            return activity.surfaceView.handle.getMaxScreenHeight();
         }
 
         @Override
@@ -173,8 +172,8 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public void paint(final A3Graphics graphics) {
-            activity.surfaceView.handle.paint(graphics);
+        public void paint(final A3Graphics graphics, final boolean snapshot) {
+            activity.surfaceView.handle.paint(graphics, snapshot);
         }
 
         @Override
@@ -184,8 +183,8 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public A3Image snapshot() {
-            return activity.surfaceView.handle.snapshot();
+        public A3Image updateAndSnapshot() {
+            return activity.surfaceView.handle.updateAndSnapshot();
         }
 
         @Override
@@ -196,6 +195,11 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         @Override
         public void addContextListener(final A3ContextListener listener) {
             activity.surfaceView.handle.addContextListener(listener);
+        }
+
+        @Override
+        public A3Container getContainer() {
+            return activity;
         }
 
         @Override
@@ -296,6 +300,11 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         @Override
         public A3Clipboard getSelection() {
             return activity.surfaceView.handle.getSelection();
+        }
+
+        @Override
+        public A3Clipboard createClipboard(final String name) {
+            return activity.surfaceView.handle.createClipboard(name);
         }
 
         @Override

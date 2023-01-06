@@ -6,6 +6,7 @@ import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -13,8 +14,6 @@ import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3InputListener;
-import com.ansdoship.a3wt.media.A3MediaKit;
-import com.ansdoship.a3wt.media.A3MediaPlayer;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -50,7 +49,7 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyPressed;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyReleased;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.A3Images2BufferedImages;
-import static com.ansdoship.a3wt.awt.A3AWTUtils.AWTImages2A3Images;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.awtImages2A3Images;
 
 public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener,
         MouseInputListener, MouseWheelListener, KeyListener {
@@ -123,7 +122,7 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
 
         @Override
         public List<A3Image> getIconImages() {
-            return AWTImages2A3Images(dialog.getIconImages());
+            return awtImages2A3Images(dialog.getIconImages());
         }
 
         @Override
@@ -142,13 +141,8 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
-        public A3MediaKit getMediaKit() {
-            return dialog.canvas.handle.getMediaKit();
-        }
-
-        @Override
-        public A3MediaPlayer getMediaPlayer() {
-            return dialog.canvas.handle.getMediaPlayer();
+        public A3BundleKit getBundleKit() {
+            return dialog.canvas.handle.getBundleKit();
         }
 
         @Override
@@ -361,6 +355,11 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         @Override
         public A3Clipboard getSelection() {
             return dialog.canvas.handle.getSelection();
+        }
+
+        @Override
+        public A3Clipboard createClipboard(final String name) {
+            return dialog.canvas.handle.createClipboard(name);
         }
 
         @Override

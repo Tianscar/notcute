@@ -188,19 +188,21 @@ public class AWTA3CubicCurve implements A3CubicCurve {
     }
 
     @Override
-    public void set(final A3Point startPos, final A3Point ctrlPos1, final A3Point ctrlPos2, final A3Point endPos) {
+    public A3CubicCurve set(final A3Point startPos, final A3Point ctrlPos1, final A3Point ctrlPos2, final A3Point endPos) {
         checkArgNotNull(startPos, "startPos");
         checkArgNotNull(ctrlPos1, "ctrlPos1");
         checkArgNotNull(ctrlPos2, "ctrlPos2");
         checkArgNotNull(endPos, "endPos");
         cubicCurve2D.setCurve(((AWTA3Point)startPos).point2D, ((AWTA3Point)ctrlPos1).point2D,
                 ((AWTA3Point)ctrlPos2).point2D, ((AWTA3Point)endPos).point2D);
+        return this;
     }
 
     @Override
-    public void set(final float startX, final float startY, final float ctrlX1, final float ctrlY1,
+    public A3CubicCurve set(final float startX, final float startY, final float ctrlX1, final float ctrlY1,
                     final float ctrlX2, final float ctrlY2, final float endX, final float endY) {
         cubicCurve2D.setCurve(startX, startY, ctrlX1, ctrlY1, ctrlX2, ctrlY2, endX, endY);
+        return this;
     }
 
     @Override
@@ -254,8 +256,9 @@ public class AWTA3CubicCurve implements A3CubicCurve {
     }
 
     @Override
-    public void reset() {
+    public A3CubicCurve reset() {
         cubicCurve2D.setCurve(0, 0, 0, 0, 0, 0, 0, 0);
+        return this;
     }
 
 }

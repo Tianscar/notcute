@@ -55,9 +55,9 @@ public interface A3Preferences {
 
     boolean contains(final String key);
     A3Preferences remove(final String key);
-    void clear();
+    A3Preferences clear();
 
     boolean commit();
-    void apply();
+    A3Preferences apply();
 
 }

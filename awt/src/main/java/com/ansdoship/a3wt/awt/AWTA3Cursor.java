@@ -6,7 +6,7 @@ import com.ansdoship.a3wt.graphics.A3Image;
 import java.awt.Cursor;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.createCustomCursor;
-import static com.ansdoship.a3wt.awt.A3AWTUtils.cursorType2AWTCursorType;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.cursorType2awtCursorType;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AWTA3Cursor implements A3Cursor {
@@ -33,7 +33,7 @@ public class AWTA3Cursor implements A3Cursor {
             cursor = A3AWTUtils.getGoneCursor();
         }
         else {
-            final int type0 = cursorType2AWTCursorType(type);
+            final int type0 = cursorType2awtCursorType(type);
             cursor = Cursor.getPredefinedCursor(type0 == -1 ? Cursor.DEFAULT_CURSOR : type0);
         }
     }

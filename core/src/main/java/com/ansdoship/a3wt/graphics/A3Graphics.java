@@ -7,9 +7,9 @@ import com.ansdoship.a3wt.util.A3Resetable;
 import static com.ansdoship.a3wt.util.A3Colors.BLACK;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
-public interface A3Graphics extends A3Disposable, A3Resetable {
+public interface A3Graphics extends A3Disposable, A3Resetable<A3Graphics> {
 
-    interface Data extends A3Copyable<Data>, A3Resetable {
+    interface Data extends A3Copyable<Data>, A3Resetable<Data> {
         A3Rect getClipBounds();
         void getClipBounds(final A3Rect bounds);
 
@@ -17,47 +17,47 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         void getClipRect(final A3Rect rect);
         A3Path getClipPath();
         void getClipPath(final A3Path path);
-        void setClipRect(final A3Rect rect);
-        void setClipPath(final A3Path path);
+        Data setClipRect(final A3Rect rect);
+        Data setClipPath(final A3Path path);
 
         A3Transform getTransform();
         void getTransform(final A3Transform transform);
-        void setTransform(final A3Transform transform);
+        Data setTransform(final A3Transform transform);
 
         int getColor();
-        void setColor(final int color);
+        Data setColor(final int color);
 
         int getStyle();
-        void setStyle(final int style);
+        Data setStyle(final int style);
 
         float getStrokeWidth();
-        void setStrokeWidth(final float width);
+        Data setStrokeWidth(final float width);
 
         int getStrokeJoin();
-        void setStrokeJoin(final int join);
+        Data setStrokeJoin(final int join);
 
         int getStrokeCap();
-        void setStrokeCap(final int cap);
+        Data setStrokeCap(final int cap);
 
         float getStrokeMiter();
-        void setStrokeMiter(final float miter);
+        Data setStrokeMiter(final float miter);
 
-        void setFont(final A3Font font);
+        Data setFont(final A3Font font);
         A3Font getFont();
-        void setTextSize(final float size);
+        Data setTextSize(final float size);
         float getTextSize();
 
-        void setAntiAlias(final boolean antiAlias);
+        Data setAntiAlias(final boolean antiAlias);
         boolean isAntiAlias();
-        void setFilterImage(final boolean filterImage);
+        Data setFilterImage(final boolean filterImage);
         boolean isFilterImage();
-        void setSubpixelText(final boolean subpixelText);
+        Data setSubpixelText(final boolean subpixelText);
         boolean isSubpixelText();
-        void setUnderlineText(final boolean underlineText);
+        Data setUnderlineText(final boolean underlineText);
         boolean isUnderlineText();
-        void setStrikeThroughText(final boolean strikeThroughText);
+        Data setStrikeThroughText(final boolean strikeThroughText);
         boolean isStrikeThroughText();
-        void setDither(final boolean dither);
+        Data setDither(final boolean dither);
         boolean isDither();
     }
 
@@ -109,9 +109,10 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setClipPath(final A3Path path) {
+        public Data setClipPath(final A3Path path) {
             this.clipPath = path == null ? null : path.copy();
             this.clipRect = null;
+            return this;
         }
 
         @Override
@@ -125,9 +126,10 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setClipRect(final A3Rect rect) {
+        public Data setClipRect(final A3Rect rect) {
             this.clipRect = rect == null ? null : rect.copy();
             this.clipPath = null;
+            return this;
         }
 
         @Override
@@ -141,8 +143,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setTransform(final A3Transform transform) {
+        public Data setTransform(final A3Transform transform) {
             this.transform = transform == null ? null : transform.copy();
+            return this;
         }
 
         @Override
@@ -151,8 +154,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setColor(final int color) {
+        public Data setColor(final int color) {
             this.color = color;
+            return this;
         }
 
         @Override
@@ -161,8 +165,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setStyle(final int style) {
+        public Data setStyle(final int style) {
             this.style = style;
+            return this;
         }
 
         @Override
@@ -171,8 +176,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setStrokeWidth(final float width) {
+        public Data setStrokeWidth(final float width) {
             this.strokeWidth = width;
+            return this;
         }
 
         @Override
@@ -181,8 +187,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setStrokeJoin(final int join) {
+        public Data setStrokeJoin(final int join) {
             this.strokeJoin = join;
+            return this;
         }
 
         @Override
@@ -191,8 +198,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setStrokeCap(final int cap) {
+        public Data setStrokeCap(final int cap) {
             this.strokeCap = cap;
+            return this;
         }
 
         @Override
@@ -201,8 +209,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setStrokeMiter(final float miter) {
+        public Data setStrokeMiter(final float miter) {
             this.strokeMiter = miter;
+            return this;
         }
 
         @Override
@@ -211,8 +220,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setFont(final A3Font font) {
+        public Data setFont(final A3Font font) {
             this.font = font;
+            return this;
         }
 
         @Override
@@ -221,8 +231,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setTextSize(final float size) {
+        public Data setTextSize(final float size) {
             this.textSize = size;
+            return this;
         }
 
         @Override
@@ -231,8 +242,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setAntiAlias(final boolean antiAlias) {
+        public Data setAntiAlias(final boolean antiAlias) {
             this.antiAlias = antiAlias;
+            return this;
         }
 
         @Override
@@ -241,8 +253,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setFilterImage(final boolean filterImage) {
+        public Data setFilterImage(final boolean filterImage) {
             this.filterImage = filterImage;
+            return this;
         }
 
         @Override
@@ -251,8 +264,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setSubpixelText(final boolean subpixelText) {
+        public Data setSubpixelText(final boolean subpixelText) {
             this.subpixelText = subpixelText;
+            return this;
         }
 
         @Override
@@ -261,8 +275,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setUnderlineText(final boolean underlineText) {
+        public Data setUnderlineText(final boolean underlineText) {
             this.underlineText = underlineText;
+            return this;
         }
 
         @Override
@@ -271,8 +286,9 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setStrikeThroughText(final boolean strikeThroughText) {
+        public Data setStrikeThroughText(final boolean strikeThroughText) {
             this.strikeThroughText = strikeThroughText;
+            return this;
         }
 
         @Override
@@ -281,12 +297,13 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
         }
 
         @Override
-        public void setDither(final boolean dither) {
+        public Data setDither(final boolean dither) {
             this.dither = dither;
+            return this;
         }
 
         @Override
-        public void reset() {
+        public Data reset() {
             setClipRect(null);
             setClipPath(null);
             setTransform(null);
@@ -304,6 +321,7 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
             setUnderlineText(false);
             setStrikeThroughText(false);
             setDither(true);
+            return this;
         }
 
         @Override
@@ -401,18 +419,27 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
     void drawRoundRect(final A3Point pos, final A3Size size, final A3Size corner);
     void drawRoundRect(final A3Rect rect, final A3Size corner);
     void drawRoundRect(final A3RoundRect roundRect);
-    void drawText(final CharSequence text, final float x, final float y);
+    default void drawText(final CharSequence text, final float x, final float y) {
+        drawText(text, 0, text.length(), x, y);
+    }
+    void drawText(final CharSequence text, final int start, final int end, final float x, final float y);
     void drawText(final char[] text, final int offset, final int length, final float x, final float y);
 
     default float measureText(final CharSequence text) {
         return measureText(text, 0, text.length());
     }
-    float measureText(final CharSequence text, final int offset, final int length);
+    float measureText(final CharSequence text, final int start, final int end);
     float measureText(final char[] text, final int offset, final int length);
     A3Font.Metrics getFontMetrics();
     void getFontMetrics(final A3Font.Metrics metrics);
-    A3Rect getTextBounds(final CharSequence text);
-    void getTextBounds(final CharSequence text, final A3Rect bounds);
+    default A3Rect getTextBounds(final CharSequence text) {
+        return getTextBounds(text, 0, text.length());
+    }
+    A3Rect getTextBounds(final CharSequence text, final int start, final int end);
+    default void getTextBounds(final CharSequence text, final A3Rect bounds) {
+        getTextBounds(text, 0, text.length(), bounds);
+    }
+    void getTextBounds(final CharSequence text, final int start, final int end, final A3Rect bounds);
     A3Rect getTextBounds(final char[] text, final int offset, final int length);
     void getTextBounds(final char[] text, final int offset, final int length, final A3Rect bounds);
 
@@ -423,49 +450,52 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
     A3Path getClipPath();
     void getClipPath(final A3Path path);
 
-    void setClipRect(final float x, final float y, final float width, final float height);
-    void setClipRect(final A3Point pos, final A3Size size);
-    void setClipRect(final A3Rect rect);
-    void setClipPath(final A3Path path);
+    A3Graphics setClipRect(final float x, final float y, final float width, final float height);
+    A3Graphics setClipRect(final A3Point pos, final A3Size size);
+    A3Graphics setClipRect(final A3Rect rect);
+    A3Graphics setClipPath(final A3Path path);
 
     A3Transform getTransform();
     void getTransform(final A3Transform transform);
-    void setTransform(final A3Transform transform);
+    A3Graphics setTransform(final A3Transform transform);
+    A3Graphics setTransform(final float[] matrixValues);
+    A3Graphics setTransform(final float sx, final float kx, final float dx,
+                                final float ky, final float sy, final float dy);
 
     int getColor();
-    void setColor(final int color);
+    A3Graphics setColor(final int color);
 
     int getStyle();
-    void setStyle(final int style);
+    A3Graphics setStyle(final int style);
 
     float getStrokeWidth();
-    void setStrokeWidth(final float strokeWidth);
+    A3Graphics setStrokeWidth(final float strokeWidth);
 
     int getStrokeJoin();
-    void setStrokeJoin(final int join);
+    A3Graphics setStrokeJoin(final int join);
 
     int getStrokeCap();
-    void setStrokeCap(final int cap);
+    A3Graphics setStrokeCap(final int cap);
 
     float getStrokeMiter();
-    void setStrokeMiter(final float miter);
+    A3Graphics setStrokeMiter(final float miter);
 
-    void setFont(final A3Font font);
+    A3Graphics setFont(final A3Font font);
     A3Font getFont();
-    void setTextSize(final float size);
+    A3Graphics setTextSize(final float size);
     float getTextSize();
 
-    void setAntiAlias(final boolean antiAlias);
+    A3Graphics setAntiAlias(final boolean antiAlias);
     boolean isAntiAlias();
-    void setFilterImage(final boolean filterImage);
+    A3Graphics setFilterImage(final boolean filterImage);
     boolean isFilterImage();
-    void setSubpixelText(final boolean subpixelText);
+    A3Graphics setSubpixelText(final boolean subpixelText);
     boolean isSubpixelText();
-    void setUnderlineText(final boolean underlineText);
+    A3Graphics setUnderlineText(final boolean underlineText);
     boolean isUnderlineText();
-    void setStrikeThroughText(final boolean strikeThroughText);
+    A3Graphics setStrikeThroughText(final boolean strikeThroughText);
     boolean isStrikeThroughText();
-    void setDither(final boolean dither);
+    A3Graphics setDither(final boolean dither);
     boolean isDither();
 
     void save();
@@ -473,6 +503,6 @@ public interface A3Graphics extends A3Disposable, A3Resetable {
     void apply();
 
     Data getData();
-    void setData(final Data data);
+    A3Graphics setData(final Data data);
 
 }

@@ -40,8 +40,9 @@ public class AWTA3Size implements A3Size {
     }
 
     @Override
-    public void set(final float width, final float height) {
+    public A3Size set(final float width, final float height) {
         dimension2D.setSize(width, height);
+        return this;
     }
 
     @Override
@@ -62,8 +63,9 @@ public class AWTA3Size implements A3Size {
     }
 
     @Override
-    public void reset() {
+    public A3Size reset() {
         dimension2D.setSize(0, 0);
+        return this;
     }
 
 }

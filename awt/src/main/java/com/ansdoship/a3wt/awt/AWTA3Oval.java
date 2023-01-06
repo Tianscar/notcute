@@ -1,9 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.graphics.A3Oval;
-import com.ansdoship.a3wt.graphics.A3Point;
-import com.ansdoship.a3wt.graphics.A3Rect;
-import com.ansdoship.a3wt.graphics.A3Size;
+import com.ansdoship.a3wt.graphics.*;
 
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
@@ -60,6 +57,12 @@ public class AWTA3Oval implements A3Oval {
     @Override
     public A3Point getPos() {
         return new AWTA3Point(new Point2D.Float(ellipse2D.x, ellipse2D.y));
+    }
+
+    @Override
+    public void getPos(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(ellipse2D.x, ellipse2D.y);
     }
 
     @Override
@@ -178,18 +181,20 @@ public class AWTA3Oval implements A3Oval {
     }
 
     @Override
-    public void set(final float x, final float y, final float width, final float height) {
+    public A3Oval set(final float x, final float y, final float width, final float height) {
         ellipse2D.setFrame(x, y, width, height);
+        return this;
     }
 
     @Override
-    public void set(final A3Point pos, final A3Size size) {
+    public A3Oval set(final A3Point pos, final A3Size size) {
         checkArgNotNull(pos, "pos");
         checkArgNotNull(size, "size");
         ellipse2D.x = pos.getX();
         ellipse2D.y = pos.getY();
         ellipse2D.width = size.getWidth();
         ellipse2D.height = size.getHeight();
+        return this;
     }
 
     @Override
@@ -241,8 +246,9 @@ public class AWTA3Oval implements A3Oval {
     }
 
     @Override
-    public void reset() {
+    public A3Oval reset() {
         ellipse2D.x = ellipse2D.y = ellipse2D.width = ellipse2D.height = 0;
+        return this;
     }
 
 }

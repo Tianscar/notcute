@@ -6,7 +6,7 @@ import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Container;
 import com.ansdoship.a3wt.app.A3Context;
-import com.ansdoship.a3wt.graphics.A3Color;
+import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
@@ -14,8 +14,6 @@ import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3InputListener;
-import com.ansdoship.a3wt.media.A3MediaKit;
-import com.ansdoship.a3wt.media.A3MediaPlayer;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -49,7 +47,7 @@ import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyTyped;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyPressed;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.commonKeyReleased;
 import static com.ansdoship.a3wt.awt.A3AWTUtils.A3Images2BufferedImages;
-import static com.ansdoship.a3wt.awt.A3AWTUtils.AWTImages2A3Images;
+import static com.ansdoship.a3wt.awt.A3AWTUtils.awtImages2A3Images;
 
 public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListener, WindowListener, WindowFocusListener,
         MouseInputListener, MouseWheelListener, KeyListener {
@@ -122,7 +120,7 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
 
         @Override
         public List<A3Image> getIconImages() {
-            return AWTImages2A3Images(frame.getIconImages());
+            return awtImages2A3Images(frame.getIconImages());
         }
 
         @Override
@@ -141,13 +139,8 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
         }
 
         @Override
-        public A3MediaKit getMediaKit() {
-            return frame.canvas.handle.getMediaKit();
-        }
-
-        @Override
-        public A3MediaPlayer getMediaPlayer() {
-            return frame.canvas.handle.getMediaPlayer();
+        public A3BundleKit getBundleKit() {
+            return frame.canvas.handle.getBundleKit();
         }
 
         @Override
@@ -225,12 +218,12 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
         }
 
         @Override
-        public A3Color getBackgroundColor() {
+        public int getBackgroundColor() {
             return frame.canvas.handle.getBackgroundColor();
         }
 
         @Override
-        public void setBackgroundColor(final A3Color color) {
+        public void setBackgroundColor(final int color) {
             frame.canvas.handle.setBackgroundColor(color);
         }
 
@@ -358,6 +351,11 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
         @Override
         public A3Clipboard getSelection() {
             return frame.canvas.handle.getSelection();
+        }
+
+        @Override
+        public A3Clipboard createClipboard(final String name) {
+            return frame.canvas.handle.createClipboard(name);
         }
 
         @Override

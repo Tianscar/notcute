@@ -1,6 +1,6 @@
 package com.ansdoship.a3wt.graphics;
 
-import com.ansdoship.a3wt.bundle.A3ExtensiveBundle;
+import com.ansdoship.a3wt.bundle.A3ExtMapBundle;
 
 public interface A3Line extends A3Shape<A3Line> {
 
@@ -20,8 +20,8 @@ public interface A3Line extends A3Shape<A3Line> {
     A3Line setStartPos(final A3Point pos);
     A3Line setEndPos(final A3Point pos);
 
-    void set(final float startX, final float startY, final float endX, final float endY);
-    void set(final A3Point startPos, final A3Point endPos);
+    A3Line set(final float startX, final float startY, final float endX, final float endY);
+    A3Line set(final A3Point startPos, final A3Point endPos);
 
     String KEY_START_X = "startX";
     String KEY_START_Y = "startY";
@@ -29,7 +29,7 @@ public interface A3Line extends A3Shape<A3Line> {
     String KEY_END_Y = "endY";
 
     @Override
-    default void save(final A3ExtensiveBundle.Saver saver) {
+    default void save(final A3ExtMapBundle.Saver saver) {
         saver.putFloat(KEY_START_X, getStartX());
         saver.putFloat(KEY_START_Y, getStartY());
         saver.putFloat(KEY_END_X, getEndX());
@@ -37,7 +37,7 @@ public interface A3Line extends A3Shape<A3Line> {
     }
 
     @Override
-    default void restore(final A3ExtensiveBundle.Restorer restorer) {
+    default void restore(final A3ExtMapBundle.Restorer restorer) {
         set(restorer.getFloat(KEY_START_X, 0), restorer.getFloat(KEY_START_Y, 0),
                 restorer.getFloat(KEY_END_X, 0), restorer.getFloat(KEY_END_Y, 0));
     }

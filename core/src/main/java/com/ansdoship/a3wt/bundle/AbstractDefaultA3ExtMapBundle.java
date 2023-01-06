@@ -12,7 +12,41 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public class DefaultA3SectionalMapBundle implements A3SectionalMapBundle {
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
+
+public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
+
+    protected static class Element {
+        protected final Object element;
+        public Element(final A3ExtMapBundle element) {
+            this.element = element;
+        }
+        public Object getElement() {
+            return element;
+        }
+        public Element(final String element) {
+            this.element = element;
+        }
+        public Element(final Delegate element) {
+            this.element = element;
+        }
+        public boolean isExtMapBundle() {
+            return element instanceof A3ExtMapBundle;
+        }
+        public boolean isString() {
+            return element instanceof String;
+        }
+        public boolean isDelegate() {
+            return element instanceof Delegate;
+        }
+    }
+
+    protected final Map<String, Element> map;
+
+    protected AbstractDefaultA3ExtMapBundle(final Map<String, Element> map) {
+        checkArgNotNull(map, "map");
+        this.map = map;
+    }
 
     @Override
     public boolean save(File output, int format) {
@@ -55,112 +89,122 @@ public class DefaultA3SectionalMapBundle implements A3SectionalMapBundle {
     }
 
     @Override
-    public A3MapBundle putByte(String key, byte value) {
+    public A3ExtMapBundle putByte(String key, byte value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putShort(String key, short value) {
+    public A3ExtMapBundle putShort(String key, short value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putInt(String key, int value) {
+    public A3ExtMapBundle putInt(String key, int value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putLong(String key, long value) {
+    public A3ExtMapBundle putLong(String key, long value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putFloat(String key, float value) {
+    public A3ExtMapBundle putFloat(String key, float value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putDouble(String key, double value) {
+    public A3ExtMapBundle putDouble(String key, double value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putBoolean(String key, boolean value) {
+    public A3ExtMapBundle putBoolean(String key, boolean value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putChar(String key, char value) {
+    public A3ExtMapBundle putChar(String key, char value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putString(String key, String value) {
+    public A3ExtMapBundle putString(String key, String value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putBigInteger(String key, BigInteger value) {
+    public A3ExtMapBundle putBigInteger(String key, BigInteger value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putBigDecimal(String key, BigDecimal value) {
+    public A3ExtMapBundle putBigDecimal(String key, BigDecimal value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putByteArray(String key, byte[] value) {
+    public <T extends Delegate> A3ExtMapBundle putDelegate(String key, T value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putShortArray(String key, short[] value) {
+    public A3ExtMapBundle putByteArray(String key, byte[] value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putIntArray(String key, int[] value) {
+    public A3ExtMapBundle putShortArray(String key, short[] value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putLongArray(String key, long[] value) {
+    public A3ExtMapBundle putIntArray(String key, int[] value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putFloatArray(String key, float[] value) {
+    public A3ExtMapBundle putLongArray(String key, long[] value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putDoubleArray(String key, double[] value) {
+    public A3ExtMapBundle putFloatArray(String key, float[] value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putBooleanArray(String key, boolean[] value) {
+    public A3ExtMapBundle putDoubleArray(String key, double[] value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putCharArray(String key, char[] value) {
+    public A3ExtMapBundle putBooleanArray(String key, boolean[] value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putStringArray(String key, String[] value) {
+    public A3ExtMapBundle putCharArray(String key, char[] value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putBigIntegerArray(String key, BigInteger[] value) {
+    public A3ExtMapBundle putStringArray(String key, String[] value) {
         return null;
     }
 
     @Override
-    public A3MapBundle putBigDecimalArray(String key, BigDecimal[] value) {
+    public A3ExtMapBundle putBigIntegerArray(String key, BigInteger[] value) {
+        return null;
+    }
+
+    @Override
+    public A3ExtMapBundle putBigDecimalArray(String key, BigDecimal[] value) {
+        return null;
+    }
+
+    @Override
+    public <T extends Delegate> A3ExtMapBundle putDelegateArray(String key, T[] value) {
         return null;
     }
 
@@ -220,6 +264,16 @@ public class DefaultA3SectionalMapBundle implements A3SectionalMapBundle {
     }
 
     @Override
+    public A3ExtMapBundle get(String key, A3ExtMapBundle defValue) {
+        return null;
+    }
+
+    @Override
+    public <T extends Delegate> T getDelegate(String key, T defValue) {
+        return null;
+    }
+
+    @Override
     public byte[] getByteArray(String key, byte[] defValue) {
         return new byte[0];
     }
@@ -275,12 +329,22 @@ public class DefaultA3SectionalMapBundle implements A3SectionalMapBundle {
     }
 
     @Override
+    public A3ExtMapBundle[] get(String key, A3ExtMapBundle[] defValue) {
+        return new A3ExtMapBundle[0];
+    }
+
+    @Override
+    public <T extends Delegate> T[] getDelegateArray(String key, T[] defValue) {
+        return null;
+    }
+
+    @Override
     public boolean contains(String key) {
         return false;
     }
 
     @Override
-    public A3MapBundle remove(String key) {
+    public A3ExtMapBundle remove(String key) {
         return null;
     }
 
@@ -305,22 +369,22 @@ public class DefaultA3SectionalMapBundle implements A3SectionalMapBundle {
     }
 
     @Override
-    public A3MapBundle get(Object key) {
+    public A3ExtMapBundle get(Object key) {
         return null;
     }
 
     @Override
-    public A3MapBundle put(String key, A3MapBundle value) {
+    public A3ExtMapBundle put(String key, A3ExtMapBundle value) {
         return null;
     }
 
     @Override
-    public A3MapBundle remove(Object key) {
+    public A3ExtMapBundle remove(Object key) {
         return null;
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends A3MapBundle> m) {
+    public void putAll(Map<? extends String, ? extends A3ExtMapBundle> m) {
 
     }
 
@@ -335,12 +399,12 @@ public class DefaultA3SectionalMapBundle implements A3SectionalMapBundle {
     }
 
     @Override
-    public Collection<A3MapBundle> values() {
+    public Collection<A3ExtMapBundle> values() {
         return null;
     }
 
     @Override
-    public Set<Entry<String, A3MapBundle>> entrySet() {
+    public Set<Entry<String, A3ExtMapBundle>> entrySet() {
         return null;
     }
 
@@ -355,13 +419,7 @@ public class DefaultA3SectionalMapBundle implements A3SectionalMapBundle {
     }
 
     @Override
-    public A3MapBundle get(String key, A3MapBundle defValue) {
+    public A3ExtMapBundle get() {
         return null;
     }
-
-    @Override
-    public A3MapBundle get() {
-        return null;
-    }
-
 }

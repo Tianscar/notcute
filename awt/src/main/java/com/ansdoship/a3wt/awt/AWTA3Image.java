@@ -1,8 +1,10 @@
 package com.ansdoship.a3wt.awt;
 
+import com.ansdoship.a3wt.graphics.A3Coordinate;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3Image;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import static com.ansdoship.a3wt.awt.A3AWTUtils.bufferedImageType2ImageType;
@@ -51,10 +53,11 @@ public class AWTA3Image implements A3Image {
     }
 
     @Override
-    public void setDuration(final long duration) {
+    public A3Image setDuration(final long duration) {
         checkDisposed("Can't call setDuration() on a disposed A3Image");
         checkArgRangeMin(duration, 0, true, "duration");
         this.duration = duration;
+        return this;
     }
 
     @Override
@@ -64,9 +67,10 @@ public class AWTA3Image implements A3Image {
     }
 
     @Override
-    public void setHotSpotX(final int hotSpotX) {
+    public A3Image setHotSpotX(final int hotSpotX) {
         checkDisposed("Can't call setHotSpotX() on a disposed A3Image");
         this.hotSpotX = hotSpotX;
+        return this;
     }
 
     @Override
@@ -76,9 +80,22 @@ public class AWTA3Image implements A3Image {
     }
 
     @Override
-    public void setHotSpotY(final int hotSpotY) {
+    public A3Image setHotSpotY(final int hotSpotY) {
         checkDisposed("Can't call setHotSpotY() on a disposed A3Image");
         this.hotSpotY = hotSpotY;
+        return this;
+    }
+
+    @Override
+    public A3Coordinate getHotSpot() {
+        return new AWTA3Coordinate(new Point(hotSpotX, hotSpotY));
+    }
+
+    @Override
+    public A3Image setHotSpot(final A3Coordinate hotSpot) {
+        hotSpotX = hotSpot.getX();
+        hotSpotY = hotSpot.getY();
+        return this;
     }
 
     @Override
@@ -106,9 +123,10 @@ public class AWTA3Image implements A3Image {
     }
 
     @Override
-    public void setPixel(final int x, final int y, final int color) {
+    public A3Image setPixel(final int x, final int y, final int color) {
         checkDisposed("Can't call setPixel() on a disposed A3Image");
         bufferedImage.setRGB(x, y, color);
+        return this;
     }
 
     @Override
@@ -119,10 +137,11 @@ public class AWTA3Image implements A3Image {
     }
 
     @Override
-    public void setPixels(final int[] pixels, final int offset, final int stride, final int x, final int y, final int width, final int height) {
+    public A3Image setPixels(final int[] pixels, final int offset, final int stride, final int x, final int y, final int width, final int height) {
         checkArgNotNull(pixels, "pixels");
         checkDisposed("Can't call setPixels() on a disposed A3Image");
         bufferedImage.setRGB(x, y, width, height, pixels, offset, stride);
+        return this;
     }
 
     @Override
@@ -155,18 +174,20 @@ public class AWTA3Image implements A3Image {
 
     @Override
     public A3Image copy(final int type) {
-        checkDisposed("Can't call setType() on a disposed A3Image");
+        checkDisposed("Can't call copy() on a disposed A3Image");
         return new AWTA3Image(getImage(bufferedImage, imageType2BufferedImageType(type)));
     }
 
     public void setBufferedImage(final BufferedImage bufferedImage) {
         checkArgNotNull(bufferedImage, "bufferedImage");
+        checkDisposed("Can't call setBufferedImage() on a disposed AWTA3Image");
         this.bufferedImage = bufferedImage;
         setGraphics(new AWTA3Graphics(this.bufferedImage));
     }
 
     public void setGraphics(final AWTA3Graphics graphics) {
         checkArgNotNull(graphics, "graphics");
+        checkDisposed("Can't call setGraphics() on a disposed AWTA3Image");
         this.graphics.dispose();
         this.graphics = graphics;
     }
@@ -174,6 +195,7 @@ public class AWTA3Image implements A3Image {
     @Override
     public void to(final A3Image dst) {
         checkArgNotNull(dst, "dst");
+        checkDisposed("Can't call to() on a disposed A3Image");
         final AWTA3Image dst0 = (AWTA3Image) dst;
         dst0.bufferedImage = A3AWTUtils.copyBufferedImage(bufferedImage);
         if (graphics != null) dst0.createGraphics().setData(graphics.data);
@@ -185,6 +207,7 @@ public class AWTA3Image implements A3Image {
     @Override
     public void from(final A3Image src) {
         checkArgNotNull(src, "src");
+        checkDisposed("Can't call from() on a disposed A3Image");
         src.to(this);
     }
 
