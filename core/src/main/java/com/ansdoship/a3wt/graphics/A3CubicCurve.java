@@ -69,4 +69,9 @@ public interface A3CubicCurve extends A3Shape<A3CubicCurve> {
                 restorer.getFloat(KEY_END_X, 0), restorer.getFloat(KEY_END_Y, 0));
     }
 
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3CubicCurve.class;
+    }
+
 }

@@ -376,9 +376,8 @@ public class AndroidA3Preferences implements A3Preferences {
     }
 
     @Override
-    public A3Preferences apply() {
+    public void apply() {
         editor.apply();
-        return this;
     }
 
 }

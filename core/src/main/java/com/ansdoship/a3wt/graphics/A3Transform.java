@@ -87,4 +87,9 @@ public interface A3Transform extends A3Copyable<A3Transform>, A3Resetable<A3Tran
                 restorer.getFloat(KEY_SKEW_Y, 0), restorer.getFloat(KEY_SCALE_Y, 1), restorer.getFloat(KEY_TRANSLATE_Y, 0));
     }
 
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Transform.class;
+    }
+
 }

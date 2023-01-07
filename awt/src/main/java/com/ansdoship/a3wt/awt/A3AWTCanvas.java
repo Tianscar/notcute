@@ -10,6 +10,19 @@ import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
 import com.ansdoship.a3wt.graphics.A3GraphicsKit;
 import com.ansdoship.a3wt.graphics.A3Image;
+import com.ansdoship.a3wt.graphics.A3Arc;
+import com.ansdoship.a3wt.graphics.A3Line;
+import com.ansdoship.a3wt.graphics.A3QuadCurve;
+import com.ansdoship.a3wt.graphics.A3CubicCurve;
+import com.ansdoship.a3wt.graphics.A3Coordinate;
+import com.ansdoship.a3wt.graphics.A3Point;
+import com.ansdoship.a3wt.graphics.A3Area;
+import com.ansdoship.a3wt.graphics.A3Rect;
+import com.ansdoship.a3wt.graphics.A3Oval;
+import com.ansdoship.a3wt.graphics.A3RoundRect;
+import com.ansdoship.a3wt.graphics.A3Dimension;
+import com.ansdoship.a3wt.graphics.A3Size;
+import com.ansdoship.a3wt.graphics.A3Transform;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 
@@ -127,6 +140,21 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         protected static final AWTA3Platform platform = new AWTA3Platform();
         protected static final AWTA3GraphicsKit graphicsKit = new AWTA3GraphicsKit();
         protected static final DefaultA3BundleKit bundleKit = new DefaultA3BundleKit();
+        static {
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Arc.class, graphicsKit::createArc);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Area.class, graphicsKit::createArea);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Coordinate.class, graphicsKit::createCoordinate);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3CubicCurve.class, graphicsKit::createCubicCurve);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Dimension.class, graphicsKit::createDimension);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Line.class, graphicsKit::createLine);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Oval.class, graphicsKit::createOval);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Point.class, graphicsKit::createPoint);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3QuadCurve.class, graphicsKit::createQuadCurve);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Rect.class, graphicsKit::createRect);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3RoundRect.class, graphicsKit::createRoundRect);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Size.class, graphicsKit::createSize);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Transform.class, graphicsKit::createTransform);
+        }
 
         @Override
         public A3Context getContext() {

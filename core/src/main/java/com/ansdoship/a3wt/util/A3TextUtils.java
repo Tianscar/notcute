@@ -29,7 +29,7 @@ public class A3TextUtils {
         for (int i = 0, length = text.length(); i < length; i ++) {
             if (text.charAt(i) == '\n') {
                 lines.add(text.subSequence(index, i));
-                if (i + 1 < text.length()) index = i + 1;
+                if (i + 1 <= text.length()) index = i + 1;
             }
         }
         lines.add(text.subSequence(index, text.length()));

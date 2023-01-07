@@ -50,9 +50,5 @@ public interface A3KeyValueBundle extends A3Bundle {
     String[] getStringArray(final String key, final String[] defValue);
     BigInteger[] getBigIntegerArray(final String key, final BigInteger[] defValue);
     BigDecimal[] getBigDecimalArray(final String key, final BigDecimal[] defValue);
-
-    boolean contains(final String key);
-    A3KeyValueBundle remove(final String key);
-    void clear();
     
 }

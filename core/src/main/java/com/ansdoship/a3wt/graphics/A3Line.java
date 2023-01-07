@@ -41,5 +41,10 @@ public interface A3Line extends A3Shape<A3Line> {
         set(restorer.getFloat(KEY_START_X, 0), restorer.getFloat(KEY_START_Y, 0),
                 restorer.getFloat(KEY_END_X, 0), restorer.getFloat(KEY_END_Y, 0));
     }
+
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Line.class;
+    }
     
 }

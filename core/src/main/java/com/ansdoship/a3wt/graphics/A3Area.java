@@ -58,5 +58,10 @@ public interface A3Area extends A3Copyable<A3Area>, A3Resetable<A3Area>, A3ExtMa
         set(restorer.getInt(KEY_X, 0), restorer.getInt(KEY_Y, 0),
                 restorer.getInt(KEY_WIDTH, 0), restorer.getInt(KEY_HEIGHT, 0));
     }
-    
+
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Area.class;
+    }
+
 }

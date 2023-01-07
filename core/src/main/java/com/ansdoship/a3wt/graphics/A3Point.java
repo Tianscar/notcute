@@ -28,4 +28,9 @@ public interface A3Point extends A3Copyable<A3Point>, A3Resetable<A3Point>, A3Ex
         set(restorer.getFloat(KEY_X, 0), restorer.getFloat(KEY_Y, 0));
     }
 
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Point.class;
+    }
+
 }

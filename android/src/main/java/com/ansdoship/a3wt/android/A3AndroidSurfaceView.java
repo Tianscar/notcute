@@ -20,10 +20,7 @@ import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.bundle.DefaultA3BundleKit;
-import com.ansdoship.a3wt.graphics.A3Cursor;
-import com.ansdoship.a3wt.graphics.A3Graphics;
-import com.ansdoship.a3wt.graphics.A3GraphicsKit;
-import com.ansdoship.a3wt.graphics.A3Image;
+import com.ansdoship.a3wt.graphics.*;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 import com.ansdoship.a3wt.util.A3Maps;
@@ -75,6 +72,21 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         protected static final AndroidA3Platform platform = new AndroidA3Platform();
         protected static final AndroidA3GraphicsKit graphicsKit = new AndroidA3GraphicsKit();
         protected static final DefaultA3BundleKit bundleKit = new DefaultA3BundleKit();
+        static {
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Arc.class, graphicsKit::createArc);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Area.class, graphicsKit::createArea);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Coordinate.class, graphicsKit::createCoordinate);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3CubicCurve.class, graphicsKit::createCubicCurve);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Dimension.class, graphicsKit::createDimension);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Line.class, graphicsKit::createLine);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Oval.class, graphicsKit::createOval);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Point.class, graphicsKit::createPoint);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3QuadCurve.class, graphicsKit::createQuadCurve);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Rect.class, graphicsKit::createRect);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3RoundRect.class, graphicsKit::createRoundRect);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Size.class, graphicsKit::createSize);
+            bundleKit.getExtMapBundleDelegateMappings().put(A3Transform.class, graphicsKit::createTransform);
+        }
 
         @Override
         public A3Context getContext() {

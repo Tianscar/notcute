@@ -2,8 +2,6 @@ package com.ansdoship.a3wt.bundle;
 
 public interface A3BundleKit {
 
-    A3I18NBundle getI18NBundle();
-
     default A3MapBundle createMapBundle() {
         return new DefaultA3MapBundle();
     }
@@ -29,15 +27,17 @@ public interface A3BundleKit {
     }
 
     default A3ExtMapBundle createExtMapBundle() {
-        return new DefaultA3ExtMapBundle();
+        return new DefaultA3ExtMapBundle(this);
     }
 
     default A3ExtMapBundle createExtMapBundle(final boolean concurrent) {
-        return concurrent ? new DefaultConcurrentA3ExtMapBundle() : new DefaultA3ExtMapBundle();
+        return concurrent ? new DefaultConcurrentA3ExtMapBundle(this) : new DefaultA3ExtMapBundle(this);
     }
 
     default A3ExtMapBundle createConcurrentExtMapBundle() {
-        return new DefaultConcurrentA3ExtMapBundle();
+        return new DefaultConcurrentA3ExtMapBundle(this);
     }
+
+    A3ExtMapBundle.Delegate createDelegate(final Class<? extends A3ExtMapBundle.Delegate> typeClass);
 
 }

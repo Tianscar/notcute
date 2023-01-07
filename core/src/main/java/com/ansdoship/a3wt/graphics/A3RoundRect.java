@@ -74,5 +74,10 @@ public interface A3RoundRect extends A3Shape<A3RoundRect> {
                 restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0),
                 restorer.getFloat(KEY_ARC_WIDTH, 0), restorer.getFloat(KEY_ARC_HEIGHT, 0));
     }
+
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3RoundRect.class;
+    }
     
 }

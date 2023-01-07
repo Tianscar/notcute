@@ -28,4 +28,9 @@ public interface A3Dimension extends A3Copyable<A3Dimension>, A3Resetable<A3Dime
         set(restorer.getInt(KEY_WIDTH, 0), restorer.getInt(KEY_HEIGHT, 0));
     }
 
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Dimension.class;
+    }
+
 }

@@ -73,4 +73,9 @@ public interface A3Arc extends A3Shape<A3Arc> {
                 restorer.getBoolean(KEY_USE_CENTER, false));
     }
 
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Arc.class;
+    }
+
 }

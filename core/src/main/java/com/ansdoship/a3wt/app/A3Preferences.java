@@ -58,6 +58,6 @@ public interface A3Preferences {
     A3Preferences clear();
 
     boolean commit();
-    A3Preferences apply();
+    void apply();
 
 }

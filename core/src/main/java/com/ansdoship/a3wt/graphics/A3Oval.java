@@ -57,4 +57,9 @@ public interface A3Oval extends A3Shape<A3Oval> {
                 restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0));
     }
 
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Oval.class;
+    }
+
 }

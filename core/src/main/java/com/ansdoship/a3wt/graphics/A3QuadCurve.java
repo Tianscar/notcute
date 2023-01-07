@@ -53,5 +53,10 @@ public interface A3QuadCurve extends A3Shape<A3QuadCurve> {
                 restorer.getFloat(KEY_CTRL_X, 0), restorer.getFloat(KEY_CTRL_Y, 0),
                 restorer.getFloat(KEY_END_X, 0), restorer.getFloat(KEY_END_Y, 0));
     }
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3QuadCurve.class;
+    }
+
 
 }

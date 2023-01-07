@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface A3Context extends A3Disposable {
 
-    interface Handle extends A3Paintable {
+    interface Handle {
 
         A3Context getContext();
 

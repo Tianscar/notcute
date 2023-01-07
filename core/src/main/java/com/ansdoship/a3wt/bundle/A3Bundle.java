@@ -14,7 +14,6 @@ public interface A3Bundle {
         public static final int PROPERTIES = 0;
         public static final int INI = 1;
         public static final int XML = 2;
-        public static final int JSON = 3;
     }
 
     boolean save(final File output, final int format);

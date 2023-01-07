@@ -1,6 +1,4 @@
-package com.ansdoship.a3wt.bundle;
-
-import com.ansdoship.a3wt.app.A3Assets;
+package com.ansdoship.a3wt.app;
 
 import java.io.File;
 import java.io.InputStream;
@@ -10,7 +8,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
 
-public interface A3I18NBundle {
+public interface A3I18NText {
 
     boolean loadAll(final File input);
     boolean load(final Locale locale, final File input);

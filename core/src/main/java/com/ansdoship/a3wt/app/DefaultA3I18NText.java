@@ -1,6 +1,4 @@
-package com.ansdoship.a3wt.bundle;
-
-import com.ansdoship.a3wt.app.A3Assets;
+package com.ansdoship.a3wt.app;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -23,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 import static com.ansdoship.a3wt.util.A3Charsets.UTF_8;
 
-public class DefaultA3I18NBundle implements A3I18NBundle {
+public class DefaultA3I18NText implements A3I18NText {
 
     protected final Map<Locale, Properties> localeProperties = new ConcurrentHashMap<>();
     protected final Map<Locale, Locale> localeMappings = new ConcurrentHashMap<>();

@@ -27,5 +27,10 @@ public interface A3Size extends A3Copyable<A3Size>, A3Resetable<A3Size>, A3ExtMa
     default void restore(final A3ExtMapBundle.Restorer restorer) {
         set(restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0));
     }
+
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Size.class;
+    }
     
 }

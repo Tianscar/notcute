@@ -57,4 +57,9 @@ public interface A3Rect extends A3Shape<A3Rect> {
                 restorer.getFloat(KEY_WIDTH, 0), restorer.getFloat(KEY_HEIGHT, 0));
     }
 
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Rect.class;
+    }
+
 }

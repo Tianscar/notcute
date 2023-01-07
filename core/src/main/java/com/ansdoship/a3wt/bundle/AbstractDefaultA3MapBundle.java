@@ -3,19 +3,16 @@ package com.ansdoship.a3wt.bundle;
 import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.util.A3Arrays;
 import com.ansdoship.a3wt.util.A3Charsets;
+import com.ansdoship.a3wt.util.A3Maps;
+import com.ansdoship.a3wt.util.A3StringUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.*;
 
+import static com.ansdoship.a3wt.util.A3Preconditions.checkArgElementsNotNull;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
 public abstract class AbstractDefaultA3MapBundle implements A3MapBundle {
@@ -27,8 +24,8 @@ public abstract class AbstractDefaultA3MapBundle implements A3MapBundle {
         this.map = map;
     }
 
-    private static final String[] READER_FORMAT_NAMES = new String[] {"properties", "prop", "xml"};
-    private static final String[] WRITER_FORMAT_NAMES = new String[] {"properties", "prop", "xml"};
+    private static final String[] READER_FORMAT_NAMES = new String[] {"properties", "prop"};
+    private static final String[] WRITER_FORMAT_NAMES = new String[] {"properties", "prop"};
 
     @Override
     public boolean save(final File output, final int format) {
@@ -54,15 +51,6 @@ public abstract class AbstractDefaultA3MapBundle implements A3MapBundle {
                 } catch (IOException e) {
                     return false;
                 }
-            case Format.XML:
-                try {
-                    final Properties properties = new Properties(map.size());
-                    properties.putAll(map);
-                    properties.storeToXML(output, null, A3Charsets.UTF_8.name());
-                    return true;
-                } catch (IOException e) {
-                    return false;
-                }
             default:
                 return false;
         }
@@ -70,7 +58,9 @@ public abstract class AbstractDefaultA3MapBundle implements A3MapBundle {
 
     @Override
     public boolean restore(final File input) {
-        try (final FileInputStream stream = new FileInputStream(input)) {
+        checkArgNotNull(input, "input");
+        try (final FileInputStream fileInputStream = new FileInputStream(input);
+             final BufferedInputStream stream = new BufferedInputStream(fileInputStream)) {
             return restore(stream);
         }
         catch (final IOException e) {
@@ -83,24 +73,16 @@ public abstract class AbstractDefaultA3MapBundle implements A3MapBundle {
         checkArgNotNull(input, "input");
         final Properties properties = new Properties();
         try {
-            properties.loadFromXML(input);
+            properties.load(input);
         }
-        catch (final InvalidPropertiesFormatException e) {
-            try {
-                properties.load(input);
-            }
-            catch (final IOException ex) {
-                return false;
-            }
-        }
-        catch (IOException e) {
+        catch (final IOException ex) {
             return false;
         }
         map.clear();
         final Map tmp0 = properties;
         final Map<String, String> tmp1 = (Map<String, String>) tmp0;
         map.putAll(tmp1);
-        return false;
+        return true;
     }
 
     @Override
@@ -130,275 +112,310 @@ public abstract class AbstractDefaultA3MapBundle implements A3MapBundle {
         return A3Arrays.copy(WRITER_FORMAT_NAMES);
     }
 
-    @Override
-    public A3KeyValueBundle putByte(String key, byte value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putShort(String key, short value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putInt(String key, int value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putLong(String key, long value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putFloat(String key, float value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putDouble(String key, double value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putBoolean(String key, boolean value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putChar(String key, char value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putString(String key, String value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putBigInteger(String key, BigInteger value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putBigDecimal(String key, BigDecimal value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putByteArray(String key, byte[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putShortArray(String key, short[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putIntArray(String key, int[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putLongArray(String key, long[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putFloatArray(String key, float[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putDoubleArray(String key, double[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putBooleanArray(String key, boolean[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putCharArray(String key, char[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putStringArray(String key, String[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putBigIntegerArray(String key, BigInteger[] value) {
-        return null;
-    }
-
-    @Override
-    public A3KeyValueBundle putBigDecimalArray(String key, BigDecimal[] value) {
-        return null;
-    }
-
-    @Override
-    public byte getByte(String key, byte defValue) {
-        return 0;
-    }
-
-    @Override
-    public short getShort(String key, short defValue) {
-        return 0;
-    }
-
-    @Override
-    public int getInt(String key, int defValue) {
-        return 0;
-    }
-
-    @Override
-    public long getLong(String key, long defValue) {
-        return 0;
-    }
-
-    @Override
-    public float getFloat(String key, float defValue) {
-        return 0;
-    }
-
-    @Override
-    public double getDouble(String key, double defValue) {
-        return 0;
-    }
-
-    @Override
-    public boolean getBoolean(String key, boolean defValue) {
-        return false;
-    }
-
-    @Override
-    public char getChar(String key, char defValue) {
-        return 0;
-    }
-
-    @Override
-    public String getString(String key, String defValue) {
-        return null;
-    }
-
-    @Override
-    public BigInteger getBigInteger(String key, BigInteger defValue) {
-        return null;
-    }
-
-    @Override
-    public BigDecimal getBigDecimal(String key, BigDecimal defValue) {
-        return null;
-    }
-
-    @Override
-    public byte[] getByteArray(String key, byte[] defValue) {
-        return new byte[0];
-    }
-
-    @Override
-    public short[] getShortArray(String key, short[] defValue) {
-        return new short[0];
-    }
-
-    @Override
-    public int[] getIntArray(String key, int[] defValue) {
-        return new int[0];
-    }
-
-    @Override
-    public long[] getLongArray(String key, long[] defValue) {
-        return new long[0];
-    }
-
-    @Override
-    public float[] getFloatArray(String key, float[] defValue) {
-        return new float[0];
-    }
-
-    @Override
-    public double[] getDoubleArray(String key, double[] defValue) {
-        return new double[0];
-    }
-
-    @Override
-    public boolean[] getBooleanArray(String key, boolean[] defValue) {
-        return new boolean[0];
-    }
-
-    @Override
-    public char[] getCharArray(String key, char[] defValue) {
-        return new char[0];
-    }
-
-    @Override
-    public String[] getStringArray(String key, String[] defValue) {
-        return new String[0];
-    }
-
-    @Override
-    public BigInteger[] getBigIntegerArray(String key, BigInteger[] defValue) {
-        return new BigInteger[0];
-    }
-
-    @Override
-    public BigDecimal[] getBigDecimalArray(String key, BigDecimal[] defValue) {
-        return new BigDecimal[0];
-    }
-
-    @Override
-    public boolean contains(String key) {
-        return map.containsKey(key);
-    }
-
-    @Override
-    public A3KeyValueBundle remove(String key) {
-        map.remove(key);
+    private A3MapBundle put0(final String key, final String value) {
+        checkArgNotNull(key, "key");
+        checkArgNotNull(value, "value");
+        map.put(key, value);
         return this;
     }
 
     @Override
+    public A3MapBundle putByte(final String key, final byte value) {
+        return put0(key, Byte.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putShort(final String key, final short value) {
+        return put0(key, Short.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putInt(final String key, final int value) {
+        return put0(key, Integer.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putLong(final String key, final long value) {
+        return put0(key, Long.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putFloat(final String key, final float value) {
+        return put0(key, Float.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putDouble(final String key, final double value) {
+        return put0(key, Double.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putBoolean(final String key, final boolean value) {
+        return put0(key, Boolean.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putChar(final String key, final char value) {
+        return put0(key, Character.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putString(final String key, final String value) {
+        return put0(key, value == null ? "null" : value);
+    }
+
+    @Override
+    public A3MapBundle putBigInteger(final String key, final BigInteger value) {
+        checkArgNotNull(value, "value");
+        return put0(key, value.toString());
+    }
+
+    @Override
+    public A3MapBundle putBigDecimal(final String key, final BigDecimal value) {
+        checkArgNotNull(value, "value");
+        return put0(key, value.toPlainString());
+    }
+
+    @Override
+    public A3MapBundle putByteArray(final String key, final byte[] value) {
+        checkArgNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putShortArray(final String key, final short[] value) {
+        checkArgNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putIntArray(final String key, final int[] value) {
+        checkArgNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putLongArray(final String key, final long[] value) {
+        checkArgNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putFloatArray(final String key, final float[] value) {
+        checkArgNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putDoubleArray(final String key, final double[] value) {
+        checkArgNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putBooleanArray(final String key, final boolean[] value) {
+        checkArgNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putCharArray(final String key, final char[] value) {
+        checkArgNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putStringArray(final String key, final String[] value) {
+        checkArgElementsNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putBigIntegerArray(final String key, final BigInteger[] value) {
+        checkArgElementsNotNull(value, "value");
+        return put0(key, Arrays.toString(value));
+    }
+
+    @Override
+    public A3MapBundle putBigDecimalArray(final String key, final BigDecimal[] value) {
+        checkArgElementsNotNull(value, "value");
+        return put0(key, A3Arrays.toPlainString(value));
+    }
+
+    private String get0(final String key, final String defValue) {
+        checkArgNotNull(key, "key");
+        return A3Maps.getOrDefault(map, key, defValue);
+    }
+
+    @Override
+    public byte getByte(final String key, final byte defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : Byte.parseByte(value);
+    }
+
+    @Override
+    public short getShort(final String key, final short defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : Short.parseShort(value);
+    }
+
+    @Override
+    public int getInt(final String key, final int defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : Integer.parseInt(value);
+    }
+
+    @Override
+    public long getLong(final String key, final long defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : Long.parseLong(value);
+    }
+
+    @Override
+    public float getFloat(final String key, final float defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : Float.parseFloat(value);
+    }
+
+    @Override
+    public double getDouble(final String key, final double defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : Double.parseDouble(value);
+    }
+
+    @Override
+    public boolean getBoolean(final String key, final boolean defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : Boolean.parseBoolean(value);
+    }
+
+    @Override
+    public char getChar(final String key, final char defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : value.charAt(0);
+    }
+
+    @Override
+    public String getString(final String key, final String defValue) {
+        return get0(key, defValue);
+    }
+
+    @Override
+    public BigInteger getBigInteger(final String key, final BigInteger defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : new BigInteger(value);
+    }
+
+    @Override
+    public BigDecimal getBigDecimal(final String key, final BigDecimal defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : new BigDecimal(value);
+    }
+
+    @Override
+    public byte[] getByteArray(final String key, final byte[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseByteArray(value);
+    }
+
+    @Override
+    public short[] getShortArray(final String key, final short[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseShortArray(value);
+    }
+
+    @Override
+    public int[] getIntArray(final String key, final int[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseIntArray(value);
+    }
+
+    @Override
+    public long[] getLongArray(final String key, final long[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseLongArray(value);
+    }
+
+    @Override
+    public float[] getFloatArray(final String key, final float[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseFloatArray(value);
+    }
+
+    @Override
+    public double[] getDoubleArray(final String key, final double[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseDoubleArray(value);
+    }
+
+    @Override
+    public boolean[] getBooleanArray(final String key, final boolean[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseBooleanArray(value);
+    }
+
+    @Override
+    public char[] getCharArray(final String key, final char[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseCharArray(value);
+    }
+
+    @Override
+    public String[] getStringArray(final String key, final String[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseStringArray(value);
+    }
+
+    @Override
+    public BigInteger[] getBigIntegerArray(final String key, final BigInteger[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseBigIntegerArray(value);
+    }
+
+    @Override
+    public BigDecimal[] getBigDecimalArray(final String key, final BigDecimal[] defValue) {
+        final String value = get0(key, null);
+        return value == null ? defValue : A3StringUtils.parseBigDecimalArray(value);
+    }
+
+    @Override
     public int size() {
-        return 0;
+        return map.size();
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return map.isEmpty();
     }
 
     @Override
-    public boolean containsKey(Object key) {
-        return false;
+    public boolean containsKey(final Object key) {
+        return map.containsKey(key);
     }
 
     @Override
-    public boolean containsValue(Object value) {
-        return false;
+    public boolean containsValue(final Object value) {
+        return map.containsValue(value);
     }
 
     @Override
-    public String get(Object key) {
-        return null;
+    public String get(final Object key) {
+        return map.get(key);
     }
 
     @Override
-    public String put(String key, String value) {
-        return null;
+    public String put(final String key, final String value) {
+        return map.put(key, value);
     }
 
     @Override
-    public String remove(Object key) {
-        return null;
+    public String remove(final Object key) {
+        return map.remove(key);
     }
 
     @Override
-    public void putAll(Map<? extends String, ? extends String> m) {
-
+    public void putAll(final Map<? extends String, ? extends String> m) {
+        map.putAll(m);
     }
 
     @Override
@@ -408,17 +425,17 @@ public abstract class AbstractDefaultA3MapBundle implements A3MapBundle {
 
     @Override
     public Set<String> keySet() {
-        return null;
+        return map.keySet();
     }
 
     @Override
     public Collection<String> values() {
-        return null;
+        return map.values();
     }
 
     @Override
     public Set<Entry<String, String>> entrySet() {
-        return null;
+        return map.entrySet();
     }
 
 }

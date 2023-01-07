@@ -1,6 +1,8 @@
 package com.ansdoship.a3wt.awt;
 
+import com.ansdoship.a3wt.app.A3I18NText;
 import com.ansdoship.a3wt.app.A3Platform;
+import com.ansdoship.a3wt.app.DefaultA3I18NText;
 import com.ansdoship.a3wt.util.A3Logger;
 
 public class AWTA3Platform implements A3Platform {
@@ -84,6 +86,13 @@ public class AWTA3Platform implements A3Platform {
     @Override
     public int getBaselinePPI() {
         return BASELINE_PPI;
+    }
+
+    protected static final DefaultA3I18NText i18NText = new DefaultA3I18NText();
+
+    @Override
+    public A3I18NText getI18NText() {
+        return i18NText;
     }
 
 }

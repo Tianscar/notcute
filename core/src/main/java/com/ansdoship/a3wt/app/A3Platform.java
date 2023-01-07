@@ -13,4 +13,6 @@ public interface A3Platform {
 
     int getBaselinePPI();
 
+    A3I18NText getI18NText();
+
 }

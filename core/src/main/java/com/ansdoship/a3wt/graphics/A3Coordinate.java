@@ -28,4 +28,9 @@ public interface A3Coordinate extends A3Copyable<A3Coordinate>, A3Resetable<A3Co
         set(restorer.getInt(KEY_X, 0), restorer.getInt(KEY_Y, 0));
     }
 
+    @Override
+    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+        return A3Coordinate.class;
+    }
+
 }

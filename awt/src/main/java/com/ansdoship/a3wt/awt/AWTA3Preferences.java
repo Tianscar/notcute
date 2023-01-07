@@ -370,7 +370,7 @@ public class AWTA3Preferences implements A3Preferences {
     }
 
     @Override
-    public A3Preferences apply() {
+    public void apply() {
         flush();
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -378,7 +378,6 @@ public class AWTA3Preferences implements A3Preferences {
                 write();
             }
         });
-        return this;
     }
 
     protected void flush() {
