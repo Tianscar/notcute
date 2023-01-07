@@ -22,17 +22,20 @@ a3wt-core
 │   └── AWT
 │       ├── Cocoa
 │       │   └── macOS
+│       ├── Motif
+│       │   └── *nix⁄Motif
 │       ├── Win32
 │       │   └── Windows
 │       └── X11
-│           └── *nix X11
-├── a3wt-qt (WIP)
+│           └── *nix⁄X11
+├── a3wt-qt
 │   └── Qt Jambi
 │       └── Qt
-│           └── *nix Wayland
-└── a3wt-teavm (WIP)
+│           └── *nix⁄Wayland
+└── a3wt-teavm
     └── TeaVM
         └── HTML5
+            └── Modern Browsers
 ```
 
 (children nodes depends on root node)
