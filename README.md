@@ -54,7 +54,7 @@ Add the following lines to the JVM args:
 ## Contributing
 The A3WT project currently maintained by only [me](https://github.com/Tianscar).  
 Since I'm not a skilled programmer, the code may be badly written...  
-So! contributing welcome! PRs welcome! I'm quite glad to have you!
+So! Contributing welcome! PRs welcome! I'm quite glad to have you!
 
 ## License
 [Apache-2.0](https://github.com/AnsdoShip/a3wt/blob/main/LICENSE) (c) [A3WT](https://github.com/AnsdoShip/a3wt)
