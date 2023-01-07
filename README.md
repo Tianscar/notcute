@@ -38,7 +38,7 @@ a3wt-core
 ```
 a3wt-core
 ├── 2D Graphics Framework
-├── Audio Framework
+├── Audio Framework (WIP)
 └── Bundle Framework
 ```
 
