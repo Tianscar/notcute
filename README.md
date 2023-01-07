@@ -28,10 +28,6 @@ a3wt-core
 │       │   └── Windows
 │       └── X11
 │           └── *nix⁄X11
-├── (WIP) a3wt-qt
-│   └── Qt Jambi
-│       └── Qt
-│           └── *nix⁄Wayland
 └── (WIP) a3wt-teavm
     └── TeaVM
         └── HTML5
