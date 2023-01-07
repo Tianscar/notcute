@@ -89,7 +89,7 @@ a3wt-core
 │   │   └── (WIP) Uri
 │   └── Platform (Related-infos)
 ├── Bundle Framework (Serialization⁄Deserialization)
-│   ├── Extensive Bundle (Map-based, XML-like)
+│   ├── Extensive Map Bundle (Map-based, XML-like)
 │   │   ├── (WIP) JSON (*.json)
 │   │   └── XML (.xml)
 │   ├── Map Bundle (Map-based, Properties-like)
