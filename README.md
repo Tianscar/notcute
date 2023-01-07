@@ -3,6 +3,7 @@ The abstract layer for Android GUI and AWT.
 
 "Any problem in computer science can be solved with another layer of indirection [except the problem of too many layers of indirection]."
 
+A3WT is not a framework built from scratch, just an indirection layer over existing frameworks.
 ## Design
 - A cross-platform desktop/mobile Windowing Toolkit/Game Engine for Java.
 - Modular and flexible.
@@ -39,6 +40,14 @@ a3wt-core
 ├── 2D Graphics Framework
 ├── Audio Framework
 └── Bundle Framework
+```
+
+## Note
+### Running with AWT/X11 backend & Java 9+
+Add the following lines to the JVM args: 
+```
+--add-exports java.desktop/sun.awt=ALL-UNNAMED
+--add-exports java.desktop/sun.awt.X11=ALL-UNNAMED
 ```
 
 ## License
