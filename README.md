@@ -40,6 +40,7 @@ a3wt-core
 
 (children nodes depend on root node)
 ```
+a3wt-core
 ├── 2D Graphics Framework
 │   ├── Custom Cursor API
 │   │   ├── Single-frame Cursor
