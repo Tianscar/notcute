@@ -10,11 +10,6 @@ A3WT is not a framework built from scratch, just an indirection layer over exist
 - Modular and flexible.
 - Can be embedded to related GUI frameworks (Android GUI, AWT, etc).
 
-## Contributing
-The A3WT project currently maintained by only [me](https://github.com/Tianscar).  
-Since I'm not a skilled programmer, the code may be badly written...  
-So! contributing welcome! PRs welcome! I'm quite glad to have you!
-
 ## Architecture
 
 (root node depends on children nodes)
@@ -55,6 +50,11 @@ Add the following lines to the JVM args:
 --add-exports java.desktop/sun.awt=ALL-UNNAMED
 --add-exports java.desktop/sun.awt.X11=ALL-UNNAMED
 ```
+
+## Contributing
+The A3WT project currently maintained by only [me](https://github.com/Tianscar).  
+Since I'm not a skilled programmer, the code may be badly written...  
+So! contributing welcome! PRs welcome! I'm quite glad to have you!
 
 ## License
 [Apache-2.0](https://github.com/AnsdoShip/a3wt/blob/main/LICENSE) (c) [A3WT](https://github.com/AnsdoShip/a3wt)
