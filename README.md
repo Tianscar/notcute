@@ -150,12 +150,12 @@ Add the following lines to the JVM args:
 ## Contributing
 The A3WT project currently maintained by only [me](https://github.com/Tianscar).  
 Since I'm not a skilled programmer, the code may be badly written...  
-So! Contributions welcome! PRs welcome! I'm quite glad to have you!
+So! Contributions welcome! PRs welcome! If you're planning to contribute, I'm quite glad to have you!
 
 ## License
 [Apache-2.0](https://github.com/AnsdoShip/a3wt/blob/main/LICENSE) (c) [A3WT](https://github.com/AnsdoShip/a3wt)
 
-### A3WT currently uses code from the following projects:
+### A3WT currently uses some code from/depends on the following projects:
 Apache-2.0 (c) [Android Open Source Project (AOSP)](https://source.android.com/)  
 Apache-2.0 (c) [Apache Harmony](https://harmony.apache.org)  
 [MIT](https://github.com/koral--/android-gif-drawable/blob/dev/LICENSE) (c) [android-gif-drawable](https://github.com/koral--/android-gif-drawable)  
