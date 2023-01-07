@@ -1,11 +1,6 @@
 package com.ansdoship.a3wt.awt;
 
-import com.ansdoship.a3wt.app.A3Platform;
-import com.ansdoship.a3wt.app.A3Assets;
-import com.ansdoship.a3wt.app.A3Preferences;
-import com.ansdoship.a3wt.app.A3Clipboard;
-import com.ansdoship.a3wt.app.A3Container;
-import com.ansdoship.a3wt.app.A3Context;
+import com.ansdoship.a3wt.app.*;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -131,6 +126,16 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
         @Override
         public A3Platform getPlatform() {
             return frame.canvas.handle.getPlatform();
+        }
+
+        @Override
+        public A3Logger getLogger() {
+            return frame.canvas.handle.getLogger();
+        }
+
+        @Override
+        public A3I18NText getI18NText() {
+            return frame.canvas.handle.getI18NText();
         }
 
         @Override

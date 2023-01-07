@@ -8,7 +8,6 @@ import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 import com.ansdoship.a3wt.util.A3Disposable;
-import com.ansdoship.a3wt.util.A3Paintable;
 
 import java.io.File;
 import java.util.List;
@@ -20,6 +19,8 @@ public interface A3Context extends A3Disposable {
         A3Context getContext();
 
         A3Platform getPlatform();
+        A3Logger getLogger();
+        A3I18NText getI18NText();
         A3GraphicsKit getGraphicsKit();
         A3BundleKit getBundleKit();
 

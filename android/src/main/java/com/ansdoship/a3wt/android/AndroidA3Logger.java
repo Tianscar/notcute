@@ -1,7 +1,7 @@
 package com.ansdoship.a3wt.android;
 
 import android.util.Log;
-import com.ansdoship.a3wt.util.A3Logger;
+import com.ansdoship.a3wt.app.A3Logger;
 
 public class AndroidA3Logger implements A3Logger {
 

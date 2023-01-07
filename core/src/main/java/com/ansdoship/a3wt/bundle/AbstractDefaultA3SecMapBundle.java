@@ -3,7 +3,7 @@ package com.ansdoship.a3wt.bundle;
 import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.util.A3Arrays;
 import com.ansdoship.a3wt.util.A3Maps;
-import com.ansdoship.a3wt.util.A3StringUtils;
+import com.ansdoship.a3wt.util.A3TextUtils;
 import org.ini4j.Ini;
 
 import java.io.*;
@@ -333,67 +333,67 @@ public abstract class AbstractDefaultA3SecMapBundle implements A3SecMapBundle {
     @Override
     public byte[] getByteArray(final String key, final byte[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseByteArray(value);
+        return value == null ? defValue : A3TextUtils.parseByteArray(value);
     }
 
     @Override
     public short[] getShortArray(final String key, final short[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseShortArray(value);
+        return value == null ? defValue : A3TextUtils.parseShortArray(value);
     }
 
     @Override
     public int[] getIntArray(final String key, final int[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseIntArray(value);
+        return value == null ? defValue : A3TextUtils.parseIntArray(value);
     }
 
     @Override
     public long[] getLongArray(final String key, final long[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseLongArray(value);
+        return value == null ? defValue : A3TextUtils.parseLongArray(value);
     }
 
     @Override
     public float[] getFloatArray(final String key, final float[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseFloatArray(value);
+        return value == null ? defValue : A3TextUtils.parseFloatArray(value);
     }
 
     @Override
     public double[] getDoubleArray(final String key, final double[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseDoubleArray(value);
+        return value == null ? defValue : A3TextUtils.parseDoubleArray(value);
     }
 
     @Override
     public boolean[] getBooleanArray(final String key, final boolean[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseBooleanArray(value);
+        return value == null ? defValue : A3TextUtils.parseBooleanArray(value);
     }
 
     @Override
     public char[] getCharArray(final String key, final char[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseCharArray(value);
+        return value == null ? defValue : A3TextUtils.parseCharArray(value);
     }
 
     @Override
     public String[] getStringArray(final String key, final String[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseStringArray(value);
+        return value == null ? defValue : A3TextUtils.parseStringArray(value);
     }
 
     @Override
     public BigInteger[] getBigIntegerArray(final String key, final BigInteger[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseBigIntegerArray(value);
+        return value == null ? defValue : A3TextUtils.parseBigIntegerArray(value);
     }
 
     @Override
     public BigDecimal[] getBigDecimalArray(final String key, final BigDecimal[] defValue) {
         final String value = get0(key, null);
-        return value == null ? defValue : A3StringUtils.parseBigDecimalArray(value);
+        return value == null ? defValue : A3TextUtils.parseBigDecimalArray(value);
     }
 
     @Override

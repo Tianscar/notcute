@@ -16,7 +16,7 @@ package com.ansdoship.a3wt.awt;
  * limitations under the License.
  */
 
-import com.ansdoship.a3wt.util.A3Logger;
+import com.ansdoship.a3wt.app.A3Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

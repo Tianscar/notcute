@@ -6,12 +6,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
-import com.ansdoship.a3wt.app.A3Platform;
-import com.ansdoship.a3wt.app.A3Assets;
-import com.ansdoship.a3wt.app.A3Clipboard;
-import com.ansdoship.a3wt.app.A3Preferences;
-import com.ansdoship.a3wt.app.A3Context;
-import com.ansdoship.a3wt.app.A3Container;
+import com.ansdoship.a3wt.app.*;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -44,6 +39,16 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         @Override
         public A3Platform getPlatform() {
             return popupWindow.surfaceView.handle.getPlatform();
+        }
+
+        @Override
+        public A3Logger getLogger() {
+            return popupWindow.surfaceView.handle.getLogger();
+        }
+
+        @Override
+        public A3I18NText getI18NText() {
+            return popupWindow.surfaceView.handle.getI18NText();
         }
 
         @Override

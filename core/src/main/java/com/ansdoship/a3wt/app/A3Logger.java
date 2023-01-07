@@ -1,4 +1,4 @@
-package com.ansdoship.a3wt.util;
+package com.ansdoship.a3wt.app;
 
 public interface A3Logger {
 

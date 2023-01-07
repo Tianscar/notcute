@@ -3,7 +3,7 @@ package com.ansdoship.a3wt.android;
 import android.content.SharedPreferences;
 import com.ansdoship.a3wt.app.A3Preferences;
 import com.ansdoship.a3wt.util.A3Arrays;
-import com.ansdoship.a3wt.util.A3StringUtils;
+import com.ansdoship.a3wt.util.A3TextUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -278,77 +278,77 @@ public class AndroidA3Preferences implements A3Preferences {
     public byte[] getByteArray(final String key, final byte[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseByteArray(value);
+        return value == null ? defValue : A3TextUtils.parseByteArray(value);
     }
 
     @Override
     public short[] getShortArray(final String key, final short[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseShortArray(value);
+        return value == null ? defValue : A3TextUtils.parseShortArray(value);
     }
 
     @Override
     public int[] getIntArray(final String key, final int[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseIntArray(value);
+        return value == null ? defValue : A3TextUtils.parseIntArray(value);
     }
 
     @Override
     public long[] getLongArray(final String key, final long[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseLongArray(value);
+        return value == null ? defValue : A3TextUtils.parseLongArray(value);
     }
 
     @Override
     public float[] getFloatArray(final String key, final float[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseFloatArray(value);
+        return value == null ? defValue : A3TextUtils.parseFloatArray(value);
     }
 
     @Override
     public double[] getDoubleArray(final String key, final double[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseDoubleArray(value);
+        return value == null ? defValue : A3TextUtils.parseDoubleArray(value);
     }
 
     @Override
     public boolean[] getBooleanArray(final String key, final boolean[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseBooleanArray(value);
+        return value == null ? defValue : A3TextUtils.parseBooleanArray(value);
     }
 
     @Override
     public char[] getCharArray(final String key, final char[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseCharArray(value);
+        return value == null ? defValue : A3TextUtils.parseCharArray(value);
     }
 
     @Override
     public String[] getStringArray(final String key, final String[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseStringArray(value);
+        return value == null ? defValue : A3TextUtils.parseStringArray(value);
     }
 
     @Override
     public BigInteger[] getBigIntegerArray(final String key, final BigInteger[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseBigIntegerArray(value);
+        return value == null ? defValue : A3TextUtils.parseBigIntegerArray(value);
     }
 
     @Override
     public BigDecimal[] getBigDecimalArray(final String key, final BigDecimal[] defValue) {
         checkArgNotNull(key, "key");
         final String value = sharedPreferences.getString(key, null);
-        return value == null ? defValue : A3StringUtils.parseBigDecimalArray(value);
+        return value == null ? defValue : A3TextUtils.parseBigDecimalArray(value);
     }
 
     @Override

@@ -1,10 +1,6 @@
 package com.ansdoship.a3wt.app;
 
-import com.ansdoship.a3wt.util.A3Logger;
-
 public interface A3Platform {
-
-    A3Logger getLogger();
 
     String getBackendName();
     String getPlatformName();
@@ -12,7 +8,5 @@ public interface A3Platform {
     String getPlatformArch();
 
     int getBaselinePPI();
-
-    A3I18NText getI18NText();
 
 }

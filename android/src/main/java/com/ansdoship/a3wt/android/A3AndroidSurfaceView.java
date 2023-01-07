@@ -18,6 +18,9 @@ import com.ansdoship.a3wt.app.A3Platform;
 import com.ansdoship.a3wt.app.A3Assets;
 import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Preferences;
+import com.ansdoship.a3wt.app.A3Logger;
+import com.ansdoship.a3wt.app.A3I18NText;
+import com.ansdoship.a3wt.app.DefaultA3I18NText;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.bundle.DefaultA3BundleKit;
 import com.ansdoship.a3wt.graphics.*;
@@ -106,6 +109,17 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         @Override
         public A3BundleKit getBundleKit() {
             return bundleKit;
+        }
+
+        protected static final A3Logger logger = new AndroidA3Logger();
+        @Override
+        public A3Logger getLogger() {
+            return logger;
+        }
+        protected static final A3I18NText i18NText = new DefaultA3I18NText();
+        @Override
+        public A3I18NText getI18NText() {
+            return i18NText;
         }
 
         protected final Map<String, AndroidA3Preferences> preferencesMap = new ConcurrentHashMap<>();

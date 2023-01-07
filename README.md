@@ -28,22 +28,114 @@ a3wt-core
 │       │   └── Windows
 │       └── X11
 │           └── *nix⁄X11
-├── a3wt-qt
+├── (WIP) a3wt-qt
 │   └── Qt Jambi
 │       └── Qt
 │           └── *nix⁄Wayland
-└── a3wt-teavm
+└── (WIP) a3wt-teavm
     └── TeaVM
         └── HTML5
             └── Modern Browsers
 ```
 
-(children nodes depends on root node)
+(children nodes depend on root node)
 ```
-a3wt-core
 ├── 2D Graphics Framework
-├── Audio Framework (WIP)
-└── Bundle Framework
+│   ├── Custom Cursor API
+│   │   ├── Single-frame Cursor
+│   │   └── (WIP) Multi-frame Cursor
+│   ├── Graphics API
+│   │   ├── Affine Transform API (Java2D-like)
+│   │   ├── Geometry Framework (Java2D-like)
+│   │   ├── Graphics (Java2D-like)
+│   │   └── Vector Path API (Android-like)
+│   └── Image Framework
+│       ├── Image I⁄O
+│       │   ├── Multi-frame
+│       │   │   ├── (AWT Only) TIFF (*.tiff)
+│       │   │   └── GIF (*.gif)
+│       │   └── Single-frame
+│       │       ├── (Android Only) WebP (*.webp)
+│       │       ├── BMP (*.bmp)
+│       │       ├── JPEG (*.jpeg, *.jpg)
+│       │       └── PNG (*.png)
+│       ├── Multi-frame Image (List-based)
+│       └── Single-frame Image
+├── Application Framework
+│   ├── Context (2D Drawing)
+│   │   ├── Assets
+│   │   ├── Clipboard
+│   │   │   ├── Application
+│   │   │   └── System
+│   │   │       ├── Clipboard
+│   │   │       └── Selection
+│   │   ├── Container (Windowing)
+│   │   ├── I18N Text Manager
+│   │   ├── Listeners (Event-driven)
+│   │   │   ├── Container
+│   │   │   │   └── Window Events (Resize, Move, etc.)
+│   │   │   ├── Context
+│   │   │   │   ├── Drawing Events
+│   │   │   │   └── Widget Events (Resize, Move, etc.)
+│   │   │   └── Input
+│   │   │       ├── Keyboard
+│   │   │       ├── Pointer
+│   │   │       │   ├── Mouse
+│   │   │       │   └── Touch Screen
+│   │   │       └── (WIP) Gamepad
+│   │   ├── Logger
+│   │   ├── Preferences (File-based)
+│   │   └── (WIP) Uri
+│   └── Platform (Related-infos)
+├── Bundle Framework (Serialization⁄Deserialization)
+│   ├── Extensive Bundle (Map-based, XML-like)
+│   │   ├── (WIP) JSON (*.json)
+│   │   └── XML (.xml)
+│   ├── Map Bundle (Map-based, Properties-like)
+│   │   └── Properties (*.properties, *.prop)
+│   └── Sectional Map Bundle (Map-based, INI-like)
+│       └── INI (*.ini)
+├── Utilities
+│   ├── DiskLruCache
+│   ├── Interface
+│   │   ├── Callable
+│   │   ├── Copyable
+│   │   ├── Disposable
+│   │   ├── Paintable
+│   │   └── Resetable
+│   ├── LruCache
+│   └── Toolkit⁄Factory
+│       ├── Arrays
+│       ├── Asserts
+│       ├── Charsets
+│       ├── Collections
+│       ├── Colors
+│       ├── Files (BIO)
+│       ├── Maps
+│       ├── Math
+│       ├── Preconditions
+│       ├── ScreenUtils
+│       ├── Streams
+│       ├── TextUtils
+│       └── Unsafe
+└── (WIP) Media Framework
+    ├── Audio Framework
+    │   ├── Audio I⁄O
+    │   │   ├── (Read Only) AIFF (*.aif, *.aiff)
+    │   │   ├── (Read Only) AU (*.au)
+    │   │   ├── (Read Only) MP3 (*.mp3)
+    │   │   ├── (Read Only) OGG (*.ogg)
+    │   │   └── WAV (*.wav)
+    │   └── Audio Recorder
+    ├── Media Player
+    │   ├── Audio
+    │   │   ├── Static
+    │   │   └── Stream
+    │   └── Video
+    │       └── Stream
+    │           └── NOT DESIGNED YET
+    └── Video Framework
+        └── NOT DESIGNED YET
 ```
 
 ## Notes
