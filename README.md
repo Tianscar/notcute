@@ -42,7 +42,7 @@ a3wt-core
 ```
 
 ## License
-[Apache-2.0](LICENSE) (c) [A3WT]()
+[Apache-2.0](https://github.com/AnsdoShip/a3wt/blob/main/LICENSE) (c) [A3WT](https://github.com/AnsdoShip/a3wt)
 
 ### A3WT currently uses code from the following projects:
 Apache-2.0 (c) [Android Open Source Project (AOSP)](https://source.android.com/)  
