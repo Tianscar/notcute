@@ -44,7 +44,7 @@ a3wt-core
 ## License
 [Apache-2.0](LICENSE) (c) [A3WT]()
 
-### A3WT project currently uses code from the following projects:
+### A3WT currently uses code from the following projects:
 Apache-2.0 (c) [Android Open Source Project (AOSP)](https://source.android.com/)  
 Apache-2.0 (c) [Apache Harmony](https://harmony.apache.org)  
 [MIT](https://github.com/koral--/android-gif-drawable/blob/dev/LICENSE) (c) [android-gif-drawable](https://github.com/koral--/android-gif-drawable)  
