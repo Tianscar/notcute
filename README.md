@@ -5,7 +5,7 @@ The abstract layer for Android GUI and AWT.
 
 ## Design
 - A cross-platform desktop/mobile Windowing Toolkit/Game Engine for Java.
-- Modular, flexible and pluggable.
+- Modular and flexible.
 - Can be embedded to related GUI frameworks (Android GUI, AWT, etc).
 
 ## Architecture
