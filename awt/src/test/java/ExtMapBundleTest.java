@@ -78,7 +78,7 @@ public class ExtMapBundleTest {
                     }
                 }
                 bundle.putDelegate("point", point);
-                bundle.save(bundleFile, A3Bundle.Format.XML);
+                bundle.save(bundleFile, "xml");
                 return super.containerCloseRequested();
             }
         });

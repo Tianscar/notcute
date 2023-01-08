@@ -17,6 +17,7 @@ import com.ansdoship.a3wt.input.A3ContextListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -297,6 +298,17 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         public A3Cursor getCursor() {
             return popupWindow.surfaceView.handle.getCursor();
         }
+
+        @Override
+        public boolean browse(final URI uri) {
+            return popupWindow.surfaceView.handle.browse(uri);
+        }
+
+        @Override
+        public boolean open(final File file) {
+            return popupWindow.surfaceView.handle.open(file);
+        }
+
     }
 
     protected A3AndroidPopupWindowHandle handle;
@@ -410,6 +422,7 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
             for (A3ContainerListener listener : handle.containerListeners) {
                 listener.containerFocusGained();
             }
+            surfaceView.requestFocus();
         }
         else {
             for (A3ContainerListener listener : handle.containerListeners) {

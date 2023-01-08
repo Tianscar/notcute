@@ -12,9 +12,9 @@ import java.util.List;
 
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
-public class A3Streams {
+public class A3StreamUtils {
 
-    private A3Streams(){}
+    private A3StreamUtils(){}
 
     public static final int DEFAULT_BUFFER_SIZE = 8192;
     public static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;

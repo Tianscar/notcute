@@ -10,6 +10,7 @@ import com.ansdoship.a3wt.input.A3InputListener;
 import com.ansdoship.a3wt.util.A3Disposable;
 
 import java.io.File;
+import java.net.URI;
 import java.util.List;
 
 public interface A3Context extends A3Disposable {
@@ -81,6 +82,9 @@ public interface A3Context extends A3Disposable {
 
         void setCursor(final A3Cursor cursor);
         A3Cursor getCursor();
+
+        boolean browse(final URI uri);
+        boolean open(final File file);
     }
 
     Handle getContextHandle();

@@ -49,6 +49,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferStrategy;
 import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -517,6 +518,16 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         @Override
         public A3Cursor getCursor() {
             return cursor;
+        }
+
+        @Override
+        public boolean browse(final URI uri) {
+            return A3AWTUtils.browse(uri);
+        }
+
+        @Override
+        public boolean open(final File file) {
+            return A3AWTUtils.open(file);
         }
 
     }

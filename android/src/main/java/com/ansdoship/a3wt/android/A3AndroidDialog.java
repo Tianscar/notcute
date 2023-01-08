@@ -18,6 +18,7 @@ import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -319,6 +320,16 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
             return dialog.surfaceView.handle.getCursor();
         }
 
+        @Override
+        public boolean browse(final URI uri) {
+            return dialog.surfaceView.handle.browse(uri);
+        }
+
+        @Override
+        public boolean open(final File file) {
+            return dialog.surfaceView.handle.open(file);
+        }
+
     }
 
     protected A3AndroidDialogHandle handle;
@@ -395,6 +406,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
             for (A3ContainerListener listener : handle.containerListeners) {
                 listener.containerFocusGained();
             }
+            surfaceView.requestFocus();
         }
         else {
             for (A3ContainerListener listener : handle.containerListeners) {

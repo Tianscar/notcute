@@ -17,6 +17,7 @@ import com.ansdoship.a3wt.input.A3ContainerListener;
 import com.ansdoship.a3wt.input.A3InputListener;
 
 import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -322,6 +323,16 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
             return activity.surfaceView.handle.getCursor();
         }
 
+        @Override
+        public boolean browse(final URI uri) {
+            return activity.surfaceView.handle.browse(uri);
+        }
+
+        @Override
+        public boolean open(final File file) {
+            return activity.surfaceView.handle.open(file);
+        }
+
     }
 
     @Override
@@ -399,6 +410,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
             for (final A3ContainerListener listener : handle.containerListeners) {
                 listener.containerFocusGained();
             }
+            surfaceView.requestFocus();
         }
         else {
             for (final A3ContainerListener listener : handle.containerListeners) {

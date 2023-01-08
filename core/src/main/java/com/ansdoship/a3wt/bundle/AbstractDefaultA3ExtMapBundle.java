@@ -46,8 +46,9 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
     protected abstract AbstractDefaultA3ExtMapBundle createExtMapBundle();
 
     @Override
-    public boolean save(final File output, final int format) {
+    public boolean save(final File output, final String format) {
         checkArgNotNull(output, "output");
+        checkArgNotNull(format, "format");
         try (final FileOutputStream stream = new FileOutputStream(output)) {
             return save(stream, format);
         }
@@ -443,11 +444,12 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
     }
 
     @Override
-    public boolean save(final OutputStream output, final int format) {
+    public boolean save(final OutputStream output, final String format) {
         checkArgNotNull(output, "output");
+        checkArgNotNull(format, "format");
         try (BufferedOutputStream stream = new BufferedOutputStream(output)) {
-            switch (format) {
-                case Format.XML:
+            switch (format.toLowerCase()) {
+                case "xml":
                     DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                     try {
                         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();

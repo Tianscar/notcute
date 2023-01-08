@@ -26,7 +26,7 @@ import static com.ansdoship.a3wt.android.A3AndroidUtils.gifDrawable2FramedImage;
 import static com.ansdoship.a3wt.util.A3Arrays.containsIgnoreCase;
 import static com.ansdoship.a3wt.util.A3Arrays.copy;
 import static com.ansdoship.a3wt.util.A3Math.clamp;
-import static com.ansdoship.a3wt.util.A3Streams.MAX_BUFFER_SIZE;
+import static com.ansdoship.a3wt.util.A3StreamUtils.MAX_BUFFER_SIZE;
 
 public class GifFBIOSpi implements FBIOServiceProvider {
 

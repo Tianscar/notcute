@@ -43,7 +43,7 @@ import java.util.regex.Pattern;
 
 import static com.ansdoship.a3wt.util.A3Charsets.US_ASCII;
 import static com.ansdoship.a3wt.util.A3Charsets.UTF_8;
-import static com.ansdoship.a3wt.util.A3Streams.closeQuietly;
+import static com.ansdoship.a3wt.util.A3StreamUtils.closeQuietly;
 import static com.ansdoship.a3wt.util.A3Files.readStringAndClose;
 import static com.ansdoship.a3wt.util.A3Files.deleteContents;
 

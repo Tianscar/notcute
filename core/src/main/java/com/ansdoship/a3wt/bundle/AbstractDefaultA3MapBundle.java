@@ -28,8 +28,9 @@ public abstract class AbstractDefaultA3MapBundle implements A3MapBundle {
     private static final String[] WRITER_FORMAT_NAMES = new String[] {"properties", "prop"};
 
     @Override
-    public boolean save(final File output, final int format) {
+    public boolean save(final File output, final String format) {
         checkArgNotNull(output, "output");
+        checkArgNotNull(format, "format");
         try (final FileOutputStream stream = new FileOutputStream(output)) {
             return save(stream, format);
         }
@@ -39,10 +40,12 @@ public abstract class AbstractDefaultA3MapBundle implements A3MapBundle {
     }
 
     @Override
-    public boolean save(final OutputStream output, final int format) {
+    public boolean save(final OutputStream output, final String format) {
         checkArgNotNull(output, "output");
-        switch (format) {
-            case Format.PROPERTIES:
+        checkArgNotNull(format, "format");
+        switch (format.toLowerCase()) {
+            case "properties":
+            case "prop":
                 try {
                     final Properties properties = new Properties(map.size());
                     properties.putAll(map);

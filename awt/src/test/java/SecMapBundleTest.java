@@ -38,7 +38,7 @@ public class SecMapBundleTest {
                     } catch (IOException ignored) {
                     }
                 }
-                bundle.save(bundleFile, A3Bundle.Format.INI);
+                bundle.save(bundleFile, "ini");
                 return super.containerCloseRequested();
             }
         });

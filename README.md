@@ -84,6 +84,21 @@ a3wt-core
 │   │   ├── Preferences (File-based)
 │   │   └── (WIP) Uri
 │   └── Platform (Related-infos)
+├── (WIP) Audio Framework
+│   ├── Audio Reader
+│   │   ├── (Android Only) 3GPP (*.3gp)
+│   │   ├── (Android Only) AAC (*.aac)
+│   │   ├── (AWT Only) AIFF (*.aif, *.aiff)
+│   │   ├── (AWT Only) AU (*.au)
+│   │   ├── (AWT Only) SND (*.snd)
+│   │   ├── FLAC (*.flac)
+│   │   ├── MIDI (*.midi, *.mid)
+│   │   ├── MP3 (*.mp3)
+│   │   ├── OGG (*.ogg)
+│   │   └── WAV (*.wav)
+│   ├── Music
+│   ├── Sound
+│   └── Audio Recorder
 ├── Bundle Framework (Serialization⁄Deserialization)
 │   ├── Extensive Map Bundle (Map-based, XML-like)
 │   │   ├── (WIP) JSON (*.json)
@@ -92,47 +107,27 @@ a3wt-core
 │   │   └── Properties (*.properties, *.prop)
 │   └── Sectional Map Bundle (Map-based, INI-like)
 │       └── INI (*.ini)
-├── Utilities
-│   ├── DiskLruCache
-│   ├── Interface
-│   │   ├── Callable
-│   │   ├── Copyable
-│   │   ├── Disposable
-│   │   ├── Paintable
-│   │   └── Resetable
-│   ├── LruCache
-│   └── Toolkit⁄Factory
-│       ├── Arrays
-│       ├── Asserts
-│       ├── Charsets
-│       ├── Collections
-│       ├── Colors
-│       ├── Files (BIO)
-│       ├── Maps
-│       ├── Math
-│       ├── Preconditions
-│       ├── ScreenUtils
-│       ├── Streams
-│       ├── TextUtils
-│       └── Unsafe
-└── (WIP) Media Framework
-    ├── Audio Framework
-    │   ├── Audio I⁄O
-    │   │   ├── (Read Only) AIFF (*.aif, *.aiff)
-    │   │   ├── (Read Only) AU (*.au)
-    │   │   ├── (Read Only) MP3 (*.mp3)
-    │   │   ├── (Read Only) OGG (*.ogg)
-    │   │   └── WAV (*.wav)
-    │   └── Audio Recorder
-    ├── Media Player
-    │   ├── Audio
-    │   │   ├── Static
-    │   │   └── Stream
-    │   └── Video
-    │       └── Stream
-    │           └── NOT DESIGNED YET
-    └── Video Framework
-        └── NOT DESIGNED YET
+└── Utilities
+    ├── DiskLruCache
+    ├── Interface
+    │   ├── Callable
+    │   ├── Copyable
+    │   ├── Disposable
+    │   ├── Paintable
+    │   └── Resetable
+    ├── LruCache
+    └── Toolkit⁄Factory
+        ├── Arrays
+        ├── Asserts
+        ├── Charsets
+        ├── Collections
+        ├── Colors
+        ├── Files (BIO)
+        ├── Maps
+        ├── Math
+        ├── Preconditions
+        ├── StreamUtils
+        └── TextUtils
 ```
 
 ## Notes

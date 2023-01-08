@@ -8,6 +8,7 @@ import com.ansdoship.a3wt.graphics.A3Image;
 import com.ansdoship.a3wt.input.A3InputListener;
 import com.ansdoship.a3wt.util.A3Math;
 
+import java.awt.Desktop;
 import java.awt.Image;
 import java.awt.DisplayMode;
 import java.awt.Toolkit;
@@ -38,6 +39,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -785,6 +788,56 @@ public class A3AWTUtils {
         checkArgNotNull(path2D, "path2D");
         if (path2D instanceof Path2D.Float) return (Path2D.Float) path2D;
         else return new Path2D.Float(path2D);
+    }
+
+    public static boolean browse(final URI uri) {
+        checkArgNotNull(uri, "uri");
+        try {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(uri);
+                return true;
+            }
+            else if (AWTA3Platform.isWindows()) {
+                new ProcessBuilder().command("cmd", "/c", "start", uri.toString()).start();
+                return true;
+            }
+            else if (AWTA3Platform.isMac()) {
+                new ProcessBuilder().command("open", uri.toString()).start();
+                return true;
+            }
+            else {
+                new ProcessBuilder().command("xdg-open", uri.toString()).start();
+                return true;
+            }
+        }
+        catch (final IOException e) {
+            return false;
+        }
+    }
+
+    public static boolean open(final File file) {
+        checkArgNotNull(file, "file");
+        try {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+                Desktop.getDesktop().open(file);
+                return true;
+            }
+            else if (AWTA3Platform.isWindows()) {
+                new ProcessBuilder().command("cmd", "/c", "start", file.getAbsolutePath()).start();
+                return true;
+            }
+            else if (AWTA3Platform.isMac()) {
+                new ProcessBuilder().command("open", file.getAbsolutePath()).start();
+                return true;
+            }
+            else {
+                new ProcessBuilder().command("xdg-open", file.getAbsolutePath()).start();
+                return true;
+            }
+        }
+        catch (final IOException e) {
+            return false;
+        }
     }
 
 }

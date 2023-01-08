@@ -12,7 +12,7 @@ import java.net.URL;
 
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotEmpty;
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
-import static com.ansdoship.a3wt.util.A3Streams.transferTo;
+import static com.ansdoship.a3wt.util.A3StreamUtils.transferTo;
 
 public class A3Files {
 

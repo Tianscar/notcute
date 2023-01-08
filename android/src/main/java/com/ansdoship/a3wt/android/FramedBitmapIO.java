@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.ansdoship.a3wt.util.A3Streams.closeQuietly;
+import static com.ansdoship.a3wt.util.A3StreamUtils.closeQuietly;
 
 /**
  * A factory class that providing functions to decode and encode Android Bitmap.

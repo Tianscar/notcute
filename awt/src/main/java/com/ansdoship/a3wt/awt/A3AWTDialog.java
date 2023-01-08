@@ -27,6 +27,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -373,6 +374,16 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         }
 
         @Override
+        public boolean browse(final URI uri) {
+            return dialog.canvas.handle.browse(uri);
+        }
+
+        @Override
+        public boolean open(final File file) {
+            return dialog.canvas.handle.open(file);
+        }
+
+        @Override
         public void setCursor(final A3Cursor cursor) {
             dialog.canvas.handle.setCursor(cursor);
         }
@@ -573,6 +584,7 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         for (A3ContainerListener listener : handle.containerListeners) {
             listener.containerFocusGained();
         }
+        canvas.requestFocus();
     }
 
     @Override

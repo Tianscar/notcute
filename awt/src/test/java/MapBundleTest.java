@@ -34,7 +34,7 @@ public class MapBundleTest {
                     } catch (IOException ignored) {
                     }
                 }
-                bundle.save(bundleFile, A3Bundle.Format.PROPERTIES);
+                bundle.save(bundleFile, "properties");
                 return super.containerCloseRequested();
             }
         });

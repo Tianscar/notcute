@@ -1,8 +1,8 @@
-package com.ansdoship.a3wt.util;
+package com.ansdoship.a3wt.awt;
 
 import java.lang.reflect.Field;
 
-public class A3Unsafe {
+public class Unsafe {
 
     private static final sun.misc.Unsafe UNSAFE;
     static {
@@ -12,13 +12,12 @@ public class A3Unsafe {
             final Field field = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
             unsafe = (sun.misc.Unsafe) field.get(null);
-        } catch (NoSuchFieldException ignored) {
-        } catch (IllegalAccessException ignored) {
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {
         }
         UNSAFE = unsafe;
     }
 
-    private A3Unsafe(){}
+    private Unsafe(){}
 
     public static sun.misc.Unsafe getUnsafe() {
         return UNSAFE;

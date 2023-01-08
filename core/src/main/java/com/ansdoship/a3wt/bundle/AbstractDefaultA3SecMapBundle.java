@@ -34,8 +34,9 @@ public abstract class AbstractDefaultA3SecMapBundle implements A3SecMapBundle {
     protected abstract A3MapBundle createMapBundle();
 
     @Override
-    public boolean save(final File output, final int format) {
+    public boolean save(final File output, final String format) {
         checkArgNotNull(output, "output");
+        checkArgNotNull(format, "format");
         try (final FileOutputStream stream = new FileOutputStream(output)) {
             return save(stream, format);
         }
@@ -45,10 +46,11 @@ public abstract class AbstractDefaultA3SecMapBundle implements A3SecMapBundle {
     }
 
     @Override
-    public boolean save(final OutputStream output, final int format) {
+    public boolean save(final OutputStream output, final String format) {
         checkArgNotNull(output, "output");
-        switch (format) {
-            case Format.INI:
+        checkArgNotNull(format, "format");
+        switch (format.toLowerCase()) {
+            case "ini":
                 final Ini ini = new Ini();
                 A3MapBundle bundle;
                 for (final String key : map.keySet()) {

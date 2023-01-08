@@ -1,10 +1,13 @@
 package com.ansdoship.a3wt.android;
 
+import android.content.ActivityNotFoundException;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
@@ -29,6 +32,7 @@ import com.ansdoship.a3wt.input.A3InputListener;
 import com.ansdoship.a3wt.util.A3Maps;
 
 import java.io.File;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -386,6 +390,34 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         @Override
         public A3Cursor getCursor() {
             return cursor;
+        }
+
+        @Override
+        public boolean browse(final URI uri) {
+            checkArgNotNull(uri, "uri");
+            final Context context = ((AndroidA3Context)getContext()).getContext();
+            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri.toString()));
+            try {
+                context.startActivity(intent);
+                return true;
+            }
+            catch (final ActivityNotFoundException e) {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean open(final File file) {
+            checkArgNotNull(file, "file");
+            final Context context = ((AndroidA3Context)getContext()).getContext();
+            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(file.getAbsolutePath()));
+            try {
+                context.startActivity(intent);
+                return true;
+            }
+            catch (final ActivityNotFoundException e) {
+                return false;
+            }
         }
 
     }
