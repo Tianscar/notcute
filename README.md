@@ -114,6 +114,7 @@ a3wt-core
     │   ├── Copyable
     │   ├── Disposable
     │   ├── Paintable
+    │   ├── Prepareable
     │   └── Resetable
     ├── LruCache
     └── Toolkit⁄Factory
