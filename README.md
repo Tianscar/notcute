@@ -145,19 +145,19 @@ Since I'm not a skilled programmer, the code may be badly written...
 So! Contributions welcome! PRs welcome! If you're planning to contribute, I'm quite glad to have you!
 
 ## License
-[Apache-2.0](https://github.com/AnsdoShip/a3wt/blob/main/LICENSE) (c) [A3WT](https://github.com/AnsdoShip/a3wt)
+[Apache-2.0](https://github.com/AnsdoShip/a3wt/blob/main/LICENSE) (c) AnsdoShip Studio
 
 ### A3WT currently uses some code from the following projects:
-Apache-2.0 (c) [Android Open Source Project (AOSP)](https://source.android.com/)  
-Apache-2.0 (c) [Apache Harmony](https://harmony.apache.org)  
-Apache-2.0 (c) [animated-gif-lib-for-java](https://github.com/rtyley/animated-gif-lib-for-java)  
-[Apache-2.0](https://github.com/JakeWharton/DiskLruCache/blob/master/LICENSE.txt) (c) [DiskLruCache](http://jakewharton.github.io/DiskLruCache)  
-[MIT](https://github.com/philfrei/AudioCue-maven/blob/main/LICENSE) (c) [AudioCue-Maven](https://github.com/philfrei/AudioCue-maven)
+Apache-2.0 [Android Open Source Project (AOSP)](https://source.android.com/)  
+Apache-2.0 [Apache Harmony](https://harmony.apache.org)  
+Apache-2.0 [animated-gif-lib-for-java](https://github.com/rtyley/animated-gif-lib-for-java)  
+[Apache-2.0](https://github.com/JakeWharton/DiskLruCache/blob/master/LICENSE.txt) [DiskLruCache](http://jakewharton.github.io/DiskLruCache)  
+[MIT](https://github.com/philfrei/AudioCue-maven/blob/main/LICENSE) [AudioCue-Maven](https://github.com/philfrei/AudioCue-maven)
 ### A3WT currently uses the following projects as dependencies:
-[MIT](https://github.com/koral--/android-gif-drawable/blob/dev/LICENSE) (c) [android-gif-drawable](https://github.com/koral--/android-gif-drawable)  
-[Apache-2.0](https://ini4j.sourceforge.net/license.html) (c) [ini4j](https://ini4j.sourceforge.net/)  
-[BSD-3-Clause](https://github.com/haraldk/TwelveMonkeys/blob/master/LICENSE.txt) (c) [TwelveMonkeys](http://haraldk.github.io/TwelveMonkeys/)  
-[Apache-2.0](https://github.com/jnr/jnr-ffi/blob/master/LICENSE) (c) [jnr-ffi](https://github.com/jnr/jnr-ffi)  
-LGPL-2.1 (c) [MP3SPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/mp3spi/1.9.5.4)  
-LGPL-2.1 (c) [VorbisSPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/vorbisspi/1.0.3.3)  
-LGPL-2.1 (c) [jFLAC](https://jflac.sourceforge.net)
+[MIT](https://github.com/koral--/android-gif-drawable/blob/dev/LICENSE) [android-gif-drawable](https://github.com/koral--/android-gif-drawable)  
+[Apache-2.0](https://ini4j.sourceforge.net/license.html) [ini4j](https://ini4j.sourceforge.net/)  
+[BSD-3-Clause](https://github.com/haraldk/TwelveMonkeys/blob/master/LICENSE.txt) [TwelveMonkeys](http://haraldk.github.io/TwelveMonkeys/)  
+[Apache-2.0](https://github.com/jnr/jnr-ffi/blob/master/LICENSE) [jnr-ffi](https://github.com/jnr/jnr-ffi)  
+LGPL-2.1 [MP3SPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/mp3spi/1.9.5.4)  
+LGPL-2.1 [VorbisSPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/vorbisspi/1.0.3.3)  
+LGPL-2.1 [jFLAC](https://jflac.sourceforge.net)
