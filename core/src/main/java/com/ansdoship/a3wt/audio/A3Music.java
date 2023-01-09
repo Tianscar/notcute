@@ -1,12 +1,13 @@
 package com.ansdoship.a3wt.audio;
 
 import com.ansdoship.a3wt.util.A3Disposable;
+import com.ansdoship.a3wt.util.A3Prepareable;
 import com.ansdoship.a3wt.util.A3Resetable;
 
 import java.io.IOException;
 import java.util.List;
 
-public interface A3Music extends A3Disposable, A3Resetable<A3Music> {
+public interface A3Music extends A3Disposable, A3Prepareable, A3Resetable<A3Music> {
 
     A3Music setVolume(final float volume);
     A3Music setLooping(final int loops);
@@ -16,6 +17,7 @@ public interface A3Music extends A3Disposable, A3Resetable<A3Music> {
     int getLooping();
     int getMillisecondPos();
 
+    @Override
     void prepare() throws IOException;
     void start();
     void pause();

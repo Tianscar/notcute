@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
 import com.ansdoship.a3wt.app.*;
+import com.ansdoship.a3wt.audio.A3AudioKit;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -60,6 +61,11 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         @Override
         public A3BundleKit getBundleKit() {
             return popupWindow.surfaceView.handle.getBundleKit();
+        }
+
+        @Override
+        public A3AudioKit getAudioKit() {
+            return popupWindow.surfaceView.handle.getAudioKit();
         }
 
         @Override

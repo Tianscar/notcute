@@ -1,6 +1,7 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.*;
+import com.ansdoship.a3wt.audio.A3AudioKit;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -147,6 +148,11 @@ public class A3AWTFrame extends Frame implements AWTA3Container, ComponentListen
         @Override
         public A3BundleKit getBundleKit() {
             return frame.canvas.handle.getBundleKit();
+        }
+
+        @Override
+        public A3AudioKit getAudioKit() {
+            return frame.canvas.handle.getAudioKit();
         }
 
         @Override

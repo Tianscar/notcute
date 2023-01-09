@@ -15,6 +15,7 @@ import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 public class AndroidA3Music implements A3Music, MediaPlayer.OnCompletionListener {
 
     protected volatile boolean disposed = false;
+    protected volatile boolean prepared = false;
 
     protected volatile float volume;
     protected volatile int loops;
@@ -42,7 +43,7 @@ public class AndroidA3Music implements A3Music, MediaPlayer.OnCompletionListener
     protected void apply() {
         mediaPlayer.setVolume(volume, volume);
         if (loopsLeft.get() != 0) mediaPlayer.setLooping(true);
-        mediaPlayer.seekTo(pos);
+        mediaPlayer.seekTo(A3Math.clamp(pos, 0, getMillisecondLength()));
     }
 
     @Override
@@ -60,7 +61,7 @@ public class AndroidA3Music implements A3Music, MediaPlayer.OnCompletionListener
 
     @Override
     public A3Music setMillisecondPos(final int pos) {
-        this.pos = A3Math.clamp(pos, 0, getMillisecondLength());
+        this.pos = pos;
         return this;
     }
 
@@ -80,8 +81,18 @@ public class AndroidA3Music implements A3Music, MediaPlayer.OnCompletionListener
     }
 
     @Override
+    public boolean isPrepared() {
+        return prepared;
+    }
+
+    public void checkPrepared() {
+        checkPrepared("Please prepare first!");
+    }
+
+    @Override
     public void prepare() throws IOException {
         mediaPlayer.prepare();
+        prepared = true;
         for (final A3MusicListener listener : listeners) {
             listener.musicPrepared();
         }
@@ -89,6 +100,7 @@ public class AndroidA3Music implements A3Music, MediaPlayer.OnCompletionListener
 
     @Override
     public void start() {
+        checkPrepared();
         apply();
         mediaPlayer.start();
         for (final A3MusicListener listener : listeners) {
@@ -98,6 +110,7 @@ public class AndroidA3Music implements A3Music, MediaPlayer.OnCompletionListener
 
     @Override
     public void pause() {
+        checkPrepared();
         mediaPlayer.pause();
         for (final A3MusicListener listener : listeners) {
             listener.musicPaused();
@@ -106,6 +119,7 @@ public class AndroidA3Music implements A3Music, MediaPlayer.OnCompletionListener
 
     @Override
     public void resume() {
+        checkPrepared();
         mediaPlayer.start();
         for (final A3MusicListener listener : listeners) {
             listener.musicResumed();
@@ -114,7 +128,9 @@ public class AndroidA3Music implements A3Music, MediaPlayer.OnCompletionListener
 
     @Override
     public void stop() {
+        checkPrepared();
         mediaPlayer.stop();
+        prepared = false;
     }
 
     @Override

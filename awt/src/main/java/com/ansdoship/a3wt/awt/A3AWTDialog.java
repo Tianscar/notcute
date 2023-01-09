@@ -1,6 +1,7 @@
 package com.ansdoship.a3wt.awt;
 
 import com.ansdoship.a3wt.app.*;
+import com.ansdoship.a3wt.audio.A3AudioKit;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -149,6 +150,11 @@ public class A3AWTDialog extends Dialog implements AWTA3Container, ComponentList
         @Override
         public A3BundleKit getBundleKit() {
             return dialog.canvas.handle.getBundleKit();
+        }
+
+        @Override
+        public A3AudioKit getAudioKit() {
+            return dialog.canvas.handle.getAudioKit();
         }
 
         @Override

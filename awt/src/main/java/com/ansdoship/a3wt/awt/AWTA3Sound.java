@@ -1,15 +1,17 @@
-package com.ansdoship.a3wt.android;
+package com.ansdoship.a3wt.awt;
 
-import android.media.SoundPool;
+import com.adonax.audiocue.AudioCue;
+import com.adonax.audiocue.AudioMixer;
 import com.ansdoship.a3wt.audio.A3Sound;
 import com.ansdoship.a3wt.audio.A3SoundListener;
 
+import javax.sound.sampled.LineUnavailableException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.ansdoship.a3wt.util.A3Preconditions.checkArgNotNull;
 
-public class AndroidA3Sound implements A3Sound {
+public class AWTA3Sound implements A3Sound {
 
     protected volatile boolean disposed = false;
 
@@ -17,15 +19,18 @@ public class AndroidA3Sound implements A3Sound {
     protected volatile float speed;
     protected volatile int loops;
 
-    protected final SoundPool soundPool;
-    protected final int soundId;
+    protected final AudioMixer audioMixer;
+    protected final AudioCue audioCue;
+    protected volatile int instanceID;
 
     protected final List<A3SoundListener> listeners = new CopyOnWriteArrayList<>();
 
-    public AndroidA3Sound(final SoundPool soundPool, final int soundId) {
-        checkArgNotNull(soundPool, "soundPool");
-        this.soundPool = soundPool;
-        this.soundId = soundId;
+    public AWTA3Sound(final AudioMixer audioMixer, final AudioCue audioCue) {
+        checkArgNotNull(audioMixer, "audioMixer");
+        checkArgNotNull(audioCue, "audioCue");
+        this.audioMixer = audioMixer;
+        this.audioCue = audioCue;
+        this.instanceID = audioCue.obtainInstance();
         reset();
     }
 
@@ -38,7 +43,12 @@ public class AndroidA3Sound implements A3Sound {
     public void dispose() {
         if (isDisposed()) return;
         disposed = true;
-        soundPool.unload(soundId);
+        if (audioCue.isPlayerRunning()) {
+            audioCue.close();
+        }
+        if (audioMixer.getTrackCacheCount() < 1) {
+            if (audioMixer.isMixerRunning()) audioMixer.stop();
+        }
         for (final A3SoundListener listener : listeners) {
             listener.soundDisposed();
         }
@@ -77,9 +87,27 @@ public class AndroidA3Sound implements A3Sound {
         return loops;
     }
 
+    private void apply() {
+        audioCue.setVolume(instanceID, volume);
+        audioCue.setLooping(instanceID, loops);
+        audioCue.setSpeed(instanceID, speed);
+    }
+
     @Override
     public void start() {
-        if (soundPool.play(soundId, volume, volume, 1, loops, speed) != 0) {
+        if (!audioMixer.isMixerRunning()) {
+            try {
+                audioMixer.start();
+            }
+            catch (LineUnavailableException e) {
+                return;
+            }
+        }
+        if (!audioCue.isPlayerRunning()) audioCue.open(audioMixer);
+        if (!audioCue.isPlaying(instanceID)) {
+            apply();
+            audioCue.setFramePosition(instanceID, 0);
+            audioCue.start(instanceID);
             for (final A3SoundListener listener : listeners) {
                 listener.soundStarted();
             }
@@ -88,7 +116,7 @@ public class AndroidA3Sound implements A3Sound {
 
     @Override
     public void pause() {
-        soundPool.pause(soundId);
+        audioCue.stop(instanceID);
         for (final A3SoundListener listener : listeners) {
             listener.soundPaused();
         }
@@ -96,7 +124,7 @@ public class AndroidA3Sound implements A3Sound {
 
     @Override
     public void resume() {
-        soundPool.resume(soundId);
+        audioCue.start(instanceID);
         for (final A3SoundListener listener : listeners) {
             listener.soundResumed();
         }
@@ -104,7 +132,15 @@ public class AndroidA3Sound implements A3Sound {
 
     @Override
     public void stop() {
-        soundPool.stop(soundId);
+        if (audioCue.isPlaying(instanceID)) audioCue.stop(instanceID);
+        if (audioCue.isPlayerRunning()) {
+            audioCue.close();
+            audioCue.releaseInstance(instanceID);
+            instanceID = audioCue.obtainInstance();
+        }
+        if (audioMixer.getTrackCacheCount() < 1) {
+            if (audioMixer.isMixerRunning()) audioMixer.stop();
+        }
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.ansdoship.a3wt.app.A3Clipboard;
 import com.ansdoship.a3wt.app.A3Logger;
 import com.ansdoship.a3wt.app.A3I18NText;
 import com.ansdoship.a3wt.app.DefaultA3I18NText;
+import com.ansdoship.a3wt.audio.A3AudioKit;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.bundle.DefaultA3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
@@ -159,6 +160,7 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
             bundleKit.getExtMapBundleDelegateMappings().put(A3Size.class, graphicsKit::createSize);
             bundleKit.getExtMapBundleDelegateMappings().put(A3Transform.class, graphicsKit::createTransform);
         }
+        protected static final AWTA3AudioKit audioKit = new AWTA3AudioKit();
 
         @Override
         public A3Context getContext() {
@@ -178,6 +180,11 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         @Override
         public A3BundleKit getBundleKit() {
             return bundleKit;
+        }
+
+        @Override
+        public A3AudioKit getAudioKit() {
+            return audioKit;
         }
 
         protected static final A3Logger logger = new AWTA3Logger();

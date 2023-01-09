@@ -1,5 +1,6 @@
 package com.ansdoship.a3wt.app;
 
+import com.ansdoship.a3wt.audio.A3AudioKit;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -24,6 +25,7 @@ public interface A3Context extends A3Disposable {
         A3I18NText getI18NText();
         A3GraphicsKit getGraphicsKit();
         A3BundleKit getBundleKit();
+        A3AudioKit getAudioKit();
 
         void postRunnable(final Runnable runnable);
 

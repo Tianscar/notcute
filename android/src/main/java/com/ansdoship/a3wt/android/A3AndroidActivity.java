@@ -7,6 +7,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import com.ansdoship.a3wt.app.*;
+import com.ansdoship.a3wt.audio.A3AudioKit;
 import com.ansdoship.a3wt.bundle.A3BundleKit;
 import com.ansdoship.a3wt.graphics.A3Cursor;
 import com.ansdoship.a3wt.graphics.A3Graphics;
@@ -84,6 +85,11 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         @Override
         public A3BundleKit getBundleKit() {
             return activity.surfaceView.handle.getBundleKit();
+        }
+
+        @Override
+        public A3AudioKit getAudioKit() {
+            return activity.surfaceView.handle.getAudioKit();
         }
 
         @Override
