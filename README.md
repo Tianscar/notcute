@@ -3,8 +3,7 @@
 
 The abstract layer for Android GUI and AWT.
 
-"Any problem in computer science can be solved with another layer of indirection [except the problem of too many layers of indirection]."
-
+"Any problem in computer science can be solved with another layer of indirection [except the problem of too many layers of indirection]."  
 A3WT is not a framework built from scratch, just an indirection layer over existing frameworks.
 
 ## Design
