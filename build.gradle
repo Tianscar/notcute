@@ -14,8 +14,8 @@ subprojects {
 
     ext {
         libName = 'A3WT'
-        libGroupName = 'com.ansdoship'
-        libVendorName = 'AnsdoShip'
+        libGroupName = 'io.github.a3wtproject'
+        libVendorName = 'A3WT Project'
 
         libVersionCode = 1
         libVersionName = '0.0.1'
@@ -75,7 +75,7 @@ configure ([project(':core'), project(':awt')]) {
                 pom {
                     name = libName
                     description = 'Cross-platform direct UI Toolkit for Java. Currently supports Windows/Linux/macOS/Android.'
-                    url = 'https://github.com/AnsdoShip/a3wt'
+                    url = 'https://github.com/a3wtproject/a3wt'
                     licenses {
                         license {
                             name = 'The Apache License, Version 2.0'
@@ -84,15 +84,15 @@ configure ([project(':core'), project(':awt')]) {
                     }
                     developers {
                         developer {
-                            id = 'AnsdoShip'
-                            name = 'AnsdoShip Studio'
+                            id = 'Tianscar'
+                            name = 'Tiansword Carbonicacid'
                             email = 'tianscar@protonmail.com'
                         }
                     }
                     scm {
-                        connection = 'scm:git:git@github.com/AnsdoShip/a3wt.git'
-                        developerConnection = 'scm:git:git@github.com/AnsdoShip/a3wt.git'
-                        url = 'https://github.com/AnsdoShip/a3wt'
+                        connection = 'scm:git:git@github.com/a3wtproject/a3wt.git'
+                        developerConnection = 'scm:git:git@github.com/a3wtproject/a3wt.git'
+                        url = 'https://github.com/a3wtproject/a3wt'
                     }
                 }
             }

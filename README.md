@@ -27,7 +27,9 @@ a3wt-core
 │       ├── Win32
 │       │   └── Windows
 │       └── X11
-│           └── *nix⁄X11
+│           ├── *nix⁄X11
+│           └── XWayland
+│               └── *nix⁄Wayland
 └── (WIP) a3wt-teavm
     └── TeaVM
         └── HTML5
@@ -145,7 +147,7 @@ Since I'm not a skilled programmer, the code may be badly written...
 So! Contributions welcome! PRs welcome! If you're planning to contribute, I'm quite glad to have you!
 
 ## License
-[Apache-2.0](https://github.com/AnsdoShip/a3wt/blob/main/LICENSE) (c) AnsdoShip Studio
+[Apache-2.0](LICENSE) (c) Tianscar
 
 ### A3WT currently uses some code from the following projects:
 Apache-2.0 [Android Open Source Project (AOSP)](https://source.android.com/)  

@@ -30,9 +30,8 @@ android {
 dependencies {
     implementation project(':core')
 
+    implementation 'com.tianscar:android-bmp-encoder:1.0.0'
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.15'
-
-    //implementation 'androidx.appcompat:appcompat:1.5.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
