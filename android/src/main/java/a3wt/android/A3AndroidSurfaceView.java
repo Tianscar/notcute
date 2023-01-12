@@ -1,5 +1,6 @@
 package a3wt.android;
 
+import a3wt.app.*;
 import a3wt.graphics.*;
 import android.content.ActivityNotFoundException;
 import android.content.ClipboardManager;
@@ -17,14 +18,6 @@ import android.view.SurfaceHolder;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
 import android.view.PointerIcon;
-import a3wt.app.A3Context;
-import a3wt.app.A3Platform;
-import a3wt.app.A3Assets;
-import a3wt.app.A3Clipboard;
-import a3wt.app.A3Preferences;
-import a3wt.app.A3Logger;
-import a3wt.app.A3I18NText;
-import a3wt.app.DefaultA3I18NText;
 import a3wt.audio.A3AudioKit;
 import a3wt.bundle.A3BundleKit;
 import a3wt.bundle.DefaultA3BundleKit;
@@ -57,45 +50,56 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
     @Override
     public boolean onTouch(final View v, final MotionEvent event) {
-        return commonOnTouchEvent(handle.inputListeners, event);
+        return commonOnTouchEvent(holder.inputListeners, event);
     }
 
     @Override
     public boolean onHover(final View v, final MotionEvent event) {
-        return commonOnHoverEvent(handle.inputListeners, event);
+        return commonOnHoverEvent(holder.inputListeners, event);
     }
 
     @Override
     public boolean onKey(final View v, final int keyCode, final KeyEvent event) {
-        return commonOnKeyEvent(handle.inputListeners, event);
+        return commonOnKeyEvent(holder.inputListeners, event);
     }
 
     @Override
     public boolean onGenericMotion(final View v, final MotionEvent event) {
-        return commonOnMouseWheelMotion(handle.inputListeners, event);
+        return commonOnMouseWheelMotion(holder.inputListeners, event);
     }
 
-    protected static class A3AndroidSurfaceViewHandle implements Handle {
+    protected static class A3AndroidSurfaceViewHolder implements Holder {
 
         protected static final AndroidA3Platform platform = new AndroidA3Platform();
         protected static final AndroidA3GraphicsKit graphicsKit = new AndroidA3GraphicsKit();
         protected static final DefaultA3BundleKit bundleKit = new DefaultA3BundleKit();
         static {
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Arc.class, graphicsKit::createArc);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Area.class, graphicsKit::createArea);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Coordinate.class, graphicsKit::createCoordinate);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3CubicCurve.class, graphicsKit::createCubicCurve);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Dimension.class, graphicsKit::createDimension);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Line.class, graphicsKit::createLine);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Oval.class, graphicsKit::createOval);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Point.class, graphicsKit::createPoint);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3QuadCurve.class, graphicsKit::createQuadCurve);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Rect.class, graphicsKit::createRect);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3RoundRect.class, graphicsKit::createRoundRect);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Size.class, graphicsKit::createSize);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Transform.class, graphicsKit::createTransform);
+            bundleKit.addExtMapBundleDelegateMapping(A3Arc.class, graphicsKit::createArc);
+            bundleKit.addExtMapBundleDelegateMapping(A3Area.class, graphicsKit::createArea);
+            bundleKit.addExtMapBundleDelegateMapping(A3Coordinate.class, graphicsKit::createCoordinate);
+            bundleKit.addExtMapBundleDelegateMapping(A3CubicCurve.class, graphicsKit::createCubicCurve);
+            bundleKit.addExtMapBundleDelegateMapping(A3Dimension.class, graphicsKit::createDimension);
+            bundleKit.addExtMapBundleDelegateMapping(A3Line.class, graphicsKit::createLine);
+            bundleKit.addExtMapBundleDelegateMapping(A3Oval.class, graphicsKit::createOval);
+            bundleKit.addExtMapBundleDelegateMapping(A3Point.class, graphicsKit::createPoint);
+            bundleKit.addExtMapBundleDelegateMapping(A3QuadCurve.class, graphicsKit::createQuadCurve);
+            bundleKit.addExtMapBundleDelegateMapping(A3Rect.class, graphicsKit::createRect);
+            bundleKit.addExtMapBundleDelegateMapping(A3RoundRect.class, graphicsKit::createRoundRect);
+            bundleKit.addExtMapBundleDelegateMapping(A3Size.class, graphicsKit::createSize);
+            bundleKit.addExtMapBundleDelegateMapping(A3Transform.class, graphicsKit::createTransform);
         }
         protected static final AndroidA3AudioKit audioKit = new AndroidA3AudioKit();
+        protected static final DefaultA3Factory factory = new DefaultA3Factory();
+        static {
+            factory.addMapping("a3wt", "graphicsKit", () -> graphicsKit);
+            factory.addMapping("a3wt", "bundleKit", () -> bundleKit);
+            factory.addMapping("a3wt", "audioKit", () -> audioKit);
+        }
+
+        @Override
+        public A3Factory getFactory() {
+            return factory;
+        }
 
         @Override
         public A3Context getContext() {
@@ -188,7 +192,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
         protected final A3AndroidSurfaceView surfaceView;
 
-        public A3AndroidSurfaceViewHandle(final A3AndroidSurfaceView surfaceView) {
+        public A3AndroidSurfaceViewHolder(final A3AndroidSurfaceView surfaceView) {
             checkArgNotNull(surfaceView, "surfaceView");
             this.surfaceView = surfaceView;
             graphicsKit.attach(surfaceView.getContext());
@@ -429,11 +433,11 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
     }
 
-    protected final A3AndroidSurfaceViewHandle handle;
+    protected final A3AndroidSurfaceViewHolder holder;
 
     @Override
-    public Handle getContextHandle() {
-        return handle;
+    public Holder getContextHolder() {
+        return holder;
     }
     
     protected volatile boolean disposed = false;
@@ -459,9 +463,9 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
 
     public A3AndroidSurfaceView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        handle = new A3AndroidSurfaceViewHandle(this);
-        handle.surfaceHolder = getHolder();
-        handle.surfaceHolder.addCallback(this);
+        holder = new A3AndroidSurfaceViewHolder(this);
+        holder.surfaceHolder = getHolder();
+        holder.surfaceHolder.addCallback(this);
         addOnLayoutChangeListener(this);
         setOnTouchListener(this);
         setOnHoverListener(this);
@@ -470,33 +474,33 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     }
 
     @Override
-    public void surfaceCreated(final SurfaceHolder holder) {
-        if (!handle.surfaceFirstCreated) {
-            handle.surfaceFirstCreated = true;
-            for (A3ContextListener listener : handle.contextListeners) {
+    public void surfaceCreated(final SurfaceHolder surfaceHolder) {
+        if (!holder.surfaceFirstCreated) {
+            holder.surfaceFirstCreated = true;
+            for (A3ContextListener listener : holder.contextListeners) {
                 listener.contextCreated();
             }
         }
     }
 
     @Override
-    public void surfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
+    public void surfaceChanged(final SurfaceHolder surfaceHolder, final int format, final int width, final int height) {
     }
 
     @Override
-    public void surfaceDestroyed(final SurfaceHolder holder) {
+    public void surfaceDestroyed(final SurfaceHolder surfaceHolder) {
     }
 
     @Override
     protected void onFocusChanged(final boolean gainFocus, final int direction, final Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
         if (gainFocus) {
-            for (final A3ContextListener listener : handle.contextListeners) {
+            for (final A3ContextListener listener : holder.contextListeners) {
                 listener.contextFocusGained();
             }
         }
         else {
-            for (final A3ContextListener listener : handle.contextListeners) {
+            for (final A3ContextListener listener : holder.contextListeners) {
                 listener.contextFocusLost();
             }
         }
@@ -505,12 +509,12 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     @Override
     protected void onVisibilityChanged(final View changedView, final int visibility) {
         if (visibility == VISIBLE) {
-            for (final A3ContextListener listener : handle.contextListeners) {
+            for (final A3ContextListener listener : holder.contextListeners) {
                 listener.contextShown();
             }
         }
         else {
-            for (final A3ContextListener listener : handle.contextListeners) {
+            for (final A3ContextListener listener : holder.contextListeners) {
                 listener.contextHidden();
             }
         }
@@ -521,10 +525,10 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
                                final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
         final int width = right - left;
         final int height = bottom - top;
-        for (final A3ContextListener listener : handle.contextListeners) {
+        for (final A3ContextListener listener : holder.contextListeners) {
             listener.contextResized(width, height);
         }
-        for (final A3ContextListener listener : handle.contextListeners) {
+        for (final A3ContextListener listener : holder.contextListeners) {
             listener.contextMoved(left, top);
         }
     }
@@ -538,7 +542,7 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
     public void dispose() {
         if (isDisposed()) return;
         disposed = true;
-        for (final A3ContextListener listener : handle.contextListeners) {
+        for (final A3ContextListener listener : holder.contextListeners) {
             listener.contextDisposed();
         }
     }

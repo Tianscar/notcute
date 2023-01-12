@@ -30,104 +30,109 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
     @Override
     public boolean onGenericMotionEvent(final MotionEvent event) {
-        return A3AndroidUtils.commonOnMouseWheelMotion(handle.inputListeners, event) || super.onGenericMotionEvent(event);
+        return A3AndroidUtils.commonOnMouseWheelMotion(holder.inputListeners, event) || super.onGenericMotionEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
-        return A3AndroidUtils.commonOnTouchEvent(handle.inputListeners, event) || super.onTouchEvent(event);
+        return A3AndroidUtils.commonOnTouchEvent(holder.inputListeners, event) || super.onTouchEvent(event);
     }
 
     @Override
     public boolean onHover(final View v, final MotionEvent event) {
-        return A3AndroidUtils.commonOnHoverEvent(handle.inputListeners, event);
+        return A3AndroidUtils.commonOnHoverEvent(holder.inputListeners, event);
     }
 
     @Override
     public boolean onKey(final DialogInterface dialog, final int keyCode, final KeyEvent event) {
-        return A3AndroidUtils.commonOnKeyEvent(handle.inputListeners, event);
+        return A3AndroidUtils.commonOnKeyEvent(holder.inputListeners, event);
     }
 
-    protected static class A3AndroidDialogHandle implements A3Context.Handle, A3Container.Handle {
+    protected static class A3AndroidDialogHolder implements A3Context.Holder, A3Container.Holder {
 
         @Override
         public A3Context getContext() {
-            return dialog.surfaceView.handle.getContext();
+            return dialog.surfaceView.holder.getContext();
         }
 
         @Override
         public A3Platform getPlatform() {
-            return dialog.surfaceView.handle.getPlatform();
+            return dialog.surfaceView.holder.getPlatform();
         }
 
         @Override
         public A3Logger getLogger() {
-            return dialog.surfaceView.handle.getLogger();
+            return dialog.surfaceView.holder.getLogger();
+        }
+
+        @Override
+        public A3Factory getFactory() {
+            return dialog.surfaceView.holder.getFactory();
         }
 
         @Override
         public A3I18NText getI18NText() {
-            return dialog.surfaceView.handle.getI18NText();
+            return dialog.surfaceView.holder.getI18NText();
         }
 
         @Override
         public A3GraphicsKit getGraphicsKit() {
-            return dialog.surfaceView.handle.getGraphicsKit();
+            return dialog.surfaceView.holder.getGraphicsKit();
         }
 
         @Override
         public A3BundleKit getBundleKit() {
-            return dialog.surfaceView.handle.getBundleKit();
+            return dialog.surfaceView.holder.getBundleKit();
         }
 
         @Override
         public A3AudioKit getAudioKit() {
-            return dialog.surfaceView.handle.getAudioKit();
+            return dialog.surfaceView.holder.getAudioKit();
         }
 
         @Override
         public int getScreenWidth() {
-            return dialog.surfaceView.handle.getScreenWidth();
+            return dialog.surfaceView.holder.getScreenWidth();
         }
 
         @Override
         public int getScreenHeight() {
-            return dialog.surfaceView.handle.getScreenHeight();
+            return dialog.surfaceView.holder.getScreenHeight();
         }
 
         @Override
         public int getMinScreenWidth() {
-            return dialog.surfaceView.handle.getMinScreenWidth();
+            return dialog.surfaceView.holder.getMinScreenWidth();
         }
 
         @Override
         public int getMinScreenHeight() {
-            return dialog.surfaceView.handle.getMinScreenHeight();
+            return dialog.surfaceView.holder.getMinScreenHeight();
         }
 
         @Override
         public int getMaxScreenWidth() {
-            return dialog.surfaceView.handle.getMaxScreenWidth();
+            return dialog.surfaceView.holder.getMaxScreenWidth();
         }
 
         @Override
         public int getMaxScreenHeight() {
-            return dialog.surfaceView.handle.getMaxScreenHeight();
+            return dialog.surfaceView.holder.getMaxScreenHeight();
         }
 
         @Override
         public int getPPI() {
-            return dialog.surfaceView.handle.getPPI();
+            return dialog.surfaceView.holder.getPPI();
         }
 
         @Override
         public float getDensity() {
-            return dialog.surfaceView.handle.getDensity();
+            return dialog.surfaceView.holder.getDensity();
         }
 
         @Override
         public float getScaledDensity() {
-            return dialog.surfaceView.handle.getScaledDensity();
+            return dialog.surfaceView.holder.getScaledDensity();
         }
 
         @Override
@@ -137,7 +142,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
         protected final A3AndroidDialog dialog;
 
-        public A3AndroidDialogHandle(final A3AndroidDialog dialog) {
+        public A3AndroidDialogHolder(final A3AndroidDialog dialog) {
             checkArgNotNull(dialog, "dialog");
             this.dialog = dialog;
         }
@@ -147,7 +152,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
         @Override
         public A3Graphics getGraphics() {
-            return dialog.surfaceView.handle.getGraphics();
+            return dialog.surfaceView.holder.getGraphics();
         }
 
         @Override
@@ -162,43 +167,43 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
         @Override
         public int getBackgroundColor() {
-            return dialog.surfaceView.handle.getBackgroundColor();
+            return dialog.surfaceView.holder.getBackgroundColor();
         }
 
         @Override
         public void setBackgroundColor(int color) {
-            dialog.surfaceView.handle.setBackgroundColor(color);
+            dialog.surfaceView.holder.setBackgroundColor(color);
         }
 
         @Override
         public long elapsed() {
-            return dialog.surfaceView.handle.elapsed();
+            return dialog.surfaceView.holder.elapsed();
         }
 
         @Override
         public void paint(final A3Graphics graphics, final boolean snapshot) {
-            dialog.surfaceView.handle.paint(graphics, snapshot);
+            dialog.surfaceView.holder.paint(graphics, snapshot);
         }
 
         @Override
         public void update() {
             dialog.checkDisposed("Can't call update() on a disposed A3Container");
-            dialog.surfaceView.handle.update();
+            dialog.surfaceView.holder.update();
         }
 
         @Override
         public A3Image updateAndSnapshot() {
-            return dialog.surfaceView.handle.updateAndSnapshot();
+            return dialog.surfaceView.holder.updateAndSnapshot();
         }
 
         @Override
         public List<A3ContextListener> getContextListeners() {
-            return dialog.surfaceView.handle.getContextListeners();
+            return dialog.surfaceView.holder.getContextListeners();
         }
 
         @Override
         public void addContextListener(final A3ContextListener listener) {
-            dialog.surfaceView.handle.addContextListener(listener);
+            dialog.surfaceView.holder.addContextListener(listener);
         }
 
         @Override
@@ -228,12 +233,12 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
         @Override
         public List<A3InputListener> getContextInputListeners() {
-            return dialog.surfaceView.handle.getContextInputListeners();
+            return dialog.surfaceView.holder.getContextInputListeners();
         }
 
         @Override
         public void addContextInputListener(final A3InputListener listener) {
-            dialog.surfaceView.handle.addContextInputListener(listener);
+            dialog.surfaceView.holder.addContextInputListener(listener);
         }
 
         @Override
@@ -248,42 +253,42 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
         @Override
         public A3Preferences getPreferences(final String name) {
-            return dialog.surfaceView.handle.getPreferences(name);
+            return dialog.surfaceView.holder.getPreferences(name);
         }
 
         @Override
         public boolean deletePreferences(final String name) {
-            return dialog.surfaceView.handle.deletePreferences(name);
+            return dialog.surfaceView.holder.deletePreferences(name);
         }
 
         @Override
         public A3Assets getAssets() {
-            return dialog.surfaceView.handle.getAssets();
+            return dialog.surfaceView.holder.getAssets();
         }
 
         @Override
         public File getCacheDir() {
-            return dialog.surfaceView.handle.getCacheDir();
+            return dialog.surfaceView.holder.getCacheDir();
         }
 
         @Override
         public File getConfigDir() {
-            return dialog.surfaceView.handle.getConfigDir();
+            return dialog.surfaceView.holder.getConfigDir();
         }
 
         @Override
         public File getFilesDir(final String type) {
-            return dialog.surfaceView.handle.getFilesDir(type);
+            return dialog.surfaceView.holder.getFilesDir(type);
         }
 
         @Override
         public File getHomeDir() {
-            return dialog.surfaceView.handle.getHomeDir();
+            return dialog.surfaceView.holder.getHomeDir();
         }
 
         @Override
         public File getTmpDir() {
-            return dialog.surfaceView.handle.getTmpDir();
+            return dialog.surfaceView.holder.getTmpDir();
         }
 
         @Override
@@ -299,51 +304,51 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
 
         @Override
         public A3Clipboard getClipboard() {
-            return dialog.surfaceView.handle.getClipboard();
+            return dialog.surfaceView.holder.getClipboard();
         }
 
         @Override
         public A3Clipboard getSelection() {
-            return dialog.surfaceView.handle.getSelection();
+            return dialog.surfaceView.holder.getSelection();
         }
 
         @Override
         public A3Clipboard createClipboard(final String name) {
-            return dialog.surfaceView.handle.createClipboard(name);
+            return dialog.surfaceView.holder.createClipboard(name);
         }
 
         @Override
         public void setCursor(final A3Cursor cursor) {
-            dialog.surfaceView.handle.setCursor(cursor);
+            dialog.surfaceView.holder.setCursor(cursor);
         }
 
         @Override
         public A3Cursor getCursor() {
-            return dialog.surfaceView.handle.getCursor();
+            return dialog.surfaceView.holder.getCursor();
         }
 
         @Override
         public boolean browse(final URI uri) {
-            return dialog.surfaceView.handle.browse(uri);
+            return dialog.surfaceView.holder.browse(uri);
         }
 
         @Override
         public boolean open(final File file) {
-            return dialog.surfaceView.handle.open(file);
+            return dialog.surfaceView.holder.open(file);
         }
 
     }
 
-    protected A3AndroidDialogHandle handle;
+    protected A3AndroidDialogHolder holder;
 
     @Override
-    public A3Context.Handle getContextHandle() {
-        return surfaceView.handle;
+    public A3Context.Holder getContextHolder() {
+        return surfaceView.holder;
     }
 
     @Override
-    public A3Container.Handle getContainerHandle() {
-        return handle;
+    public A3Container.Holder getContainerHolder() {
+        return holder;
     }
 
     protected A3AndroidSurfaceView surfaceView;
@@ -369,11 +374,11 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
         getWindow().getDecorView().setOnHoverListener(this);
         setOnDismissListener(this);
         setOnKeyListener(this);
-        if (handle == null) handle = new A3AndroidDialogHandle(this);
-        handle.postRunnable(new Runnable() {
+        if (holder == null) holder = new A3AndroidDialogHolder(this);
+        holder.postRunnable(new Runnable() {
             @Override
             public void run() {
-                for (A3ContainerListener listener : handle.containerListeners) {
+                for (A3ContainerListener listener : holder.containerListeners) {
                     listener.containerCreated();
                 }
             }
@@ -383,21 +388,21 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
     @Override
     protected void onStart() {
         super.onStart();
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerStarted();
         }
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerResumed();
         }
     }
 
     @Override
     protected void onStop() {
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerPaused();
         }
         super.onStop();
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerStopped();
         }
     }
@@ -405,13 +410,13 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
     @Override
     public void onWindowFocusChanged(final boolean hasFocus) {
         if (hasFocus) {
-            for (A3ContainerListener listener : handle.containerListeners) {
+            for (A3ContainerListener listener : holder.containerListeners) {
                 listener.containerFocusGained();
             }
             surfaceView.requestFocus();
         }
         else {
-            for (A3ContainerListener listener : handle.containerListeners) {
+            for (A3ContainerListener listener : holder.containerListeners) {
                 listener.containerFocusLost();
             }
         }
@@ -431,10 +436,10 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
     @Override
     public void onDismiss(final DialogInterface dialog) {
         dispose();
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerDisposed();
         }
-        handle = null;
+        holder = null;
     }
 
     @Override
@@ -442,10 +447,10 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
                                final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
         final int width = right - left;
         final int height = bottom - top;
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerResized(width, height);
         }
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerMoved(left, top);
         }
     }
@@ -453,7 +458,7 @@ public class A3AndroidDialog extends Dialog implements AndroidA3Container,
     @Override
     public void dismiss() {
         boolean close = true;
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             close = close && listener.containerCloseRequested();
         }
         if (close) super.dismiss();

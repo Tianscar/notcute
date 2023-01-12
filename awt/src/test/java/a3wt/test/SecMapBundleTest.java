@@ -14,13 +14,13 @@ public class SecMapBundleTest {
         File bundleFile = new File(SecMapBundleTest.class.getCanonicalName() + ".ini");
         A3AWTFrame frame = new A3AWTFrame("Sectional Map Bundle Test");
         frame.setMinimumSize(new Dimension(640, 480));
-        A3SecMapBundle bundle = frame.getContainerHandle().getBundleKit().createSecMapBundle(true);
+        A3SecMapBundle bundle = frame.getContainerHolder().getBundleKit().createSecMapBundle(true);
         bundle.restore(bundleFile);
         bundle.setKey("size");
         frame.setSize(bundle.getInt("width", 640), bundle.getInt("height", 480));
         bundle.setKey("pos");
         frame.setLocation(bundle.getInt("x", 0), bundle.getInt("y", 0));
-        frame.getContainerHandle().addContainerListener(new A3ContainerAdapter() {
+        frame.getContainerHolder().addContainerListener(new A3ContainerAdapter() {
             @Override
             public void containerResized(int width, int height) {
                 bundle.setKey("size");

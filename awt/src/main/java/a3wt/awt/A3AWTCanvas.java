@@ -1,12 +1,6 @@
 package a3wt.awt;
 
-import a3wt.app.A3Context;
-import a3wt.app.A3Platform;
-import a3wt.app.A3Preferences;
-import a3wt.app.A3Clipboard;
-import a3wt.app.A3Logger;
-import a3wt.app.A3I18NText;
-import a3wt.app.DefaultA3I18NText;
+import a3wt.app.*;
 import a3wt.audio.A3AudioKit;
 import a3wt.bundle.A3BundleKit;
 import a3wt.bundle.DefaultA3BundleKit;
@@ -69,37 +63,37 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
 
     @Override
     public void mousePressed(final MouseEvent e) {
-        A3AWTUtils.commonMousePressed(handle.inputListeners, e);
+        A3AWTUtils.commonMousePressed(holder.inputListeners, e);
     }
 
     @Override
     public void mouseReleased(final MouseEvent e) {
-        A3AWTUtils.commonMouseReleased(handle.inputListeners, e);
+        A3AWTUtils.commonMouseReleased(holder.inputListeners, e);
     }
 
     @Override
     public void mouseEntered(final MouseEvent e) {
-        A3AWTUtils.commonMouseEntered(handle.inputListeners, e);
+        A3AWTUtils.commonMouseEntered(holder.inputListeners, e);
     }
 
     @Override
     public void mouseExited(final MouseEvent e) {
-        A3AWTUtils.commonMouseExited(handle.inputListeners, e);
+        A3AWTUtils.commonMouseExited(holder.inputListeners, e);
     }
 
     @Override
     public void mouseDragged(final MouseEvent e) {
-        A3AWTUtils.commonMouseDragged(handle.inputListeners, e);
+        A3AWTUtils.commonMouseDragged(holder.inputListeners, e);
     }
 
     @Override
     public void mouseMoved(final MouseEvent e) {
-        A3AWTUtils.commonMouseMoved(handle.inputListeners, e);
+        A3AWTUtils.commonMouseMoved(holder.inputListeners, e);
     }
 
     @Override
     public void mouseWheelMoved(final MouseWheelEvent e) {
-        A3AWTUtils.commonMouseWheelMoved(handle.inputListeners, e);
+        A3AWTUtils.commonMouseWheelMoved(holder.inputListeners, e);
     }
 
     private boolean componentFirstVisible = true;
@@ -109,7 +103,7 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         if (!componentFirstVisible) return;
         if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) == HierarchyEvent.SHOWING_CHANGED) {
             componentFirstVisible = false;
-            for (A3ContextListener listener : handle.contextListeners) {
+            for (A3ContextListener listener : holder.contextListeners) {
                 if (isVisible()) listener.contextCreated();
             }
         }
@@ -117,40 +111,51 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
 
     @Override
     public void keyTyped(final KeyEvent e) {
-        A3AWTUtils.commonKeyTyped(handle.inputListeners, e);
+        A3AWTUtils.commonKeyTyped(holder.inputListeners, e);
     }
 
     @Override
     public void keyPressed(final KeyEvent e) {
-        A3AWTUtils.commonKeyPressed(handle.inputListeners, e);
+        A3AWTUtils.commonKeyPressed(holder.inputListeners, e);
     }
 
     @Override
     public void keyReleased(final KeyEvent e) {
-        A3AWTUtils.commonKeyReleased(handle.inputListeners, e);
+        A3AWTUtils.commonKeyReleased(holder.inputListeners, e);
     }
 
-    protected static class A3AWTCanvasHandle implements Handle {
+    protected static class A3AWTCanvasHolder implements Holder {
 
         protected static final AWTA3Platform platform = new AWTA3Platform();
         protected static final AWTA3GraphicsKit graphicsKit = new AWTA3GraphicsKit();
         protected static final DefaultA3BundleKit bundleKit = new DefaultA3BundleKit();
         static {
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Arc.class, graphicsKit::createArc);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Area.class, graphicsKit::createArea);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Coordinate.class, graphicsKit::createCoordinate);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3CubicCurve.class, graphicsKit::createCubicCurve);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Dimension.class, graphicsKit::createDimension);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Line.class, graphicsKit::createLine);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Oval.class, graphicsKit::createOval);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Point.class, graphicsKit::createPoint);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3QuadCurve.class, graphicsKit::createQuadCurve);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Rect.class, graphicsKit::createRect);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3RoundRect.class, graphicsKit::createRoundRect);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Size.class, graphicsKit::createSize);
-            bundleKit.getExtMapBundleDelegateMappings().put(A3Transform.class, graphicsKit::createTransform);
+            bundleKit.addExtMapBundleDelegateMapping(A3Arc.class, graphicsKit::createArc);
+            bundleKit.addExtMapBundleDelegateMapping(A3Area.class, graphicsKit::createArea);
+            bundleKit.addExtMapBundleDelegateMapping(A3Coordinate.class, graphicsKit::createCoordinate);
+            bundleKit.addExtMapBundleDelegateMapping(A3CubicCurve.class, graphicsKit::createCubicCurve);
+            bundleKit.addExtMapBundleDelegateMapping(A3Dimension.class, graphicsKit::createDimension);
+            bundleKit.addExtMapBundleDelegateMapping(A3Line.class, graphicsKit::createLine);
+            bundleKit.addExtMapBundleDelegateMapping(A3Oval.class, graphicsKit::createOval);
+            bundleKit.addExtMapBundleDelegateMapping(A3Point.class, graphicsKit::createPoint);
+            bundleKit.addExtMapBundleDelegateMapping(A3QuadCurve.class, graphicsKit::createQuadCurve);
+            bundleKit.addExtMapBundleDelegateMapping(A3Rect.class, graphicsKit::createRect);
+            bundleKit.addExtMapBundleDelegateMapping(A3RoundRect.class, graphicsKit::createRoundRect);
+            bundleKit.addExtMapBundleDelegateMapping(A3Size.class, graphicsKit::createSize);
+            bundleKit.addExtMapBundleDelegateMapping(A3Transform.class, graphicsKit::createTransform);
         }
         protected static final AWTA3AudioKit audioKit = new AWTA3AudioKit();
+        protected static final DefaultA3Factory factory = new DefaultA3Factory();
+        static {
+            factory.addMapping("a3wt", "graphicsKit", () -> graphicsKit);
+            factory.addMapping("a3wt", "bundleKit", () -> bundleKit);
+            factory.addMapping("a3wt", "audioKit", () -> audioKit);
+        }
+
+        @Override
+        public A3Factory getFactory() {
+            return factory;
+        }
 
         @Override
         public A3Context getContext() {
@@ -243,7 +248,7 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
 
         protected final A3AWTCanvas canvas;
 
-        public A3AWTCanvasHandle(final A3AWTCanvas canvas) {
+        public A3AWTCanvasHolder(final A3AWTCanvas canvas) {
             checkArgNotNull(canvas, "canvas");
             this.canvas = canvas;
         }
@@ -529,11 +534,11 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
 
     }
 
-    protected final A3AWTCanvasHandle handle;
+    protected final A3AWTCanvasHolder holder;
 
     @Override
-    public Handle getContextHandle() {
-        return handle;
+    public Holder getContextHolder() {
+        return holder;
     }
 
     protected volatile boolean disposed = false;
@@ -549,7 +554,7 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         addMouseWheelListener(this);
         addHierarchyListener(this);
         addKeyListener(this);
-        handle = new A3AWTCanvasHandle(this);
+        holder = new A3AWTCanvasHolder(this);
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -580,42 +585,42 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
 
     @Override
     public void componentResized(final ComponentEvent e) {
-        for (A3ContextListener listener : handle.contextListeners) {
+        for (A3ContextListener listener : holder.contextListeners) {
             listener.contextResized(e.getComponent().getWidth(), e.getComponent().getHeight());
         }
     }
 
     @Override
     public void componentMoved(final ComponentEvent e) {
-        for (A3ContextListener listener : handle.contextListeners) {
+        for (A3ContextListener listener : holder.contextListeners) {
             listener.contextMoved(e.getComponent().getX(), e.getComponent().getY());
         }
     }
 
     @Override
     public void componentShown(final ComponentEvent e) {
-        for (A3ContextListener listener : handle.contextListeners) {
+        for (A3ContextListener listener : holder.contextListeners) {
             listener.contextShown();
         }
     }
 
     @Override
     public void componentHidden(final ComponentEvent e) {
-        for (A3ContextListener listener : handle.contextListeners) {
+        for (A3ContextListener listener : holder.contextListeners) {
             listener.contextHidden();
         }
     }
 
     @Override
     public void focusGained(final FocusEvent e) {
-        for (A3ContextListener listener : handle.contextListeners) {
+        for (A3ContextListener listener : holder.contextListeners) {
             listener.contextFocusGained();
         }
     }
 
     @Override
     public void focusLost(final FocusEvent e) {
-        for (A3ContextListener listener : handle.contextListeners) {
+        for (A3ContextListener listener : holder.contextListeners) {
             listener.contextFocusLost();
         }
     }
@@ -623,7 +628,7 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
     @Override
     public File getPreferencesFile(final String name) {
         checkArgNotEmpty(name, "name");
-        return new File(handle.getConfigDir(), name + ".xml");
+        return new File(holder.getConfigDir(), name + ".xml");
     }
 
     @Override
@@ -647,7 +652,7 @@ public class A3AWTCanvas extends Canvas implements AWTA3Context, ComponentListen
         disposed = true;
         final BufferStrategy bufferStrategy = getBufferStrategy();
         if (bufferStrategy != null) bufferStrategy.dispose();
-        for (A3ContextListener listener : handle.contextListeners) {
+        for (A3ContextListener listener : holder.contextListeners) {
             listener.contextDisposed();
         }
     }

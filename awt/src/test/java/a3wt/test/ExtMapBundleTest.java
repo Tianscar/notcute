@@ -23,11 +23,11 @@ public class ExtMapBundleTest {
         File bundleFile = new File(ExtMapBundleTest.class.getCanonicalName() + ".xml");
         A3AWTFrame frame = new A3AWTFrame("Extensive Map Bundle Test");
         frame.setMinimumSize(new Dimension(640, 480));
-        A3Point point = frame.getContainerHandle().getGraphicsKit().createPoint();
-        A3ExtMapBundle bundle = frame.getContainerHandle().getBundleKit().createExtMapBundle(true);
+        A3Point point = frame.getContainerHolder().getGraphicsKit().createPoint();
+        A3ExtMapBundle bundle = frame.getContainerHolder().getBundleKit().createExtMapBundle(true);
         if (!bundle.restore(bundleFile)) {
-            bundle.putExtMapBundle("size", frame.getContainerHandle().getBundleKit().createExtMapBundle(true));
-            bundle.putExtMapBundle("pos", frame.getContainerHandle().getBundleKit().createExtMapBundle(true));
+            bundle.putExtMapBundle("size", frame.getContainerHolder().getBundleKit().createExtMapBundle(true));
+            bundle.putExtMapBundle("pos", frame.getContainerHolder().getBundleKit().createExtMapBundle(true));
         }
         else {
             A3Point delegate = bundle.getDelegate("point", null);
@@ -37,7 +37,7 @@ public class ExtMapBundleTest {
                 bundle.getExtMapBundle("size", null).getInt("height", 480));
         frame.setLocation(bundle.getExtMapBundle("pos", null).getInt("x", 0),
                 bundle.getExtMapBundle("pos", null).getInt("y", 0));
-        frame.getContainerHandle().addContainerListener(new A3ContainerAdapter() {
+        frame.getContainerHolder().addContainerListener(new A3ContainerAdapter() {
             @Override
             public void containerCreated() {
                 new Timer().schedule(new TimerTask() {
@@ -45,7 +45,7 @@ public class ExtMapBundleTest {
                     public void run() {
                         synchronized (lock) {
                             if (!frame.isDisposed()) {
-                                if (!paused) frame.getContainerHandle().update();
+                                if (!paused) frame.getContainerHolder().update();
                             }
                             else System.exit(0);
                         }
@@ -83,7 +83,7 @@ public class ExtMapBundleTest {
                 return super.containerCloseRequested();
             }
         });
-        frame.getContextHandle().addContextListener(new A3ContextAdapter() {
+        frame.getContextHolder().addContextListener(new A3ContextAdapter() {
             @Override
             public void contextPainted(A3Graphics graphics, boolean snapshot) {
                 graphics.setStrokeWidth(128.f);
@@ -93,7 +93,7 @@ public class ExtMapBundleTest {
                 graphics.drawPoint(point.getX(), point.getY());
             }
         });
-        frame.getContextHandle().addContextInputListener(new A3InputAdapter() {
+        frame.getContextHolder().addContextInputListener(new A3InputAdapter() {
             @Override
             public boolean pointerDown(float x, float y, int pointer, int button) {
                 point.set(x, y);

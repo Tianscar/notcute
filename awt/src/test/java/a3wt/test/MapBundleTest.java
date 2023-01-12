@@ -14,11 +14,11 @@ public class MapBundleTest {
         File bundleFile = new File(MapBundleTest.class.getCanonicalName() + ".prop");
         A3AWTFrame frame = new A3AWTFrame("Map Bundle Test");
         frame.setMinimumSize(new Dimension(640, 480));
-        A3MapBundle bundle = frame.getContainerHandle().getBundleKit().createMapBundle(true);
+        A3MapBundle bundle = frame.getContainerHolder().getBundleKit().createMapBundle(true);
         bundle.restore(bundleFile);
         frame.setSize(bundle.getInt("width", 640), bundle.getInt("height", 480));
         frame.setLocation(bundle.getInt("x", 0), bundle.getInt("y", 0));
-        frame.getContainerHandle().addContainerListener(new A3ContainerAdapter() {
+        frame.getContainerHolder().addContainerListener(new A3ContainerAdapter() {
             @Override
             public void containerResized(int width, int height) {
                 bundle.putInt("width", width).putInt("height", height);

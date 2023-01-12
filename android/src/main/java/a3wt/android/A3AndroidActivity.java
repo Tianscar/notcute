@@ -28,109 +28,114 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
 
     @Override
     public boolean onGenericMotionEvent(final MotionEvent event) {
-        return A3AndroidUtils.commonOnMouseWheelMotion(handle.inputListeners, event) || super.onGenericMotionEvent(event);
+        return A3AndroidUtils.commonOnMouseWheelMotion(holder.inputListeners, event) || super.onGenericMotionEvent(event);
     }
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
-        return A3AndroidUtils.commonOnTouchEvent(handle.inputListeners, event) || super.onTouchEvent(event);
+        return A3AndroidUtils.commonOnTouchEvent(holder.inputListeners, event) || super.onTouchEvent(event);
     }
 
     @Override
     public boolean onHover(final View v, final MotionEvent event) {
-        return A3AndroidUtils.commonOnHoverEvent(handle.inputListeners, event);
+        return A3AndroidUtils.commonOnHoverEvent(holder.inputListeners, event);
     }
 
     @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-        return A3AndroidUtils.commonOnKeyEvent(handle.inputListeners, event) || super.onKeyDown(keyCode, event);
+        return A3AndroidUtils.commonOnKeyEvent(holder.inputListeners, event) || super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onKeyUp(final int keyCode, final KeyEvent event) {
-        return A3AndroidUtils.commonOnKeyEvent(handle.inputListeners, event) || super.onKeyUp(keyCode, event);
+        return A3AndroidUtils.commonOnKeyEvent(holder.inputListeners, event) || super.onKeyUp(keyCode, event);
     }
 
-    protected static class A3AndroidActivityHandle implements A3Context.Handle, A3Container.Handle {
+    protected static class A3AndroidActivityHolder implements A3Context.Holder, A3Container.Holder {
 
         @Override
         public A3Context getContext() {
-            return activity.surfaceView.handle.getContext();
+            return activity.surfaceView.holder.getContext();
         }
 
         @Override
         public A3Platform getPlatform() {
-            return activity.surfaceView.handle.getPlatform();
+            return activity.surfaceView.holder.getPlatform();
         }
 
         @Override
         public A3Logger getLogger() {
-            return activity.surfaceView.handle.getLogger();
+            return activity.surfaceView.holder.getLogger();
+        }
+
+        @Override
+        public A3Factory getFactory() {
+            return activity.surfaceView.holder.getFactory();
         }
 
         @Override
         public A3I18NText getI18NText() {
-            return activity.surfaceView.handle.getI18NText();
+            return activity.surfaceView.holder.getI18NText();
         }
 
         @Override
         public A3GraphicsKit getGraphicsKit() {
-            return activity.surfaceView.handle.getGraphicsKit();
+            return activity.surfaceView.holder.getGraphicsKit();
         }
 
         @Override
         public A3BundleKit getBundleKit() {
-            return activity.surfaceView.handle.getBundleKit();
+            return activity.surfaceView.holder.getBundleKit();
         }
 
         @Override
         public A3AudioKit getAudioKit() {
-            return activity.surfaceView.handle.getAudioKit();
+            return activity.surfaceView.holder.getAudioKit();
         }
 
         @Override
         public int getScreenWidth() {
-            return activity.surfaceView.handle.getScreenWidth();
+            return activity.surfaceView.holder.getScreenWidth();
         }
 
         @Override
         public int getScreenHeight() {
-            return activity.surfaceView.handle.getScreenHeight();
+            return activity.surfaceView.holder.getScreenHeight();
         }
 
         @Override
         public int getMinScreenWidth() {
-            return activity.surfaceView.handle.getMinScreenWidth();
+            return activity.surfaceView.holder.getMinScreenWidth();
         }
 
         @Override
         public int getMinScreenHeight() {
-            return activity.surfaceView.handle.getMinScreenHeight();
+            return activity.surfaceView.holder.getMinScreenHeight();
         }
 
         @Override
         public int getMaxScreenWidth() {
-            return activity.surfaceView.handle.getMaxScreenWidth();
+            return activity.surfaceView.holder.getMaxScreenWidth();
         }
 
         @Override
         public int getMaxScreenHeight() {
-            return activity.surfaceView.handle.getMaxScreenHeight();
+            return activity.surfaceView.holder.getMaxScreenHeight();
         }
 
         @Override
         public int getPPI() {
-            return activity.surfaceView.handle.getPPI();
+            return activity.surfaceView.holder.getPPI();
         }
 
         @Override
         public float getDensity() {
-            return activity.surfaceView.handle.getDensity();
+            return activity.surfaceView.holder.getDensity();
         }
 
         @Override
         public float getScaledDensity() {
-            return activity.surfaceView.handle.getScaledDensity();
+            return activity.surfaceView.holder.getScaledDensity();
         }
 
         @Override
@@ -141,7 +146,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
 
         protected final A3AndroidActivity activity;
         
-        public A3AndroidActivityHandle(final A3AndroidActivity activity) {
+        public A3AndroidActivityHolder(final A3AndroidActivity activity) {
             checkArgNotNull(activity, "activity");
             this.activity = activity;
         }
@@ -151,7 +156,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
 
         @Override
         public A3Graphics getGraphics() {
-            return activity.surfaceView.handle.getGraphics();
+            return activity.surfaceView.holder.getGraphics();
         }
 
         @Override
@@ -166,43 +171,43 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
 
         @Override
         public int getBackgroundColor() {
-            return activity.surfaceView.handle.getBackgroundColor();
+            return activity.surfaceView.holder.getBackgroundColor();
         }
 
         @Override
         public void setBackgroundColor(final int color) {
-            activity.surfaceView.handle.setBackgroundColor(color);
+            activity.surfaceView.holder.setBackgroundColor(color);
         }
 
         @Override
         public long elapsed() {
-            return activity.surfaceView.handle.elapsed();
+            return activity.surfaceView.holder.elapsed();
         }
 
         @Override
         public void paint(final A3Graphics graphics, final boolean snapshot) {
-            activity.surfaceView.handle.paint(graphics, snapshot);
+            activity.surfaceView.holder.paint(graphics, snapshot);
         }
 
         @Override
         public void update() {
             activity.checkDisposed("Can't call update() on a disposed A3Container");
-            activity.surfaceView.handle.update();
+            activity.surfaceView.holder.update();
         }
 
         @Override
         public A3Image updateAndSnapshot() {
-            return activity.surfaceView.handle.updateAndSnapshot();
+            return activity.surfaceView.holder.updateAndSnapshot();
         }
 
         @Override
         public List<A3ContextListener> getContextListeners() {
-            return activity.surfaceView.handle.getContextListeners();
+            return activity.surfaceView.holder.getContextListeners();
         }
 
         @Override
         public void addContextListener(final A3ContextListener listener) {
-            activity.surfaceView.handle.addContextListener(listener);
+            activity.surfaceView.holder.addContextListener(listener);
         }
 
         @Override
@@ -231,12 +236,12 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
 
         @Override
         public List<A3InputListener> getContextInputListeners() {
-            return activity.surfaceView.handle.getContextInputListeners();
+            return activity.surfaceView.holder.getContextInputListeners();
         }
 
         @Override
         public void addContextInputListener(final A3InputListener listener) {
-            activity.surfaceView.handle.addContextInputListener(listener);
+            activity.surfaceView.holder.addContextInputListener(listener);
         }
 
         @Override
@@ -251,42 +256,42 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
 
         @Override
         public A3Preferences getPreferences(final String name) {
-            return activity.surfaceView.handle.getPreferences(name);
+            return activity.surfaceView.holder.getPreferences(name);
         }
 
         @Override
         public boolean deletePreferences(final String name) {
-            return activity.surfaceView.handle.deletePreferences(name);
+            return activity.surfaceView.holder.deletePreferences(name);
         }
 
         @Override
         public A3Assets getAssets() {
-            return activity.surfaceView.handle.getAssets();
+            return activity.surfaceView.holder.getAssets();
         }
 
         @Override
         public File getCacheDir() {
-            return activity.surfaceView.handle.getCacheDir();
+            return activity.surfaceView.holder.getCacheDir();
         }
 
         @Override
         public File getConfigDir() {
-            return activity.surfaceView.handle.getConfigDir();
+            return activity.surfaceView.holder.getConfigDir();
         }
 
         @Override
         public File getFilesDir(final String type) {
-            return activity.surfaceView.handle.getFilesDir(type);
+            return activity.surfaceView.holder.getFilesDir(type);
         }
 
         @Override
         public File getHomeDir() {
-            return activity.surfaceView.handle.getHomeDir();
+            return activity.surfaceView.holder.getHomeDir();
         }
 
         @Override
         public File getTmpDir() {
-            return activity.surfaceView.handle.getTmpDir();
+            return activity.surfaceView.holder.getTmpDir();
         }
 
         @Override
@@ -302,37 +307,37 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
 
         @Override
         public A3Clipboard getClipboard() {
-            return activity.surfaceView.handle.getClipboard();
+            return activity.surfaceView.holder.getClipboard();
         }
 
         @Override
         public A3Clipboard getSelection() {
-            return activity.surfaceView.handle.getSelection();
+            return activity.surfaceView.holder.getSelection();
         }
 
         @Override
         public A3Clipboard createClipboard(final String name) {
-            return activity.surfaceView.handle.createClipboard(name);
+            return activity.surfaceView.holder.createClipboard(name);
         }
 
         @Override
         public void setCursor(final A3Cursor cursor) {
-            activity.surfaceView.handle.setCursor(cursor);
+            activity.surfaceView.holder.setCursor(cursor);
         }
 
         @Override
         public A3Cursor getCursor() {
-            return activity.surfaceView.handle.getCursor();
+            return activity.surfaceView.holder.getCursor();
         }
 
         @Override
         public boolean browse(final URI uri) {
-            return activity.surfaceView.handle.browse(uri);
+            return activity.surfaceView.holder.browse(uri);
         }
 
         @Override
         public boolean open(final File file) {
-            return activity.surfaceView.handle.open(file);
+            return activity.surfaceView.holder.open(file);
         }
 
     }
@@ -342,16 +347,16 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         return this;
     }
     
-    protected A3AndroidActivityHandle handle;
+    protected A3AndroidActivityHolder holder;
 
     @Override
-    public A3Context.Handle getContextHandle() {
-        return surfaceView.handle;
+    public A3Context.Holder getContextHolder() {
+        return surfaceView.holder;
     }
 
     @Override
-    public A3Container.Handle getContainerHandle() {
-        return handle;
+    public A3Container.Holder getContainerHolder() {
+        return holder;
     }
 
     protected A3AndroidSurfaceView surfaceView;
@@ -363,11 +368,11 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         setContentView(surfaceView);
         getWindow().getDecorView().addOnLayoutChangeListener(this);
         getWindow().getDecorView().setOnHoverListener(this);
-        if (handle == null) handle = new A3AndroidActivityHandle(this);
-        handle.postRunnable(new Runnable() {
+        if (holder == null) holder = new A3AndroidActivityHolder(this);
+        holder.postRunnable(new Runnable() {
             @Override
             public void run() {
-                for (A3ContainerListener listener : handle.containerListeners) {
+                for (A3ContainerListener listener : holder.containerListeners) {
                     listener.containerCreated();
                 }
             }
@@ -377,7 +382,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     @Override
     protected void onStart() {
         super.onStart();
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerStarted();
         }
     }
@@ -385,7 +390,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     @Override
     protected void onResume() {
         super.onResume();
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerResumed();
         }
     }
@@ -393,7 +398,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     @Override
     protected void onPause() {
         super.onPause();
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerPaused();
         }
     }
@@ -401,7 +406,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     @Override
     protected void onStop() {
         super.onStop();
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerStopped();
         }
     }
@@ -409,13 +414,13 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     @Override
     public void onWindowFocusChanged(final boolean hasFocus) {
         if (hasFocus) {
-            for (final A3ContainerListener listener : handle.containerListeners) {
+            for (final A3ContainerListener listener : holder.containerListeners) {
                 listener.containerFocusGained();
             }
             surfaceView.requestFocus();
         }
         else {
-            for (final A3ContainerListener listener : handle.containerListeners) {
+            for (final A3ContainerListener listener : holder.containerListeners) {
                 listener.containerFocusLost();
             }
         }
@@ -437,10 +442,10 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         if (isFinishing()) {
             dispose();
             super.onDestroy();
-            for (final A3ContainerListener listener : handle.containerListeners) {
+            for (final A3ContainerListener listener : holder.containerListeners) {
                 listener.containerDisposed();
             }
-            handle = null;
+            holder = null;
         }
         else {
             super.onDestroy();
@@ -452,10 +457,10 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
                                final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
         final int width = right - left;
         final int height = bottom - top;
-        for (final A3ContainerListener listener : handle.containerListeners) {
+        for (final A3ContainerListener listener : holder.containerListeners) {
             listener.containerResized(width, height);
         }
-        for (final A3ContainerListener listener : handle.containerListeners) {
+        for (final A3ContainerListener listener : holder.containerListeners) {
             listener.containerMoved(left, top);
         }
     }
@@ -463,7 +468,7 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
     @Override
     public void finish() {
         boolean close = true;
-        for (final A3ContainerListener listener : handle.containerListeners) {
+        for (final A3ContainerListener listener : holder.containerListeners) {
             close = close && listener.containerCloseRequested();
         }
         if (close) super.finish();

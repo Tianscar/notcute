@@ -11,8 +11,16 @@ public class DefaultA3BundleKit implements A3BundleKit {
 
     protected final Map<Class<? extends A3ExtMapBundle.Delegate>, A3Callable<A3ExtMapBundle.Delegate>> extMapBundleDelegateMappings = new ConcurrentHashMap<>();
 
+    @Override
     public Map<Class<? extends A3ExtMapBundle.Delegate>, A3Callable<A3ExtMapBundle.Delegate>> getExtMapBundleDelegateMappings() {
         return extMapBundleDelegateMappings;
+    }
+
+    @Override
+    public void addExtMapBundleDelegateMapping(Class<? extends A3ExtMapBundle.Delegate> typeClass, A3Callable<A3ExtMapBundle.Delegate> mapping) {
+        checkArgNotNull(typeClass, "typeClass");
+        checkArgNotNull(mapping, "mapping");
+        extMapBundleDelegateMappings.put(typeClass, mapping);
     }
 
     @Override

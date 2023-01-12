@@ -19,8 +19,8 @@ public class SimpleLoop {
         A3AWTFrame frame = new A3AWTFrame("Simple Loop");
         frame.setMinimumSize(new Dimension(640, 480));
         frame.setLocationRelativeTo(null);
-        A3Container.Handle handle = frame.getContainerHandle();
-        handle.addContainerListener(new A3ContainerAdapter() {
+        A3Container.Holder holder = frame.getContainerHolder();
+        holder.addContainerListener(new A3ContainerAdapter() {
             @Override
             public void containerCreated() {
                 new Timer().schedule(new TimerTask() {
@@ -28,7 +28,7 @@ public class SimpleLoop {
                     public void run() {
                         synchronized (lock) {
                             if (!frame.isDisposed()) {
-                                if (!paused) handle.update();
+                                if (!paused) holder.update();
                             }
                             else System.exit(0);
                         }
@@ -44,7 +44,7 @@ public class SimpleLoop {
                 paused = false;
             }
         });
-        handle.addContextListener(new A3ContextAdapter() {
+        holder.addContextListener(new A3ContextAdapter() {
             @Override
             public void contextPainted(A3Graphics graphics, boolean snapshot) {
                 graphics.drawRect(

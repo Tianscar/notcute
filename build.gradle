@@ -15,10 +15,10 @@ subprojects {
     ext {
         libName = 'A3WT'
         libGroupName = 'io.github.a3wtproject'
-        libVendorName = 'A3WT Project'
+        libVendorName = 'The A3WT Project'
 
         libVersionCode = 1
-        libVersionName = '0.0.1'
+        libVersionName = '0.1.0-SNAPSHOT'
 
         libSourceCompatibility = JavaVersion.VERSION_1_8
         libTargetCompatibility = JavaVersion.VERSION_1_8

@@ -24,10 +24,10 @@ public class MovingDot {
         A3AWTFrame frame = new A3AWTFrame("Moving Dot");
         frame.setMinimumSize(new Dimension(640, 480));
         frame.setLocationRelativeTo(null);
-        A3Container.Handle handle = frame.getContainerHandle();
-        A3Point dotPos = handle.getGraphicsKit().createPoint();
+        A3Container.Holder holder = frame.getContainerHolder();
+        A3Point dotPos = holder.getGraphicsKit().createPoint();
         dotPos.set(320, 240);
-        handle.addContainerListener(new A3ContainerAdapter() {
+        holder.addContainerListener(new A3ContainerAdapter() {
             @Override
             public void containerCreated() {
                 new Timer().schedule(new TimerTask() {
@@ -35,7 +35,7 @@ public class MovingDot {
                     public void run() {
                         synchronized (lock) {
                             if (!frame.isDisposed()) {
-                                if (!paused) handle.update();
+                                if (!paused) holder.update();
                             }
                             else System.exit(0);
                         }
@@ -51,7 +51,7 @@ public class MovingDot {
                 paused = false;
             }
         });
-        handle.addContextInputListener(new A3InputAdapter() {
+        holder.addContextInputListener(new A3InputAdapter() {
             @Override
             public boolean keyDown(int keyCode, int keyLocation) {
                 switch (keyCode) {
@@ -97,7 +97,7 @@ public class MovingDot {
                 return true;
             }
         });
-        handle.addContextListener(new A3ContextAdapter() {
+        holder.addContextListener(new A3ContextAdapter() {
             @Override
             public void contextPainted(A3Graphics graphics, boolean snapshot) {
                 graphics.setStrokeWidth(1);
@@ -108,8 +108,8 @@ public class MovingDot {
                 if(down) dotPos.setY(dotPos.getY() + 10);
                 if(left) dotPos.setX(dotPos.getX() - 10);
                 if(right) dotPos.setX(dotPos.getX() + 10);
-                dotPos.set(A3Math.clamp(dotPos.getX(), 0, handle.getWidth()),
-                        A3Math.clamp(dotPos.getY(), 0, handle.getHeight()));
+                dotPos.set(A3Math.clamp(dotPos.getX(), 0, holder.getWidth()),
+                        A3Math.clamp(dotPos.getY(), 0, holder.getHeight()));
                 graphics.reset();
                 graphics.setStrokeJoin(A3Graphics.Join.ROUND);
                 graphics.setStrokeCap(A3Graphics.Cap.ROUND);

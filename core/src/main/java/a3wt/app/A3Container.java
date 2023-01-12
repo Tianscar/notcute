@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface A3Container extends A3Context {
 
-    interface Handle extends A3Context.Handle {
+    interface Holder extends A3Context.Holder {
         A3Container getContainer();
 
         void setIconImages(final List<A3Image> images);
@@ -23,6 +23,6 @@ public interface A3Container extends A3Context {
         boolean isFullscreen();
     }
 
-    Handle getContainerHandle();
+    Holder getContainerHolder();
 
 }

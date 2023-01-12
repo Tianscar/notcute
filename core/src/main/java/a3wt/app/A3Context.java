@@ -16,12 +16,13 @@ import java.util.List;
 
 public interface A3Context extends A3Disposable {
 
-    interface Handle {
+    interface Holder {
 
         A3Context getContext();
 
         A3Platform getPlatform();
         A3Logger getLogger();
+        A3Factory getFactory();
         A3I18NText getI18NText();
         A3GraphicsKit getGraphicsKit();
         A3BundleKit getBundleKit();
@@ -89,6 +90,6 @@ public interface A3Context extends A3Disposable {
         boolean open(final File file);
     }
 
-    Handle getContextHandle();
+    Holder getContextHolder();
 
 }

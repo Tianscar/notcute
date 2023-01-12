@@ -27,86 +27,91 @@ import static a3wt.util.A3Preconditions.checkArgNotNull;
 public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Container,
         View.OnLayoutChangeListener, PopupWindow.OnDismissListener, View.OnFocusChangeListener {
 
-    protected static class A3AndroidPopupWindowHandle implements A3Context.Handle, A3Container.Handle {
+    protected static class A3AndroidPopupWindowHolder implements A3Context.Holder, A3Container.Holder {
 
         @Override
         public A3Context getContext() {
-            return popupWindow.surfaceView.handle.getContext();
+            return popupWindow.surfaceView.holder.getContext();
         }
 
         @Override
         public A3Platform getPlatform() {
-            return popupWindow.surfaceView.handle.getPlatform();
+            return popupWindow.surfaceView.holder.getPlatform();
         }
 
         @Override
         public A3Logger getLogger() {
-            return popupWindow.surfaceView.handle.getLogger();
+            return popupWindow.surfaceView.holder.getLogger();
+        }
+
+        @Override
+        public A3Factory getFactory() {
+            return popupWindow.surfaceView.holder.getFactory();
         }
 
         @Override
         public A3I18NText getI18NText() {
-            return popupWindow.surfaceView.handle.getI18NText();
+            return popupWindow.surfaceView.holder.getI18NText();
         }
 
         @Override
         public A3GraphicsKit getGraphicsKit() {
-            return popupWindow.surfaceView.handle.getGraphicsKit();
+            return popupWindow.surfaceView.holder.getGraphicsKit();
         }
 
         @Override
         public A3BundleKit getBundleKit() {
-            return popupWindow.surfaceView.handle.getBundleKit();
+            return popupWindow.surfaceView.holder.getBundleKit();
         }
 
         @Override
         public A3AudioKit getAudioKit() {
-            return popupWindow.surfaceView.handle.getAudioKit();
+            return popupWindow.surfaceView.holder.getAudioKit();
         }
 
         @Override
         public int getScreenWidth() {
-            return popupWindow.surfaceView.handle.getScreenWidth();
+            return popupWindow.surfaceView.holder.getScreenWidth();
         }
 
         @Override
         public int getScreenHeight() {
-            return popupWindow.surfaceView.handle.getScreenHeight();
+            return popupWindow.surfaceView.holder.getScreenHeight();
         }
 
         @Override
         public int getMinScreenWidth() {
-            return popupWindow.surfaceView.handle.getMinScreenWidth();
+            return popupWindow.surfaceView.holder.getMinScreenWidth();
         }
 
         @Override
         public int getMinScreenHeight() {
-            return popupWindow.surfaceView.handle.getMinScreenHeight();
+            return popupWindow.surfaceView.holder.getMinScreenHeight();
         }
 
         @Override
         public int getMaxScreenWidth() {
-            return popupWindow.surfaceView.handle.getMaxScreenWidth();
+            return popupWindow.surfaceView.holder.getMaxScreenWidth();
         }
 
         @Override
         public int getMaxScreenHeight() {
-            return popupWindow.surfaceView.handle.getMaxScreenHeight();
+            return popupWindow.surfaceView.holder.getMaxScreenHeight();
         }
 
         @Override
         public int getPPI() {
-            return popupWindow.surfaceView.handle.getPPI();
+            return popupWindow.surfaceView.holder.getPPI();
         }
 
         @Override
         public float getDensity() {
-            return popupWindow.surfaceView.handle.getDensity();
+            return popupWindow.surfaceView.holder.getDensity();
         }
 
         @Override
         public float getScaledDensity() {
-            return popupWindow.surfaceView.handle.getScaledDensity();
+            return popupWindow.surfaceView.holder.getScaledDensity();
         }
 
         @Override
@@ -116,7 +121,7 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
 
         protected final A3AndroidPopupWindow popupWindow;
 
-        public A3AndroidPopupWindowHandle(final A3AndroidPopupWindow popupWindow) {
+        public A3AndroidPopupWindowHolder(final A3AndroidPopupWindow popupWindow) {
             checkArgNotNull(popupWindow, "popupWindow");
             this.popupWindow = popupWindow;
         }
@@ -126,7 +131,7 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
 
         @Override
         public A3Graphics getGraphics() {
-            return popupWindow.surfaceView.handle.getGraphics();
+            return popupWindow.surfaceView.holder.getGraphics();
         }
 
         @Override
@@ -141,43 +146,43 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
 
         @Override
         public int getBackgroundColor() {
-            return popupWindow.surfaceView.handle.getBackgroundColor();
+            return popupWindow.surfaceView.holder.getBackgroundColor();
         }
 
         @Override
         public void setBackgroundColor(final int color) {
-            popupWindow.surfaceView.handle.setBackgroundColor(color);
+            popupWindow.surfaceView.holder.setBackgroundColor(color);
         }
 
         @Override
         public long elapsed() {
-            return popupWindow.surfaceView.handle.elapsed();
+            return popupWindow.surfaceView.holder.elapsed();
         }
 
         @Override
         public void paint(final A3Graphics graphics, final boolean snapshot) {
-            popupWindow.surfaceView.handle.paint(graphics, snapshot);
+            popupWindow.surfaceView.holder.paint(graphics, snapshot);
         }
 
         @Override
         public void update() {
             popupWindow.checkDisposed("Can't call update() on a disposed A3Container");
-            popupWindow.surfaceView.handle.update();
+            popupWindow.surfaceView.holder.update();
         }
 
         @Override
         public A3Image updateAndSnapshot() {
-            return popupWindow.surfaceView.handle.updateAndSnapshot();
+            return popupWindow.surfaceView.holder.updateAndSnapshot();
         }
 
         @Override
         public List<A3ContextListener> getContextListeners() {
-            return popupWindow.surfaceView.handle.getContextListeners();
+            return popupWindow.surfaceView.holder.getContextListeners();
         }
 
         @Override
         public void addContextListener(final A3ContextListener listener) {
-            popupWindow.surfaceView.handle.addContextListener(listener);
+            popupWindow.surfaceView.holder.addContextListener(listener);
         }
 
         @Override
@@ -207,12 +212,12 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
 
         @Override
         public List<A3InputListener> getContextInputListeners() {
-            return popupWindow.surfaceView.handle.getContextInputListeners();
+            return popupWindow.surfaceView.holder.getContextInputListeners();
         }
 
         @Override
         public void addContextInputListener(final A3InputListener listener) {
-            popupWindow.surfaceView.handle.addContextInputListener(listener);
+            popupWindow.surfaceView.holder.addContextInputListener(listener);
         }
 
         @Override
@@ -227,42 +232,42 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
 
         @Override
         public A3Preferences getPreferences(final String name) {
-            return popupWindow.surfaceView.handle.getPreferences(name);
+            return popupWindow.surfaceView.holder.getPreferences(name);
         }
 
         @Override
         public boolean deletePreferences(final String name) {
-            return popupWindow.surfaceView.handle.deletePreferences(name);
+            return popupWindow.surfaceView.holder.deletePreferences(name);
         }
 
         @Override
         public A3Assets getAssets() {
-            return popupWindow.surfaceView.handle.getAssets();
+            return popupWindow.surfaceView.holder.getAssets();
         }
 
         @Override
         public File getCacheDir() {
-            return popupWindow.surfaceView.handle.getCacheDir();
+            return popupWindow.surfaceView.holder.getCacheDir();
         }
 
         @Override
         public File getConfigDir() {
-            return popupWindow.surfaceView.handle.getConfigDir();
+            return popupWindow.surfaceView.holder.getConfigDir();
         }
 
         @Override
         public File getFilesDir(final String type) {
-            return popupWindow.surfaceView.handle.getFilesDir(type);
+            return popupWindow.surfaceView.holder.getFilesDir(type);
         }
 
         @Override
         public File getHomeDir() {
-            return popupWindow.surfaceView.handle.getHomeDir();
+            return popupWindow.surfaceView.holder.getHomeDir();
         }
 
         @Override
         public File getTmpDir() {
-            return popupWindow.surfaceView.handle.getTmpDir();
+            return popupWindow.surfaceView.holder.getTmpDir();
         }
 
         @Override
@@ -278,51 +283,51 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
 
         @Override
         public A3Clipboard getClipboard() {
-            return popupWindow.surfaceView.handle.getClipboard();
+            return popupWindow.surfaceView.holder.getClipboard();
         }
 
         @Override
         public A3Clipboard getSelection() {
-            return popupWindow.surfaceView.handle.getSelection();
+            return popupWindow.surfaceView.holder.getSelection();
         }
 
         @Override
         public A3Clipboard createClipboard(final String name) {
-            return popupWindow.surfaceView.handle.createClipboard(name);
+            return popupWindow.surfaceView.holder.createClipboard(name);
         }
 
         @Override
         public void setCursor(final A3Cursor cursor) {
-            popupWindow.surfaceView.handle.setCursor(cursor);
+            popupWindow.surfaceView.holder.setCursor(cursor);
         }
 
         @Override
         public A3Cursor getCursor() {
-            return popupWindow.surfaceView.handle.getCursor();
+            return popupWindow.surfaceView.holder.getCursor();
         }
 
         @Override
         public boolean browse(final URI uri) {
-            return popupWindow.surfaceView.handle.browse(uri);
+            return popupWindow.surfaceView.holder.browse(uri);
         }
 
         @Override
         public boolean open(final File file) {
-            return popupWindow.surfaceView.handle.open(file);
+            return popupWindow.surfaceView.holder.open(file);
         }
 
     }
 
-    protected A3AndroidPopupWindowHandle handle;
+    protected A3AndroidPopupWindowHolder holder;
 
     @Override
-    public A3Context.Handle getContextHandle() {
-        return surfaceView.handle;
+    public A3Context.Holder getContextHolder() {
+        return surfaceView.holder;
     }
 
     @Override
-    public A3Container.Handle getContainerHandle() {
-        return handle;
+    public A3Container.Holder getContainerHolder() {
+        return holder;
     }
 
     protected final A3AndroidSurfaceView surfaceView;
@@ -339,15 +344,15 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         surfaceView = new A3AndroidSurfaceView(context) {
             @Override
             public boolean onTouchEvent(final MotionEvent event) {
-                return A3AndroidUtils.commonOnTouchEvent(handle.inputListeners, event) || performClick() || super.onTouchEvent(event);
+                return A3AndroidUtils.commonOnTouchEvent(holder.inputListeners, event) || performClick() || super.onTouchEvent(event);
             }
             @Override
             public boolean onHoverEvent(final MotionEvent event) {
-                return A3AndroidUtils.commonOnHoverEvent(handle.inputListeners, event) || super.onHoverEvent(event);
+                return A3AndroidUtils.commonOnHoverEvent(holder.inputListeners, event) || super.onHoverEvent(event);
             }
             @Override
             public boolean onGenericMotionEvent(final MotionEvent event) {
-                return A3AndroidUtils.commonOnMouseWheelMotion(handle.inputListeners, event) || super.onGenericMotionEvent(event);
+                return A3AndroidUtils.commonOnMouseWheelMotion(holder.inputListeners, event) || super.onGenericMotionEvent(event);
             }
             @Override
             public boolean performClick() {
@@ -355,22 +360,22 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
             }
             @Override
             public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-                return A3AndroidUtils.commonOnKeyEvent(handle.inputListeners, event) || super.onKeyDown(keyCode, event);
+                return A3AndroidUtils.commonOnKeyEvent(holder.inputListeners, event) || super.onKeyDown(keyCode, event);
             }
             @Override
             public boolean onKeyUp(final int keyCode, final KeyEvent event) {
-                return A3AndroidUtils.commonOnKeyEvent(handle.inputListeners, event) || super.onKeyUp(keyCode, event);
+                return A3AndroidUtils.commonOnKeyEvent(holder.inputListeners, event) || super.onKeyUp(keyCode, event);
             }
         };
         setContentView(surfaceView);
         surfaceView.setOnFocusChangeListener(this);
         surfaceView.addOnLayoutChangeListener(this);
         setOnDismissListener(this);
-        handle = new A3AndroidPopupWindowHandle(this);
-        handle.postRunnable(new Runnable() {
+        holder = new A3AndroidPopupWindowHolder(this);
+        holder.postRunnable(new Runnable() {
             @Override
             public void run() {
-                for (A3ContainerListener listener : handle.containerListeners) {
+                for (A3ContainerListener listener : holder.containerListeners) {
                     listener.containerCreated();
                 }
             }
@@ -391,8 +396,8 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         surfaceView.setOnFocusChangeListener(this);
         surfaceView.addOnLayoutChangeListener(this);
         setOnDismissListener(this);
-        handle = new A3AndroidPopupWindowHandle(this);
-        for (A3ContainerListener listener : handle.containerListeners) {
+        holder = new A3AndroidPopupWindowHolder(this);
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerCreated();
         }
     }
@@ -405,7 +410,7 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
     @Override
     public void setWidth(final int width) {
         super.setWidth(width);
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerResized(width, getHeight());
         }
     }
@@ -413,7 +418,7 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
     @Override
     public void setHeight(final int height) {
         super.setHeight(height);
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerResized(getWidth(), height);
         }
     }
@@ -421,13 +426,13 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
     @Override
     public void onFocusChange(final View v, final boolean hasFocus) {
         if (hasFocus) {
-            for (A3ContainerListener listener : handle.containerListeners) {
+            for (A3ContainerListener listener : holder.containerListeners) {
                 listener.containerFocusGained();
             }
             surfaceView.requestFocus();
         }
         else {
-            for (A3ContainerListener listener : handle.containerListeners) {
+            for (A3ContainerListener listener : holder.containerListeners) {
                 listener.containerFocusLost();
             }
         }
@@ -447,16 +452,16 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
     @Override
     public void onDismiss() {
         dispose();
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerDisposed();
         }
-        handle = null;
+        holder = null;
     }
 
     @Override
     public void onLayoutChange(final View v, final int left, final int top, final int right, final int bottom,
                                final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             listener.containerMoved(left, top);
         }
     }
@@ -464,7 +469,7 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
     @Override
     public void dismiss() {
         boolean close = true;
-        for (A3ContainerListener listener : handle.containerListeners) {
+        for (A3ContainerListener listener : holder.containerListeners) {
             close = close && listener.containerCloseRequested();
         }
         if (close) super.dismiss();

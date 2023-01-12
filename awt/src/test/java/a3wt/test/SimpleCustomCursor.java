@@ -20,8 +20,8 @@ public class SimpleCustomCursor {
         A3AWTFrame frame = new A3AWTFrame("Simple Custom Cursor");
         frame.setMinimumSize(new Dimension(640, 480));
         frame.setLocationRelativeTo(null);
-        A3Container.Handle handle = frame.getContainerHandle();
-        handle.addContainerListener(new A3ContainerAdapter() {
+        A3Container.Holder holder = frame.getContainerHolder();
+        holder.addContainerListener(new A3ContainerAdapter() {
             @Override
             public void containerCreated() {
                 new Timer().schedule(new TimerTask() {
@@ -29,7 +29,7 @@ public class SimpleCustomCursor {
                     public void run() {
                         synchronized (lock) {
                             if (!frame.isDisposed()) {
-                                if (!paused) handle.update();
+                                if (!paused) holder.update();
                             }
                             else System.exit(0);
                         }
@@ -45,10 +45,10 @@ public class SimpleCustomCursor {
                 paused = false;
             }
         });
-        A3Image image = handle.getGraphicsKit().readImage(handle.getAssets(), "tianscar_avatar.png", A3Image.Type.ARGB_8888);
-        handle.setCursor(handle.getGraphicsKit().createCursor(image));
+        A3Image image = holder.getGraphicsKit().readImage(holder.getAssets(), "tianscar_avatar.png", A3Image.Type.ARGB_8888);
+        holder.setCursor(holder.getGraphicsKit().createCursor(image));
         image.dispose();
-        handle.addContextListener(new A3ContextAdapter() {
+        holder.addContextListener(new A3ContextAdapter() {
             @Override
             public void contextPainted(A3Graphics graphics, boolean snapshot) {
             }

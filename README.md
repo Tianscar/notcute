@@ -70,6 +70,7 @@ a3wt-core
 │   │   │       ├── Clipboard
 │   │   │       └── Selection
 │   │   ├── Container (Windowing)
+│   │   ├── Factory (Create kits by name)
 │   │   ├── I18N Text Manager
 │   │   ├── Listeners (Event-driven)
 │   │   │   ├── Container

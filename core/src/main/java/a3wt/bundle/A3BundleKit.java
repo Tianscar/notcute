@@ -1,5 +1,9 @@
 package a3wt.bundle;
 
+import a3wt.util.A3Callable;
+
+import java.util.Map;
+
 public interface A3BundleKit {
 
     default A3MapBundle createMapBundle() {
@@ -25,6 +29,9 @@ public interface A3BundleKit {
     default A3SecMapBundle createConcurrentSecMapBundle() {
         return new DefaultConcurrentA3SecMapBundle();
     }
+
+    Map<Class<? extends A3ExtMapBundle.Delegate>, A3Callable<A3ExtMapBundle.Delegate>> getExtMapBundleDelegateMappings();
+    void addExtMapBundleDelegateMapping(final Class<? extends A3ExtMapBundle.Delegate> typeClass, final A3Callable<A3ExtMapBundle.Delegate> mapping);
 
     default A3ExtMapBundle createExtMapBundle() {
         return new DefaultA3ExtMapBundle(this);
