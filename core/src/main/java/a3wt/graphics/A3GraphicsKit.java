@@ -12,13 +12,16 @@ import java.util.Iterator;
 public interface A3GraphicsKit {
 
     A3Image createImage(final int width, final int height, final int type);
-    default A3FramedImage createFramedImage(final A3Image... frames) {
+    default A3Image.Frame createImageFrame(final A3Image image, final long duration) {
+        return new A3FramedImage.DefaultFrame(image, duration);
+    }
+    default A3FramedImage createFramedImage(final A3Image.Frame... frames) {
         return new DefaultA3FramedImage(frames);
     }
-    default A3FramedImage createFramedImage(final Collection<A3Image> frames) {
+    default A3FramedImage createFramedImage(final Collection<A3Image.Frame> frames) {
         return new DefaultA3FramedImage(frames);
     }
-    default A3FramedImage createFramedImage(final Iterator<A3Image> frames) {
+    default A3FramedImage createFramedImage(final Iterator<A3Image.Frame> frames) {
         return new DefaultA3FramedImage(frames);
     }
 
@@ -105,7 +108,22 @@ public interface A3GraphicsKit {
     A3Font getDefaultFont();
 
     A3Cursor createCursor(final int type);
-    A3Cursor createCursor(final A3Image image);
+    A3Cursor createCursor(final A3Image image, final int hotSpotX, final int hotSpotY);
+    A3Cursor createCursor(final A3Image image, final A3Coordinate hotSpot);
+    default A3Cursor.Frame createCursorFrame(final A3Cursor cursor, final long duration) {
+        return new A3FramedCursor.DefaultFrame(cursor, duration);
+    }
+    A3Cursor createFramedCursor(final A3FramedImage image, final int hotSpotX, final int hotSpotY);
+    A3Cursor createFramedCursor(final A3FramedImage image, final A3Coordinate hotSpot);
+    default A3FramedCursor createFramedCursor(final A3Cursor.Frame... frames) {
+        return new DefaultA3FramedCursor(frames);
+    }
+    default A3FramedCursor createFramedCursor(final Collection<A3Cursor.Frame> frames) {
+        return new DefaultA3FramedCursor(frames);
+    }
+    default A3FramedCursor createFramedCursor(final Iterator<A3Cursor.Frame> frames) {
+        return new DefaultA3FramedCursor(frames);
+    }
 
     A3Cursor getDefaultCursor();
 

@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import a3wt.audio.A3AudioKit;
+import a3wt.audio.A3AudioPlayer;
 import a3wt.bundle.A3BundleKit;
 import a3wt.graphics.A3Cursor;
 import a3wt.graphics.A3Graphics;
@@ -89,8 +89,8 @@ public class A3AndroidActivity extends Activity implements AndroidA3Container, V
         }
 
         @Override
-        public A3AudioKit getAudioKit() {
-            return activity.surfaceView.holder.getAudioKit();
+        public A3AudioPlayer getAudioPlayer() {
+            return activity.surfaceView.holder.getAudioPlayer();
         }
 
         @Override

@@ -1,7 +1,7 @@
 package a3wt.awt;
 
 import a3wt.app.*;
-import a3wt.audio.A3AudioKit;
+import a3wt.audio.A3AudioPlayer;
 import a3wt.bundle.A3BundleKit;
 import a3wt.graphics.A3Cursor;
 import a3wt.graphics.A3Graphics;
@@ -10,6 +10,7 @@ import a3wt.graphics.A3Image;
 import a3wt.input.A3ContextListener;
 import a3wt.input.A3ContainerListener;
 import a3wt.input.A3InputListener;
+import a3wt.util.A3Collections;
 
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -103,6 +104,20 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         commonKeyReleased(holder.inputListeners, e);
     }
 
+    public void setMinimumSize(final int width, final int height) {
+        setMinimumSize(new Dimension(width, height));
+    }
+
+    @Override
+    public void setMaximumSize(final int width, final int height) {
+        setMaximumSize(new Dimension(width, height));
+    }
+
+    @Override
+    public void setPreferredSize(final int width, final int height) {
+        setPreferredSize(new Dimension(width, height));
+    }
+
     protected static class A3AWTWindowHolder implements A3Context.Holder, A3Container.Holder {
 
         @Override
@@ -156,8 +171,8 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
         }
 
         @Override
-        public A3AudioKit getAudioKit() {
-            return window.canvas.holder.getAudioKit();
+        public A3AudioPlayer getAudioPlayer() {
+            return window.canvas.holder.getAudioPlayer();
         }
 
         @Override
@@ -216,8 +231,8 @@ public class A3AWTWindow extends Window implements AWTA3Container, ComponentList
             this.window = window;
         }
 
-        protected final List<A3ContainerListener> containerListeners = new CopyOnWriteArrayList<>();
-        protected final List<A3InputListener> inputListeners = new CopyOnWriteArrayList<>();
+        protected final List<A3ContainerListener> containerListeners = A3Collections.checkNullList(new CopyOnWriteArrayList<>());
+        protected final List<A3InputListener> inputListeners = A3Collections.checkNullList(new CopyOnWriteArrayList<>());
 
         @Override
         public A3Graphics getGraphics() {

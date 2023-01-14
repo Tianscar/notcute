@@ -42,8 +42,8 @@ a3wt-core
 a3wt-core
 ├── 2D Graphics Framework
 │   ├── Custom Cursor API
-│   │   ├── Single-frame Cursor
-│   │   └── (WIP) Multi-frame Cursor
+│   │   ├── Multi-frame Cursor
+│   │   └── Single-frame Cursor
 │   ├── Graphics API
 │   │   ├── Affine Transform API (Java2D-like)
 │   │   ├── Geometry Framework (Java2D-like)
@@ -89,7 +89,7 @@ a3wt-core
 │   │   └── (WIP) Uri
 │   └── Platform (Related-infos)
 ├── Audio Framework
-│   ├── Audio Reader
+│   ├── Audio Player
 │   │   ├── (Android Only) 3GPP (*.3gp)
 │   │   ├── (Android Only) AAC (*.aac)
 │   │   ├── (AWT Only) AIFF (*.aif, *.aiff)
@@ -100,8 +100,6 @@ a3wt-core
 │   │   ├── MP3 (*.mp3)
 │   │   ├── OGG (*.ogg)
 │   │   └── WAV (*.wav)
-│   ├── Music
-│   ├── Sound
 │   └── (WIP) Audio Recorder
 ├── Bundle Framework (Serialization⁄Deserialization)
 │   ├── Extensive Map Bundle (Map-based, XML-like)
@@ -112,7 +110,11 @@ a3wt-core
 │   └── Sectional Map Bundle (Map-based, INI-like)
 │       └── INI (*.ini)
 └── Utilities
-    ├── DiskLruCache
+    ├── Collections⁄Maps
+    │   ├── FilterCollection
+    │   ├── FilterList
+    │   ├── FilterMap
+    │   └── FilterSet
     ├── Interface
     │   ├── Callable
     │   ├── Copyable
@@ -121,14 +123,14 @@ a3wt-core
     │   ├── Prepareable
     │   └── Resetable
     ├── LruCache
+    │   ├── Disk
+    │   └── Memory
     └── Toolkit⁄Factory
         ├── Arrays
         ├── Asserts
         ├── Charsets
-        ├── Collections
         ├── Colors
         ├── Files (BIO)
-        ├── Maps
         ├── Math
         ├── Preconditions
         ├── StreamUtils

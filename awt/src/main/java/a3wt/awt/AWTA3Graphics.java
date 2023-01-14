@@ -149,7 +149,6 @@ public class AWTA3Graphics implements A3Graphics {
     public void drawImage(final A3Image image, final float x, final float y) {
         checkArgNotNull(image, "image");
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
-        mImageTransform.setToTranslation(x - image.getHotSpotX(), y - image.getHotSpotY());
         graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(), mImageTransform, null);
     }
 
@@ -158,7 +157,6 @@ public class AWTA3Graphics implements A3Graphics {
         checkArgNotNull(image, "image");
         checkArgNotNull(point, "point");
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
-        mImageTransform.setToTranslation(point.getX() - image.getHotSpotX(), point.getY() - image.getHotSpotY());
         graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(), mImageTransform, null);
     }
 

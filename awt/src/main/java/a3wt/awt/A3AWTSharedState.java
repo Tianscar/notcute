@@ -6,7 +6,7 @@ import java.awt.Dialog;
 
 public class A3AWTSharedState {
 
-    private A3AWTSharedState(){}
+    private A3AWTSharedState() {}
 
     private static volatile String companyName = "";
     private static volatile String appName = "";

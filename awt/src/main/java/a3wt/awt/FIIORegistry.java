@@ -1,6 +1,5 @@
 package a3wt.awt;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Collection;

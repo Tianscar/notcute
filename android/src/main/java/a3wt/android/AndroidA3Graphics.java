@@ -93,9 +93,7 @@ public class AndroidA3Graphics implements A3Graphics {
         checkArgNotNull(image, "image");
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
         canvas.save();
-        canvas.drawBitmap(((AndroidA3Image)image).getBitmap(),
-                x - image.getHotSpotX(), y - image.getHotSpotY(),
-                paint);
+        canvas.drawBitmap(((AndroidA3Image)image).getBitmap(), x, y, paint);
         canvas.restore();
     }
 

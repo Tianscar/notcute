@@ -341,7 +341,7 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
                     if (firstElement.getChildNodes().getLength() != 1 || firstElement.getFirstChild().getNodeType() != Node.TEXT_NODE) return defValue;
                     Class<?> typeClass = Class.forName(firstElement.getFirstChild().getTextContent());
                     if (Delegate.class.isAssignableFrom(typeClass)) {
-                        Delegate delegate = bundle.bundleKit.createDelegate((Class<? extends Delegate>) typeClass);
+                        Delegate delegate = bundle.bundleKit.createExtMapBundleDelegate((Class<? extends Delegate>) typeClass);
                         delegate.restore(new XMLRestorer(bundle, child));
                         return (T) delegate;
                     }
@@ -515,7 +515,7 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
                     if (firstElement.getChildNodes().getLength() != 1 || firstElement.getFirstChild().getNodeType() != Node.TEXT_NODE) continue;
                     Class<?> typeClass = Class.forName(firstElement.getFirstChild().getTextContent());
                     if (Delegate.class.isAssignableFrom(typeClass)) {
-                        Delegate delegate = bundle.bundleKit.createDelegate((Class<? extends Delegate>) typeClass);
+                        Delegate delegate = bundle.bundleKit.createExtMapBundleDelegate((Class<? extends Delegate>) typeClass);
                         XMLRestorer restorer = new XMLRestorer(bundle, child);
                         delegate.restore(restorer);
                         bundle.putDelegate(child.getNodeName(), delegate);

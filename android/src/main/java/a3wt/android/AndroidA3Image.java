@@ -15,17 +15,10 @@ public class AndroidA3Image implements A3Image {
     protected volatile AndroidA3Graphics graphics;
     protected volatile boolean disposed = false;
 
-    protected volatile long duration;
-    protected volatile int hotSpotX;
-    protected volatile int hotSpotY;
-
     public AndroidA3Image(final Bitmap bitmap, final long duration, final int hotSpotX, final int hotSpotY) {
         checkArgNotNull(bitmap, "bitmap");
         checkArgRangeMin(duration, 0, true, "duration");
         this.bitmap = bitmap;
-        this.duration = duration;
-        this.hotSpotX = hotSpotX;
-        this.hotSpotY = hotSpotY;
     }
 
     public AndroidA3Image(final Bitmap bitmap) {
@@ -34,60 +27,6 @@ public class AndroidA3Image implements A3Image {
 
     public Bitmap getBitmap() {
         return bitmap;
-    }
-
-    @Override
-    public long getDuration() {
-        checkDisposed("Can't call getDuration() on a disposed A3Image");
-        return duration;
-    }
-
-    @Override
-    public A3Image setDuration(final long duration) {
-        checkDisposed("Can't call setDuration() on a disposed A3Image");
-        checkArgRangeMin(duration, 0, true, "time");
-        this.duration = duration;
-        return this;
-    }
-
-    @Override
-    public int getHotSpotX() {
-        checkDisposed("Can't call getHotSpotX() on a disposed A3Image");
-        return hotSpotX;
-    }
-
-    @Override
-    public A3Image setHotSpotX(final int hotSpotX) {
-        checkDisposed("Can't call setHotSpotX() on a disposed A3Image");
-        this.hotSpotX = hotSpotX;
-        return this;
-    }
-
-    @Override
-    public int getHotSpotY() {
-        checkDisposed("Can't call getHotSpotY() on a disposed A3Image");
-        return hotSpotY;
-    }
-
-    @Override
-    public A3Image setHotSpotY(final int hotSpotY) {
-        checkDisposed("Can't call setHotSpotY() on a disposed A3Image");
-        this.hotSpotY = hotSpotY;
-        return this;
-    }
-
-    @Override
-    public A3Coordinate getHotSpot() {
-        checkDisposed("Can't call getHotSpot() on a disposed A3Image");
-        return new AndroidA3Coordinate(new Point(hotSpotX, hotSpotY));
-    }
-
-    @Override
-    public A3Image setHotSpot(final A3Coordinate hotSpot) {
-        checkArgNotNull(hotSpot, "hotSpot");
-        checkDisposed("Can't call setHotSpot() on a disposed A3Image");
-        hotSpot.set(hotSpotX, hotSpotY);
-        return this;
     }
 
     @Override
@@ -100,9 +39,6 @@ public class AndroidA3Image implements A3Image {
     public A3Image copy(final int type) {
         checkDisposed("Can't call copy() on a disposed A3Image");
         final AndroidA3Image result = new AndroidA3Image(A3AndroidUtils.copyBitmap(bitmap, A3AndroidUtils.imageType2BitmapConfig(type)));
-        result.duration = duration;
-        result.hotSpotX = hotSpotX;
-        result.hotSpotY = hotSpotY;
         return result;
     }
 
@@ -165,16 +101,12 @@ public class AndroidA3Image implements A3Image {
         graphics = null;
         if (!bitmap.isRecycled()) bitmap.recycle();
         bitmap = null;
-        duration = -1;
     }
 
     @Override
     public A3Image copy() {
         checkDisposed("Can't call copy() on a disposed A3Image");
         final AndroidA3Image result = new AndroidA3Image(A3AndroidUtils.copyBitmap(bitmap));
-        result.duration = duration;
-        result.hotSpotX = hotSpotX;
-        result.hotSpotY = hotSpotY;
         return result;
     }
 
@@ -199,9 +131,6 @@ public class AndroidA3Image implements A3Image {
         final AndroidA3Image dst0 = (AndroidA3Image) dst;
         dst0.bitmap = A3AndroidUtils.copyBitmap(bitmap);
         if (graphics != null) dst0.createGraphics().setData(graphics.data);
-        dst0.duration = duration;
-        dst0.hotSpotX = hotSpotX;
-        dst0.hotSpotY = hotSpotY;
     }
 
     @Override

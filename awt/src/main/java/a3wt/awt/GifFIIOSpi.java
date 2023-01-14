@@ -1,7 +1,6 @@
 package a3wt.awt;
 
 import a3wt.graphics.A3FramedImage;
-import a3wt.graphics.A3Image;
 import a3wt.graphics.DefaultA3FramedImage;
 import a3wt.util.A3Math;
 import com.madgag.gif.fmsware.AnimatedGifEncoder;
@@ -38,11 +37,11 @@ public final class GifFIIOSpi implements FIIOServiceProvider {
         final GifDecoder decoder = new GifDecoder();
         final int status = decoder.read(stream);
         if (status == STATUS_OK) {
-            final AWTA3Image[] images = new AWTA3Image[decoder.getFrameCount()];
+            final A3FramedImage.Frame[] frames = new A3FramedImage.Frame[decoder.getFrameCount()];
             for (int i = 0; i < decoder.getFrameCount(); i++) {
-                images[i] = new AWTA3Image(decoder.getFrame(i), decoder.getDelay(i), 0, 0);
+                frames[i] = new A3FramedImage.DefaultFrame(new AWTA3Image(decoder.getFrame(i)), decoder.getDelay(i));
             }
-            final A3FramedImage result = new DefaultA3FramedImage(images);
+            final A3FramedImage result = new DefaultA3FramedImage(frames);
             result.setLooping(decoder.getLoopCount());
             return result;
         }
@@ -60,8 +59,8 @@ public final class GifFIIOSpi implements FIIOServiceProvider {
         final int height = im.getGeneralHeight();
         encoder.setSize(width, height);
         AWTA3Image image;
-        for (final A3Image i : im) {
-            image = (AWTA3Image) i;
+        for (final A3FramedImage.Frame frame : im) {
+            image = (AWTA3Image) frame.getImage();
             if (image.hasAlpha()) {
                 encoder.setBackground(TRANSPARENT);
                 encoder.setTransparent(TRANSPARENT, true);

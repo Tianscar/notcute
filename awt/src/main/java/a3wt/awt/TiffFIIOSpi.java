@@ -1,7 +1,6 @@
 package a3wt.awt;
 
 import a3wt.graphics.A3FramedImage;
-import a3wt.graphics.A3Image;
 import a3wt.graphics.DefaultA3FramedImage;
 import com.twelvemonkeys.imageio.metadata.tiff.TIFF;
 
@@ -34,9 +33,9 @@ public final class TiffFIIOSpi implements FIIOServiceProvider {
         final ImageReader reader = getTiffImageReader();
         if (reader == null) return null;
         reader.setInput(stream);
-        final AWTA3Image[] images = new AWTA3Image[reader.getNumImages(true)];
-        for (int i = 0; i < images.length; i ++) {
-            images[i] = new AWTA3Image(reader.read(i), 0, 0, 0);
+        final A3FramedImage.Frame[] frames = new A3FramedImage.Frame[reader.getNumImages(true)];
+        for (int i = 0; i < frames.length; i ++) {
+            frames[i] = new A3FramedImage.DefaultFrame(new AWTA3Image(reader.read(i)), 0);
         }
         try {
             stream.close();
@@ -44,7 +43,7 @@ public final class TiffFIIOSpi implements FIIOServiceProvider {
         catch (final IOException ignored) {
         }
         reader.dispose();
-        return new DefaultA3FramedImage(images);
+        return new DefaultA3FramedImage(frames);
     }
 
     private static boolean isTiff(final ImageInputStream stream, final int versionMagic) throws IOException {
@@ -69,8 +68,8 @@ public final class TiffFIIOSpi implements FIIOServiceProvider {
         params.setCompressionType("LZW");
         params.setCompressionQuality(quality);
         writer.prepareWriteSequence(null);
-        for (final A3Image i : im) {
-            writer.writeToSequence(new IIOImage(((AWTA3Image)i).bufferedImage, null, null), params);
+        for (final A3FramedImage.Frame frame : im) {
+            writer.writeToSequence(new IIOImage(((AWTA3Image)frame.getImage()).bufferedImage, null, null), params);
         }
         writer.endWriteSequence();
         output.flush();

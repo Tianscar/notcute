@@ -521,9 +521,35 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public A3Cursor createCursor(final A3Image image) {
-        if (image instanceof A3FramedImage) return new AWTA3Cursor((AWTA3Image) ((A3FramedImage)image).get());
-        return new AWTA3Cursor((AWTA3Image) image);
+    public A3Cursor createCursor(final A3Image image, final int hotSpotX, final int hotSpotY) {
+        if (image instanceof A3FramedImage) return createFramedCursor((A3FramedImage) image, hotSpotX, hotSpotY);
+        else return new AWTA3Cursor((AWTA3Image) image, new Point(hotSpotX, hotSpotY));
+    }
+
+    @Override
+    public A3Cursor createCursor(final A3Image image, final A3Coordinate hotSpot) {
+        if (image instanceof A3FramedImage) return createFramedCursor((A3FramedImage) image, hotSpot);
+        else return new AWTA3Cursor((AWTA3Image) image, ((AWTA3Coordinate)hotSpot).point);
+    }
+
+    @Override
+    public A3Cursor createFramedCursor(final A3FramedImage image, final int hotSpotX, final int hotSpotY) {
+        final A3Cursor.Frame[] frames = new A3Cursor.Frame[image.size()];
+        for (int i = 0; i < frames.length; i ++) {
+            frames[i] = new A3Cursor.DefaultFrame(new AWTA3Cursor((AWTA3Image) image.get(i).getImage(), new Point(hotSpotX, hotSpotY)),
+                    image.get(i).getDuration());
+        }
+        return createFramedCursor(frames);
+    }
+
+    @Override
+    public A3Cursor createFramedCursor(final A3FramedImage image, final A3Coordinate hotSpot) {
+        final A3Cursor.Frame[] frames = new A3Cursor.Frame[image.size()];
+        for (int i = 0; i < frames.length; i ++) {
+            frames[i] = new A3Cursor.DefaultFrame(new AWTA3Cursor((AWTA3Image) image.get(i).getImage(), ((AWTA3Coordinate)hotSpot).point),
+                    image.get(i).getDuration());
+        }
+        return createFramedCursor(frames);
     }
 
     @Override

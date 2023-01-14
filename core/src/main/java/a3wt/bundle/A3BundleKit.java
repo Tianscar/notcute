@@ -30,9 +30,6 @@ public interface A3BundleKit {
         return new DefaultConcurrentA3SecMapBundle();
     }
 
-    Map<Class<? extends A3ExtMapBundle.Delegate>, A3Callable<A3ExtMapBundle.Delegate>> getExtMapBundleDelegateMappings();
-    void addExtMapBundleDelegateMapping(final Class<? extends A3ExtMapBundle.Delegate> typeClass, final A3Callable<A3ExtMapBundle.Delegate> mapping);
-
     default A3ExtMapBundle createExtMapBundle() {
         return new DefaultA3ExtMapBundle(this);
     }
@@ -45,6 +42,12 @@ public interface A3BundleKit {
         return new DefaultConcurrentA3ExtMapBundle(this);
     }
 
-    A3ExtMapBundle.Delegate createDelegate(final Class<? extends A3ExtMapBundle.Delegate> typeClass);
+    Map<Class<? extends A3ExtMapBundle.Delegate>, A3Callable<? extends A3ExtMapBundle.Delegate>> getExtMapBundleDelegateMappings();
+    A3Callable<? extends A3ExtMapBundle.Delegate> putExtMapBundleDelegateMapping(final Class<? extends A3ExtMapBundle.Delegate> typeClass, final A3Callable<? extends A3ExtMapBundle.Delegate> mapping);
+    A3Callable<? extends A3ExtMapBundle.Delegate> removeExtMapBundleDelegateMapping(final Class<? extends A3ExtMapBundle.Delegate> typeClass);
+    A3Callable<? extends A3ExtMapBundle.Delegate> getExtMapBundleDelegateMapping(final Class<? extends A3ExtMapBundle.Delegate> typeClass);
+    void clearExtMapBundleMappings();
+
+    A3ExtMapBundle.Delegate createExtMapBundleDelegate(final Class<? extends A3ExtMapBundle.Delegate> typeClass);
 
 }

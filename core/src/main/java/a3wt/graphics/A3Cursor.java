@@ -1,8 +1,13 @@
 package a3wt.graphics;
 
+import a3wt.util.A3Copyable;
+
+import static a3wt.util.A3Preconditions.checkArgNotNull;
+
 public interface A3Cursor {
 
     class Type {
+        private Type() {}
         public static final int ARROW = 0;
         public static final int DEFAULT = ARROW;
         public static final int CROSSHAIR = 1;
@@ -31,7 +36,76 @@ public interface A3Cursor {
         public static final int GONE = 100;
     }
 
+    interface Frame extends A3Copyable<Frame> {
+        void setCursor(final A3Cursor cursor);
+        A3Cursor getCursor();
+        void setDuration(final long duration);
+        long getDuration();
+    }
+
+    class DefaultFrame implements Frame {
+
+        protected long duration;
+        protected A3Cursor cursor;
+
+        public DefaultFrame(final A3Cursor cursor, final long duration) {
+            checkArgNotNull(cursor, "cursor");
+            this.duration = duration;
+            this.cursor = cursor;
+        }
+
+        public DefaultFrame(final A3Cursor cursor) {
+            checkArgNotNull(cursor, "cursor");
+            this.duration = 0;
+            this.cursor = cursor;
+        }
+
+        @Override
+        public void setCursor(final A3Cursor cursor) {
+            checkArgNotNull(cursor, "cursor");
+            this.cursor = cursor;
+        }
+
+        @Override
+        public A3Cursor getCursor() {
+            return cursor;
+        }
+
+        @Override
+        public void setDuration(final long duration) {
+            this.duration = duration;
+        }
+
+        @Override
+        public long getDuration() {
+            return duration;
+        }
+
+        @Override
+        public Frame copy() {
+            return new DefaultFrame(cursor, duration);
+        }
+
+        @Override
+        public void to(final Frame dst) {
+            checkArgNotNull(dst, "dst");
+            dst.setDuration(duration);
+            dst.setCursor(cursor);
+        }
+
+        @Override
+        public void from(final Frame src) {
+            checkArgNotNull(src, "src");
+            src.to(this);
+        }
+
+    }
+
     int getType();
     A3Image getImage();
+
+    int getHotSpotX();
+    int getHotSpotY();
+    A3Coordinate getHotSpot();
 
 }

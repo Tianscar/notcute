@@ -1,5 +1,7 @@
 package a3wt.app;
 
+import a3wt.util.A3Maps;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -24,7 +26,7 @@ import static a3wt.util.A3Charsets.UTF_8;
 public class DefaultA3I18NText implements A3I18NText {
 
     protected final Map<Locale, Properties> localeProperties = new ConcurrentHashMap<>();
-    protected final Map<Locale, Locale> localeMappings = new ConcurrentHashMap<>();
+    protected final Map<Locale, Locale> localeMappings = A3Maps.checkNullMap(new ConcurrentHashMap<>());
 
     protected volatile Locale defaultLocale = Locale.getDefault();
 
@@ -121,15 +123,17 @@ public class DefaultA3I18NText implements A3I18NText {
     }
 
     @Override
+    public Map<Locale, Locale> getLocaleMappings() {
+        return localeMappings;
+    }
+
+    @Override
     public Locale putLocaleMapping(final Locale target, final Locale replacement) {
-        checkArgNotNull(target, "target");
-        checkArgNotNull(replacement, "replacement");
         return localeMappings.put(target, replacement);
     }
 
     @Override
     public Locale removeLocaleMapping(final Locale target) {
-        checkArgNotNull(target, "target");
         return localeMappings.remove(target);
     }
 
@@ -140,7 +144,6 @@ public class DefaultA3I18NText implements A3I18NText {
 
     @Override
     public Locale getMappedLocale(final Locale target) {
-        checkArgNotNull(target, "target");
         final Locale replacement = localeMappings.get(target);
         return replacement == null ? target : replacement;
     }

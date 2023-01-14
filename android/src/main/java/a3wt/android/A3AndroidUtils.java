@@ -637,9 +637,9 @@ public class A3AndroidUtils {
     public static A3FramedImage gifDrawable2FramedImage(final GifDrawable drawable, final Bitmap.Config config) {
         checkArgNotNull(drawable, "drawable");
         try {
-            AndroidA3Image[] frames = new AndroidA3Image[drawable.getNumberOfFrames()];
+            A3Image.Frame[] frames = new A3Image.Frame[drawable.getNumberOfFrames()];
             for (int i = 0; i < frames.length; i ++) {
-                frames[i] = new AndroidA3Image(getBitmap(drawable.seekToFrameAndGet(i), config), drawable.getFrameDuration(i), 0, 0);
+                frames[i] = new A3Image.DefaultFrame(new AndroidA3Image(getBitmap(drawable.seekToFrameAndGet(i), config)), drawable.getFrameDuration(i));
             }
             A3FramedImage result = new DefaultA3FramedImage(frames);
             result.setLooping(drawable.getLoopCount());

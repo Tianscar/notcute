@@ -557,11 +557,10 @@ public class A3AWTUtils {
         return DEFAULT_CURSOR;
     }
 
-    public static Cursor createCustomCursor(final Image image, final int hotSpotX, final int hotSpotY, final String name) {
+    public static Cursor createCustomCursor(final Image image, final Point hotSpot, final String name) {
         checkArgNotNull(image, "image");
         checkArgNotNull(name, "name");
-        final Point hotSpot = new Point(hotSpotX, hotSpotY);
-        final Cursor result;
+        checkArgNotNull(hotSpot, "hotSpot");
         try {
             if (AWTA3Platform.isX11()) return (Cursor) Class.forName("com.tianscar.awt.x11.ColorfulXCursor")
                     .getConstructor(Image.class, Point.class, String.class)

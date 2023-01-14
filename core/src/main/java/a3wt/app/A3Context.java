@@ -1,11 +1,8 @@
 package a3wt.app;
 
-import a3wt.audio.A3AudioKit;
+import a3wt.audio.A3AudioPlayer;
 import a3wt.bundle.A3BundleKit;
-import a3wt.graphics.A3Cursor;
-import a3wt.graphics.A3Graphics;
-import a3wt.graphics.A3GraphicsKit;
-import a3wt.graphics.A3Image;
+import a3wt.graphics.*;
 import a3wt.input.A3ContextListener;
 import a3wt.input.A3InputListener;
 import a3wt.util.A3Disposable;
@@ -26,7 +23,7 @@ public interface A3Context extends A3Disposable {
         A3I18NText getI18NText();
         A3GraphicsKit getGraphicsKit();
         A3BundleKit getBundleKit();
-        A3AudioKit getAudioKit();
+        A3AudioPlayer getAudioPlayer();
 
         void postRunnable(final Runnable runnable);
 
@@ -85,6 +82,13 @@ public interface A3Context extends A3Disposable {
 
         void setCursor(final A3Cursor cursor);
         A3Cursor getCursor();
+        default void setFramedCursor(final A3FramedCursor cursor) {
+            setCursor(cursor);
+        }
+        default A3FramedCursor getFramedCursor() {
+            final A3Cursor cursor = getCursor();
+            return cursor instanceof A3FramedCursor ? (A3FramedCursor) cursor : null;
+        }
 
         boolean browse(final URI uri);
         boolean open(final File file);

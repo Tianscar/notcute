@@ -1,10 +1,8 @@
 package a3wt.awt;
 
-import a3wt.graphics.A3Coordinate;
 import a3wt.graphics.A3Graphics;
 import a3wt.graphics.A3Image;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import static a3wt.util.A3Preconditions.checkArgNotNull;
@@ -41,58 +39,6 @@ public class AWTA3Image implements A3Image {
     public A3Graphics createGraphics() {
         if (graphics == null) graphics = new AWTA3Graphics(bufferedImage);
         return graphics;
-    }
-
-    @Override
-    public long getDuration() {
-        checkDisposed("Can't call getDuration() on a disposed A3Image");
-        return duration;
-    }
-
-    @Override
-    public A3Image setDuration(final long duration) {
-        checkDisposed("Can't call setDuration() on a disposed A3Image");
-        checkArgRangeMin(duration, 0, true, "duration");
-        this.duration = duration;
-        return this;
-    }
-
-    @Override
-    public int getHotSpotX() {
-        checkDisposed("Can't call getHotSpotX() on a disposed A3Image");
-        return hotSpotX;
-    }
-
-    @Override
-    public A3Image setHotSpotX(final int hotSpotX) {
-        checkDisposed("Can't call setHotSpotX() on a disposed A3Image");
-        this.hotSpotX = hotSpotX;
-        return this;
-    }
-
-    @Override
-    public int getHotSpotY() {
-        checkDisposed("Can't call getHotSpotY() on a disposed A3Image");
-        return hotSpotY;
-    }
-
-    @Override
-    public A3Image setHotSpotY(final int hotSpotY) {
-        checkDisposed("Can't call setHotSpotY() on a disposed A3Image");
-        this.hotSpotY = hotSpotY;
-        return this;
-    }
-
-    @Override
-    public A3Coordinate getHotSpot() {
-        return new AWTA3Coordinate(new Point(hotSpotX, hotSpotY));
-    }
-
-    @Override
-    public A3Image setHotSpot(final A3Coordinate hotSpot) {
-        hotSpotX = hotSpot.getX();
-        hotSpotY = hotSpot.getY();
-        return this;
     }
 
     @Override

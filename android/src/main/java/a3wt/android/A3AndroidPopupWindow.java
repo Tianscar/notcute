@@ -7,7 +7,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.PopupWindow;
-import a3wt.audio.A3AudioKit;
+import a3wt.audio.A3AudioPlayer;
 import a3wt.bundle.A3BundleKit;
 import a3wt.graphics.A3Cursor;
 import a3wt.graphics.A3Graphics;
@@ -65,8 +65,8 @@ public class A3AndroidPopupWindow extends PopupWindow implements AndroidA3Contai
         }
 
         @Override
-        public A3AudioKit getAudioKit() {
-            return popupWindow.surfaceView.holder.getAudioKit();
+        public A3AudioPlayer getAudioPlayer() {
+            return popupWindow.surfaceView.holder.getAudioPlayer();
         }
 
         @Override

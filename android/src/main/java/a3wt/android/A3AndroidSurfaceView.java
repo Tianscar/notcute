@@ -18,7 +18,7 @@ import android.view.SurfaceHolder;
 import android.view.MotionEvent;
 import android.view.KeyEvent;
 import android.view.PointerIcon;
-import a3wt.audio.A3AudioKit;
+import a3wt.audio.A3AudioPlayer;
 import a3wt.bundle.A3BundleKit;
 import a3wt.bundle.DefaultA3BundleKit;
 import a3wt.input.A3ContextListener;
@@ -74,27 +74,21 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         protected static final AndroidA3GraphicsKit graphicsKit = new AndroidA3GraphicsKit();
         protected static final DefaultA3BundleKit bundleKit = new DefaultA3BundleKit();
         static {
-            bundleKit.addExtMapBundleDelegateMapping(A3Arc.class, graphicsKit::createArc);
-            bundleKit.addExtMapBundleDelegateMapping(A3Area.class, graphicsKit::createArea);
-            bundleKit.addExtMapBundleDelegateMapping(A3Coordinate.class, graphicsKit::createCoordinate);
-            bundleKit.addExtMapBundleDelegateMapping(A3CubicCurve.class, graphicsKit::createCubicCurve);
-            bundleKit.addExtMapBundleDelegateMapping(A3Dimension.class, graphicsKit::createDimension);
-            bundleKit.addExtMapBundleDelegateMapping(A3Line.class, graphicsKit::createLine);
-            bundleKit.addExtMapBundleDelegateMapping(A3Oval.class, graphicsKit::createOval);
-            bundleKit.addExtMapBundleDelegateMapping(A3Point.class, graphicsKit::createPoint);
-            bundleKit.addExtMapBundleDelegateMapping(A3QuadCurve.class, graphicsKit::createQuadCurve);
-            bundleKit.addExtMapBundleDelegateMapping(A3Rect.class, graphicsKit::createRect);
-            bundleKit.addExtMapBundleDelegateMapping(A3RoundRect.class, graphicsKit::createRoundRect);
-            bundleKit.addExtMapBundleDelegateMapping(A3Size.class, graphicsKit::createSize);
-            bundleKit.addExtMapBundleDelegateMapping(A3Transform.class, graphicsKit::createTransform);
+            bundleKit.putExtMapBundleDelegateMapping(A3Arc.class, graphicsKit::createArc);
+            bundleKit.putExtMapBundleDelegateMapping(A3Area.class, graphicsKit::createArea);
+            bundleKit.putExtMapBundleDelegateMapping(A3Coordinate.class, graphicsKit::createCoordinate);
+            bundleKit.putExtMapBundleDelegateMapping(A3CubicCurve.class, graphicsKit::createCubicCurve);
+            bundleKit.putExtMapBundleDelegateMapping(A3Dimension.class, graphicsKit::createDimension);
+            bundleKit.putExtMapBundleDelegateMapping(A3Line.class, graphicsKit::createLine);
+            bundleKit.putExtMapBundleDelegateMapping(A3Oval.class, graphicsKit::createOval);
+            bundleKit.putExtMapBundleDelegateMapping(A3Point.class, graphicsKit::createPoint);
+            bundleKit.putExtMapBundleDelegateMapping(A3QuadCurve.class, graphicsKit::createQuadCurve);
+            bundleKit.putExtMapBundleDelegateMapping(A3Rect.class, graphicsKit::createRect);
+            bundleKit.putExtMapBundleDelegateMapping(A3RoundRect.class, graphicsKit::createRoundRect);
+            bundleKit.putExtMapBundleDelegateMapping(A3Size.class, graphicsKit::createSize);
+            bundleKit.putExtMapBundleDelegateMapping(A3Transform.class, graphicsKit::createTransform);
         }
-        protected static final AndroidA3AudioKit audioKit = new AndroidA3AudioKit();
-        protected static final DefaultA3Factory factory = new DefaultA3Factory();
-        static {
-            factory.addMapping("a3wt", "graphicsKit", () -> graphicsKit);
-            factory.addMapping("a3wt", "bundleKit", () -> bundleKit);
-            factory.addMapping("a3wt", "audioKit", () -> audioKit);
-        }
+        protected static final AndroidA3AudioPlayer audioPlayer = new AndroidA3AudioPlayer();
 
         @Override
         public A3Factory getFactory() {
@@ -122,8 +116,8 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         }
 
         @Override
-        public A3AudioKit getAudioKit() {
-            return audioKit;
+        public A3AudioPlayer getAudioPlayer() {
+            return audioPlayer;
         }
 
         protected static final A3Logger logger = new AndroidA3Logger();
@@ -387,14 +381,23 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
             return applicationClipboards.get(name);
         }
 
-        protected volatile AndroidA3Cursor cursor;
+        protected volatile A3Cursor cursor = graphicsKit.getDefaultCursor();
+        protected volatile CursorAnimator cursorAnimator;
 
         @Override
         public void setCursor(final A3Cursor cursor) {
             checkArgNotNull(cursor, "cursor");
-            this.cursor = (AndroidA3Cursor) cursor;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                surfaceView.setPointerIcon((PointerIcon) this.cursor.pointerIcon);
+            if (cursorAnimator != null) cursorAnimator.stop();
+            this.cursor = cursor;
+            if (cursor instanceof A3FramedCursor) {
+                cursorAnimator = new CursorAnimator(surfaceView, (A3FramedCursor) cursor);
+                cursorAnimator.start();
+            }
+            else {
+                cursorAnimator = null;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    surfaceView.setPointerIcon((PointerIcon) ((AndroidA3Cursor) cursor).pointerIcon);
+                }
             }
         }
 
@@ -429,6 +432,17 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
             catch (final ActivityNotFoundException e) {
                 return false;
             }
+        }
+
+        protected static final DefaultA3Factory factory = new DefaultA3Factory();
+        static {
+            factory.putMapping("a3wt", "assets", assetsRef::get);
+            factory.putMapping("a3wt", "i18nTest", () -> i18NText);
+            factory.putMapping("a3wt", "logger", () -> logger);
+            factory.putMapping("a3wt", "platform", () -> platform);
+            factory.putMapping("a3wt", "audioPlayer", () -> audioPlayer);
+            factory.putMapping("a3wt", "bundleKit", () -> bundleKit);
+            factory.putMapping("a3wt", "graphicsKit", () -> graphicsKit);
         }
 
     }

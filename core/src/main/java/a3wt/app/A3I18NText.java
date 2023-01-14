@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Map;
 
 public interface A3I18NText {
 
@@ -18,6 +19,7 @@ public interface A3I18NText {
 
     Properties unload(final Locale locale);
 
+    Map<Locale, Locale> getLocaleMappings();
     Locale putLocaleMapping(final Locale target, final Locale replacement);
     Locale removeLocaleMapping(final Locale target);
     void clearLocaleMappings();

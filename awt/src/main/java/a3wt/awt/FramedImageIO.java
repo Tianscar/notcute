@@ -38,11 +38,11 @@ public final class FramedImageIO {
         for (final FIIOServiceProvider provider : FIIORegistry.getServiceProviders()) {
             image = provider.read(input);
             if (image != null) {
-                A3Image frame;
+                A3FramedImage.Frame frame;
                 for (int i = 0, size = image.size(); i < size; i ++) {
                     frame = image.get(i);
-                    if (frame.getType() != type) {
-                        image.set(i, frame.copy(type));
+                    if (frame.getImage().getType() != type) {
+                        image.set(i, frame.copy(A3AWTUtils.bufferedImageType2ImageType(type)));
                     }
                 }
                 break;

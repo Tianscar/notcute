@@ -3,22 +3,27 @@ package a3wt.audio;
 public abstract class A3SoundAdapter implements A3SoundListener {
 
     @Override
-    public void soundStarted() {
+    public void soundLoaded(final A3AudioPlayer.Sound sound) {
 
     }
 
     @Override
-    public void soundPaused() {
+    public void soundStarted(final A3AudioPlayer.Sound sound) {
 
     }
 
     @Override
-    public void soundResumed() {
+    public void soundPaused(final A3AudioPlayer.Sound sound) {
 
     }
 
     @Override
-    public void soundDisposed() {
+    public void soundResumed(final A3AudioPlayer.Sound sound) {
+
+    }
+
+    @Override
+    public void soundUnloaded(final A3AudioPlayer.Sound sound) {
 
     }
 
