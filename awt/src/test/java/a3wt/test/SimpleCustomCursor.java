@@ -14,7 +14,6 @@ import java.util.TimerTask;
 public class SimpleCustomCursor {
 
     private volatile static boolean paused = false;
-    private static final Object lock = new Object();
 
     public static void main(String[] args) {
         A3AWTFrame frame = new A3AWTFrame("Simple Custom Cursor");
@@ -27,12 +26,12 @@ public class SimpleCustomCursor {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        synchronized (lock) {
+                        frame.getContainerHolder().postRunnable(() -> {
                             if (!frame.isDisposed()) {
-                                if (!paused) holder.update();
+                                if (!paused) frame.getContainerHolder().update();
                             }
                             else System.exit(0);
-                        }
+                        });
                     }
                 }, 0, 1000 / 60);
             }
@@ -46,7 +45,7 @@ public class SimpleCustomCursor {
             }
         });
         A3Image image = holder.getGraphicsKit().readImage(holder.getAssets(), "tianscar_avatar.png", A3Image.Type.ARGB_8888);
-        holder.setCursor(holder.getGraphicsKit().createCursor(image, 0, 0));
+        holder.setCursor(holder.getGraphicsKit().createCursor(image, image.getWidth() / 2.f, image.getHeight() / 2.f));
         image.dispose();
         holder.addContextListener(new A3ContextAdapter() {
             @Override

@@ -30,6 +30,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,6 +48,13 @@ import static a3wt.util.A3Files.createDirIfNotExist;
 
 public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Context, SurfaceHolder.Callback,
         View.OnLayoutChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnKeyListener, View.OnGenericMotionListener {
+
+    {
+        final ServiceLoader<A3Initializer> serviceLoader = ServiceLoader.load(A3Initializer.class, A3Initializer.class.getClassLoader());
+        for (final A3Initializer initializer : serviceLoader) {
+            initializer.initialize();
+        }
+    }
 
     @Override
     public boolean onTouch(final View v, final MotionEvent event) {
@@ -74,19 +82,16 @@ public class A3AndroidSurfaceView extends SurfaceView implements AndroidA3Contex
         protected static final AndroidA3GraphicsKit graphicsKit = new AndroidA3GraphicsKit();
         protected static final DefaultA3BundleKit bundleKit = new DefaultA3BundleKit();
         static {
-            bundleKit.putExtMapBundleDelegateMapping(A3Arc.class, graphicsKit::createArc);
-            bundleKit.putExtMapBundleDelegateMapping(A3Area.class, graphicsKit::createArea);
-            bundleKit.putExtMapBundleDelegateMapping(A3Coordinate.class, graphicsKit::createCoordinate);
-            bundleKit.putExtMapBundleDelegateMapping(A3CubicCurve.class, graphicsKit::createCubicCurve);
-            bundleKit.putExtMapBundleDelegateMapping(A3Dimension.class, graphicsKit::createDimension);
-            bundleKit.putExtMapBundleDelegateMapping(A3Line.class, graphicsKit::createLine);
-            bundleKit.putExtMapBundleDelegateMapping(A3Oval.class, graphicsKit::createOval);
-            bundleKit.putExtMapBundleDelegateMapping(A3Point.class, graphicsKit::createPoint);
-            bundleKit.putExtMapBundleDelegateMapping(A3QuadCurve.class, graphicsKit::createQuadCurve);
-            bundleKit.putExtMapBundleDelegateMapping(A3Rect.class, graphicsKit::createRect);
-            bundleKit.putExtMapBundleDelegateMapping(A3RoundRect.class, graphicsKit::createRoundRect);
-            bundleKit.putExtMapBundleDelegateMapping(A3Size.class, graphicsKit::createSize);
-            bundleKit.putExtMapBundleDelegateMapping(A3Transform.class, graphicsKit::createTransform);
+            bundleKit.putExtMapBundleableMapping(A3Arc.class, graphicsKit::createArc);
+            bundleKit.putExtMapBundleableMapping(A3CubicCurve.class, graphicsKit::createCubicCurve);
+            bundleKit.putExtMapBundleableMapping(A3Line.class, graphicsKit::createLine);
+            bundleKit.putExtMapBundleableMapping(A3Oval.class, graphicsKit::createOval);
+            bundleKit.putExtMapBundleableMapping(A3Point.class, graphicsKit::createPoint);
+            bundleKit.putExtMapBundleableMapping(A3QuadCurve.class, graphicsKit::createQuadCurve);
+            bundleKit.putExtMapBundleableMapping(A3Rect.class, graphicsKit::createRect);
+            bundleKit.putExtMapBundleableMapping(A3RoundRect.class, graphicsKit::createRoundRect);
+            bundleKit.putExtMapBundleableMapping(A3Size.class, graphicsKit::createSize);
+            bundleKit.putExtMapBundleableMapping(A3Transform.class, graphicsKit::createTransform);
         }
         protected static final AndroidA3AudioPlayer audioPlayer = new AndroidA3AudioPlayer();
 

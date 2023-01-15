@@ -224,43 +224,6 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public A3Coordinate createCoordinate() {
-        return new AndroidA3Coordinate(new Point());
-    }
-
-    @Override
-    public A3Coordinate createCoordinate(final int x, final int y) {
-        return new AndroidA3Coordinate(new Point(x, y));
-    }
-
-    @Override
-    public A3Dimension createDimension() {
-        return new AndroidA3Dimension();
-    }
-
-    @Override
-    public A3Dimension createDimension(final int width, final int height) {
-        return new AndroidA3Dimension(width, height);
-    }
-
-    @Override
-    public A3Area createArea() {
-        return new AndroidA3Area(new Rect());
-    }
-
-    @Override
-    public A3Area createArea(final int x, final int y, final int width, final int height) {
-        return new AndroidA3Area(new Rect(x, y, x + width, y + height));
-    }
-
-    @Override
-    public A3Area createArea(final A3Coordinate pos, final A3Dimension size) {
-        checkArgNotNull(pos, "pos");
-        checkArgNotNull(size, "size");
-        return createArea(pos.getX(), pos.getY(), size.getWidth(), size.getHeight());
-    }
-
-    @Override
     public A3Path createPath() {
         return new AndroidA3Path(new Path());
     }
@@ -476,19 +439,19 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public A3Cursor createCursor(final A3Image image, final int hotSpotX, final int hotSpotY) {
+    public A3Cursor createCursor(final A3Image image, final float hotSpotX, final float hotSpotY) {
         if (image instanceof A3FramedImage) return createFramedCursor((A3FramedImage) image, hotSpotX, hotSpotY);
         else return new AndroidA3Cursor(((AndroidA3Image) image), hotSpotX, hotSpotY);
     }
 
     @Override
-    public A3Cursor createCursor(final A3Image image, final A3Coordinate hotSpot) {
+    public A3Cursor createCursor(final A3Image image, final A3Point hotSpot) {
         if (image instanceof A3FramedImage) return createFramedCursor((A3FramedImage) image, hotSpot);
         else return new AndroidA3Cursor(((AndroidA3Image) image), hotSpot.getX(), hotSpot.getY());
     }
 
     @Override
-    public A3Cursor createFramedCursor(final A3FramedImage image, final int hotSpotX, final int hotSpotY) {
+    public A3Cursor createFramedCursor(final A3FramedImage image, final float hotSpotX, final float hotSpotY) {
         final A3Cursor.Frame[] frames = new A3Cursor.Frame[image.size()];
         for (int i = 0; i < frames.length; i ++) {
             frames[i] = new A3Cursor.DefaultFrame(new AndroidA3Cursor((AndroidA3Image) image.get(i).getImage(), hotSpotX, hotSpotY),
@@ -498,7 +461,7 @@ public class AndroidA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public A3Cursor createFramedCursor(final A3FramedImage image, final A3Coordinate hotSpot) {
+    public A3Cursor createFramedCursor(final A3FramedImage image, final A3Point hotSpot) {
         return createFramedCursor(image, hotSpot.getX(), hotSpot.getY());
     }
 

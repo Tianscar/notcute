@@ -47,6 +47,27 @@ public class AWTA3Oval implements A3Oval {
     }
 
     @Override
+    public float getCenterX() {
+        return ellipse2D.x + ellipse2D.width / 2;
+    }
+
+    @Override
+    public float getCenterY() {
+        return ellipse2D.y + ellipse2D.height / 2;
+    }
+
+    @Override
+    public A3Point getCenter() {
+        return new AWTA3Point(new Point2D.Float(getCenterX(), getCenterY()));
+    }
+
+    @Override
+    public void getCenter(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(getCenterX(), getCenterY());
+    }
+
+    @Override
     public float getX() {
         return ellipse2D.x;
     }
@@ -129,6 +150,26 @@ public class AWTA3Oval implements A3Oval {
     }
 
     @Override
+    public A3Oval setCenterX(final float centerX) {
+        ellipse2D.x = centerX - ellipse2D.width / 2;
+        return this;
+    }
+
+    @Override
+    public A3Oval setCenterY(final float centerY) {
+        ellipse2D.y = centerY - ellipse2D.height / 2;
+        return this;
+    }
+
+    @Override
+    public A3Oval setCenter(final A3Point center) {
+        checkArgNotNull(center, "center");
+        ellipse2D.x = center.getX() - ellipse2D.width / 2;
+        ellipse2D.y = center.getY() - ellipse2D.height / 2;
+        return this;
+    }
+
+    @Override
     public A3Oval setX(final float x) {
         ellipse2D.x = x;
         return this;
@@ -183,13 +224,13 @@ public class AWTA3Oval implements A3Oval {
     }
 
     @Override
-    public A3Oval set(final float x, final float y, final float width, final float height) {
+    public A3Oval setRect(final float x, final float y, final float width, final float height) {
         ellipse2D.setFrame(x, y, width, height);
         return this;
     }
 
     @Override
-    public A3Oval set(final A3Point pos, final A3Size size) {
+    public A3Oval setRect(final A3Point pos, final A3Size size) {
         checkArgNotNull(pos, "pos");
         checkArgNotNull(size, "size");
         ellipse2D.x = pos.getX();
@@ -245,6 +286,17 @@ public class AWTA3Oval implements A3Oval {
     @Override
     public boolean contains(final A3Rect rect) {
         return ellipse2D.contains(((AWTA3Rect)rect).rectangle2D);
+    }
+
+    @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        return ellipse2D.intersects(x, y, width, height);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return ellipse2D.intersects(((AWTA3Rect)rect).rectangle2D);
     }
 
     @Override

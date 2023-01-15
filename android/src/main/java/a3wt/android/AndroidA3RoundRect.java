@@ -1,11 +1,8 @@
 package a3wt.android;
 
+import a3wt.graphics.*;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import a3wt.graphics.A3Point;
-import a3wt.graphics.A3Rect;
-import a3wt.graphics.A3RoundRect;
-import a3wt.graphics.A3Size;
 
 import static a3wt.util.A3Preconditions.checkArgNotNull;
 import static a3wt.util.A3Preconditions.checkArgRangeBounds;
@@ -58,6 +55,27 @@ public class AndroidA3RoundRect implements A3RoundRect {
     @Override
     public float getBottom() {
         return y + height;
+    }
+
+    @Override
+    public float getCenterX() {
+        return x + width / 2;
+    }
+
+    @Override
+    public float getCenterY() {
+        return y + height / 2;
+    }
+
+    @Override
+    public A3Point getCenter() {
+        return new AndroidA3Point(new PointF(getCenterX(), getCenterY()));
+    }
+
+    @Override
+    public void getCenter(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(getCenterX(), getCenterY());
     }
 
     @Override
@@ -160,6 +178,26 @@ public class AndroidA3RoundRect implements A3RoundRect {
         y = top;
         width = right - left;
         height = bottom - top;
+        return this;
+    }
+
+    @Override
+    public A3RoundRect setCenterX(final float centerX) {
+        x = centerX - width / 2;
+        return this;
+    }
+
+    @Override
+    public A3RoundRect setCenterY(final float centerY) {
+        y = centerY - height / 2;
+        return this;
+    }
+
+    @Override
+    public A3RoundRect setCenter(final A3Point center) {
+        checkArgNotNull(center, "center");
+        x = center.getX() - width / 2;
+        y = center.getY() - height / 2;
         return this;
     }
 
@@ -297,30 +335,24 @@ public class AndroidA3RoundRect implements A3RoundRect {
 
     @Override
     public boolean contains(float x, float y) {
-        if (width <= 0.0f || height <= 0.0f) {
-            return false;
-        }
-        float rrx0 = getX();
-        float rry0 = getY();
-        final float rrx1 = rrx0 + getWidth();
-        final float rry1 = rry0 + getHeight();
-        // Check for trivial rejection - point is outside bounding rectangle
-        if (x < rrx0 || y < rry0 || x >= rrx1 || y >= rry1) {
-            return false;
-        }
-        final float aw = Math.min(getWidth(), Math.abs(getArcWidth())) / 2.0f;
-        final float ah = Math.min(getHeight(), Math.abs(getArcHeight())) / 2.0f;
-        // Check which corner point is in and do circular containment
-        // test - otherwise simple acceptance
-        if (x >= (rrx0 += aw) && x < (rrx0 = rrx1 - aw)) {
-            return true;
-        }
-        if (y >= (rry0 += ah) && y < (rry0 = rry1 - ah)) {
-            return true;
-        }
-        x = (x - rrx0) / aw;
-        y = (y - rry0) / ah;
-        return (x * x + y * y <= 1.0f);
+        if (isEmpty()) return false;
+        final float x1 = this.x;
+        final float y1 = this.y;
+        final float x2 = x1 + width;
+        final float y2 = y1 + height;
+        if (x < x1 || x >= x2 || y < y1 || y >= y2) return false;
+        final float aw = this.rx / 2.0f;
+        final float ah = this.ry / 2.0f;
+        final float cx, cy;
+        if (x < x1 + aw) cx = x1 + aw;
+        else if (x > x2 - aw) cx = x2 - aw;
+        else return true;
+        if (y < y1 + ah) cy = y1 + ah;
+        else if (y > y2 - ah) cy = y2 - ah;
+        else return true;
+        x = (x - cx) / aw;
+        y = (y - cy) / ah;
+        return x * x + y * y <= 1.0f;
     }
 
     @Override
@@ -331,19 +363,34 @@ public class AndroidA3RoundRect implements A3RoundRect {
 
     @Override
     public boolean contains(final float x, final float y, final float width, final float height) {
-        if (this.width <= 0.0f || this.height <= 0.0f || width <= 0.0f || height <= 0.0f) {
-            return false;
-        }
-        return (contains(x, y) &&
-                contains(x + width, y) &&
-                contains(x, y + height) &&
-                contains(x + width, y + height));
+        if (isEmpty() || width <= 0.0f || height <= 0.0f) return false;
+        final float x2 = x + width;
+        final float y2 = y + height;
+        return contains(x, y) && contains(x2, y) && contains(x2, y2) && contains(x, y2);
     }
 
     @Override
     public boolean contains(final A3Rect rect) {
         checkArgNotNull(rect, "rect");
         return contains(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+    }
+
+    @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        if (isEmpty() || width <= 0.0f || height <= 0.0f) return false;
+        final float cx = this.x + this.width / 2.0f;
+        final float cy = this.y + this.height / 2.0f;
+        final float x2 = x + width;
+        final float y2 = y + height;
+        final float nx = cx < x ? x : Math.min(cx, x2);
+        final float ny = cy < y ? y : Math.min(cy, y2);
+        return contains(nx, ny);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return intersects(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
 
     @Override

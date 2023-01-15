@@ -1,13 +1,13 @@
 package a3wt.graphics;
 
-import a3wt.util.A3Copyable;
+import a3wt.util.A3MutableCopyable;
 import a3wt.util.A3Disposable;
 
 import static a3wt.util.A3Preconditions.checkArgNotNull;
 
-public interface A3Image extends A3Disposable, A3Copyable<A3Image> {
+public interface A3Image extends A3Disposable, A3MutableCopyable<A3Image> {
 
-    interface Frame extends A3Copyable<Frame>, A3Disposable {
+    interface Frame extends A3MutableCopyable<Frame>, A3Disposable {
         void setImage(final A3Image image);
         A3Image getImage();
         void setDuration(final long duration);

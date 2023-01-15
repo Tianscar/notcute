@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public interface A3FilterList<E> extends List<E>, A3FilterCollection<E> {
+public interface A3FilterList<E> extends A3List<E>, A3FilterCollection<E> {
 
     @Override
     List<E> filterInstance();

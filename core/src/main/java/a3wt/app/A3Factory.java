@@ -1,6 +1,6 @@
 package a3wt.app;
 
-import a3wt.util.A3Callable;
+import a3wt.util.A3Supplier;
 
 import java.util.Map;
 
@@ -30,18 +30,18 @@ public interface A3Factory {
         }
     }
 
-    Map<Identifier, A3Callable<?>> getMappings();
-    A3Callable<?> putMapping(final Identifier identifier, final A3Callable<?> mapping);
-    default A3Callable<?> putMapping(final String namespace, final String name, final A3Callable<?> mapping) {
+    Map<Identifier, A3Supplier<?>> getMappings();
+    A3Supplier<?> putMapping(final Identifier identifier, final A3Supplier<?> mapping);
+    default A3Supplier<?> putMapping(final String namespace, final String name, final A3Supplier<?> mapping) {
         return putMapping(new DefaultIdentifier(namespace, name), mapping);
     }
-    A3Callable<?> removeMapping(final Identifier identifier);
-    default A3Callable<?> removeMapping(final String namespace, final String name) {
+    A3Supplier<?> removeMapping(final Identifier identifier);
+    default A3Supplier<?> removeMapping(final String namespace, final String name) {
         return removeMapping(new DefaultIdentifier(namespace, name));
     }
     void clearMappings();
-    A3Callable<?> getMapping(final Identifier identifier);
-    default A3Callable<?> getMapping(final String namespace, final String name) {
+    A3Supplier<?> getMapping(final Identifier identifier);
+    default A3Supplier<?> getMapping(final String namespace, final String name) {
         return getMapping(new DefaultIdentifier(namespace, name));
     }
 

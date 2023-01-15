@@ -6,6 +6,7 @@ import a3wt.graphics.A3Line;
 import a3wt.graphics.A3Point;
 import a3wt.graphics.A3Rect;
 
+import static a3wt.android.A3AndroidUtils.linesIntersect;
 import static a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AndroidA3Line implements A3Line {
@@ -125,7 +126,7 @@ public class AndroidA3Line implements A3Line {
     }
 
     @Override
-    public A3Line set(final float startX, final float startY, final float endX, final float endY) {
+    public A3Line setLine(final float startX, final float startY, final float endX, final float endY) {
         this.startX = startX;
         this.startY = startY;
         this.endX = endX;
@@ -134,7 +135,7 @@ public class AndroidA3Line implements A3Line {
     }
 
     @Override
-    public A3Line set(final A3Point startPos, final A3Point endPos) {
+    public A3Line setLine(final A3Point startPos, final A3Point endPos) {
         checkArgNotNull(startPos, "startPos");
         checkArgNotNull(endPos, "endPos");
         this.startX = startPos.getX();
@@ -165,6 +166,17 @@ public class AndroidA3Line implements A3Line {
     }
 
     @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        return intersects(new AndroidA3Rect(new RectF(x, y, x + width, y + height)));
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return rect.intersectsLine(this);
+    }
+
+    @Override
     public A3Line copy() {
         return new AndroidA3Line(startX, startY, endX, endY);
     }
@@ -187,4 +199,15 @@ public class AndroidA3Line implements A3Line {
         return this;
     }
 
+    @Override
+    public boolean intersectsLine(final float startX, final float startY, final float endX, final float endY) {
+        return linesIntersect(startX, startY, endX, endY, getStartX(), getStartY(), getEndX(), getEndY());
+    }
+
+    @Override
+    public boolean intersectsLine(final A3Line line) {
+        checkArgNotNull(line, "line");
+        return linesIntersect(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY(), getStartX(), getStartY(), getEndX(), getEndY());
+    }
+    
 }

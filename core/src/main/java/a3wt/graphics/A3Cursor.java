@@ -1,6 +1,6 @@
 package a3wt.graphics;
 
-import a3wt.util.A3Copyable;
+import a3wt.util.A3MutableCopyable;
 
 import static a3wt.util.A3Preconditions.checkArgNotNull;
 
@@ -36,7 +36,7 @@ public interface A3Cursor {
         public static final int GONE = 100;
     }
 
-    interface Frame extends A3Copyable<Frame> {
+    interface Frame extends A3MutableCopyable<Frame> {
         void setCursor(final A3Cursor cursor);
         A3Cursor getCursor();
         void setDuration(final long duration);
@@ -104,8 +104,8 @@ public interface A3Cursor {
     int getType();
     A3Image getImage();
 
-    int getHotSpotX();
-    int getHotSpotY();
-    A3Coordinate getHotSpot();
+    float getHotSpotX();
+    float getHotSpotY();
+    A3Point getHotSpot();
 
 }

@@ -1,6 +1,6 @@
 package a3wt.bundle;
 
-import a3wt.util.A3Callable;
+import a3wt.util.A3Supplier;
 
 import java.util.Map;
 
@@ -42,12 +42,12 @@ public interface A3BundleKit {
         return new DefaultConcurrentA3ExtMapBundle(this);
     }
 
-    Map<Class<? extends A3ExtMapBundle.Delegate>, A3Callable<? extends A3ExtMapBundle.Delegate>> getExtMapBundleDelegateMappings();
-    A3Callable<? extends A3ExtMapBundle.Delegate> putExtMapBundleDelegateMapping(final Class<? extends A3ExtMapBundle.Delegate> typeClass, final A3Callable<? extends A3ExtMapBundle.Delegate> mapping);
-    A3Callable<? extends A3ExtMapBundle.Delegate> removeExtMapBundleDelegateMapping(final Class<? extends A3ExtMapBundle.Delegate> typeClass);
-    A3Callable<? extends A3ExtMapBundle.Delegate> getExtMapBundleDelegateMapping(final Class<? extends A3ExtMapBundle.Delegate> typeClass);
+    Map<Class<? extends A3ExtMapBundle.Bundleable>, A3Supplier<? extends A3ExtMapBundle.Bundleable>> getExtMapBundleableMappings();
+    A3Supplier<? extends A3ExtMapBundle.Bundleable> putExtMapBundleableMapping(final Class<? extends A3ExtMapBundle.Bundleable> typeClass, final A3Supplier<? extends A3ExtMapBundle.Bundleable> mapping);
+    A3Supplier<? extends A3ExtMapBundle.Bundleable> removeExtMapBundleableMapping(final Class<? extends A3ExtMapBundle.Bundleable> typeClass);
+    A3Supplier<? extends A3ExtMapBundle.Bundleable> getExtMapBundleableMapping(final Class<? extends A3ExtMapBundle.Bundleable> typeClass);
     void clearExtMapBundleMappings();
 
-    A3ExtMapBundle.Delegate createExtMapBundleDelegate(final Class<? extends A3ExtMapBundle.Delegate> typeClass);
+    A3ExtMapBundle.Bundleable createExtMapBundleable(final Class<? extends A3ExtMapBundle.Bundleable> typeClass);
 
 }

@@ -1,11 +1,13 @@
 package a3wt.android;
 
+import a3wt.graphics.A3Line;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import a3wt.graphics.A3Point;
 import a3wt.graphics.A3Rect;
 import a3wt.graphics.A3Size;
 
+import static a3wt.android.A3AndroidUtils.linesIntersect;
 import static a3wt.util.A3Preconditions.checkArgNotNull;
 
 public class AndroidA3Rect implements A3Rect {
@@ -50,6 +52,27 @@ public class AndroidA3Rect implements A3Rect {
     @Override
     public float getBottom() {
         return rectF.bottom;
+    }
+
+    @Override
+    public float getCenterX() {
+        return rectF.centerX();
+    }
+
+    @Override
+    public float getCenterY() {
+        return rectF.centerY();
+    }
+
+    @Override
+    public A3Point getCenter() {
+        return new AndroidA3Point(new PointF(getCenterX(), getCenterY()));
+    }
+
+    @Override
+    public void getCenter(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(getCenterX(), getCenterY());
     }
 
     @Override
@@ -125,6 +148,26 @@ public class AndroidA3Rect implements A3Rect {
     }
 
     @Override
+    public A3Rect setCenterX(final float centerX) {
+        setX(centerX - rectF.width() / 2);
+        return this;
+    }
+
+    @Override
+    public A3Rect setCenterY(final float centerY) {
+        setY(centerY - rectF.height() / 2);
+        return this;
+    }
+
+    @Override
+    public A3Rect setCenter(final A3Point center) {
+        checkArgNotNull(center, "center");
+        setX(center.getX() - rectF.width() / 2);
+        setY(center.getY() - rectF.height() / 2);
+        return this;
+    }
+
+    @Override
     public A3Rect setX(final float x) {
         rectF.right += x - rectF.left;
         rectF.left = x;
@@ -179,13 +222,13 @@ public class AndroidA3Rect implements A3Rect {
     }
 
     @Override
-    public A3Rect set(final float x, final float y, final float width, final float height) {
+    public A3Rect setRect(final float x, final float y, final float width, final float height) {
         rectF.set(x, y, x + width, y + height);
         return this;
     }
 
     @Override
-    public A3Rect set(final A3Point pos, final A3Size size) {
+    public A3Rect setRect(final A3Point pos, final A3Size size) {
         checkArgNotNull(pos, "pos");
         checkArgNotNull(size, "size");
         return set(pos.getX(), pos.getY(), size.getWidth(), size.getHeight());
@@ -234,6 +277,34 @@ public class AndroidA3Rect implements A3Rect {
     public boolean contains(final A3Rect rect) {
         checkArgNotNull(rect, "rect");
         return rectF.contains(((AndroidA3Rect)rect).rectF);
+    }
+
+    @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        return rectF.intersects(x, y, x + width, y + height);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return RectF.intersects(rectF, ((AndroidA3Rect)rect).rectF);
+    }
+
+    @Override
+    public boolean intersectsLine(final A3Line line) {
+        checkArgNotNull(line, "line");
+        return intersectsLine(line.getStartX(), line.getStartY(), line.getEndX(), line.getEndY());
+    }
+
+    public boolean intersectsLine(final float startX, final float startY, final float endX, final float endY) {
+        final float x1 = getX();
+        final float y1 = getY();
+        final float x2 = x1 + getWidth();
+        final float y2 = y1 + getHeight();
+        return (x1 <= startX && startX <= x2 && y1 <= startY && startY <= y2) || 
+                (x1 <= endX && endX <= x2 && y1 <= endY && endY <= y2) || 
+                linesIntersect(x1, y1, x2, y2, startX, startY, endX, endY) ||
+                linesIntersect(x2, y1, x1, y2, startX, startY, endX, endY);
     }
 
 }

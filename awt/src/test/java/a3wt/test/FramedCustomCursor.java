@@ -15,7 +15,6 @@ import java.util.TimerTask;
 public class FramedCustomCursor {
 
     private volatile static boolean paused = false;
-    private static final Object lock = new Object();
 
     public static void main(String[] args) {
         A3AWTFrame frame = new A3AWTFrame("Framed Custom Cursor");
@@ -28,12 +27,12 @@ public class FramedCustomCursor {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        synchronized (lock) {
+                        frame.getContainerHolder().postRunnable(() -> {
                             if (!frame.isDisposed()) {
-                                if (!paused) holder.update();
+                                if (!paused) frame.getContainerHolder().update();
                             }
                             else System.exit(0);
-                        }
+                        });
                     }
                 }, 0, 1000 / 60);
             }
@@ -47,7 +46,7 @@ public class FramedCustomCursor {
             }
         });
         A3FramedImage image = holder.getGraphicsKit().readFramedImage(holder.getAssets(), "piglin.gif", A3Image.Type.ARGB_8888);
-        holder.setCursor(holder.getGraphicsKit().createFramedCursor(image, 0, 0));
+        holder.setCursor(holder.getGraphicsKit().createFramedCursor(image, image.getWidth() / 2.f, image.getHeight() / 2.f));
         image.dispose();
         holder.addContextListener(new A3ContextAdapter() {
             @Override

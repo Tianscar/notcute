@@ -1,12 +1,13 @@
 package a3wt.bundle;
 
+import a3wt.util.A3Map;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Map;
 
 import static a3wt.util.A3Preconditions.checkArgNotNull;
 
-public interface A3ExtMapBundle extends A3KeyValueBundle, Map<String, A3ExtMapBundle.Value> {
+public interface A3ExtMapBundle extends A3KeyValueBundle<A3ExtMapBundle>, A3Map<String, A3ExtMapBundle.Value> {
 
     interface Value {
         Object getValue();
@@ -27,7 +28,7 @@ public interface A3ExtMapBundle extends A3KeyValueBundle, Map<String, A3ExtMapBu
             checkArgNotNull(value, "value");
             this.value = value;
         }
-        public DefaultValue(final Delegate value) {
+        public DefaultValue(final Bundleable value) {
             checkArgNotNull(value, "value");
             this.value = value;
         }
@@ -37,10 +38,10 @@ public interface A3ExtMapBundle extends A3KeyValueBundle, Map<String, A3ExtMapBu
         }
     }
 
-    interface Delegate {
+    interface Bundleable {
         void save(final Saver saver);
         void restore(final Restorer restorer);
-        Class<? extends Delegate> typeClass();
+        Class<? extends Bundleable> typeClass();
     }
 
     interface Saver {
@@ -56,7 +57,7 @@ public interface A3ExtMapBundle extends A3KeyValueBundle, Map<String, A3ExtMapBu
         Saver putBigInteger(final String key, final BigInteger value);
         Saver putBigDecimal(final String key, final BigDecimal value);
         Saver putExtMapBundle(final String key, final A3ExtMapBundle value);
-        <T extends Delegate> Saver putDelegate(final String key, final T value);
+        <T extends Bundleable> Saver putBundleable(final String key, final T value);
         Saver putByteArray(final String key, final byte[] value);
         Saver putShortArray(final String key, final short[] value);
         Saver putIntArray(final String key, final int[] value);
@@ -83,7 +84,7 @@ public interface A3ExtMapBundle extends A3KeyValueBundle, Map<String, A3ExtMapBu
         BigInteger getBigInteger(final String key, final BigInteger defValue);
         BigDecimal getBigDecimal(final String key, final BigDecimal defValue);
         A3ExtMapBundle getExtMapBundle(final String key, final A3ExtMapBundle defValue);
-        <T extends Delegate> T getDelegate(final String key, final T defValue);
+        <T extends Bundleable> T getBundleable(final String key, final T defValue);
         byte[] getByteArray(final String key, final byte[] defValue);
         short[] getShortArray(final String key, final short[] defValue);
         int[] getIntArray(final String key, final int[] defValue);
@@ -109,7 +110,7 @@ public interface A3ExtMapBundle extends A3KeyValueBundle, Map<String, A3ExtMapBu
     A3ExtMapBundle putBigInteger(final String key, final BigInteger value);
     A3ExtMapBundle putBigDecimal(final String key, final BigDecimal value);
     A3ExtMapBundle putExtMapBundle(final String key, final A3ExtMapBundle value);
-    <T extends Delegate> A3ExtMapBundle putDelegate(final String key, final T value);
+    <T extends Bundleable> A3ExtMapBundle putBundleable(final String key, final T value);
     A3ExtMapBundle putByteArray(final String key, final byte[] value);
     A3ExtMapBundle putShortArray(final String key, final short[] value);
     A3ExtMapBundle putIntArray(final String key, final int[] value);
@@ -134,7 +135,7 @@ public interface A3ExtMapBundle extends A3KeyValueBundle, Map<String, A3ExtMapBu
     BigInteger getBigInteger(final String key, final BigInteger defValue);
     BigDecimal getBigDecimal(final String key, final BigDecimal defValue);
     A3ExtMapBundle getExtMapBundle(final String key, final A3ExtMapBundle defValue);
-    <T extends Delegate> T getDelegate(final String key, final T defValue);
+    <T extends Bundleable> T getBundleable(final String key, final T defValue);
     byte[] getByteArray(final String key, final byte[] defValue);
     short[] getShortArray(final String key, final short[] defValue);
     int[] getIntArray(final String key, final int[] defValue);

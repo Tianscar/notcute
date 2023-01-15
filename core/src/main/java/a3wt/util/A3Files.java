@@ -12,11 +12,11 @@ import java.net.URL;
 
 import static a3wt.util.A3Preconditions.checkArgNotEmpty;
 import static a3wt.util.A3Preconditions.checkArgNotNull;
-import static a3wt.util.A3StreamUtils.transferTo;
+import static a3wt.util.A3Streams.transferTo;
 
 public class A3Files {
 
-    private A3Files(){}
+    private A3Files() {}
 
     private static final int BUFFER_SIZE = 8192;
 

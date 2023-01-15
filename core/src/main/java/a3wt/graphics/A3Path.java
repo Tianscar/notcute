@@ -1,9 +1,9 @@
 package a3wt.graphics;
 
-import a3wt.util.A3Copyable;
+import a3wt.util.A3MutableCopyable;
 import a3wt.util.A3Resetable;
 
-public interface A3Path extends A3Copyable<A3Path>, A3Boundable, A3Resetable<A3Path> {
+public interface A3Path extends A3MutableCopyable<A3Path>, A3Boundable, A3Resetable<A3Path> {
 
     void close();
 

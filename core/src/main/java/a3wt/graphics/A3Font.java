@@ -1,13 +1,13 @@
 package a3wt.graphics;
 
-import a3wt.util.A3Copyable;
+import a3wt.util.A3MutableCopyable;
 import a3wt.util.A3Resetable;
 
 import static a3wt.util.A3Preconditions.checkArgNotNull;
 
 public interface A3Font {
 
-    interface Metrics extends A3Copyable<Metrics>, A3Resetable<Metrics> {
+    interface Metrics extends A3MutableCopyable<Metrics>, A3Resetable<Metrics> {
         Metrics setBaseline(final float baseline);
         float getBaseline();
         Metrics setAscent(final float ascent);

@@ -16,7 +16,6 @@ import java.util.TimerTask;
 public class MovingDot {
 
     private volatile static boolean paused = false;
-    private static final Object lock = new Object();
 
     private volatile static boolean up, down, left, right;
 
@@ -33,12 +32,12 @@ public class MovingDot {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        synchronized (lock) {
+                        frame.getContainerHolder().postRunnable(() -> {
                             if (!frame.isDisposed()) {
-                                if (!paused) holder.update();
+                                if (!paused) frame.getContainerHolder().update();
                             }
                             else System.exit(0);
-                        }
+                        });
                     }
                 }, 0, 1000 / 60);
             }

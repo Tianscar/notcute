@@ -1,6 +1,6 @@
 package a3wt.bundle;
 
-import java.util.Map;
+import a3wt.util.A3Map;
 
-public interface A3MapBundle extends A3KeyValueBundle, Map<String, String> {
+public interface A3MapBundle extends A3KeyValueBundle<A3MapBundle>, A3Map<String, String> {
 }

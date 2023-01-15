@@ -1,6 +1,6 @@
 package a3wt.graphics;
 
-import a3wt.util.A3Copyable;
+import a3wt.util.A3MutableCopyable;
 import a3wt.util.A3Disposable;
 import a3wt.util.A3Resetable;
 
@@ -9,7 +9,7 @@ import static a3wt.util.A3Preconditions.checkArgNotNull;
 
 public interface A3Graphics extends A3Disposable, A3Resetable<A3Graphics> {
 
-    interface Data extends A3Copyable<Data>, A3Resetable<Data> {
+    interface Data extends A3MutableCopyable<Data>, A3Resetable<Data> {
         A3Rect getClipBounds();
         void getClipBounds(final A3Rect bounds);
 
@@ -388,6 +388,10 @@ public interface A3Graphics extends A3Disposable, A3Resetable<A3Graphics> {
     void drawPath(final A3Path path);
     void drawImage(final A3Image image, final float x, final float y);
     void drawImage(final A3Image image, final A3Point point);
+    void drawImage(final A3Image image, final A3Transform transform);
+    void drawImage(final A3Image image, final float[] matrixValues);
+    void drawImage(final A3Image image, final float sx, final float kx, final float dx,
+                            final float ky, final float sy, final float dy);
     void drawPoint(final float x, final float y);
     void drawPoint(final A3Point point);
     void drawArc(final float x, final float y, final float width, final float height, final float startAngle, final float sweepAngle, final boolean useCenter);
@@ -461,6 +465,7 @@ public interface A3Graphics extends A3Disposable, A3Resetable<A3Graphics> {
     A3Graphics setTransform(final float[] matrixValues);
     A3Graphics setTransform(final float sx, final float kx, final float dx,
                                 final float ky, final float sy, final float dy);
+    A3Graphics setTransform(final A3Point scale, final A3Point skew, final A3Point translate);
 
     int getColor();
     A3Graphics setColor(final int color);

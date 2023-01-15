@@ -1,36 +1,23 @@
 package a3wt.awt;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Collection;
-import java.util.ServiceLoader;
-import java.util.Objects;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class FIIORegistry {
 
-    private static final Map<Class<? extends FIIOServiceProvider>, FIIOServiceProvider> providers = new HashMap<>();
+    private static final Map<Class<? extends FIIOServiceProvider>, FIIOServiceProvider> providers = new ConcurrentHashMap<>();
 
     private FIIORegistry(){}
 
     static {
         registerBasicServiceProviders();
-        registerServiceProviders(Objects.requireNonNull(Thread.currentThread().getContextClassLoader()), false);
     }
 
     public static void registerBasicServiceProviders() {
         registerServiceProvider(new GifFIIOSpi());
         registerServiceProvider(new TiffFIIOSpi());
-    }
-
-    public static void registerServiceProviders(ClassLoader classLoader, boolean refresh) {
-        ServiceLoader<FIIOServiceProvider> serviceLoader = ServiceLoader.load(FIIOServiceProvider.class, classLoader);
-        if (refresh) {
-            serviceLoader.reload();
-        }
-        for (FIIOServiceProvider provider : serviceLoader) {
-            registerServiceProvider(provider);
-        }
     }
 
     public static boolean registerServiceProvider(FIIOServiceProvider provider) {

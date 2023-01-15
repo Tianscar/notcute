@@ -1,36 +1,22 @@
 package a3wt.android;
 
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Collection;
-import java.util.ServiceLoader;
-import java.util.Objects;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class BIORegistry {
 
-    private static final Map<Class<? extends BIOServiceProvider>, BIOServiceProvider> providers = new HashMap<>();
+    private static final Map<Class<? extends BIOServiceProvider>, BIOServiceProvider> providers = new ConcurrentHashMap<>();
 
     private BIORegistry(){}
 
     static {
         registerBasicServiceProviders();
-        registerServiceProviders(Objects.requireNonNull(Thread.currentThread().getContextClassLoader()), false);
     }
 
     public static void registerBasicServiceProviders() {
         registerServiceProvider(new BasicBIOSpi());
-    }
-
-    public static void registerServiceProviders(ClassLoader classLoader, boolean refresh) {
-        ServiceLoader<BIOServiceProvider> serviceLoader = ServiceLoader.load(BIOServiceProvider.class, classLoader);
-        if (refresh) {
-            serviceLoader.reload();
-        }
-        for (BIOServiceProvider provider : serviceLoader) {
-            registerServiceProvider(provider);
-        }
     }
 
     public static boolean registerServiceProvider(BIOServiceProvider provider) {

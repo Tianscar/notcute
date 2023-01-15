@@ -31,7 +31,7 @@ import static a3wt.util.A3Preconditions.checkArgNotNull;
 public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
 
     protected static final String ROOT_TAG = A3ExtMapBundle.class.getCanonicalName();
-    protected static final String DELEGATE_CLASS_TAG = A3ExtMapBundle.Delegate.class.getCanonicalName();
+    protected static final String BUNDLEABLE_CLASS_TAG = A3ExtMapBundle.Bundleable.class.getCanonicalName();
 
     protected final A3BundleKit bundleKit;
     protected final Map<String, Value> map;
@@ -144,11 +144,11 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
         }
 
         @Override
-        public <T extends Delegate> Saver putDelegate(String key, T value) {
+        public <T extends Bundleable> Saver putBundleable(String key, T value) {
             checkArgNotNull(key, "key");
             checkArgNotNull(value, "value");
             Node node = this.node.appendChild(document.createElement(key));
-            Element classTag = document.createElement(DELEGATE_CLASS_TAG);
+            Element classTag = document.createElement(BUNDLEABLE_CLASS_TAG);
             classTag.appendChild(document.createTextNode(value.typeClass().getCanonicalName()));
             node.appendChild(classTag);
             value.save(new XMLSaver(document, node));
@@ -332,18 +332,18 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
         }
 
         @Override
-        public <T extends Delegate> T getDelegate(final String key, final T defValue) {
+        public <T extends Bundleable> T getBundleable(final String key, final T defValue) {
             Node child = get(key);
             Node firstElement;
             if (child == null) return defValue;
-            else if ((firstElement = child.getFirstChild()) != null && firstElement.getNodeName().equals(DELEGATE_CLASS_TAG)) {
+            else if ((firstElement = child.getFirstChild()) != null && firstElement.getNodeName().equals(BUNDLEABLE_CLASS_TAG)) {
                 try {
                     if (firstElement.getChildNodes().getLength() != 1 || firstElement.getFirstChild().getNodeType() != Node.TEXT_NODE) return defValue;
                     Class<?> typeClass = Class.forName(firstElement.getFirstChild().getTextContent());
-                    if (Delegate.class.isAssignableFrom(typeClass)) {
-                        Delegate delegate = bundle.bundleKit.createExtMapBundleDelegate((Class<? extends Delegate>) typeClass);
-                        delegate.restore(new XMLRestorer(bundle, child));
-                        return (T) delegate;
+                    if (Bundleable.class.isAssignableFrom(typeClass)) {
+                        Bundleable bundleable = bundle.bundleKit.createExtMapBundleable((Class<? extends Bundleable>) typeClass);
+                        bundleable.restore(new XMLRestorer(bundle, child));
+                        return (T) bundleable;
                     }
                     else return defValue;
                 }
@@ -430,12 +430,12 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
                 element.appendChild(document.createTextNode((String) value.getValue()));
                 node.appendChild(element);
             }
-            else if (Delegate.class.isAssignableFrom(value.typeClass())) {
-                Delegate delegate = (Delegate) value.getValue();
-                Element classTag = document.createElement(DELEGATE_CLASS_TAG);
-                classTag.appendChild(document.createTextNode(delegate.typeClass().getCanonicalName()));
+            else if (Bundleable.class.isAssignableFrom(value.typeClass())) {
+                Bundleable bundleable = (Bundleable) value.getValue();
+                Element classTag = document.createElement(BUNDLEABLE_CLASS_TAG);
+                classTag.appendChild(document.createTextNode(bundleable.typeClass().getCanonicalName()));
                 element.appendChild(classTag);
-                delegate.save(new XMLSaver(document, node.appendChild(element)));
+                bundleable.save(new XMLSaver(document, node.appendChild(element)));
             }
             else if (A3ExtMapBundle.class.isAssignableFrom(value.typeClass())) {
                 saveToDocument((A3ExtMapBundle) value.getValue(), document, node.appendChild(element));
@@ -510,15 +510,15 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
             if (child.getChildNodes().getLength() == 1 && child.getFirstChild().getNodeType() == Node.TEXT_NODE) {
                 bundle.putString(child.getNodeName(), child.getFirstChild().getTextContent());
             }
-            else if (firstElement != null && firstElement.getNodeName().equals(DELEGATE_CLASS_TAG)) {
+            else if (firstElement != null && firstElement.getNodeName().equals(BUNDLEABLE_CLASS_TAG)) {
                 try {
                     if (firstElement.getChildNodes().getLength() != 1 || firstElement.getFirstChild().getNodeType() != Node.TEXT_NODE) continue;
                     Class<?> typeClass = Class.forName(firstElement.getFirstChild().getTextContent());
-                    if (Delegate.class.isAssignableFrom(typeClass)) {
-                        Delegate delegate = bundle.bundleKit.createExtMapBundleDelegate((Class<? extends Delegate>) typeClass);
+                    if (Bundleable.class.isAssignableFrom(typeClass)) {
+                        Bundleable bundleable = bundle.bundleKit.createExtMapBundleable((Class<? extends Bundleable>) typeClass);
                         XMLRestorer restorer = new XMLRestorer(bundle, child);
-                        delegate.restore(restorer);
-                        bundle.putDelegate(child.getNodeName(), delegate);
+                        bundleable.restore(restorer);
+                        bundle.putBundleable(child.getNodeName(), bundleable);
                     }
                 }
                 catch (final ClassNotFoundException ignored) {
@@ -600,7 +600,7 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
         return put0(key, new DefaultValue(value));
     }
 
-    private A3ExtMapBundle put0(final String key, final Delegate value) {
+    private A3ExtMapBundle put0(final String key, final Bundleable value) {
         return put0(key, new DefaultValue(value));
     }
 
@@ -667,7 +667,7 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
     }
 
     @Override
-    public <T extends Delegate> A3ExtMapBundle putDelegate(final String key, final T value) {
+    public <T extends Bundleable> A3ExtMapBundle putBundleable(final String key, final T value) {
         return put0(key, value);
     }
 
@@ -754,7 +754,7 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
         return value == null ? defValue : (A3ExtMapBundle) value.getValue();
     }
 
-    private <T extends Delegate> T get0(final String key, final T defValue) {
+    private <T extends Bundleable> T get0(final String key, final T defValue) {
         checkArgNotNull(key, "key");
         final Value value = get0(key, (Value) null);
         return value == null ? defValue : (T) value.getValue();
@@ -831,7 +831,7 @@ public abstract class AbstractDefaultA3ExtMapBundle implements A3ExtMapBundle {
     }
 
     @Override
-    public <T extends Delegate> T getDelegate(final String key, final T defValue) {
+    public <T extends Bundleable> T getBundleable(final String key, final T defValue) {
         return get0(key, defValue);
     }
 

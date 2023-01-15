@@ -2,41 +2,23 @@ package a3wt.graphics;
 
 import a3wt.bundle.A3ExtMapBundle;
 
-public interface A3Arc extends A3Shape<A3Arc> {
+public interface A3Arc extends A3Rectangular<A3Arc> {
 
-    float getLeft();
-    float getTop();
-    float getRight();
-    float getBottom();
-    float getX();
-    float getY();
-    A3Point getPos();
-    void getPos(final A3Point pos);
-    float getWidth();
-    float getHeight();
-    A3Size getSize();
-    void getSize(final A3Size size);
+    float getStartX();
+    float getStartY();
+    float getEndX();
+    float getEndY();
+    A3Point getStartPos();
+    void getStartPos(final A3Point pos);
+    A3Point getEndPos();
+    void getEndPos(final A3Point pos);
+
     A3Rect getRect();
     void getRect(final A3Rect rect);
     float getStartAngle();
     float getSweepAngle();
     boolean isUseCenter();
 
-    A3Arc setLeft(final float left);
-    A3Arc setTop(final float top);
-    A3Arc setRight(final float right);
-    A3Arc setBottom(final float bottom);
-    A3Arc setBounds(final float left, final float top, final float right, final float bottom);
-    A3Arc setX(final float x);
-    A3Arc setY(final float y);
-    A3Arc setWidth(final float width);
-    A3Arc setHeight(final float height);
-    A3Arc setPos(final float x, final float y);
-    A3Arc setPos(final A3Point pos);
-    A3Arc setSize(final float width, final float height);
-    A3Arc setSize(final A3Size size);
-    A3Arc setRect(final float x, final float y, final float width, final float height);
-    A3Arc setRect(final A3Point pos, final A3Size size);
     A3Arc setRect(final A3Rect rect);
     A3Arc setStartAngle(final float startAngle);
     A3Arc setSweepAngle(final float sweepAngle);
@@ -46,20 +28,13 @@ public interface A3Arc extends A3Shape<A3Arc> {
     A3Arc set(final A3Point pos, final A3Size size, final float startAngle, final float sweepAngle, final boolean useCenter);
     A3Arc set(final A3Rect rect, final float startAngle, final float sweepAngle, final boolean useCenter);
 
-    String KEY_X = "x";
-    String KEY_Y = "y";
-    String KEY_WIDTH = "width";
-    String KEY_HEIGHT = "height";
     String KEY_START_ANGLE = "startAngle";
     String KEY_SWEEP_ANGLE = "sweepAngle";
     String KEY_USE_CENTER = "useCenter";
 
     @Override
     default void save(final A3ExtMapBundle.Saver saver) {
-        saver.putFloat(KEY_X, getX());
-        saver.putFloat(KEY_Y, getY());
-        saver.putFloat(KEY_WIDTH, getWidth());
-        saver.putFloat(KEY_HEIGHT, getHeight());
+        A3Rectangular.super.save(saver);
         saver.putFloat(KEY_START_ANGLE, getStartAngle());
         saver.putFloat(KEY_SWEEP_ANGLE, getSweepAngle());
         saver.putBoolean(KEY_USE_CENTER, isUseCenter());
@@ -74,7 +49,7 @@ public interface A3Arc extends A3Shape<A3Arc> {
     }
 
     @Override
-    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+    default Class<? extends A3ExtMapBundle.Bundleable> typeClass() {
         return A3Arc.class;
     }
 

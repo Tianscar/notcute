@@ -59,6 +59,27 @@ public class AndroidA3Oval implements A3Oval {
     }
 
     @Override
+    public float getCenterX() {
+        return x + width / 2;
+    }
+
+    @Override
+    public float getCenterY() {
+        return y + height / 2;
+    }
+
+    @Override
+    public A3Point getCenter() {
+        return new AndroidA3Point(new PointF(getCenterX(), getCenterY()));
+    }
+
+    @Override
+    public void getCenter(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(getCenterX(), getCenterY());
+    }
+
+    @Override
     public float getX() {
         return x;
     }
@@ -141,6 +162,26 @@ public class AndroidA3Oval implements A3Oval {
     }
 
     @Override
+    public A3Oval setCenterX(final float centerX) {
+        x = centerX - width / 2;
+        return this;
+    }
+
+    @Override
+    public A3Oval setCenterY(final float centerY) {
+        y = centerY - height / 2;
+        return this;
+    }
+
+    @Override
+    public A3Oval setCenter(final A3Point center) {
+        checkArgNotNull(center, "center");
+        x = center.getX() - width / 2;
+        y = center.getY() - height / 2;
+        return this;
+    }
+
+    @Override
     public A3Oval setX(final float x) {
         this.x = x;
         return this;
@@ -195,7 +236,7 @@ public class AndroidA3Oval implements A3Oval {
     }
 
     @Override
-    public A3Oval set(final float x, final float y, final float width, final float height) {
+    public A3Oval setRect(final float x, final float y, final float width, final float height) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -204,7 +245,7 @@ public class AndroidA3Oval implements A3Oval {
     }
 
     @Override
-    public A3Oval set(final A3Point pos, final A3Size size) {
+    public A3Oval setRect(final A3Point pos, final A3Size size) {
         checkArgNotNull(pos, "pos");
         checkArgNotNull(size, "size");
         x = pos.getX();
@@ -216,17 +257,10 @@ public class AndroidA3Oval implements A3Oval {
 
     @Override
     public boolean contains(final float x, final float y) {
-        // Normalize the coordinates compared to the ellipse
-        // having a center at 0,0 and a radius of 0.5.
-        if (width <= 0.0f) {
-            return false;
-        }
-        final float normx = (x - getX()) / width - 0.5f;
-        if (height <= 0.0f) {
-            return false;
-        }
-        final float normy = (y - getY()) / height - 0.5f;
-        return (normx * normx + normy * normy) < 0.25f;
+        if (isEmpty()) return false;
+        final float a = (x - this.x) / width - 0.5f;
+        final float b = (y - this.y) / height - 0.5f;
+        return a * a + b * b < 0.25f;
     }
 
     @Override
@@ -237,16 +271,34 @@ public class AndroidA3Oval implements A3Oval {
 
     @Override
     public boolean contains(final float x, final float y, final float width, final float height) {
-        return (contains(x, y) &&
-                contains(x + width, y) &&
-                contains(x, y + height) &&
-                contains(x + width, y + height));
+        if (isEmpty() || width <= 0.0f || height <= 0.0f) return false;
+        final float x2 = x + width;
+        final float y2 = y + height;
+        return contains(x, y) && contains(x2, y) && contains(x2, y2) && contains(x, y2);
     }
 
     @Override
     public boolean contains(final A3Rect rect) {
         checkArgNotNull(rect, "rect");
         return contains(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+    }
+
+    @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        if (isEmpty() || width <= 0.0f || height <= 0.0f) return false;
+        final float cx = this.x + this.width / 2.0f;
+        final float cy = this.y + this.height / 2.0f;
+        final float x2 = x + width;
+        final float y2 = y + height;
+        final float nx = cx < x ? x : Math.min(cx, x2);
+        final float ny = cy < y ? y : Math.min(cy, y2);
+        return contains(nx, ny);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return intersects(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
 
     @Override

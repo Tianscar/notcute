@@ -1,9 +1,9 @@
 package a3wt.graphics;
 
-import a3wt.util.A3Copyable;
+import a3wt.util.A3MutableCopyable;
 import a3wt.util.A3FilterList;
 
-public interface A3FramedCursor extends A3Cursor, A3Copyable<A3FramedCursor>, A3FilterList<A3Cursor.Frame> {
+public interface A3FramedCursor extends A3Cursor, A3MutableCopyable<A3FramedCursor>, A3FilterList<A3Cursor.Frame> {
 
     int getIndex();
     A3FramedCursor setIndex(final int index);

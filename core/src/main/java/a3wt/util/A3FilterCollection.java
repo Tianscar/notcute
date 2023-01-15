@@ -3,7 +3,7 @@ package a3wt.util;
 import java.util.Collection;
 import java.util.Iterator;
 
-public interface A3FilterCollection<E> extends Collection<E> {
+public interface A3FilterCollection<E> extends A3Collection<E> {
 
     Collection<E> filterInstance();
 

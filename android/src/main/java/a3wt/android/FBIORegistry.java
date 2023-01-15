@@ -1,36 +1,22 @@
 package a3wt.android;
 
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Collection;
-import java.util.ServiceLoader;
-import java.util.Objects;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class FBIORegistry {
 
-    private static final Map<Class<? extends FBIOServiceProvider>, FBIOServiceProvider> providers = new HashMap<>();
+    private static final Map<Class<? extends FBIOServiceProvider>, FBIOServiceProvider> providers = new ConcurrentHashMap<>();
 
     private FBIORegistry(){}
 
     static {
         registerBasicServiceProviders();
-        registerServiceProviders(Objects.requireNonNull(Thread.currentThread().getContextClassLoader()), false);
     }
 
     public static void registerBasicServiceProviders() {
         registerServiceProvider(new GifFBIOSpi());
-    }
-
-    public static void registerServiceProviders(ClassLoader classLoader, boolean refresh) {
-        ServiceLoader<FBIOServiceProvider> serviceLoader = ServiceLoader.load(FBIOServiceProvider.class, classLoader);
-        if (refresh) {
-            serviceLoader.reload();
-        }
-        for (FBIOServiceProvider provider : serviceLoader) {
-            registerServiceProvider(provider);
-        }
     }
 
     public static boolean registerServiceProvider(FBIOServiceProvider provider) {

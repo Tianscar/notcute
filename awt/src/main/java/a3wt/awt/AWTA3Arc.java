@@ -48,6 +48,27 @@ public class AWTA3Arc implements A3Arc {
     }
 
     @Override
+    public float getCenterX() {
+        return arc2D.x + arc2D.width / 2;
+    }
+
+    @Override
+    public float getCenterY() {
+        return arc2D.y + arc2D.height / 2;
+    }
+
+    @Override
+    public A3Point getCenter() {
+        return new AWTA3Point(new Point2D.Float(getCenterX(), getCenterY()));
+    }
+
+    @Override
+    public void getCenter(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(getCenterX(), getCenterY());
+    }
+
+    @Override
     public float getX() {
         return arc2D.x;
     }
@@ -152,6 +173,26 @@ public class AWTA3Arc implements A3Arc {
         arc2D.y = top;
         arc2D.width = right - left;
         arc2D.height = bottom - top;
+        return this;
+    }
+
+    @Override
+    public A3Arc setCenterX(final float centerX) {
+        arc2D.x = centerX - arc2D.width / 2;
+        return this;
+    }
+
+    @Override
+    public A3Arc setCenterY(final float centerY) {
+        arc2D.y = centerY - arc2D.height / 2;
+        return this;
+    }
+
+    @Override
+    public A3Arc setCenter(final A3Point center) {
+        checkArgNotNull(center, "center");
+        arc2D.x = center.getX() - arc2D.width / 2;
+        arc2D.y = center.getY() - arc2D.height / 2;
         return this;
     }
 
@@ -327,9 +368,76 @@ public class AWTA3Arc implements A3Arc {
     }
 
     @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        return arc2D.intersects(x, y, width, height);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return arc2D.intersects(((AWTA3Rect)rect).rectangle2D);
+    }
+
+    @Override
     public A3Arc reset() {
         arc2D.setArc(0, 0, 0, 0, 0, 0, Arc2D.OPEN);
         return this;
+    }
+
+    @Override
+    public float getStartX() {
+        final double a = Math.toRadians(arc2D.start);
+        return (float) (arc2D.x + (1.0 + Math.cos(a)) * arc2D.width / 2.0);
+    }
+
+    @Override
+    public float getStartY() {
+        final double a = Math.toRadians(arc2D.start);
+        return (float) (arc2D.y + (1.0 - Math.sin(a)) * arc2D.height / 2.0);
+    }
+
+    @Override
+    public float getEndX() {
+        final double a = Math.toRadians(arc2D.start + arc2D.extent);
+        return (float) (arc2D.x + (1.0 + Math.cos(a)) * arc2D.width / 2.0);
+    }
+
+    @Override
+    public float getEndY() {
+        final double a = Math.toRadians(arc2D.start + arc2D.extent);
+        return (float) (arc2D.y + (1.0 - Math.sin(a)) * arc2D.height / 2.0);
+    }
+
+    @Override
+    public A3Point getStartPos() {
+        final A3Point pos = new AWTA3Point(new Point2D.Float());
+        getStartPos(pos);
+        return pos;
+    }
+
+    @Override
+    public void getStartPos(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        final double a = Math.toRadians(arc2D.start);
+        pos.set(
+                (float) (arc2D.x + (1.0 + Math.cos(a)) * arc2D.width / 2.0),
+                (float) (arc2D.y + (1.0 - Math.sin(a)) * arc2D.height / 2.0));
+    }
+
+    @Override
+    public A3Point getEndPos() {
+        final A3Point pos = new AWTA3Point(new Point2D.Float());
+        getEndPos(pos);
+        return pos;
+    }
+
+    @Override
+    public void getEndPos(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        final double a = Math.toRadians(arc2D.start + arc2D.extent);
+        pos.set(
+                (float) (arc2D.x + (1.0 + Math.cos(a)) * arc2D.width / 2.0),
+                (float) (arc2D.y + (1.0 - Math.sin(a)) * arc2D.height / 2.0));
     }
 
 }

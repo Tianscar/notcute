@@ -1,8 +1,8 @@
 package a3wt.bundle;
 
-import java.util.Map;
+import a3wt.util.A3Map;
 
-public interface A3SecMapBundle extends A3KeyValueBundle, Map<String, A3MapBundle> {
+public interface A3SecMapBundle extends A3KeyValueBundle<A3SecMapBundle>, A3Map<String, A3MapBundle> {
 
     String getKey();
     void setKey(final String key);

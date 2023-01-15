@@ -1,11 +1,12 @@
 package a3wt.awt;
 
-import a3wt.graphics.A3Coordinate;
 import a3wt.graphics.A3Cursor;
 import a3wt.graphics.A3Image;
+import a3wt.graphics.A3Point;
 
 import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 
 import static a3wt.awt.A3AWTUtils.createCustomCursor;
 import static a3wt.awt.A3AWTUtils.cursorType2awtCursorType;
@@ -16,8 +17,8 @@ public class AWTA3Cursor implements A3Cursor {
     protected final Cursor cursor;
     protected final int type;
     protected final AWTA3Image image;
-    protected final int hotSpotX;
-    protected final int hotSpotY;
+    protected final float hotSpotX;
+    protected final float hotSpotY;
 
     private static final AWTA3Cursor DEFAULT_CURSOR = new AWTA3Cursor(Type.DEFAULT);
     private static final AWTA3Cursor GONE_CURSOR = new AWTA3Cursor(Type.GONE);
@@ -44,13 +45,13 @@ public class AWTA3Cursor implements A3Cursor {
         }
     }
 
-    public AWTA3Cursor(final AWTA3Image image, final Point hotSpot) {
+    public AWTA3Cursor(final AWTA3Image image, final Point2D.Float hotSpot) {
         checkArgNotNull(image, "image");
         type = -1;
         this.image = image;
         hotSpotX = hotSpot.x;
         hotSpotY = hotSpot.y;
-        cursor = createCustomCursor(image.bufferedImage, hotSpot, "A3WT/" + AWTA3Platform.BACKEND_NAME + " Custom Cursor");
+        cursor = createCustomCursor(image.bufferedImage, new Point((int) hotSpotX, (int) hotSpotY), "A3WT/" + AWTA3Platform.BACKEND_NAME + " Custom Cursor");
     }
 
     public Cursor getCursor() {
@@ -68,18 +69,18 @@ public class AWTA3Cursor implements A3Cursor {
     }
 
     @Override
-    public int getHotSpotX() {
+    public float getHotSpotX() {
         return hotSpotX;
     }
 
     @Override
-    public int getHotSpotY() {
+    public float getHotSpotY() {
         return hotSpotY;
     }
 
     @Override
-    public A3Coordinate getHotSpot() {
-        return new AWTA3Coordinate(new Point(hotSpotX, hotSpotY));
+    public A3Point getHotSpot() {
+        return new AWTA3Point(new Point2D.Float(hotSpotX, hotSpotY));
     }
 
 }

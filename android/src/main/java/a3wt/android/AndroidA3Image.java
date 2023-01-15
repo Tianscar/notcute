@@ -1,8 +1,6 @@
 package a3wt.android;
 
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import a3wt.graphics.A3Coordinate;
 import a3wt.graphics.A3Graphics;
 import a3wt.graphics.A3Image;
 

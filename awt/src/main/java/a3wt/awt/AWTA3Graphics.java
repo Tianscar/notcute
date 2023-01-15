@@ -45,6 +45,7 @@ import static a3wt.awt.A3AWTUtils.floatRectangle2D;
 import static a3wt.awt.A3AWTUtils.floatPath2D;
 import static a3wt.util.A3Preconditions.checkArgNotNull;
 import static a3wt.util.A3Preconditions.checkArgNotEmpty;
+import static a3wt.util.A3Preconditions.checkArgArrayLengthMin;
 
 public class AWTA3Graphics implements A3Graphics {
 
@@ -149,14 +150,38 @@ public class AWTA3Graphics implements A3Graphics {
     public void drawImage(final A3Image image, final float x, final float y) {
         checkArgNotNull(image, "image");
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
+        mImageTransform.setToTranslation(x, y);
         graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(), mImageTransform, null);
     }
 
     @Override
     public void drawImage(final A3Image image, final A3Point point) {
-        checkArgNotNull(image, "image");
         checkArgNotNull(point, "point");
+        drawImage(image, point.getX(), point.getY());
+    }
+
+    @Override
+    public void drawImage(final A3Image image, final A3Transform transform) {
+        checkArgNotNull(image, "image");
+        checkArgNotNull(transform, "transform");
         checkDisposed("Can't call drawImage() on a disposed A3Graphics");
+        graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(), ((AWTA3Transform)transform).affineTransform, null);
+    }
+
+    @Override
+    public void drawImage(final A3Image image, final float[] matrixValues) {
+        checkArgNotNull(image, "image");
+        checkArgArrayLengthMin(matrixValues, AWTA3Transform.MATRIX_VALUES_LENGTH, true);
+        checkDisposed("Can't call drawImage() on a disposed A3Graphics");
+        mImageTransform.setTransform(matrixValues[0], matrixValues[1], matrixValues[2], matrixValues[3], matrixValues[4], matrixValues[5]);
+        graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(), mImageTransform, null);
+    }
+
+    @Override
+    public void drawImage(final A3Image image, final float sx, final float kx, final float dx, final float ky, final float sy, final float dy) {
+        checkArgNotNull(image, "image");
+        checkDisposed("Can't call drawImage() on a disposed A3Graphics");
+        mImageTransform.setTransform(sx, kx, dx, ky, sy, dy);
         graphics2D.drawImage(((AWTA3Image)image).getBufferedImage(), mImageTransform, null);
     }
 
@@ -647,6 +672,15 @@ public class AWTA3Graphics implements A3Graphics {
     public A3Graphics setTransform(final float sx, final float kx, final float dx, final float ky, final float sy, final float dy) {
         checkDisposed("Can't call setTransform() on a disposed A3Graphics");
         mTransform.set(sx, kx, dx, ky, sy, dy);
+        graphics2D.setTransform(mTransform.affineTransform);
+        data.setTransform(mTransform);
+        return this;
+    }
+
+    @Override
+    public A3Graphics setTransform(final A3Point scale, final A3Point skew, final A3Point translate) {
+        checkDisposed("Can't call setTransform() on a disposed A3Graphics");
+        mTransform.set(scale, skew, translate);
         graphics2D.setTransform(mTransform.affineTransform);
         data.setTransform(mTransform);
         return this;

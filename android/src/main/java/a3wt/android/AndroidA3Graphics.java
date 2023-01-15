@@ -12,6 +12,7 @@ import static a3wt.android.A3AndroidUtils.paintStrokeCap2StrokeCap;
 import static a3wt.android.A3AndroidUtils.strokeCap2PaintStrokeCap;
 import static a3wt.util.A3Preconditions.checkArgNotEmpty;
 import static a3wt.util.A3Preconditions.checkArgNotNull;
+import static a3wt.util.A3Preconditions.checkArgArrayLengthMin;
 
 public class AndroidA3Graphics implements A3Graphics {
 
@@ -19,7 +20,8 @@ public class AndroidA3Graphics implements A3Graphics {
     protected final Path mPath = new Path();
     protected volatile RectF mClipRect;
     protected volatile Path mClipPath;
-    protected volatile Matrix mTransformMatrix = new Matrix();
+    protected final Matrix mTransformMatrix = new Matrix();
+    protected final Matrix mImageMatrix = new Matrix();
 
     protected volatile Canvas canvas;
     protected final Paint paint = new Paint();
@@ -101,6 +103,39 @@ public class AndroidA3Graphics implements A3Graphics {
     public void drawImage(final A3Image image, final A3Point point) {
         checkArgNotNull(point, "point");
         drawImage(image, point.getX(), point.getY());
+    }
+
+    @Override
+    public void drawImage(final A3Image image, final A3Transform transform) {
+        checkArgNotNull(image, "image");
+        checkDisposed("Can't call drawImage() on a disposed A3Graphics");
+        canvas.save();
+        canvas.drawBitmap(((AndroidA3Image)image).getBitmap(), ((AndroidA3Transform)transform).matrix, paint);
+        canvas.restore();
+    }
+
+    @Override
+    public void drawImage(final A3Image image, final float[] matrixValues) {
+        checkArgNotNull(image, "image");
+        checkArgArrayLengthMin(matrixValues, AndroidA3Transform.MATRIX_VALUES_LENGTH, true);
+        final float[] values = new float[AndroidA3Transform.ANDROID_MATRIX_VALUES_LENGTH];
+        System.arraycopy(matrixValues, 0, values, 0, AndroidA3Transform.MATRIX_VALUES_LENGTH);
+        values[6] = 0;
+        values[7] = 0;
+        values[8] = 1;
+        mImageMatrix.setValues(values);
+        canvas.save();
+        canvas.drawBitmap(((AndroidA3Image)image).getBitmap(), mImageMatrix, paint);
+        canvas.restore();
+    }
+
+    @Override
+    public void drawImage(final A3Image image, final float sx, final float kx, final float dx, final float ky, final float sy, final float dy) {
+        checkArgNotNull(image, "image");
+        mImageMatrix.setValues(new float[] {sx, kx, dx, ky, sy, dy, 0, 0, 1});
+        canvas.save();
+        canvas.drawBitmap(((AndroidA3Image)image).getBitmap(), mImageMatrix, paint);
+        canvas.restore();
     }
 
     @Override
@@ -503,6 +538,11 @@ public class AndroidA3Graphics implements A3Graphics {
         final Matrix matrix = new Matrix();
         matrix.setValues(new float[] {sx, kx, dx, ky, sy, dy, 0, 0, 1});
         return setTransform(new AndroidA3Transform(matrix));
+    }
+
+    @Override
+    public A3Graphics setTransform(A3Point scale, A3Point skew, A3Point translate) {
+        return null;
     }
 
     @Override

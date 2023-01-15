@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import static a3wt.util.A3Collections.copyElementsTo;
 import static a3wt.util.A3Preconditions.checkArgNotNull;
-import static a3wt.util.A3Collections.deepCopy;
 
 public class DefaultA3FramedImage implements A3FramedImage {
 
@@ -163,9 +163,9 @@ public class DefaultA3FramedImage implements A3FramedImage {
     public void to(final A3Image dst) {
         checkDisposed("Can't call set() on a disposed A3FramedImage");
         checkArgNotNull(dst, "dst");
-        final Collection<Frame> frames = ((DefaultA3FramedImage)dst).frames;
+        final List<Frame> frames = ((DefaultA3FramedImage)dst).frames;
         frames.clear();
-        frames.addAll(deepCopy(this.frames));
+        frames.addAll(copyElementsTo(this.frames, new ArrayList<>()));
     }
 
     @Override

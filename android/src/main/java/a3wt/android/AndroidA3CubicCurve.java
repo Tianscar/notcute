@@ -1,5 +1,6 @@
 package a3wt.android;
 
+import a3wt.graphics.A3QuadCurve;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import a3wt.graphics.A3CubicCurve;
@@ -171,6 +172,22 @@ public class AndroidA3CubicCurve implements A3CubicCurve {
     }
 
     @Override
+    public A3CubicCurve setLine(final float startX, final float startY, final float endX, final float endY) {
+        this.startX = startX;
+        this.startY = startY;
+        this.endX = endX;
+        this.endY = endY;
+        return this;
+    }
+
+    @Override
+    public A3CubicCurve setLine(final A3Point startPos, final A3Point endPos) {
+        checkArgNotNull(startPos, "startPos");
+        checkArgNotNull(endPos, "endPos");
+        return setLine(startPos.getX(), startPos.getY(), endPos.getX(), endPos.getY());
+    }
+
+    @Override
     public A3CubicCurve setCtrlX1(final float ctrlX) {
         ctrlX1 = ctrlX;
         return this;
@@ -241,57 +258,9 @@ public class AndroidA3CubicCurve implements A3CubicCurve {
     }
 
     @Override
-    public boolean contains(final float x, final float y) {
-        if (!(x * 0.0 + y * 0.0 == 0.0)) {
-            return false;
-        }
-        int crossings =
-                (A3AndroidUtils.pointCrossingsForLine(x, y, startX, startY, endX, endY) +
-                        A3AndroidUtils.pointCrossingsForCubic(x, y,
-                                startX, startY,
-                                ctrlX1, ctrlY1,
-                                ctrlX2, ctrlY2,
-                                endX, endY, 0));
-        return ((crossings & 1) == 1);
-    }
-
-    @Override
     public boolean contains(final A3Point pos) {
         checkArgNotNull(pos, "pos");
         return contains(pos.getX(), pos.getY());
-    }
-
-    @Override
-    public boolean contains(final float x, final float y, final float width, final float height) {
-        if (width <= 0 || height <= 0) {
-            return false;
-        }
-
-        final int numCrossings = rectCrossings(x, y, width, height);
-        return !(numCrossings == 0 || numCrossings == A3AndroidUtils.RECT_INTERSECTS);
-    }
-
-    private int rectCrossings(final float x, final float y, final float width, final float height) {
-        int crossings = 0;
-        if (!(startX == endX && startY == endY)) {
-            crossings = A3AndroidUtils.rectCrossingsForLine(crossings,
-                    x, y,
-                    x + width, y + height,
-                    startX, startY,
-                    endX, endY);
-            if (crossings == A3AndroidUtils.RECT_INTERSECTS) {
-                return crossings;
-            }
-        }
-        // we call this with the curve's direction reversed, because we wanted
-        // to call rectCrossingsForLine first, because it's cheaper.
-        return A3AndroidUtils.rectCrossingsForCubic(crossings,
-                x, y,
-                x + width, y + height,
-                endX, endY,
-                getCtrlX2(), getCtrlY2(),
-                getCtrlX1(), getCtrlY1(),
-                startX, startY, 0);
     }
 
     @Override

@@ -126,6 +126,26 @@ public class AWTA3QuadCurve implements A3QuadCurve {
     }
 
     @Override
+    public A3QuadCurve setLine(final float startX, final float startY, final float endX, final float endY) {
+        quadCurve2D.x1 = startX;
+        quadCurve2D.y1 = startY;
+        quadCurve2D.x2 = endX;
+        quadCurve2D.y2 = endY;
+        return this;
+    }
+
+    @Override
+    public A3QuadCurve setLine(final A3Point startPos, final A3Point endPos) {
+        checkArgNotNull(startPos, "startPos");
+        checkArgNotNull(endPos, "endPos");
+        quadCurve2D.x1 = startPos.getX();
+        quadCurve2D.y1 = startPos.getY();
+        quadCurve2D.x2 = endPos.getX();
+        quadCurve2D.y2 = endPos.getY();
+        return this;
+    }
+
+    @Override
     public A3QuadCurve setCtrlX(final float ctrlX) {
         quadCurve2D.ctrlx = ctrlX;
         return this;
@@ -208,6 +228,17 @@ public class AWTA3QuadCurve implements A3QuadCurve {
     public boolean contains(final A3Rect rect) {
         checkArgNotNull(rect, "rect");
         return quadCurve2D.contains(((AWTA3Rect)rect).rectangle2D);
+    }
+
+    @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        return quadCurve2D.intersects(x, y, width, height);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return quadCurve2D.intersects(((AWTA3Rect)rect).rectangle2D);
     }
 
     @Override

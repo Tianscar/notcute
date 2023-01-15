@@ -105,7 +105,7 @@ public class A3Arrays {
         return result;
     }
 
-    public static <E extends A3Copyable<E>> E[] deepCopy(final E[] array) {
+    public static <E extends A3MutableCopyable<E>> E[] deepCopy(final E[] array) {
         A3Preconditions.checkArgNotNull(array, "array");
         final E[] result = array.clone();
         for (int i = 0; i < array.length; i ++) {

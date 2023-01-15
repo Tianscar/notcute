@@ -1,10 +1,10 @@
 package a3wt.graphics;
 
 import a3wt.bundle.A3ExtMapBundle;
-import a3wt.util.A3Copyable;
+import a3wt.util.A3MutableCopyable;
 import a3wt.util.A3Resetable;
 
-public interface A3Size extends A3Copyable<A3Size>, A3Resetable<A3Size>, A3ExtMapBundle.Delegate {
+public interface A3Size extends A3MutableCopyable<A3Size>, A3Resetable<A3Size>, A3ExtMapBundle.Bundleable {
 
     float getWidth();
     float getHeight();
@@ -29,7 +29,7 @@ public interface A3Size extends A3Copyable<A3Size>, A3Resetable<A3Size>, A3ExtMa
     }
 
     @Override
-    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+    default Class<? extends A3ExtMapBundle.Bundleable> typeClass() {
         return A3Size.class;
     }
     

@@ -17,7 +17,6 @@ import java.util.TimerTask;
 public class ExtMapBundleTest {
 
     private volatile static boolean paused = false;
-    private static final Object lock = new Object();
 
     public static void main(String[] args) {
         File bundleFile = new File(ExtMapBundleTest.class.getCanonicalName() + ".xml");
@@ -30,8 +29,8 @@ public class ExtMapBundleTest {
             bundle.putExtMapBundle("pos", frame.getContainerHolder().getBundleKit().createExtMapBundle(true));
         }
         else {
-            A3Point delegate = bundle.getDelegate("point", null);
-            if (delegate != null) point.from(delegate);
+            A3Point bundleable = bundle.getBundleable("point", null);
+            if (bundleable != null) point.from(bundleable);
         }
         frame.setSize(bundle.getExtMapBundle("size", null).getInt("width", 640),
                 bundle.getExtMapBundle("size", null).getInt("height", 480));
@@ -43,12 +42,12 @@ public class ExtMapBundleTest {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        synchronized (lock) {
+                        frame.getContainerHolder().postRunnable(() -> {
                             if (!frame.isDisposed()) {
                                 if (!paused) frame.getContainerHolder().update();
                             }
                             else System.exit(0);
-                        }
+                        });
                     }
                 }, 0, 1000 / 60);
             }
@@ -78,7 +77,7 @@ public class ExtMapBundleTest {
                     } catch (IOException ignored) {
                     }
                 }
-                bundle.putDelegate("point", point);
+                bundle.putBundleable("point", point);
                 bundle.save(bundleFile, "xml");
                 return super.containerCloseRequested();
             }

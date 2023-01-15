@@ -1,5 +1,6 @@
 package a3wt.awt;
 
+import a3wt.graphics.A3Line;
 import a3wt.graphics.A3Point;
 import a3wt.graphics.A3Rect;
 import a3wt.graphics.A3Size;
@@ -39,6 +40,27 @@ public class AWTA3Rect implements A3Rect {
     @Override
     public float getBottom() {
         return rectangle2D.y + rectangle2D.height;
+    }
+
+    @Override
+    public float getCenterX() {
+        return rectangle2D.x + rectangle2D.width / 2;
+    }
+
+    @Override
+    public float getCenterY() {
+        return rectangle2D.y + rectangle2D.height / 2;
+    }
+
+    @Override
+    public A3Point getCenter() {
+        return new AWTA3Point(new Point2D.Float(getCenterX(), getCenterY()));
+    }
+
+    @Override
+    public void getCenter(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(getCenterX(), getCenterY());
     }
 
     @Override
@@ -124,6 +146,26 @@ public class AWTA3Rect implements A3Rect {
     }
 
     @Override
+    public A3Rect setCenterX(final float centerX) {
+        rectangle2D.x = centerX - rectangle2D.width / 2;
+        return this;
+    }
+
+    @Override
+    public A3Rect setCenterY(final float centerY) {
+        rectangle2D.y = centerY - rectangle2D.height / 2;
+        return this;
+    }
+
+    @Override
+    public A3Rect setCenter(final A3Point center) {
+        checkArgNotNull(center, "center");
+        rectangle2D.x = center.getX() - rectangle2D.width / 2;
+        rectangle2D.y = center.getY() - rectangle2D.height / 2;
+        return this;
+    }
+
+    @Override
     public A3Rect setX(final float x) {
         rectangle2D.x = x;
         return this;
@@ -178,13 +220,13 @@ public class AWTA3Rect implements A3Rect {
     }
 
     @Override
-    public A3Rect set(final float x, final float y, final float width, final float height) {
+    public A3Rect setRect(final float x, final float y, final float width, final float height) {
         rectangle2D.setRect(x, y, width, height);
         return this;
     }
 
     @Override
-    public A3Rect set(final A3Point pos, final A3Size size) {
+    public A3Rect setRect(final A3Point pos, final A3Size size) {
         checkArgNotNull(pos, "pos");
         checkArgNotNull(size, "size");
         rectangle2D.x = pos.getX();
@@ -245,9 +287,30 @@ public class AWTA3Rect implements A3Rect {
     }
 
     @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        return rectangle2D.intersects(x, y, width, height);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return rectangle2D.intersects(((AWTA3Rect)rect).rectangle2D);
+    }
+    @Override
     public A3Rect reset() {
         rectangle2D.setRect(0, 0, 0, 0);
         return this;
+    }
+
+    @Override
+    public boolean intersectsLine(final A3Line line) {
+        checkArgNotNull(line, "line");
+        return rectangle2D.intersectsLine(((AWTA3Line)line).line2D);
+    }
+
+    @Override
+    public boolean intersectsLine(final float startX, final float startY, final float endX, final float endY) {
+        return rectangle2D.intersectsLine(startX, startY, endX, endY);
     }
 
 }

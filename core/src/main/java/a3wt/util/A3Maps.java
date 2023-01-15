@@ -1,6 +1,7 @@
 package a3wt.util;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static a3wt.util.A3Preconditions.checkArgElementsNotNull;
 import static a3wt.util.A3Preconditions.checkArgNotNull;
@@ -23,6 +24,34 @@ public class A3Maps {
         }
 
         return v;
+    }
+
+    public static<K, V> boolean remove(Map<K, V> map, Object key, Object value) {
+        Object curValue = map.get(key);
+        if (!Objects.equals(curValue, value) ||
+                (curValue == null && !map.containsKey(key))) {
+            return false;
+        }
+        map.remove(key);
+        return true;
+    }
+
+    public static<K, V> boolean replace(Map<K, V> map, K key, V oldValue, V newValue) {
+        Object curValue = map.get(key);
+        if (!Objects.equals(curValue, oldValue) ||
+                (curValue == null && !map.containsKey(key))) {
+            return false;
+        }
+        map.put(key, newValue);
+        return true;
+    }
+
+    public static<K, V> V replace(Map<K, V> map, K key, V value) {
+        V curValue;
+        if (((curValue = map.get(key)) != null) || map.containsKey(key)) {
+            curValue = map.put(key, value);
+        }
+        return curValue;
     }
 
     public static<K, V> Map<K, V> checkNullMap(final Map<K, V> map) {

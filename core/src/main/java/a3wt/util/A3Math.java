@@ -25,11 +25,9 @@
 
 package a3wt.util;
 
-import static a3wt.util.A3Preconditions.checkArgNotEmpty;
-
 public class A3Math {
 
-    private A3Math(){}
+    private A3Math() {}
 
     /**
      * This method takes a numerical value and ensures it fits in a given numerical range. If the
@@ -193,6 +191,94 @@ public class A3Math {
             max = Math.max(max, args[i]);
         }
         return max;
+    }
+
+    /**
+     * Returns the float conversion of the most positive (i.e. closest to
+     * positive infinity) integer value which is less than the argument.
+     *
+     * @param value to be converted
+     * @return the floor of value
+     */
+    public static float floor(final float value) {
+        return (float) Math.floor(value);
+    }
+
+    /**
+     * Returns the float conversion of the most negative (i.e. closest to
+     * negative infinity) integer value which is greater than the argument.
+     *
+     * @param value to be converted
+     * @return the ceiling of value
+     */
+    public static float ceil(final float value) {
+        return (float) Math.ceil(value);
+    }
+
+    /**
+     * Returns the closest float approximation of the sine of the argument.
+     *
+     * @param angle to compute the cosine of, in radians
+     * @return the sine of angle
+     */
+    public static float sin(final float angle) {
+        return (float) Math.sin(angle);
+    }
+
+    /**
+     * Returns the closest float approximation of the cosine of the argument.
+     *
+     * @param angle to compute the cosine of, in radians
+     * @return the cosine of angle
+     */
+    public static float cos(final float angle) {
+        return (float) Math.cos(angle);
+    }
+
+    /**
+     * Returns the closest float approximation of the square root of the
+     * argument.
+     *
+     * @param value to compute sqrt of
+     * @return the square root of value
+     */
+    public static float sqrt(final float value) {
+        return (float) Math.sqrt(value);
+    }
+
+    /**
+     * Returns the closest float approximation of the raising "e" to the power
+     * of the argument.
+     *
+     * @param value to compute the exponential of
+     * @return the exponential of value
+     */
+    public static float exp(final float value) {
+        return (float) Math.exp(value);
+    }
+
+    /**
+     * Returns the closest float approximation of the result of raising {@code
+     * x} to the power of {@code y}.
+     *
+     * @param x the base of the operation.
+     * @param y the exponent of the operation.
+     * @return {@code x} to the power of {@code y}.
+     */
+    public static float pow(final float x, final float y) {
+        return (float) Math.pow(x, y);
+    }
+
+    /**
+     * Returns {@code sqrt(}<i>{@code x}</i><sup>{@code 2}</sup>{@code +} <i>
+     * {@code y}</i><sup>{@code 2}</sup>{@code )}.
+     *
+     * @param x a float number
+     * @param y a float number
+     * @return the hypotenuse
+     */
+    public static float hypot(final float x, final float y) {
+        return (float) Math.hypot(x, y);
     }
 
 }

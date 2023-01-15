@@ -11,22 +11,16 @@ import a3wt.graphics.A3Line;
 import a3wt.graphics.A3QuadCurve;
 import a3wt.graphics.A3CubicCurve;
 import a3wt.graphics.A3Path;
-import a3wt.graphics.A3Coordinate;
 import a3wt.graphics.A3Point;
-import a3wt.graphics.A3Area;
 import a3wt.graphics.A3Rect;
 import a3wt.graphics.A3Oval;
 import a3wt.graphics.A3RoundRect;
-import a3wt.graphics.A3Dimension;
 import a3wt.graphics.A3Size;
 import a3wt.graphics.A3Transform;
 
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.Font;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Arc2D;
@@ -267,43 +261,6 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public A3Coordinate createCoordinate() {
-        return new AWTA3Coordinate(new Point());
-    }
-
-    @Override
-    public A3Coordinate createCoordinate(final int x, final int y) {
-        return new AWTA3Coordinate(new Point(x, y));
-    }
-
-    @Override
-    public A3Dimension createDimension() {
-        return new AWTA3Dimension(new Dimension());
-    }
-
-    @Override
-    public A3Dimension createDimension(final int width, final int height) {
-        return new AWTA3Dimension(new Dimension(width, height));
-    }
-
-    @Override
-    public A3Area createArea() {
-        return new AWTA3Area(new Rectangle());
-    }
-
-    @Override
-    public A3Area createArea(final int x, final int y, final int width, final int height) {
-        return new AWTA3Area(new Rectangle(x, y, width, height));
-    }
-
-    @Override
-    public A3Area createArea(final A3Coordinate pos, final A3Dimension size) {
-        checkArgNotNull(pos, "pos");
-        checkArgNotNull(size, "size");
-        return new AWTA3Area(new Rectangle(((AWTA3Coordinate)pos).point, ((AWTA3Dimension)size).dimension));
-    }
-
-    @Override
     public A3Path createPath() {
         return new AWTA3Path(new Path2D.Float());
     }
@@ -521,32 +478,32 @@ public class AWTA3GraphicsKit implements A3GraphicsKit {
     }
 
     @Override
-    public A3Cursor createCursor(final A3Image image, final int hotSpotX, final int hotSpotY) {
+    public A3Cursor createCursor(final A3Image image, final float hotSpotX, final float hotSpotY) {
         if (image instanceof A3FramedImage) return createFramedCursor((A3FramedImage) image, hotSpotX, hotSpotY);
-        else return new AWTA3Cursor((AWTA3Image) image, new Point(hotSpotX, hotSpotY));
+        else return new AWTA3Cursor((AWTA3Image) image, new Point2D.Float(hotSpotX, hotSpotY));
     }
 
     @Override
-    public A3Cursor createCursor(final A3Image image, final A3Coordinate hotSpot) {
+    public A3Cursor createCursor(final A3Image image, final A3Point hotSpot) {
         if (image instanceof A3FramedImage) return createFramedCursor((A3FramedImage) image, hotSpot);
-        else return new AWTA3Cursor((AWTA3Image) image, ((AWTA3Coordinate)hotSpot).point);
+        else return new AWTA3Cursor((AWTA3Image) image, ((AWTA3Point)hotSpot).point2D);
     }
 
     @Override
-    public A3Cursor createFramedCursor(final A3FramedImage image, final int hotSpotX, final int hotSpotY) {
+    public A3Cursor createFramedCursor(final A3FramedImage image, final float hotSpotX, final float hotSpotY) {
         final A3Cursor.Frame[] frames = new A3Cursor.Frame[image.size()];
         for (int i = 0; i < frames.length; i ++) {
-            frames[i] = new A3Cursor.DefaultFrame(new AWTA3Cursor((AWTA3Image) image.get(i).getImage(), new Point(hotSpotX, hotSpotY)),
+            frames[i] = new A3Cursor.DefaultFrame(new AWTA3Cursor((AWTA3Image) image.get(i).getImage(), new Point2D.Float(hotSpotX, hotSpotY)),
                     image.get(i).getDuration());
         }
         return createFramedCursor(frames);
     }
 
     @Override
-    public A3Cursor createFramedCursor(final A3FramedImage image, final A3Coordinate hotSpot) {
+    public A3Cursor createFramedCursor(final A3FramedImage image, final A3Point hotSpot) {
         final A3Cursor.Frame[] frames = new A3Cursor.Frame[image.size()];
         for (int i = 0; i < frames.length; i ++) {
-            frames[i] = new A3Cursor.DefaultFrame(new AWTA3Cursor((AWTA3Image) image.get(i).getImage(), ((AWTA3Coordinate)hotSpot).point),
+            frames[i] = new A3Cursor.DefaultFrame(new AWTA3Cursor((AWTA3Image) image.get(i).getImage(), ((AWTA3Point)hotSpot).point2D),
                     image.get(i).getDuration());
         }
         return createFramedCursor(frames);

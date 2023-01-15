@@ -1,10 +1,10 @@
 package a3wt.graphics;
 
 import a3wt.bundle.A3ExtMapBundle;
-import a3wt.util.A3Copyable;
+import a3wt.util.A3MutableCopyable;
 import a3wt.util.A3Resetable;
 
-public interface A3Transform extends A3Copyable<A3Transform>, A3Resetable<A3Transform>, A3ExtMapBundle.Delegate {
+public interface A3Transform extends A3MutableCopyable<A3Transform>, A3Resetable<A3Transform>, A3ExtMapBundle.Bundleable {
 
     A3Transform postTranslate(final float dx, final float dy);
     A3Transform postScale(final float sx, final float sy);
@@ -88,7 +88,7 @@ public interface A3Transform extends A3Copyable<A3Transform>, A3Resetable<A3Tran
     }
 
     @Override
-    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+    default Class<? extends A3ExtMapBundle.Bundleable> typeClass() {
         return A3Transform.class;
     }
 

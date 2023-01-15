@@ -47,17 +47,17 @@ public class DefaultA3FramedCursor implements A3FramedCursor {
     }
 
     @Override
-    public int getHotSpotX() {
+    public float getHotSpotX() {
         return get().getCursor().getHotSpotX();
     }
 
     @Override
-    public int getHotSpotY() {
+    public float getHotSpotY() {
         return get().getCursor().getHotSpotY();
     }
 
     @Override
-    public A3Coordinate getHotSpot() {
+    public A3Point getHotSpot() {
         return get().getCursor().getHotSpot();
     }
 

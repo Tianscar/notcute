@@ -1,12 +1,12 @@
 package a3wt.android;
 
-import a3wt.graphics.A3Coordinate;
-import android.content.Context;
-import android.graphics.Point;
-import android.os.Build;
-import android.view.PointerIcon;
 import a3wt.graphics.A3Cursor;
 import a3wt.graphics.A3Image;
+import a3wt.graphics.A3Point;
+import android.content.Context;
+import android.graphics.PointF;
+import android.os.Build;
+import android.view.PointerIcon;
 
 import static a3wt.util.A3Preconditions.checkArgNotNull;
 
@@ -16,8 +16,8 @@ public class AndroidA3Cursor implements A3Cursor {
     protected final int type;
     protected final AndroidA3Image image;
 
-    protected final int hotSpotX;
-    protected final int hotSpotY;
+    protected final float hotSpotX;
+    protected final float hotSpotY;
 
     public AndroidA3Cursor(final Context context, final int type) {
         checkArgNotNull(context, "context");
@@ -32,7 +32,7 @@ public class AndroidA3Cursor implements A3Cursor {
         }
     }
 
-    public AndroidA3Cursor(final AndroidA3Image image, final int hotSpotX, final int hotSpotY) {
+    public AndroidA3Cursor(final AndroidA3Image image, final float hotSpotX, final float hotSpotY) {
         checkArgNotNull(image, "image");
         type = -1;
         this.image = image;
@@ -59,18 +59,18 @@ public class AndroidA3Cursor implements A3Cursor {
     }
 
     @Override
-    public int getHotSpotX() {
+    public float getHotSpotX() {
         return hotSpotX;
     }
 
     @Override
-    public int getHotSpotY() {
+    public float getHotSpotY() {
         return hotSpotY;
     }
 
     @Override
-    public A3Coordinate getHotSpot() {
-        return new AndroidA3Coordinate(new Point(hotSpotX, hotSpotY));
+    public A3Point getHotSpot() {
+        return new AndroidA3Point(new PointF(hotSpotX, hotSpotY));
     }
 
 }

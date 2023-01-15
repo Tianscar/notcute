@@ -47,6 +47,27 @@ public class AWTA3RoundRect implements A3RoundRect {
     }
 
     @Override
+    public float getCenterX() {
+        return roundRectangle2D.x + roundRectangle2D.width / 2;
+    }
+
+    @Override
+    public float getCenterY() {
+        return roundRectangle2D.y + roundRectangle2D.height / 2;
+    }
+
+    @Override
+    public A3Point getCenter() {
+        return new AWTA3Point(new Point2D.Float(getCenterX(), getCenterY()));
+    }
+
+    @Override
+    public void getCenter(final A3Point pos) {
+        checkArgNotNull(pos, "pos");
+        pos.set(getCenterX(), getCenterY());
+    }
+
+    @Override
     public float getX() {
         return roundRectangle2D.x;
     }
@@ -146,6 +167,26 @@ public class AWTA3RoundRect implements A3RoundRect {
         roundRectangle2D.y = top;
         roundRectangle2D.width = right - left;
         roundRectangle2D.height = bottom - top;
+        return this;
+    }
+
+    @Override
+    public A3RoundRect setCenterX(final float centerX) {
+        roundRectangle2D.x = centerX - roundRectangle2D.width / 2;
+        return this;
+    }
+
+    @Override
+    public A3RoundRect setCenterY(final float centerY) {
+        roundRectangle2D.y = centerY - roundRectangle2D.height / 2;
+        return this;
+    }
+
+    @Override
+    public A3RoundRect setCenter(final A3Point center) {
+        checkArgNotNull(center, "center");
+        roundRectangle2D.x = center.getX() - roundRectangle2D.width / 2;
+        roundRectangle2D.y = center.getY() - roundRectangle2D.height / 2;
         return this;
     }
 
@@ -310,6 +351,17 @@ public class AWTA3RoundRect implements A3RoundRect {
     public boolean contains(final A3Rect rect) {
         checkArgNotNull(rect, "rect");
         return roundRectangle2D.contains(((AWTA3Rect)rect).rectangle2D);
+    }
+
+    @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        return roundRectangle2D.intersects(x, y, width, height);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return roundRectangle2D.intersects(((AWTA3Rect)rect).rectangle2D);
     }
 
     @Override

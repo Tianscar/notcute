@@ -60,13 +60,6 @@ public interface A3GraphicsKit {
     A3Transform createTransform(final float sx, final float kx, final float dx,
                                 final float ky, final float sy, final float dy);
     A3Transform createTransform(final A3Point scale, final A3Point skew, final A3Point translate);
-    A3Coordinate createCoordinate();
-    A3Coordinate createCoordinate(final int x, final int y);
-    A3Dimension createDimension();
-    A3Dimension createDimension(final int width, final int height);
-    A3Area createArea();
-    A3Area createArea(final int x, final int y, final int width, final int height);
-    A3Area createArea(final A3Coordinate pos, final A3Dimension size);
     A3Path createPath();
     A3Arc createArc();
     A3Arc createArc(final boolean useCenter);
@@ -108,13 +101,13 @@ public interface A3GraphicsKit {
     A3Font getDefaultFont();
 
     A3Cursor createCursor(final int type);
-    A3Cursor createCursor(final A3Image image, final int hotSpotX, final int hotSpotY);
-    A3Cursor createCursor(final A3Image image, final A3Coordinate hotSpot);
+    A3Cursor createCursor(final A3Image image, final float hotSpotX, final float hotSpotY);
+    A3Cursor createCursor(final A3Image image, final A3Point hotSpot);
     default A3Cursor.Frame createCursorFrame(final A3Cursor cursor, final long duration) {
         return new A3FramedCursor.DefaultFrame(cursor, duration);
     }
-    A3Cursor createFramedCursor(final A3FramedImage image, final int hotSpotX, final int hotSpotY);
-    A3Cursor createFramedCursor(final A3FramedImage image, final A3Coordinate hotSpot);
+    A3Cursor createFramedCursor(final A3FramedImage image, final float hotSpotX, final float hotSpotY);
+    A3Cursor createFramedCursor(final A3FramedImage image, final A3Point hotSpot);
     default A3FramedCursor createFramedCursor(final A3Cursor.Frame... frames) {
         return new DefaultA3FramedCursor(frames);
     }

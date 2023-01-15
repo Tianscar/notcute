@@ -2,16 +2,8 @@ package a3wt.graphics;
 
 import a3wt.bundle.A3ExtMapBundle;
 
-public interface A3CubicCurve extends A3Shape<A3CubicCurve> {
+public interface A3CubicCurve extends A3Linear<A3CubicCurve> {
 
-    float getStartX();
-    float getStartY();
-    float getEndX();
-    float getEndY();
-    A3Point getStartPos();
-    void getStartPos(final A3Point pos);
-    A3Point getEndPos();
-    void getEndPos(final A3Point pos);
     float getCtrlX1();
     float getCtrlY1();
     float getCtrlX2();
@@ -21,12 +13,6 @@ public interface A3CubicCurve extends A3Shape<A3CubicCurve> {
     A3Point getCtrlPos2();
     void getCtrlPos2(final A3Point pos);
 
-    A3CubicCurve setStartX(final float startX);
-    A3CubicCurve setStartY(final float startY);
-    A3CubicCurve setEndX(final float endX);
-    A3CubicCurve setEndY(final float endY);
-    A3CubicCurve setStartPos(final A3Point pos);
-    A3CubicCurve setEndPos(final A3Point pos);
     A3CubicCurve setCtrlX1(final float ctrlX);
     A3CubicCurve setCtrlY1(final float ctrlY);
     A3CubicCurve setCtrlX2(final float ctrlX);
@@ -40,14 +26,10 @@ public interface A3CubicCurve extends A3Shape<A3CubicCurve> {
              final float ctrlX2, final float ctrlY2,
              final float endX, final float endY);
 
-    String KEY_START_X = "startX";
-    String KEY_START_Y = "startY";
     String KEY_CTRL_X1 = "ctrlX1";
     String KEY_CTRL_Y1 = "ctrlY1";
     String KEY_CTRL_X2 = "ctrlX2";
     String KEY_CTRL_Y2 = "ctrlY2";
-    String KEY_END_X = "endX";
-    String KEY_END_Y = "endY";
 
     @Override
     default void save(final A3ExtMapBundle.Saver saver) {
@@ -70,7 +52,7 @@ public interface A3CubicCurve extends A3Shape<A3CubicCurve> {
     }
 
     @Override
-    default Class<? extends A3ExtMapBundle.Delegate> typeClass() {
+    default Class<? extends A3ExtMapBundle.Bundleable> typeClass() {
         return A3CubicCurve.class;
     }
 

@@ -1,7 +1,7 @@
 package a3wt.util;
 
-public interface A3Callable<T> {
+import java.util.concurrent.Callable;
 
-    T call();
-
+@FunctionalInterface
+public interface A3Callable<V> extends Callable<V> {
 }

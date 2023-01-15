@@ -149,6 +149,22 @@ public class AndroidA3QuadCurve implements A3QuadCurve {
     }
 
     @Override
+    public A3QuadCurve setLine(final float startX, final float startY, final float endX, final float endY) {
+        this.startX = startX;
+        this.startY = startY;
+        this.endX = endX;
+        this.endY = endY;
+        return this;
+    }
+
+    @Override
+    public A3QuadCurve setLine(final A3Point startPos, final A3Point endPos) {
+        checkArgNotNull(startPos, "startPos");
+        checkArgNotNull(endPos, "endPos");
+        return setLine(startPos.getX(), startPos.getY(), endPos.getX(), endPos.getY());
+    }
+
+    @Override
     public A3QuadCurve setCtrlX(final float ctrlX) {
         this.ctrlX = ctrlX;
         return this;
@@ -201,17 +217,12 @@ public class AndroidA3QuadCurve implements A3QuadCurve {
         final float dy = y - startY;
         final float dxl = endX - startX;
         final float dyl = endY - startY;
-
         final float t0 = (dx * ky - dy * kx) / (dxl * ky - dyl * kx);
-        if (t0 < 0 || t0 > 1 || t0 != t0) {
-            return false;
-        }
-
+        if (t0 < 0 || t0 > 1 || t0 != t0) return false;
         final float xb = kx * t0 * t0 + 2 * (ctrlX - startX) * t0 + startX;
         final float yb = ky * t0 * t0 + 2 * (ctrlY - startY) * t0 + startY;
         final float xl = dxl * t0 + startX;
         final float yl = dyl * t0 + startY;
-
         return (x >= xb && x < xl) ||
                 (x >= xl && x < xb) ||
                 (y >= yb && y < yl) ||
@@ -226,19 +237,20 @@ public class AndroidA3QuadCurve implements A3QuadCurve {
 
     @Override
     public boolean contains(final float x, final float y, final float width, final float height) {
-        if (width <= 0 || height <= 0) {
-            return false;
-        }
-        return (contains(x, y) &&
-                contains(x + width, y) &&
-                contains(x + width, y + height) &&
-                contains(x, y + height));
+        if (width <= 0 || height <= 0) return false;
+        return contains(x, y) && contains(x + width, y) && contains(x + width, y + height) && contains(x, y + height);
     }
 
     @Override
     public boolean contains(final A3Rect rect) {
         checkArgNotNull(rect, "rect");
         return contains(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return intersects(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
 
     @Override

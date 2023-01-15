@@ -277,7 +277,7 @@ public class A3DiskLruCache implements Closeable {
       }
       redundantOpCount = lineCount - lruEntries.size();
     } finally {
-      A3StreamUtils.closeQuietly(reader);
+      A3Streams.closeQuietly(reader);
     }
   }
 
@@ -430,7 +430,7 @@ public class A3DiskLruCache implements Closeable {
       // A file must have been deleted manually!
       for (int i = 0; i < valueCount; i++) {
         if (ins[i] != null) {
-          A3StreamUtils.closeQuietly(ins[i]);
+          A3Streams.closeQuietly(ins[i]);
         } else {
           break;
         }
@@ -710,7 +710,7 @@ public class A3DiskLruCache implements Closeable {
 
     public void close() {
       for (InputStream in : ins) {
-        A3StreamUtils.closeQuietly(in);
+        A3Streams.closeQuietly(in);
       }
     }
   }
@@ -803,7 +803,7 @@ public class A3DiskLruCache implements Closeable {
         writer = new OutputStreamWriter(newOutputStream(index), UTF_8);
         writer.write(value);
       } finally {
-        A3StreamUtils.closeQuietly(writer);
+        A3Streams.closeQuietly(writer);
       }
     }
 

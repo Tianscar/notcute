@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public interface A3FilterMap<K, V> extends Map<K, V> {
+public interface A3FilterMap<K, V> extends A3Map<K, V> {
 
     Map<K, V> filterInstance();
     

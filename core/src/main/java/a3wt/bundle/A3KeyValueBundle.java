@@ -3,30 +3,30 @@ package a3wt.bundle;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public interface A3KeyValueBundle extends A3Bundle {
+public interface A3KeyValueBundle<T extends A3KeyValueBundle<T>> extends A3Bundle {
 
-    A3KeyValueBundle putByte(final String key, final byte value);
-    A3KeyValueBundle putShort(final String key, final short value);
-    A3KeyValueBundle putInt(final String key, final int value);
-    A3KeyValueBundle putLong(final String key, final long value);
-    A3KeyValueBundle putFloat(final String key, final float value);
-    A3KeyValueBundle putDouble(final String key, final double value);
-    A3KeyValueBundle putBoolean(final String key, final boolean value);
-    A3KeyValueBundle putChar(final String key, final char value);
-    A3KeyValueBundle putString(final String key, final String value);
-    A3KeyValueBundle putBigInteger(final String key, final BigInteger value);
-    A3KeyValueBundle putBigDecimal(final String key, final BigDecimal value);
-    A3KeyValueBundle putByteArray(final String key, final byte[] value);
-    A3KeyValueBundle putShortArray(final String key, final short[] value);
-    A3KeyValueBundle putIntArray(final String key, final int[] value);
-    A3KeyValueBundle putLongArray(final String key, final long[] value);
-    A3KeyValueBundle putFloatArray(final String key, final float[] value);
-    A3KeyValueBundle putDoubleArray(final String key, final double[] value);
-    A3KeyValueBundle putBooleanArray(final String key, final boolean[] value);
-    A3KeyValueBundle putCharArray(final String key, final char[] value);
-    A3KeyValueBundle putStringArray(final String key, final String[] value);
-    A3KeyValueBundle putBigIntegerArray(final String key, final BigInteger[] value);
-    A3KeyValueBundle putBigDecimalArray(final String key, final BigDecimal[] value);
+    T putByte(final String key, final byte value);
+    T putShort(final String key, final short value);
+    T putInt(final String key, final int value);
+    T putLong(final String key, final long value);
+    T putFloat(final String key, final float value);
+    T putDouble(final String key, final double value);
+    T putBoolean(final String key, final boolean value);
+    T putChar(final String key, final char value);
+    T putString(final String key, final String value);
+    T putBigInteger(final String key, final BigInteger value);
+    T putBigDecimal(final String key, final BigDecimal value);
+    T putByteArray(final String key, final byte[] value);
+    T putShortArray(final String key, final short[] value);
+    T putIntArray(final String key, final int[] value);
+    T putLongArray(final String key, final long[] value);
+    T putFloatArray(final String key, final float[] value);
+    T putDoubleArray(final String key, final double[] value);
+    T putBooleanArray(final String key, final boolean[] value);
+    T putCharArray(final String key, final char[] value);
+    T putStringArray(final String key, final String[] value);
+    T putBigIntegerArray(final String key, final BigInteger[] value);
+    T putBigDecimalArray(final String key, final BigDecimal[] value);
 
     byte getByte(final String key, final byte defValue);
     short getShort(final String key, final short defValue);

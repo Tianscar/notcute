@@ -1,7 +1,7 @@
 package a3wt.awt;
 
 import a3wt.graphics.A3FramedImage;
-import a3wt.graphics.A3Image;
+import a3wt.util.A3Math;
 
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
@@ -13,8 +13,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static a3wt.util.A3Math.clamp;
 
 public final class FramedImageIO {
 
@@ -70,7 +68,7 @@ public final class FramedImageIO {
         if (formatName == null) throw new IllegalArgumentException("format name cannot be NULL");
         if (output == null) throw new IllegalArgumentException("output cannot be NULL");
         boolean result = false;
-        final float quality0 = clamp(quality, 0, 1);
+        final float quality0 = A3Math.clamp(quality, 0, 1);
         for (final FIIOServiceProvider provider : FIIORegistry.getServiceProviders()) {
             result = provider.write(image, formatName, quality0, output);
             if (result) break;

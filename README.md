@@ -87,6 +87,7 @@ a3wt-core
 │   │   ├── Logger
 │   │   ├── Preferences (File-based)
 │   │   └── (WIP) Uri
+│   ├── Initializer SPI
 │   └── Platform (Related-infos)
 ├── Audio Framework
 │   ├── Audio Player
@@ -110,31 +111,34 @@ a3wt-core
 │   └── Sectional Map Bundle (Map-based, INI-like)
 │       └── INI (*.ini)
 └── Utilities
-    ├── Collections⁄Maps
-    │   ├── FilterCollection
-    │   ├── FilterList
-    │   ├── FilterMap
-    │   └── FilterSet
-    ├── Interface
+    ├── CharSegment
+    ├── Collections Framework
+    ├── DiskLruCache
+    ├── Functional
     │   ├── Callable
+    │   ├── Consumer
+    │   ├── Function
+    │   ├── Predicate
+    │   ├── Supplier
+    │   └── UnaryOperator
+    ├── Interface
     │   ├── Copyable
     │   ├── Disposable
+    │   ├── MutableCopyable
     │   ├── Paintable
-    │   ├── Prepareable
     │   └── Resetable
     ├── LruCache
-    │   ├── Disk
-    │   └── Memory
-    └── Toolkit⁄Factory
-        ├── Arrays
-        ├── Asserts
-        ├── Charsets
-        ├── Colors
-        ├── Files (BIO)
-        ├── Math
-        ├── Preconditions
-        ├── StreamUtils
-        └── TextUtils
+    ├── Toolkit⁄Factory
+    │   ├── Arrays
+    │   ├── Charsets
+    │   ├── Colors
+    │   ├── Files
+    │   ├── Math
+    │   ├── Objects
+    │   ├── Preconditions
+    │   ├── Streams
+    │   └── TextUtils
+    └── Tuple Framework
 ```
 
 ## Notes
@@ -158,7 +162,8 @@ Apache-2.0 [Android Open Source Project (AOSP)](https://source.android.com/)
 Apache-2.0 [Apache Harmony](https://harmony.apache.org)  
 Apache-2.0 [animated-gif-lib-for-java](https://github.com/rtyley/animated-gif-lib-for-java)  
 [Apache-2.0](https://github.com/JakeWharton/DiskLruCache/blob/master/LICENSE.txt) [DiskLruCache](http://jakewharton.github.io/DiskLruCache)  
-[MIT](https://github.com/philfrei/AudioCue-maven/blob/main/LICENSE) [AudioCue-Maven](https://github.com/philfrei/AudioCue-maven)
+[MIT](https://github.com/philfrei/AudioCue-maven/blob/main/LICENSE) [AudioCue-Maven](https://github.com/philfrei/AudioCue-maven)  
+[Apache-2.0](https://github.com/javatuples/javatuples/blob/master/LICENSE.txt) [javatuples](https://github.com/javatuples/javatuples)
 ### A3WT currently uses the following projects as dependencies:
 [MIT](https://github.com/koral--/android-gif-drawable/blob/dev/LICENSE) [android-gif-drawable](https://github.com/koral--/android-gif-drawable)  
 [Apache-2.0](https://ini4j.sourceforge.net/license.html) [ini4j](https://ini4j.sourceforge.net/)  

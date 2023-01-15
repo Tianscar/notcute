@@ -2,7 +2,7 @@ package a3wt.util;
 
 public class A3Colors {
 
-    private A3Colors(){}
+    private A3Colors() {}
 
     public static final int TRANSPARENT             = 0x00000000;
 

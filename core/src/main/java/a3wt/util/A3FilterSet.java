@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-public interface A3FilterSet<E> extends Set<E>, A3FilterCollection<E> {
+public interface A3FilterSet<E> extends A3Set<E>, A3FilterCollection<E> {
 
     @Override
     Set<E> filterInstance();

@@ -2,6 +2,7 @@ package a3wt.awt;
 
 import a3wt.graphics.A3CubicCurve;
 import a3wt.graphics.A3Point;
+import a3wt.graphics.A3QuadCurve;
 import a3wt.graphics.A3Rect;
 
 import java.awt.geom.CubicCurve2D;
@@ -148,6 +149,26 @@ public class AWTA3CubicCurve implements A3CubicCurve {
     }
 
     @Override
+    public A3CubicCurve setLine(final float startX, final float startY, final float endX, final float endY) {
+        cubicCurve2D.x1 = startX;
+        cubicCurve2D.y1 = startY;
+        cubicCurve2D.x2 = endX;
+        cubicCurve2D.y2 = endY;
+        return this;
+    }
+
+    @Override
+    public A3CubicCurve setLine(final A3Point startPos, final A3Point endPos) {
+        checkArgNotNull(startPos, "startPos");
+        checkArgNotNull(endPos, "endPos");
+        cubicCurve2D.x1 = startPos.getX();
+        cubicCurve2D.y1 = startPos.getY();
+        cubicCurve2D.x2 = endPos.getX();
+        cubicCurve2D.y2 = endPos.getY();
+        return this;
+    }
+
+    @Override
     public A3CubicCurve setCtrlX1(final float ctrlX) {
         cubicCurve2D.ctrlx1 = ctrlX;
         return this;
@@ -253,6 +274,17 @@ public class AWTA3CubicCurve implements A3CubicCurve {
     public boolean contains(final A3Rect rect) {
         checkArgNotNull(rect, "rect");
         return cubicCurve2D.contains(((AWTA3Rect)rect).rectangle2D);
+    }
+
+    @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        return cubicCurve2D.intersects(x, y, width, height);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return cubicCurve2D.intersects(((AWTA3Rect)rect).rectangle2D);
     }
 
     @Override

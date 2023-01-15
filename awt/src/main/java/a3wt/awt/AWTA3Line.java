@@ -106,13 +106,13 @@ public class AWTA3Line implements A3Line {
     }
 
     @Override
-    public A3Line set(final float startX, final float startY, final float endX, final float endY) {
+    public A3Line setLine(final float startX, final float startY, final float endX, final float endY) {
         line2D.setLine(startX, startY, endX, endY);
         return this;
     }
 
     @Override
-    public A3Line set(final A3Point startPos, final A3Point endPos) {
+    public A3Line setLine(final A3Point startPos, final A3Point endPos) {
         checkArgNotNull(startPos, "startPos");
         checkArgNotNull(endPos, "endPos");
         line2D.setLine(((AWTA3Point)startPos).point2D, ((AWTA3Point)endPos).point2D);
@@ -170,9 +170,31 @@ public class AWTA3Line implements A3Line {
     }
 
     @Override
+    public boolean intersects(final float x, final float y, final float width, final float height) {
+        return line2D.intersects(x, y, width, height);
+    }
+
+    @Override
+    public boolean intersects(final A3Rect rect) {
+        checkArgNotNull(rect, "rect");
+        return line2D.intersects(((AWTA3Rect)rect).rectangle2D);
+    }
+
+    @Override
     public A3Line reset() {
         line2D.setLine(0, 0, 0, 0);
         return this;
+    }
+
+    @Override
+    public boolean intersectsLine(final A3Line line) {
+        checkArgNotNull(line, "line");
+        return line2D.intersectsLine(((AWTA3Line)line).line2D);
+    }
+
+    @Override
+    public boolean intersectsLine(final float startX, final float startY, final float endX, final float endY) {
+        return line2D.intersectsLine(startX, startY, endX, endY);
     }
 
 }

@@ -20,8 +20,7 @@ import javax.sound.sampled.spi.FormatConversionProvider;
 import javax.sound.sampled.LineUnavailableException;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -98,11 +97,10 @@ public class AWTA3AudioPlayer implements A3AudioPlayer, AudioCueListener {
     public Sound loadSound(final A3Assets assets, final String input) {
         checkArgNotNull(assets, "assets");
         try {
-            final URL url = assets.getAssetURL(input);
-            AudioInputStream ais = AudioSystem.getAudioInputStream(url);
+            AudioInputStream ais = AudioSystem.getAudioInputStream(assets.readAsset(input));
             ais = getSupportedAudioInputStream(ais);
             float[] cue = loadAudioInputStream(ais);
-            final AWTSound sound = new AWTSound(AudioCue.makeStereoCue(cue, url.toString(), 1));
+            final AWTSound sound = new AWTSound(AudioCue.makeStereoCue(cue, input, 1));
             sounds.add(sound);
             for (final A3SoundListener listener : soundListeners) {
                 listener.soundLoaded(sound);
@@ -117,23 +115,18 @@ public class AWTA3AudioPlayer implements A3AudioPlayer, AudioCueListener {
     @Override
     public Music loadMusic(final File input) {
         checkArgNotNull(input, "input");
-        try {
-            final AWTMusic music = new AWTMusic(input.toURI().toURL());
-            musics.add(music);
-            for (final A3MusicListener listener : musicListeners) {
-                listener.musicLoaded(music);
-            }
-            return music;
+        final AWTMusic music = new AWTMusic(input);
+        musics.add(music);
+        for (final A3MusicListener listener : musicListeners) {
+            listener.musicLoaded(music);
         }
-        catch (final MalformedURLException e) {
-            return null;
-        }
+        return music;
     }
 
     @Override
     public Music loadMusic(final A3Assets assets, final String input) {
         checkArgNotNull(assets, "assets");
-        final AWTMusic music = new AWTMusic(assets.getAssetURL(input));
+        final AWTMusic music = new AWTMusic(input);
         musics.add(music);
         for (final A3MusicListener listener : musicListeners) {
             listener.musicLoaded(music);
@@ -171,16 +164,28 @@ public class AWTA3AudioPlayer implements A3AudioPlayer, AudioCueListener {
     @Override
     public void prepareMusic(final Music music) throws IOException {
         AudioCue audioCue = ((AWTMusic) music).audioCue;
-        final URL url = ((AWTMusic) music).getUrl();
         if (audioCue != null && !((AWTMusic) music).isPrepared()) {
             ((AWTMusic) music).setInstanceID(audioCue.obtainInstance());
             return;
         }
         try {
-            AudioInputStream ais = AudioSystem.getAudioInputStream(url);
+            final String name;
+            AudioInputStream ais;
+            final File file = ((AWTMusic) music).file;
+            if (file != null) {
+                ais = AudioSystem.getAudioInputStream(file);
+                name = file.getAbsolutePath();
+            }
+            else {
+                final String assetName = ((AWTMusic) music).assetName;
+                final InputStream input = AWTA3Assets.class.getClassLoader().getResourceAsStream(assetName);
+                checkArgNotNull(input, "input");
+                ais = AudioSystem.getAudioInputStream(input);
+                name = assetName;
+            }
             ais = AWTA3AudioPlayer.getSupportedAudioInputStream(ais);
             final float[] cue = AWTA3AudioPlayer.loadAudioInputStream(ais);
-            ((AWTMusic) music).setAudioCue(AudioCue.makeStereoCue(cue, url.toString(), 1));
+            ((AWTMusic) music).setAudioCue(AudioCue.makeStereoCue(cue, name, 1));
             audioCue = ((AWTMusic) music).audioCue;
             ((AWTMusic) music).setInstanceID(audioCue.obtainInstance());
             ((AWTMusic) music).setLength((int) (audioCue.getFrameLength() * 1000.0 / AudioCue.audioFormat.getFrameRate()));
@@ -431,17 +436,34 @@ public class AWTA3AudioPlayer implements A3AudioPlayer, AudioCueListener {
         protected volatile int loops;
         protected volatile int pos;
 
-        protected final URL url;
+        protected final File file;
+        protected final String assetName;
 
         protected volatile AudioCue audioCue = null;
         protected volatile boolean prepared = false;
         protected volatile int instanceID = -1;
         protected volatile int length = -1;
 
-        public AWTMusic(final URL url) {
-            checkArgNotNull(url, "url");
-            this.url = url;
+        public AWTMusic(final File file) {
+            checkArgNotNull(file, "file");
+            this.file = file;
+            this.assetName = null;
             reset();
+        }
+
+        public AWTMusic(final String assetName) {
+            checkArgNotNull(assetName, "assetName");
+            this.file = null;
+            this.assetName = assetName;
+            reset();
+        }
+
+        public String getAssetName() {
+            return assetName;
+        }
+
+        public File getFile() {
+            return file;
         }
 
         public void setAudioCue(final AudioCue audioCue) {
@@ -450,10 +472,6 @@ public class AWTA3AudioPlayer implements A3AudioPlayer, AudioCueListener {
 
         public AudioCue getAudioCue() {
             return audioCue;
-        }
-
-        public URL getUrl() {
-            return url;
         }
 
         public int getInstanceID() {
