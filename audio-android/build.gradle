@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':audio-core')
+    api project(':audio-core')
+    implementation project(':android')
+    api project(':android')
+}

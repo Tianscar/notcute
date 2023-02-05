@@ -1,0 +1,8 @@
+dependencies {
+    implementation project(':ui-core')
+    api project(':ui-core')
+    implementation project(':g2d-android')
+    api project(':g2d-android')
+    implementation project(':audio-android')
+    api project(':audio-android')
+}

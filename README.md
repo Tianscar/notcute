@@ -1,148 +1,89 @@
-# A3WT
+# Notcute
 [![Discord](https://img.shields.io/discord/1062481080202055752?style=for-the-badge&logo=discord)](https://discord.gg/hghED8mWUd)
 
-The abstract layer for Android GUI and AWT.
+An abstract graphics layer based on Android GUI, AWT, SWT and so on.
 
 "Any problem in computer science can be solved with another layer of indirection [except the problem of too many layers of indirection]."  
-A3WT is not a framework built from scratch, just an indirection layer over existing frameworks.
+Notcute is not a framework built from scratch, just an indirection layer over existing frameworks.
 
 ## Design
-- A cross-platform desktop/mobile Windowing Toolkit/Game Engine for Java.
+- A cross-platform desktop/mobile Widget Toolkit/Game Engine for Java.
 - Modular and flexible.
 - Can be embedded to related GUI frameworks (Android GUI, AWT, etc).
+- Using Qt-like signal/slot instead of traditional callbacks, to prevent the 'callback hell'.
 
-## Architecture
-
-(root node depends on children nodes)
+## Backends
 ```
-a3wt-core
-├── a3wt-android
+ui-core
+├── ui-android
 │   └── Android GUI
 │       └── Android
-├── a3wt-awt
+├── ui-awt
 │   └── AWT
 │       ├── Cocoa
 │       │   └── macOS
-│       ├── Motif
-│       │   └── *nix⁄Motif
 │       ├── Win32
 │       │   └── Windows
 │       └── X11
 │           ├── *nix⁄X11
 │           └── XWayland
 │               └── *nix⁄Wayland
-└── (WIP) a3wt-teavm
+├── (WIP) ui-gwt
+│   └── GWT
+│       └── HTML5
+│           └── Modern Browsers
+├── (WIP) ui-ikvm
+│   ├── UWP
+│   │   ├── Windows Phone
+│   │   └── Windows⁄UWP
+│   └── Win32
+│       └── Windows
+├── (WIP) ui-javafx
+│   └── JavaFX
+│       ├── Cocoa
+│       │   └── macOS
+│       ├── GTK
+│       │   ├── *nix⁄Wayland
+│       │   └── *nix⁄X11
+│       ├── JavaFXPorts
+│       │   ├── Android
+│       │   └── iOS
+│       └── Win32
+│           └── Windows
+├── (WIP) ui-qtjambi
+│   └── Qt-Jambi
+│       └── Qt
+│           ├── Android
+│           ├── macOS
+│           ├── *nix⁄Wayland
+│           ├── *nix⁄X11
+│           └── Windows
+├── (WIP) ui-robovm
+│   └── CocoaTouch
+│       └── iOS
+├── (WIP) ui-swt
+│   └── SWT
+│       ├── Cocoa
+│       │   └── macOS
+│       ├── GTK
+│       │   ├── *nix⁄Wayland
+│       │   └── *nix⁄X11
+│       └── Win32
+│           └── Windows
+└── (WIP) ui-teavm
     └── TeaVM
         └── HTML5
             └── Modern Browsers
 ```
 
-(children nodes depend on root node)
-```
-a3wt-core
-├── 2D Graphics Framework
-│   ├── Custom Cursor API
-│   │   ├── Multi-frame Cursor
-│   │   └── Single-frame Cursor
-│   ├── Graphics API
-│   │   ├── Affine Transform API (Java2D-like)
-│   │   ├── Geometry Framework (Java2D-like)
-│   │   ├── Graphics (Java2D-like)
-│   │   └── Vector Path API (Android-like)
-│   └── Image Framework
-│       ├── Image I⁄O
-│       │   ├── Multi-frame
-│       │   │   ├── (AWT Only) TIFF (*.tiff)
-│       │   │   └── GIF (*.gif)
-│       │   └── Single-frame
-│       │       ├── (Android Only) WebP (*.webp)
-│       │       ├── BMP (*.bmp)
-│       │       ├── JPEG (*.jpeg, *.jpg)
-│       │       └── PNG (*.png)
-│       ├── Multi-frame Image (List-based)
-│       └── Single-frame Image
-├── Application Framework
-│   ├── Context (2D Drawing)
-│   │   ├── Assets
-│   │   ├── Clipboard
-│   │   │   ├── Application
-│   │   │   └── System
-│   │   │       ├── Clipboard
-│   │   │       └── Selection
-│   │   ├── Container (Windowing)
-│   │   ├── Factory (Create kits by name)
-│   │   ├── I18N Text Manager
-│   │   ├── Listeners (Event-driven)
-│   │   │   ├── Container
-│   │   │   │   └── Window Events (Resize, Move, etc.)
-│   │   │   ├── Context
-│   │   │   │   ├── Drawing Events
-│   │   │   │   └── Widget Events (Resize, Move, etc.)
-│   │   │   └── Input
-│   │   │       ├── Keyboard
-│   │   │       ├── Pointer
-│   │   │       │   ├── Mouse
-│   │   │       │   └── Touch Screen
-│   │   │       └── (WIP) Gamepad
-│   │   ├── Logger
-│   │   ├── Preferences (File-based)
-│   │   └── (WIP) Uri
-│   ├── Initializer SPI
-│   └── Platform (Related-infos)
-├── Audio Framework
-│   ├── Audio Player
-│   │   ├── (Android Only) 3GPP (*.3gp)
-│   │   ├── (Android Only) AAC (*.aac)
-│   │   ├── (AWT Only) AIFF (*.aif, *.aiff)
-│   │   ├── (AWT Only) AU (*.au)
-│   │   ├── (AWT Only) SND (*.snd)
-│   │   ├── FLAC (*.flac)
-│   │   ├── MIDI (*.midi, *.mid)
-│   │   ├── MP3 (*.mp3)
-│   │   ├── OGG (*.ogg)
-│   │   └── WAV (*.wav)
-│   └── (WIP) Audio Recorder
-├── Bundle Framework (Serialization⁄Deserialization)
-│   ├── Extensive Map Bundle (Map-based, XML-like)
-│   │   ├── (WIP) JSON (*.json)
-│   │   └── XML (.xml)
-│   ├── Map Bundle (Map-based, Properties-like)
-│   │   └── Properties (*.properties, *.prop)
-│   └── Sectional Map Bundle (Map-based, INI-like)
-│       └── INI (*.ini)
-└── Utilities
-    ├── CharSegment
-    ├── Collections Framework
-    ├── DiskLruCache
-    ├── Functional
-    │   ├── Callable
-    │   ├── Consumer
-    │   ├── Function
-    │   ├── Predicate
-    │   ├── Supplier
-    │   └── UnaryOperator
-    ├── Interface
-    │   ├── Copyable
-    │   ├── Disposable
-    │   ├── MutableCopyable
-    │   ├── Paintable
-    │   └── Resetable
-    ├── LruCache
-    ├── Toolkit⁄Factory
-    │   ├── Arrays
-    │   ├── Charsets
-    │   ├── Colors
-    │   ├── Files
-    │   ├── Math
-    │   ├── Objects
-    │   ├── Preconditions
-    │   ├── Streams
-    │   └── TextUtils
-    └── Tuple Framework
-```
+## TODO List
+- Port to SWT, TeaVM, GWT, JavaFX, Qt-Jambi, RoboVM, IKVM.NET.
+- [The pluggable system-independent widgets library](/widgets).
+- 2D particle library.
+- Scaffolding libraries for several kinds of games: STG, AVG, RTS, Roguelike and so on.
 
 ## Notes
-### Running with AWT/X11 backend & Java 9+
+### Running with AWT/X11 backend & Java 16+
 Add the following lines to the JVM args: 
 ```
 --add-exports java.desktop/sun.awt=ALL-UNNAMED
@@ -150,23 +91,18 @@ Add the following lines to the JVM args:
 ```
 
 ## Contributing
-The A3WT project currently maintained by only [me](https://github.com/Tianscar).  
+The Notcute project currently maintained by only [me](https://github.com/Tianscar).  
 Since I'm not a skilled programmer, the code may be badly written...  
-So! Contributions welcome! PRs welcome! If you're planning to contribute, I'm quite glad to have you!
+So contributions & PRs welcome!
 
 ## License
 [Apache-2.0](LICENSE) (c) Tianscar
 
-### A3WT currently uses some code from the following projects:
-Apache-2.0 [Android Open Source Project (AOSP)](https://source.android.com/)  
+### This project currently uses some code from the following projects:
 Apache-2.0 [Apache Harmony](https://harmony.apache.org)  
-Apache-2.0 [animated-gif-lib-for-java](https://github.com/rtyley/animated-gif-lib-for-java)  
-[Apache-2.0](https://github.com/JakeWharton/DiskLruCache/blob/master/LICENSE.txt) [DiskLruCache](http://jakewharton.github.io/DiskLruCache)  
 [MIT](https://github.com/philfrei/AudioCue-maven/blob/main/LICENSE) [AudioCue-Maven](https://github.com/philfrei/AudioCue-maven)  
-[Apache-2.0](https://github.com/javatuples/javatuples/blob/master/LICENSE.txt) [javatuples](https://github.com/javatuples/javatuples)
-### A3WT currently uses the following projects as dependencies:
-[MIT](https://github.com/koral--/android-gif-drawable/blob/dev/LICENSE) [android-gif-drawable](https://github.com/koral--/android-gif-drawable)  
-[Apache-2.0](https://ini4j.sourceforge.net/license.html) [ini4j](https://ini4j.sourceforge.net/)  
+[MIT](https://github.com/msteinbeck/sig4j/blob/master/LICENSE) [sig4j](https://github.com/msteinbeck/sig4j)
+### This project currently uses the following libraries as dependencies:
 [BSD-3-Clause](https://github.com/haraldk/TwelveMonkeys/blob/master/LICENSE.txt) [TwelveMonkeys](http://haraldk.github.io/TwelveMonkeys/)  
 [Apache-2.0](https://github.com/jnr/jnr-ffi/blob/master/LICENSE) [jnr-ffi](https://github.com/jnr/jnr-ffi)  
 LGPL-2.1 [MP3SPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/mp3spi/1.9.5.4)  

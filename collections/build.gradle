@@ -1,0 +1,4 @@
+dependencies {
+    implementation project(':commons')
+    apiElements project(':commons')
+}

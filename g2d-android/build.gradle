@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':g2d-core')
+    api project(':g2d-core')
+    implementation project(':android')
+    api project(':android')
+}

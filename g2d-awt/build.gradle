@@ -1,0 +1,8 @@
+dependencies {
+    implementation project(':g2d-core')
+    apiElements project(':g2d-core')
+    implementation project(':javase')
+    apiElements project(':javase')
+
+    implementation 'com.twelvemonkeys.imageio:imageio-tiff:3.9.3'
+}

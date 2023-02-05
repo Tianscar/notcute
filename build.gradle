@@ -1,11 +1,6 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
-    }
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    id 'com.android.library' version '7.3.1' apply false
 }
 
 subprojects {
@@ -13,9 +8,11 @@ subprojects {
     apply plugin: 'maven-publish'
 
     ext {
-        libName = 'A3WT'
-        libGroupName = 'io.github.a3wtproject'
-        libVendorName = 'The A3WT Project'
+        libName = 'Notcute'
+        libGroupName = 'io.notcute'
+        libPublishGroupName = 'io.github.notcute'
+        libDescription = 'Cross-platform direct UI Toolkit for Java. Currently supports Windows/Linux/macOS/Android.'
+        libUrl = 'https://github.com/notcute/notcute'
 
         libVersionCode = 1
         libVersionName = '0.1.0-SNAPSHOT'
@@ -23,28 +20,37 @@ subprojects {
         libSourceCompatibility = JavaVersion.VERSION_1_8
         libTargetCompatibility = JavaVersion.VERSION_1_8
 
-        libAndroidCompileSdk = 33
-        libAndroidMinSdk = 16
-        libAndroidTargetSdk = 33
+        libLicenseName = 'The Apache License, Version 2.0'
+        libLicenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        libScmConnection = 'scm:git:git@github.com/notcute/notcute.git'
+        libScmDeveloperConnection = libScmConnection
+        libScmUrl = libUrl
     }
 
-    repositories {
-        mavenCentral()
-        google()
-    }
-
+    group libGroupName
+    version libVersionCode
 }
 
-configure ([project(':core'), project(':awt')]) {
+// Java projects
+configure ([project(':core'), project(':signalslot'), project(':collections'), project('geom2d'), project('g2d-core'),
+project(':g2d-awt'), project(':ui-core'), project(':ui-awt'), project(':javase'), project(':commons'), project(':audio-core'), project(':audio-javase'),
+project(':widgets'), project(':g2d-swt'), project(':ui-swt')]) {
     apply plugin: 'java'
 
     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
     sourceCompatibility = libSourceCompatibility
     targetCompatibility = libTargetCompatibility
 
-    group = libGroupName
-    version = libVersionName
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    }
 
+    test {
+        useJUnitPlatform()
+    }
+
+    // publish
     java {
         withJavadocJar()
         withSourcesJar()
@@ -56,15 +62,6 @@ configure ([project(':core'), project(':awt')]) {
         }
     }
 
-    dependencies {
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    }
-
-    test {
-        useJUnitPlatform()
-    }
-
     publishing {
         publications {
             mavenJava(MavenPublication) {
@@ -73,13 +70,13 @@ configure ([project(':core'), project(':awt')]) {
                 version = libVersionName
                 from components.java
                 pom {
-                    name = libName
-                    description = 'Cross-platform direct UI Toolkit for Java. Currently supports Windows/Linux/macOS/Android.'
-                    url = 'https://github.com/a3wtproject/a3wt'
+                    name = libPublishGroupName
+                    description = libDescription
+                    url = libUrl
                     licenses {
                         license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            name = libLicenseName
+                            url = libLicenseUrl
                         }
                     }
                     developers {
@@ -90,9 +87,9 @@ configure ([project(':core'), project(':awt')]) {
                         }
                     }
                     scm {
-                        connection = 'scm:git:git@github.com/a3wtproject/a3wt.git'
-                        developerConnection = 'scm:git:git@github.com/a3wtproject/a3wt.git'
-                        url = 'https://github.com/a3wtproject/a3wt'
+                        connection = libScmConnection
+                        developerConnection = libScmDeveloperConnection
+                        url = libScmUrl
                     }
                 }
             }
@@ -119,5 +116,117 @@ configure ([project(':core'), project(':awt')]) {
         useInMemoryPgpKeys(signingKey, signingPassword)
         sign(publishing.publications.mavenJava)
     }
+}
 
+// Android projects
+configure ([project(':android'), project(':g2d-android'), project(':ui-android'), project(':audio-android')]) {
+    apply plugin: 'com.android.library'
+
+    ext {
+        libAndroidCompileSdk = 33
+        libAndroidMinSdk = 16
+        libAndroidTargetSdk = 33
+    }
+
+    android {
+        namespace libGroupName + '.' + project.name.replaceAll('-', '.')
+        compileSdk libAndroidCompileSdk
+
+        defaultConfig {
+            minSdk libAndroidMinSdk
+            targetSdk libAndroidTargetSdk
+
+            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+            consumerProguardFiles "consumer-rules.pro"
+
+            //multiDexEnabled true
+        }
+        buildTypes {
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            }
+        }
+        compileOptions {
+            sourceCompatibility libSourceCompatibility
+            targetCompatibility libTargetCompatibility
+
+            //coreLibraryDesugaringEnabled true
+        }
+    }
+
+    dependencies {
+        testImplementation 'junit:junit:4.13.2'
+        androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+        androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+        //coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
+    }
+
+    // publish
+    android {
+        publishing {
+            singleVariant('release') {
+                withSourcesJar()
+                withJavadocJar()
+            }
+        }
+    }
+    publishing {
+
+        publications {
+            release(MavenPublication) {
+                groupId = libGroupName
+                artifactId = rootProject.name
+                version = libVersionName
+                afterEvaluate {
+                    from components.release
+                }
+                pom {
+                    name = libPublishGroupName
+                    description = libDescription
+                    url = libUrl
+                    licenses {
+                        license {
+                            name = libLicenseName
+                            url = libLicenseUrl
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'Tianscar'
+                            name = 'Tiansword Carbonicacid'
+                            email = 'tianscar@protonmail.com'
+                        }
+                    }
+                    scm {
+                        connection = libScmConnection
+                        developerConnection = libScmDeveloperConnection
+                        url = libScmUrl
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "OSSRH"
+                if (project.version.toString().endsWith("-SNAPSHOT")) {
+                    url = "https://s01.oss.sonatype.org/content/repositories/snapshots"
+                } else {
+                    url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                }
+                credentials {
+                    username = findProperty("ossrhUsername") ?: System.getenv("OSSRH_USERNAME")
+                    password = findProperty("ossrhPassword") ?: System.getenv("OSSRH_PASSWORD")
+                }
+            }
+        }
+    }
+
+    signing {
+        def signingKey = findProperty("signingKey") ?: System.getenv("GPG_KEY")
+        def signingPassword = findProperty("signingPassword") ?:System.getenv("GPG_PASSWORD")
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications.release)
+    }
 }

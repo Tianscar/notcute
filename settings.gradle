@@ -1,6 +1,35 @@
-rootProject.name = 'a3wt'
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
 
+rootProject.name = 'notcute'
+include ':signalslot'
+include ':collections'
 include ':core'
+include ':geom2d'
+include ':g2d-core'
+include ':g2d-awt'
+include ':g2d-android'
+include ':ui-core'
+include ':ui-awt'
+include ':ui-android'
+include ':javase'
+include ':commons'
+include ':audio-core'
+include ':audio-javase'
+include ':audio-android'
 include ':android'
-include ':awt'
-
+include ':widgets'
+include ':g2d-swt'
+include ':ui-swt'

@@ -1,0 +1,8 @@
+dependencies {
+    implementation project(':ui-core')
+    apiElements project(':ui-core')
+    implementation project(':g2d-swt')
+    apiElements project(':g2d-swt')
+    implementation project(':audio-javase')
+    apiElements project(':audio-javase')
+}

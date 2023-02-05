@@ -1,0 +1,4 @@
+dependencies {
+    implementation project(':geom2d')
+    apiElements project(':geom2d')
+}

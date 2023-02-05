@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':audio-core')
+    apiElements project(':audio-core')
+    implementation project(':javase')
+    apiElements project(':javase')
+}

@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':g2d-core')
+    apiElements project(':g2d-core')
+    implementation project(':audio-core')
+    apiElements project(':audio-core')
+}
