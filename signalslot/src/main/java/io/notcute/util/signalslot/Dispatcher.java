@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.notcute.util.signalslot.Connection.Type.*;
 
@@ -25,24 +24,11 @@ import static io.notcute.util.signalslot.Connection.Type.*;
  * JavaFX thread. By default, {@link #switchContext()} calls
  * {@link #dispatch()} in the same context as {@link #run()} which is a useful
  * default in most cases.
- *
- * Finally, {@link #start()} and {@link #stop()} are convenience methods to
- * start (and stop) an arbitrary thread which executes {@link #run()} in its
- * context.
  */
-public class Dispatcher {
-
-	/**
-	 * The default {@link Dispatcher} of {@link Connection.Type#QUEUED} connected slots.
-	 */
-	private static final Dispatcher DISPATCHER = new Dispatcher("Default-Dispatcher");
-
-	static {
-		DISPATCHER.start();
-	}
+public abstract class Dispatcher {
 
 	public static Dispatcher getDefaultDispatcher() {
-		return DISPATCHER;
+		return SimpleDispatcher.getDefaultDispatcher();
 	}
 
 	/**
@@ -75,45 +61,7 @@ public class Dispatcher {
 	 */
 	private final VoidSignal1<RuntimeException> onError = new VoidSignal1<>();
 
-	/**
-	 * The thread used in {@link #start()} and {@link #stop}.
-	 */
-	private Thread workerThread = null;
-
-	/**
-	 * The worker thread name.
-	 */
-	private final String workerThreadName;
-
-	/**
-	 * This ID is used to generate thread names.
-	 */
-	private final static AtomicInteger nextSerialNumber = new AtomicInteger(0);
-	private static int serialNumber() {
-		return nextSerialNumber.getAndIncrement();
-	}
-
-	/**
-	 * Creates a new dispatcher. The associated thread specified to run as a daemon.
-	 */
-	public Dispatcher() {
-		this("Dispatcher-" + serialNumber());
-	}
-
-	/**
-	 * Creates a new dispatcher whose associated thread has the specified name.
-	 * The associated thread specified to run as a daemon.
-	 *
-	 * @param name the name of the associated thread
-	 * @throws NullPointerException if {@code name} is null
-	 */
-	public Dispatcher(final String name) throws NullPointerException {
-		workerThreadName = Objects.requireNonNull(name);
-	}
-
-	protected boolean isDispatchThread() {
-		return Thread.currentThread() == workerThread;
-	}
+	protected abstract boolean isDispatchThread();
 
 	/**
 	 * Adds the given {@link SlotActuation} to the event queue. The slot itself
@@ -194,9 +142,7 @@ public class Dispatcher {
 	 * by calling {@link #dispatch()} within the desired context. The default
 	 * implementation calls {@link #dispatch()} within the caller context.
 	 */
-	protected void switchContext() {
-		dispatch();
-	}
+	protected abstract void switchContext();
 
 	/**
 	 * This is a callback which gets executed by {@link #dispatch()} right
@@ -224,29 +170,6 @@ public class Dispatcher {
 	 */
 	public final VoidSignal1<RuntimeException> onError() {
 		return onError;
-	}
-
-	/**
-	 * Creates a new {@link Thread} which runs {@link #run()}. Does nothing if
-	 * there already is a running thread.
-	 */
-	protected final synchronized void start() {
-		if (workerThread == null) {
-			workerThread = new Thread(this::run, workerThreadName);
-			workerThread.setDaemon(true);
-			workerThread.start();
-		}
-	}
-
-	/**
-	 * Stops the current {@link Thread} created by {@link #start()}. Does
-	 * nothing if there is no running thread.
-	 */
-	protected final synchronized void stop() {
-		if (workerThread != null) {
-			workerThread.interrupt();
-			workerThread = null;
-		}
 	}
 
 	protected void run() {

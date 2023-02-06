@@ -38,6 +38,7 @@ public class AndroidGraphics implements Graphics {
 
     public void applyInfo() {
         if (isDisposed()) throw new AlreadyDisposedException();
+        canvas.setMatrix(Util.toAndroidMatrix(info.getTransform()));
         canvas.clipPath(Util.toAndroidPath(info.getClip().getPathIterator()));
         paint.setColor(info.getColor());
         paint.setStyle(Util.toAndroidPaintStyle(info.getStyle()));
@@ -55,7 +56,6 @@ public class AndroidGraphics implements Graphics {
         paint.setUnderlineText(info.isUnderlineText());
         paint.setStrikeThruText(info.isStrikeThroughText());
         paint.setDither(info.isDither());
-        canvas.setMatrix(Util.toAndroidMatrix(info.getTransform()));
     }
 
     @Override

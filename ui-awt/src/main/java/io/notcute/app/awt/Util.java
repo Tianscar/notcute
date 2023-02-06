@@ -1,5 +1,8 @@
 package io.notcute.app.awt;
 
+import io.notcute.app.FileChooser;
+
+import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.Transferable;
@@ -121,6 +124,17 @@ final class Util {
             uris[i] = files[i].toURI();
         }
         return uris;
+    }
+
+    public static int toAWTFileDialogMode(int mode) {
+        switch (mode) {
+            case FileChooser.Mode.LOAD:
+                return FileDialog.LOAD;
+            case FileChooser.Mode.SAVE:
+                return FileDialog.SAVE;
+            default:
+                throw new IllegalArgumentException("Invalid mode: " + mode);
+        }
     }
 
 }

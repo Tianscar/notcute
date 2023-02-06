@@ -160,32 +160,64 @@ public class CubicCurve implements Shape, Resetable, SwapCloneable {
         return x1;
     }
 
+    public void setX1(float x1) {
+        this.x1 = x1;
+    }
+
     public float getY1() {
         return y1;
+    }
+
+    public void setY1(float y1) {
+        this.y1 = y1;
     }
 
     public float getCtrlX1() {
         return ctrlx1;
     }
 
+    public void setCtrlX1(float ctrlx1) {
+        this.ctrlx1 = ctrlx1;
+    }
+
     public float getCtrlY1() {
         return ctrly1;
+    }
+
+    public void setCtrlY1(float ctrly1) {
+        this.ctrly1 = ctrly1;
     }
 
     public float getCtrlX2() {
         return ctrlx2;
     }
 
+    public void setCtrlX2(float ctrlx2) {
+        this.ctrlx2 = ctrlx2;
+    }
+
     public float getCtrlY2() {
         return ctrly2;
+    }
+
+    public void setCtrlY2(float ctrly2) {
+        this.ctrly2 = ctrly2;
     }
 
     public float getX2() {
         return x2;
     }
 
+    public void setX2(float x2) {
+        this.x2 = x2;
+    }
+
     public float getY2() {
         return y2;
+    }
+
+    public void setY2(float y2) {
+        this.y2 = y2;
     }
 
     public Point getP1() {

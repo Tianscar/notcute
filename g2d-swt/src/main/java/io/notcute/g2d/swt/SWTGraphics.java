@@ -80,11 +80,25 @@ public class SWTGraphics implements Graphics {
 
     @Override
     public void drawText(CharSequence text, int start, int end, AffineTransform transform) {
+        Device device = gc.getDevice();
+        Transform originalTransform = new Transform(device);
+        gc.getTransform(originalTransform);
+        AffineTransform at = Util.toNotcuteAffineTransform(originalTransform);
+        at.concatenate(transform);
+        Transform tmpTransform = Util.toSWTTransform(device, at);
+        gc.setTransform(tmpTransform);
+        Path path = new Path(device);
+        path.addString(text.subSequence(start, end).toString(), 0, 0, gc.getFont());
+        gc.drawPath(path);
+        gc.setTransform(originalTransform);
+        path.dispose();
+        if (tmpTransform != null) tmpTransform.dispose();
+        originalTransform.dispose();
     }
 
     @Override
     public void drawText(char[] text, int offset, int length, AffineTransform transform) {
-
+        drawText(new String(text, offset, length), 0, length - offset, transform);
     }
 
     @Override

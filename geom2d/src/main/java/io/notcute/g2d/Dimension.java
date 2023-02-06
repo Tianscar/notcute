@@ -56,8 +56,16 @@ public class Dimension implements Resetable, SwapCloneable {
         return width;
     }
 
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
     public float getHeight() {
         return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
     }
 
     public void setSize(float width, float height) {

@@ -1,7 +1,7 @@
 package io.notcute.app.javase;
 
 import io.notcute.app.Preferences;
-import io.notcute.util.signalslot.Connection;
+import io.notcute.util.signalslot.SimpleDispatcher;
 import io.notcute.util.signalslot.VoidSignal0;
 
 import java.io.File;
@@ -28,10 +28,15 @@ public class JavaSEPreferences implements Preferences {
     private final ReentrantLock fileLock;
     private final VoidSignal0 onApply;
 
+    private static final SimpleDispatcher DISPATCHER = new SimpleDispatcher("JavaSE-Prefs");
+    static {
+        DISPATCHER.start();
+    }
+
     public JavaSEPreferences(File file) {
         Objects.requireNonNull(file);
         onApply = new VoidSignal0();
-        onApply.connect(this::write, Connection.Type.QUEUED);
+        onApply.connect(this::write, DISPATCHER);
         this.properties = new Properties();
         this.cache = new ConcurrentHashMap<>();
         this.file = file;

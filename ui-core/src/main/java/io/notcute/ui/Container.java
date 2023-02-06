@@ -1,5 +1,6 @@
 package io.notcute.ui;
 
+import io.notcute.app.FileChooser;
 import io.notcute.g2d.Image;
 import io.notcute.util.signalslot.*;
 
@@ -41,6 +42,8 @@ public interface Container extends G2DContext {
 
         void setFullscreen(boolean fullscreen);
         boolean isFullscreen();
+
+        FileChooser getFileChooser();
 
     }
 

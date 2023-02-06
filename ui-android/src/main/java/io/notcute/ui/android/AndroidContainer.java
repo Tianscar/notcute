@@ -8,6 +8,7 @@ import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import io.notcute.app.FileChooser;
 import io.notcute.context.Context;
 import io.notcute.g2d.Image;
 import io.notcute.g2d.android.AndroidImage;
@@ -128,7 +129,7 @@ public class AndroidContainer extends Activity implements Container, View.OnLayo
 
         @Override
         public Image[] getIconImages() {
-            return iconImages;
+            return iconImages == null ? new Image[0] : iconImages;
         }
 
         @Override
@@ -278,6 +279,13 @@ public class AndroidContainer extends Activity implements Container, View.OnLayo
         @Override
         public boolean isFullscreen() {
             return false;
+        }
+
+        private static volatile AndroidFileChooser fileChooser = null;
+        @Override
+        public FileChooser getFileChooser() {
+            if (fileChooser == null) fileChooser = new AndroidFileChooser();
+            return fileChooser;
         }
 
     }

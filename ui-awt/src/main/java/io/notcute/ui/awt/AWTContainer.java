@@ -1,6 +1,9 @@
 package io.notcute.ui.awt;
 
+import io.notcute.app.FileChooser;
+import io.notcute.app.awt.AWTFileChooser;
 import io.notcute.context.Context;
+import io.notcute.context.Identifier;
 import io.notcute.g2d.Image;
 import io.notcute.input.Input;
 import io.notcute.ui.Container;
@@ -147,6 +150,7 @@ public class AWTContainer extends Frame implements Container, ComponentListener,
         private final AWTContainer container;
         public Holder(AWTContainer container) {
             this.container = Objects.requireNonNull(container);
+            AWTContext.PRODUCER.putIfAbsent(new Identifier("notcute", "fileChooser"), this::getFileChooser);
         }
 
         @Override
@@ -316,6 +320,13 @@ public class AWTContainer extends Frame implements Container, ComponentListener,
         @Override
         public boolean isFullscreen() {
             return Shared.getFullscreenWindow() == container;
+        }
+
+        private volatile AWTFileChooser fileChooser;
+        @Override
+        public FileChooser getFileChooser() {
+            if (fileChooser == null) fileChooser = new AWTFileChooser();
+            return fileChooser;
         }
 
     }

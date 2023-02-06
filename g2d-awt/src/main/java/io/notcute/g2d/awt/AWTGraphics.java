@@ -63,11 +63,11 @@ public class AWTGraphics implements Graphics {
 
     private void applyInfo() {
         if (isDisposed()) throw new AlreadyDisposedException();
-        Shape clip = info.getClip();
-        graphics2D.setClip(clip == null ? null : Util.toAWTPath2D(clip.getPathIterator()));
         AffineTransform transform = info.getTransform();
         if (transform == null) graphics2D.getTransform().setToIdentity();
         else graphics2D.setTransform(Util.toAWTTransform(transform));
+        Shape clip = info.getClip();
+        graphics2D.setClip(clip == null ? null : Util.toAWTPath2D(clip.getPathIterator()));
         graphics2D.setColor(new Color(info.getColor(), true));
         graphics2D.setStroke(
                 new BasicStroke(

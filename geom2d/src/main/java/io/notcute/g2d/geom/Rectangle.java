@@ -79,8 +79,18 @@ public class Rectangle implements RectangularShape, Resetable, SwapCloneable {
     }
 
     @Override
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    @Override
     public float getY() {
         return y;
+    }
+
+    @Override
+    public void setY(float y) {
+        this.y = y;
     }
 
     @Override
@@ -89,8 +99,18 @@ public class Rectangle implements RectangularShape, Resetable, SwapCloneable {
     }
 
     @Override
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    @Override
     public float getHeight() {
         return height;
+    }
+
+    @Override
+    public void setHeight(float height) {
+        this.height = height;
     }
 
     @Override
