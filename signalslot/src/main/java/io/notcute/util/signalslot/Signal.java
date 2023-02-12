@@ -34,7 +34,7 @@ public abstract class Signal<R> {
 	 * The set of unique slots.
 	 * @see Connection.Type#UNIQUE
 	 */
-	private final Set<AbstractDynamicSlot> uniques = new ConcurrentHashSet<>();
+	private final Set<Slot<R>> uniques = new ConcurrentHashSet<>();
 
 	/**
 	 * Enables this signal.
@@ -122,11 +122,8 @@ public abstract class Signal<R> {
 		final boolean singleShot = (type & SINGLE_SHOT) == SINGLE_SHOT;
 		type = type << 29 >> 29;
 		boolean broken = false;
-		if (slot instanceof AbstractDynamicSlot) {
-			AbstractDynamicSlot dynamicSlot = (AbstractDynamicSlot) slot;
-			if (uniques.contains(dynamicSlot)) broken = true;
-			else if (unique) uniques.add(dynamicSlot);
-		}
+		if (uniques.contains(slot)) broken = true;
+		else if (unique) uniques.add(slot);
 		final Connection conn;
 		switch (type) {
 			case AUTO:
@@ -145,6 +142,7 @@ public abstract class Signal<R> {
 		if (conn == null) return false;
 		if (!connections.contains(conn)) return false;
 		conn.setBroken(true);
+		connections.remove(conn);
 		return true;
 	}
 
@@ -153,6 +151,7 @@ public abstract class Signal<R> {
 		for (final Connection connection : connections) {
 			if (connection.slot == slot) {
 				connection.setBroken(true);
+				connections.remove(connection);
 				return true;
 			}
 		}
@@ -164,6 +163,7 @@ public abstract class Signal<R> {
 		for (final Connection connection : connections) {
 			if (connection.dispatcher == dispatcher) {
 				connection.setBroken(true);
+				connections.remove(connection);
 				return true;
 			}
 		}
@@ -175,6 +175,7 @@ public abstract class Signal<R> {
 		for (final Connection connection : connections) {
 			if (connection.dispatcher == dispatcher && connection.slot == slot) {
 				connection.setBroken(true);
+				connections.remove(connection);
 				return true;
 			}
 		}
@@ -184,6 +185,7 @@ public abstract class Signal<R> {
 	public boolean disconnect() {
 		for (final Connection connection : connections) {
 			connection.setBroken(true);
+			connections.remove(connection);
 			return true;
 		}
 		return false;
@@ -199,6 +201,7 @@ public abstract class Signal<R> {
 			R result = null;
 			for (final Connection connection : connections) {
 				if (!connection.isBroken()) result = connection.dispatcher.actuate(new SlotActuation(connection, args));
+				else connections.remove(connection);
 			}
 			return result;
 		}
@@ -265,7 +268,10 @@ public abstract class Signal<R> {
 		 */
 		void actuate() {
 			result.set(Signal.this.actuate(connection.slot, arguments));
-			if (connection.singleShot) connection.setBroken(true);
+			if (connection.singleShot) {
+				connection.setBroken(true);
+				connections.remove(connection);
+			}
 		}
 
 		/**

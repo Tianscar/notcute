@@ -1,7 +1,7 @@
 package io.notcute.util.signalslot;
 
 /**
- * A slot with specific object, method name and unlimited argument types.
+ * A void slot with specific object, method name and unlimited argument types.
  */
 public class DynamicVoidSlot extends AbstractDynamicSlot implements VoidSlot {
 

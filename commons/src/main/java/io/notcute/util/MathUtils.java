@@ -117,11 +117,11 @@ public final class MathUtils {
         return value;
     }
 
-    public static int clampInt(final long value) {
+    public static int clamp(final long value) {
         return (int) clamp(value, Integer.MIN_VALUE, Integer.MAX_VALUE);
     }
 
-    public static float clampFloat(final double value) {
+    public static float clamp(final double value) {
         return (float) clamp(value, Float.MIN_VALUE, Float.MAX_VALUE);
     }
     

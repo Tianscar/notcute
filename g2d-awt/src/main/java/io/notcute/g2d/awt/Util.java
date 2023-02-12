@@ -97,7 +97,7 @@ final class Util {
     }
 
     public static int toNotcuteFontStyle(int style) {
-        if (style == 0) return NORMAL;
+        if (style == Font.PLAIN) return NORMAL;
         boolean bold = false;
         boolean italic = false;
         if ((style & Font.BOLD) != 0) bold = true;
@@ -210,6 +210,7 @@ final class Util {
     
     public static Path2D toAWTPath2D(io.notcute.g2d.geom.PathIterator iterator) {
         Path2D.Float path = new Path2D.Float();
+        path.setWindingRule(toAWTWindingRule(iterator.getWindingRule()));
         int type;
         float[] tmp = new float[6];
         while (iterator.hasNext()) {

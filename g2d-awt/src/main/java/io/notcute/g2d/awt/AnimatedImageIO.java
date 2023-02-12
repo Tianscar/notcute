@@ -3,7 +3,6 @@ package io.notcute.g2d.awt;
 import io.notcute.g2d.AnimatedImage;
 import io.notcute.util.MathUtils;
 
-import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.io.File;

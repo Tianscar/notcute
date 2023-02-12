@@ -2,7 +2,6 @@ package io.notcute.g2d.swt;
 
 import io.notcute.g2d.Graphics;
 import io.notcute.util.AlreadyDisposedException;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.ImageData;
 
 import java.util.Objects;
@@ -90,15 +89,7 @@ public class SWTImage implements io.notcute.g2d.Image {
     @Override
     public int getType() {
         if (isDisposed()) throw new AlreadyDisposedException();
-        switch (imageData.depth) {
-            case 32:
-                return Type.ARGB_8888;
-            case 24:
-                return Type.RGB_565;
-            default:
-                SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
-                throw new RuntimeException(); /* Can't reach */
-        }
+        return Util.toNotcuteImageType(imageData.depth);
     }
 
 }

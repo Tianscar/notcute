@@ -438,6 +438,7 @@ public interface Graphics extends Disposable {
     default void setInfo(Info info) {
         info.to(getInfo());
     }
+    void applyInfo();
 
     void save();
     void restore();

@@ -41,8 +41,6 @@ public class AWTGraphics implements Graphics {
         DEFAULT_HINTS.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
     }
 
-    private final RenderingHints hints;
-
     public AWTGraphics(BufferedImage bufferedImage) {
         this(bufferedImage.createGraphics(), bufferedImage.getWidth(), bufferedImage.getHeight());
     }
@@ -53,7 +51,7 @@ public class AWTGraphics implements Graphics {
         this.height = height;
         info = new Info();
         cacheInfo = new Info();
-        hints = new RenderingHints(null);
+        applyInfo();
     }
 
     public Graphics2D getGraphics2D() {
@@ -61,7 +59,8 @@ public class AWTGraphics implements Graphics {
         return graphics2D;
     }
 
-    private void applyInfo() {
+    @Override
+    public void applyInfo() {
         if (isDisposed()) throw new AlreadyDisposedException();
         AffineTransform transform = info.getTransform();
         if (transform == null) graphics2D.getTransform().setToIdentity();
@@ -80,7 +79,7 @@ public class AWTGraphics implements Graphics {
             graphics2D.setFont(font.deriveFont(info.getTextSize()));
             info.setFont(new AWTFont(graphics2D.getFont()));
         }
-        hints.clear();
+        RenderingHints hints = new RenderingHints(null);
         hints.putAll(DEFAULT_HINTS);
         hints.put(RenderingHints.KEY_ANTIALIASING,
                 info.isAntiAlias() ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -109,19 +108,19 @@ public class AWTGraphics implements Graphics {
 
     @Override
     public void drawColor() {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         graphics2D.fillRect(0, 0, width, height);
     }
 
     @Override
     public void drawImage(Image image, AffineTransform transform) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         graphics2D.drawImage(((AWTImage)image).getBufferedImage(), Util.toAWTTransform(transform), null);
     }
 
     @Override
     public void drawPoint(float x, float y) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         graphics2D.draw(new Line2D.Float(x, y, x, y));
     }
 
@@ -138,7 +137,7 @@ public class AWTGraphics implements Graphics {
 
     @Override
     public void drawPathIterator(PathIterator iterator) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         draw(Util.toAWTPath2D(iterator));
     }
 
@@ -156,32 +155,32 @@ public class AWTGraphics implements Graphics {
 
     @Override
     public void drawText(CharSequence text, int start, int end, AffineTransform transform) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         graphics2D.drawString(getAttributedCharacterIterator(text.toString(), start, end, transform), 0, 0);
     }
 
     @Override
     public void drawText(char[] text, int offset, int length, AffineTransform transform) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         graphics2D.drawString(getAttributedCharacterIterator(new String(text, offset, length), 0, length, transform), 0, 0);
     }
 
     @Override
     public float measureText(CharSequence text, int start, int end) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         return (float) graphics2D.getFont().getStringBounds(text.toString(), start, end, graphics2D.getFontRenderContext()).getWidth();
     }
 
     @Override
     public float measureText(char[] text, int offset, int length) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         return (float) graphics2D.getFont().getStringBounds(text, offset, offset + length, graphics2D.getFontRenderContext()).getWidth();
     }
 
     @Override
     public void getFontMetrics(Font.Metrics metrics) {
         Objects.requireNonNull(metrics);
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         LineMetrics lineMetrics = graphics2D.getFontMetrics().getLineMetrics("", graphics2D);
         metrics.setMetrics(0, lineMetrics.getAscent(),
                 lineMetrics.getDescent(), lineMetrics.getLeading(),
@@ -191,7 +190,7 @@ public class AWTGraphics implements Graphics {
     @Override
     public void getTextBounds(CharSequence text, int start, int end, Rectangle bounds) {
         Objects.requireNonNull(bounds);
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         Rectangle2D.Float stringBounds = Util.floatRectangle2D(graphics2D.getFont().getStringBounds(text.toString(), start, end,
                     graphics2D.getFontRenderContext()));
         bounds.setRect(stringBounds.x, stringBounds.y, stringBounds.width, stringBounds.height);
@@ -200,7 +199,7 @@ public class AWTGraphics implements Graphics {
     @Override
     public void getTextBounds(char[] text, int offset, int length, Rectangle bounds) {
         Objects.requireNonNull(bounds);
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         Rectangle2D.Float stringBounds = Util.floatRectangle2D(graphics2D.getFont().getStringBounds(text, offset, offset + length,
                 graphics2D.getFontRenderContext()));
         bounds.setRect(stringBounds.x, stringBounds.y, stringBounds.width, stringBounds.height);

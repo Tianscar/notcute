@@ -34,8 +34,10 @@ public class AndroidGraphics implements Graphics {
         info = new Info();
         cacheInfo = new Info();
         paint = new Paint();
+        applyInfo();
     }
 
+    @Override
     public void applyInfo() {
         if (isDisposed()) throw new AlreadyDisposedException();
         canvas.setMatrix(Util.toAndroidMatrix(info.getTransform()));
@@ -83,7 +85,7 @@ public class AndroidGraphics implements Graphics {
 
     @Override
     public void drawColor() {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
         canvas.drawColor(paint.getColor());
         canvas.restore();
@@ -91,7 +93,7 @@ public class AndroidGraphics implements Graphics {
 
     @Override
     public void drawImage(Image image, AffineTransform transform) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
         canvas.drawBitmap(((AndroidImage) image).getBitmap(), Util.toAndroidMatrix(transform), paint);
         canvas.restore();
@@ -99,7 +101,7 @@ public class AndroidGraphics implements Graphics {
 
     @Override
     public void drawPoint(float x, float y) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
         canvas.drawPoint(x, y, paint);
         canvas.restore();
@@ -107,7 +109,7 @@ public class AndroidGraphics implements Graphics {
 
     @Override
     public void drawPathIterator(PathIterator iterator) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
         canvas.drawPath(Util.toAndroidPath(iterator), paint);
         canvas.restore();
@@ -115,7 +117,7 @@ public class AndroidGraphics implements Graphics {
 
     @Override
     public void drawText(CharSequence text, int start, int end, AffineTransform transform) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
         canvas.concat(Util.toAndroidMatrix(transform));
         canvas.drawText(text, start, end, 0, 0, paint);
@@ -124,7 +126,7 @@ public class AndroidGraphics implements Graphics {
 
     @Override
     public void drawText(char[] text, int offset, int length, AffineTransform transform) {
-        applyInfo();
+        if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
         canvas.setMatrix(Util.toAndroidMatrix(transform));
         canvas.drawText(text, offset, length, 0, 0, paint);

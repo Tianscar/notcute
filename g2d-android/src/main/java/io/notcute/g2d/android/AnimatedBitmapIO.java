@@ -58,7 +58,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(InputStream stream) throws IOException {
-        return read(stream, (Bitmap.Config) null);
+        return read(stream, null);
     }
 
     public static AnimatedImage read(File file, Bitmap.Config config) throws IOException {
@@ -71,7 +71,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(File file) throws IOException {
-        return read(file, (Bitmap.Config) null);
+        return read(file, null);
     }
 
     public static AnimatedImage read(ParcelFileDescriptor descriptor, Bitmap.Config config) throws IOException {
@@ -84,7 +84,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(ParcelFileDescriptor descriptor) throws IOException {
-        return read(descriptor, (Bitmap.Config) null);
+        return read(descriptor, null);
     }
 
     public static AnimatedImage read(String pathname, Bitmap.Config config) throws IOException {
@@ -92,7 +92,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(String pathname) throws IOException {
-        return read(pathname, (Bitmap.Config) null);
+        return read(pathname, null);
     }
 
     public static AnimatedImage read(byte[] data, Bitmap.Config config) {
@@ -100,7 +100,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(byte[] data) {
-        return read(data, (Bitmap.Config) null);
+        return read(data, null);
     }
 
     public static AnimatedImage read(byte[] data, int offset, int length, Bitmap.Config config) {
@@ -113,7 +113,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(byte[] data, int offset, int length) {
-        return read(data, offset, length, (Bitmap.Config) null);
+        return read(data, offset, length, null);
     }
 
     public static AnimatedImage read(AssetManager assets, String asset, Bitmap.Config config) throws IOException {
@@ -126,7 +126,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(AssetManager assets, String asset) throws IOException {
-        return read(assets, asset, (Bitmap.Config) null);
+        return read(assets, asset, null);
     }
 
     @SuppressLint("ResourceType")
@@ -140,7 +140,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(Resources res, int id) throws IOException {
-        return read(res, id, (Bitmap.Config) null);
+        return read(res, id, null);
     }
 
     public static AnimatedImage read(ContentResolver resolver, Uri uri, Bitmap.Config config) throws IOException {
@@ -153,7 +153,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(ContentResolver resolver, Uri uri) throws IOException {
-        return read(resolver, uri, (Bitmap.Config) null);
+        return read(resolver, uri, null);
     }
 
     public static AnimatedImage read(URI uri, Bitmap.Config config) throws IOException {
@@ -166,7 +166,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(URI uri) throws IOException {
-        return read(uri, (Bitmap.Config) null);
+        return read(uri, null);
     }
 
     public static AnimatedImage read(URL url, Bitmap.Config config) throws IOException {
@@ -179,7 +179,7 @@ public final class AnimatedBitmapIO {
     }
 
     public static AnimatedImage read(URL url) throws IOException {
-        return read(url, (Bitmap.Config) null);
+        return read(url, null);
     }
 
     public static boolean write(File output, AnimatedImage image, String formatName, int quality) throws IOException {

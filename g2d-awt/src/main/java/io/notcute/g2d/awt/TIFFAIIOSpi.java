@@ -4,7 +4,6 @@ import com.twelvemonkeys.imageio.metadata.tiff.TIFF;
 import io.notcute.g2d.AnimatedImage;
 import io.notcute.g2d.Image;
 
-import javax.imageio.ImageIO;
 import javax.imageio.*;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
@@ -20,8 +19,8 @@ public final class TIFFAIIOSpi implements AIIOServiceProvider {
 
     private static final String NATIVE_FORMAT_NAME = "com_sun_media_imageio_plugins_tiff_image_1.0";
 
-    private static final String[] READER_FORMAT_NAMES = new String[]{"tif", "tiff", "bigtiff"};
-    private static final String[] WRITER_FORMAT_NAMES = new String[]{"tif", "tiff", "bigtiff"};
+    private static final String[] READER_FORMAT_NAMES = new String[] { "tif", "tiff", "bigtiff" };
+    private static final String[] WRITER_FORMAT_NAMES = new String[] { "tif", "tiff", "bigtiff" };
 
     @Override
     public AnimatedImage read(ImageInputStream stream) throws IOException {
@@ -140,7 +139,7 @@ public final class TIFFAIIOSpi implements AIIOServiceProvider {
     }
 
     private static ImageReader getTiffImageReader() {
-        Iterator<ImageReader> it = javax.imageio.ImageIO.getImageReadersByFormatName("tif");
+        Iterator<ImageReader> it = ImageIO.getImageReadersByFormatName("tif");
         if (it.hasNext()) return it.next();
         it = ImageIO.getImageReadersByFormatName("bigtiff");
         if (it.hasNext()) return it.next();

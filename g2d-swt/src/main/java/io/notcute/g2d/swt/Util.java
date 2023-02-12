@@ -1,18 +1,19 @@
 package io.notcute.g2d.swt;
 
 import io.notcute.g2d.AffineTransform;
+import io.notcute.g2d.Graphics;
+import io.notcute.g2d.Image;
 import io.notcute.g2d.geom.PathIterator;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
-import org.eclipse.swt.graphics.Device;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.Path;
-import org.eclipse.swt.graphics.Transform;
+import org.eclipse.swt.graphics.*;
 
+import java.awt.Font;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 import static io.notcute.g2d.Font.Style.*;
-import static io.notcute.g2d.Font.Style.BOLD_ITALIC;
 import static io.notcute.g2d.geom.PathIterator.SegmentType.*;
 
 final class Util {
@@ -180,6 +181,136 @@ final class Util {
                 SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
                 break;
         }
+    }
+
+    public static int toSWTGCFillRule(int windingRule) {
+        switch (windingRule) {
+            case PathIterator.WindingRule.EVEN_ODD:
+                return SWT.FILL_EVEN_ODD;
+            case PathIterator.WindingRule.NON_ZERO:
+                return SWT.FILL_WINDING;
+            default:
+                throw new IllegalArgumentException("Invalid winding rule: " + windingRule);
+        }
+    }
+
+    public static int toSWTLineCap(int strokeCap) {
+        switch (strokeCap) {
+            case Graphics.Cap.BUTT:
+                return SWT.CAP_FLAT;
+            case Graphics.Cap.ROUND:
+                return SWT.CAP_ROUND;
+            case Graphics.Cap.SQUARE:
+                return SWT.CAP_SQUARE;
+            default:
+                throw new IllegalArgumentException("Invalid stroke cap: " + strokeCap);
+        }
+    }
+
+    public static int toSWTLineJoin(int strokeJoin) {
+        switch (strokeJoin) {
+            case Graphics.Join.MITER:
+                return SWT.JOIN_MITER;
+            case Graphics.Join.ROUND:
+                return SWT.JOIN_ROUND;
+            case Graphics.Join.BEVEL:
+                return SWT.JOIN_BEVEL;
+            default:
+                throw new IllegalArgumentException("Invalid stroke join: " + strokeJoin);
+        }
+    }
+
+    public static int toSWTImageDepth(int type) {
+        switch (type) {
+            case Image.Type.ARGB_8888:
+                return 32;
+            case Image.Type.RGB_565:
+                return 24;
+            default:
+                throw new IllegalArgumentException("Invalid type: " + type);
+        }
+    }
+
+    public static int toNotcuteImageType(int depth) {
+        switch (depth) {
+            case 32:
+                return Image.Type.ARGB_8888;
+            case 24:
+                return Image.Type.RGB_565;
+            default:
+                SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
+                throw new RuntimeException(); /* Can't reach */
+        }
+    }
+
+    public static ImageData getImageData(Device device, ImageData imageData, int depth) {
+        if (device == null || imageData == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        switch (depth) {
+            case 32:
+            case 24:
+            case 16:
+            case 8:
+            case 4:
+            case 2:
+            case 1:
+                break;
+            default:
+                SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
+                break;
+        }
+        if (imageData.depth == depth) return imageData;
+        ImageData resultData = new ImageData(imageData.width, imageData.height, depth, imageData.palette);
+        org.eclipse.swt.graphics.Image resultImage = new org.eclipse.swt.graphics.Image(device, resultData); // resultImage ALLOC
+        GC resultGC = new GC(resultImage); // resultGC ALLOC
+        org.eclipse.swt.graphics.Image tmpImage = new org.eclipse.swt.graphics.Image(device, imageData); // tmpImage ALLOC
+        resultGC.drawImage(tmpImage, 0, 0);
+        resultData = resultImage.getImageData();
+        resultImage.dispose(); // resultImage FREE
+        resultGC.dispose(); // resultGC FREE
+        tmpImage.dispose(); // tmpImage FREE
+        resultData.x = imageData.x;
+        resultData.y = imageData.y;
+        resultData.disposalMethod = imageData.disposalMethod;
+        resultData.delayTime = imageData.delayTime;
+        resultData.transparentPixel = imageData.transparentPixel;
+        return resultData;
+    }
+
+    public static java.awt.Font readFont(File input) throws IOException {
+        Objects.requireNonNull(input);
+        java.awt.Font font = null;
+        try {
+            font = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, input);
+        } catch (FontFormatException e) {
+            try {
+                font = java.awt.Font.createFont(Font.TYPE1_FONT, input);
+            } catch (FontFormatException ignored) {
+            }
+        }
+        return font;
+    }
+
+    public static int toSWTFontStyle(int style) {
+        switch (style) {
+            case NORMAL:
+                return SWT.NORMAL;
+            case BOLD:
+                return SWT.BOLD;
+            case ITALIC:
+                return SWT.ITALIC;
+            case BOLD_ITALIC:
+                return SWT.BOLD | SWT.ITALIC;
+            default:
+                throw new IllegalArgumentException("Invalid font style: " + style);
+        }
+    }
+
+    public static int fromAWTtoSWTFontStyle(int style) {
+        int result = SWT.NORMAL;
+        if (style == Font.PLAIN) return result;
+        if ((style & Font.BOLD) != 0) result |= SWT.BOLD;
+        if ((style & Font.ITALIC) != 0) result |= SWT.ITALIC;
+        return result;
     }
 
 }

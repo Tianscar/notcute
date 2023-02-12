@@ -18,8 +18,8 @@ public final class GIFAIIOSpi implements AIIOServiceProvider {
 
     private static final String NATIVE_FORMAT_NAME = "javax_imageio_gif_image_1.0";
 
-    private static final String[] READER_FORMAT_NAMES = new String[]{"gif"};
-    private static final String[] WRITER_FORMAT_NAMES = new String[]{"gif"};
+    private static final String[] READER_FORMAT_NAMES = new String[] { "gif" };
+    private static final String[] WRITER_FORMAT_NAMES = new String[] { "gif" };
 
     @Override
     public AnimatedImage read(ImageInputStream stream) throws IOException {
@@ -146,7 +146,7 @@ public final class GIFAIIOSpi implements AIIOServiceProvider {
             else if (name.equals("GraphicControlExtension")) {
                 node.setAttribute("disposalMethod","restoreToBackgroundColor");
                 node.setAttribute("delayTime",
-                        Integer.toString(MathUtils.clampInt(frame.getDuration() / 10L)));
+                        Integer.toString(MathUtils.clamp(frame.getDuration() / 10L)));
             }
             node = (IIOMetadataNode) node.getNextSibling();
         }
