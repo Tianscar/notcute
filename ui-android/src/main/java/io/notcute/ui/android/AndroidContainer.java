@@ -9,6 +9,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import io.notcute.app.FileChooser;
+import io.notcute.app.android.AndroidFileChooser;
 import io.notcute.context.Context;
 import io.notcute.g2d.Image;
 import io.notcute.g2d.android.AndroidImage;

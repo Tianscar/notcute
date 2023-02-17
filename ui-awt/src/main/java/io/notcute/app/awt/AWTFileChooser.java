@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -157,7 +158,9 @@ public class AWTFileChooser implements FileChooser {
             Field peer = Component.class.getDeclaredField("peer");
             peer.setAccessible(true);
             return (long) Class.forName("sun.awt.X11.XBaseWindow").getDeclaredMethod("getWindow").invoke(peer.get(component));
-        } catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | NoSuchMethodException ignored) {
+        }
+        catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
+                 InaccessibleObjectException ignored) {
             return 0L;
         }
     }

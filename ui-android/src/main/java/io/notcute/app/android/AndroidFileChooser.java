@@ -1,4 +1,4 @@
-package io.notcute.ui.android;
+package io.notcute.app.android;
 
 import io.notcute.app.FileChooser;
 import io.notcute.ui.Container;

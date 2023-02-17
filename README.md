@@ -91,6 +91,10 @@ Add the following lines to the JVM args:
 --add-exports java.desktop/sun.awt=ALL-UNNAMED
 --add-exports java.desktop/sun.awt.X11=ALL-UNNAMED
 ```
+### Running on KDE, with AWT/X11 backend & Java 16+
+```
+--add-opens java.desktop/java.awt=ALL-UNNAMED
+```
 
 ## Contributing
 The Notcute project currently maintained by only [me](https://github.com/Tianscar).  
