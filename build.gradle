@@ -8,38 +8,57 @@ subprojects {
     apply plugin: 'maven-publish'
 
     ext {
-        libName = 'Notcute'
-        libGroupName = 'io.notcute'
-        libPublishGroupName = 'io.github.notcute'
-        libDescription = 'Cross-platform direct UI Toolkit for Java. Currently supports Windows/Linux/macOS/Android.'
-        libUrl = 'https://github.com/notcute/notcute'
+        libraryName = 'Notcute'
+        libraryGroupName = 'io.notcute'
+        libraryPublishGroupName = 'io.github.notcute'
+        libraryDescription = 'Cross-platform direct UI Toolkit for Java. Currently supports Windows/Linux/macOS/Android.'
+        libraryUrl = 'https://github.com/notcute/notcute'
 
-        libVersionCode = 1
-        libVersionName = '0.1.0-SNAPSHOT'
+        libraryVersionCode = 1
+        libraryVersionName = '0.1.0-SNAPSHOT'
 
-        libSourceCompatibility = JavaVersion.VERSION_1_8
-        libTargetCompatibility = JavaVersion.VERSION_1_8
+        libraryCoreSourceCompatibility = JavaVersion.VERSION_1_8
+        libraryCoreTargetCompatibility = JavaVersion.VERSION_1_8
 
-        libLicenseName = 'The Apache License, Version 2.0'
-        libLicenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-        libScmConnection = 'scm:git:git@github.com/notcute/notcute.git'
-        libScmDeveloperConnection = libScmConnection
-        libScmUrl = libUrl
+        libraryLicenseName = 'The Apache License, Version 2.0'
+        libraryLicenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+        libraryScmConnection = 'scm:git:git@github.com/notcute/notcute.git'
+        libraryScmDeveloperConnection = libraryScmConnection
+        libraryScmUrl = libraryUrl
+
+        libraryAndroidCompileSdk = 33
+        libraryAndroidMinSdk = 16
+        libraryAndroidTargetSdk = 33
+        libraryAndroidSourceCompatibility = JavaVersion.VERSION_1_8
+        libraryAndroidTargetCompatibility = JavaVersion.VERSION_1_8
+
+        libraryJavaSESourceCompatibility = JavaVersion.VERSION_11
+        libraryJavaSETargetCompatibility = JavaVersion.VERSION_11
     }
 
-    group libGroupName
-    version libVersionCode
+    group libraryGroupName
+    version libraryVersionCode
+}
+
+configure ([project(':core'), project(':signalslot'), project(':collections'), project('geom2d'), project('g2d-core'),
+            project(':ui-core'), project(':commons'), project(':audio-core'), project(':widgets')]) {
+    apply plugin: 'java-library'
+    sourceCompatibility = libraryCoreSourceCompatibility
+    targetCompatibility = libraryCoreTargetCompatibility
+}
+
+configure ([project(':g2d-awt'), project(':ui-awt'), project(':javase'), project(':audio-javase'), project(':g2d-swt'), project(':ui-swt')]) {
+    apply plugin: 'java-library'
+    sourceCompatibility = libraryJavaSESourceCompatibility
+    targetCompatibility = libraryJavaSETargetCompatibility
 }
 
 // Java projects
 configure ([project(':core'), project(':signalslot'), project(':collections'), project('geom2d'), project('g2d-core'),
 project(':g2d-awt'), project(':ui-core'), project(':ui-awt'), project(':javase'), project(':commons'), project(':audio-core'), project(':audio-javase'),
 project(':widgets'), project(':g2d-swt'), project(':ui-swt')]) {
-    apply plugin: 'java'
 
     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-    sourceCompatibility = libSourceCompatibility
-    targetCompatibility = libTargetCompatibility
 
     dependencies {
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
@@ -65,18 +84,18 @@ project(':widgets'), project(':g2d-swt'), project(':ui-swt')]) {
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                groupId = libGroupName
+                groupId = libraryGroupName
                 artifactId = "${rootProject.name}-${project.name}"
-                version = libVersionName
+                version = libraryVersionName
                 from components.java
                 pom {
-                    name = libPublishGroupName
-                    description = libDescription
-                    url = libUrl
+                    name = libraryPublishGroupName
+                    description = libraryDescription
+                    url = libraryUrl
                     licenses {
                         license {
-                            name = libLicenseName
-                            url = libLicenseUrl
+                            name = libraryLicenseName
+                            url = libraryLicenseUrl
                         }
                     }
                     developers {
@@ -87,9 +106,9 @@ project(':widgets'), project(':g2d-swt'), project(':ui-swt')]) {
                         }
                     }
                     scm {
-                        connection = libScmConnection
-                        developerConnection = libScmDeveloperConnection
-                        url = libScmUrl
+                        connection = libraryScmConnection
+                        developerConnection = libraryScmDeveloperConnection
+                        url = libraryScmUrl
                     }
                 }
             }
@@ -122,19 +141,13 @@ project(':widgets'), project(':g2d-swt'), project(':ui-swt')]) {
 configure ([project(':android'), project(':g2d-android'), project(':ui-android'), project(':audio-android')]) {
     apply plugin: 'com.android.library'
 
-    ext {
-        libAndroidCompileSdk = 33
-        libAndroidMinSdk = 16
-        libAndroidTargetSdk = 33
-    }
-
     android {
-        namespace libGroupName + '.' + project.name.replaceAll('-', '.')
-        compileSdk libAndroidCompileSdk
+        namespace libraryGroupName + '.' + project.name.replaceAll('-', '.')
+        compileSdk libraryAndroidCompileSdk
 
         defaultConfig {
-            minSdk libAndroidMinSdk
-            targetSdk libAndroidTargetSdk
+            minSdk libraryAndroidMinSdk
+            targetSdk libraryAndroidTargetSdk
 
             testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
             consumerProguardFiles "consumer-rules.pro"
@@ -148,8 +161,8 @@ configure ([project(':android'), project(':g2d-android'), project(':ui-android')
             }
         }
         compileOptions {
-            sourceCompatibility libSourceCompatibility
-            targetCompatibility libTargetCompatibility
+            sourceCompatibility libraryAndroidSourceCompatibility
+            targetCompatibility libraryAndroidTargetCompatibility
 
             //coreLibraryDesugaringEnabled true
         }
@@ -176,20 +189,20 @@ configure ([project(':android'), project(':g2d-android'), project(':ui-android')
 
         publications {
             release(MavenPublication) {
-                groupId = libGroupName
+                groupId = libraryGroupName
                 artifactId = rootProject.name
-                version = libVersionName
+                version = libraryVersionName
                 afterEvaluate {
                     from components.release
                 }
                 pom {
-                    name = libPublishGroupName
-                    description = libDescription
-                    url = libUrl
+                    name = libraryPublishGroupName
+                    description = libraryDescription
+                    url = libraryUrl
                     licenses {
                         license {
-                            name = libLicenseName
-                            url = libLicenseUrl
+                            name = libraryLicenseName
+                            url = libraryLicenseUrl
                         }
                     }
                     developers {
@@ -200,9 +213,9 @@ configure ([project(':android'), project(':g2d-android'), project(':ui-android')
                         }
                     }
                     scm {
-                        connection = libScmConnection
-                        developerConnection = libScmDeveloperConnection
-                        url = libScmUrl
+                        connection = libraryScmConnection
+                        developerConnection = libraryScmDeveloperConnection
+                        url = libraryScmUrl
                     }
                 }
             }

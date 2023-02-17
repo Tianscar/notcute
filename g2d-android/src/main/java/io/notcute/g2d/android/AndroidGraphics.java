@@ -34,11 +34,11 @@ public class AndroidGraphics implements Graphics {
         info = new Info();
         cacheInfo = new Info();
         paint = new Paint();
-        applyInfo();
+        apply();
     }
 
     @Override
-    public void applyInfo() {
+    public void apply() {
         if (isDisposed()) throw new AlreadyDisposedException();
         canvas.setMatrix(Util.toAndroidMatrix(info.getTransform()));
         canvas.clipPath(Util.toAndroidPath(info.getClip().getPathIterator()));

@@ -3,7 +3,7 @@ package io.notcute.ui.widgets;
 import io.notcute.g2d.AffineTransform;
 import io.notcute.g2d.Graphics;
 import io.notcute.ui.G2DContext;
-import io.notcute.util.Color;
+import io.notcute.g2d.Color;
 
 public class TextWidget extends Widget {
 
@@ -55,9 +55,11 @@ public class TextWidget extends Widget {
         if (text != null) {
             graphics.save();
             Graphics.Info info = graphics.getInfo();
+            info.reset();
             info.setColor(textColor);
             info.setStyle(Graphics.Style.FILL);
             info.setTextSize(textSize);
+            graphics.apply();
             graphics.drawText(text, 0, text.length(), textTransform);
             graphics.restore();
         }

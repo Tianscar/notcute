@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import io.notcute.app.Assets;
 import io.notcute.app.android.AndroidAssets;
-import io.notcute.g2d.AnimatedImage;
+import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Font;
 import io.notcute.g2d.GraphicsKit;
 import io.notcute.g2d.Image;
@@ -14,9 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 public class AndroidGraphicsKit implements GraphicsKit {
 
@@ -28,7 +26,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     @Override
     public Image readImage(File input, int type) {
         try {
-            AnimatedImage framedImage = readAnimatedImage(input, type);
+            MultiFrameImage framedImage = readMultiFrameImage(input, type);
             if (framedImage != null) return framedImage;
             Bitmap bitmap = BitmapIO.read(input, Util.toAndroidBitmapConfig(type));
             if (bitmap == null) return null;
@@ -41,7 +39,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     @Override
     public Image readImage(InputStream input, int type) {
         try {
-            AnimatedImage framedImage = readAnimatedImage(input, type);
+            MultiFrameImage framedImage = readMultiFrameImage(input, type);
             if (framedImage != null) return framedImage;
             Bitmap bitmap = BitmapIO.read(input, Util.toAndroidBitmapConfig(type));
             if (bitmap == null) return null;
@@ -54,7 +52,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     @Override
     public Image readImage(URL input, int type) {
         try {
-            AnimatedImage framedImage = readAnimatedImage(input, type);
+            MultiFrameImage framedImage = readMultiFrameImage(input, type);
             if (framedImage != null) return framedImage;
             Bitmap bitmap = BitmapIO.read(input, Util.toAndroidBitmapConfig(type));
             if (bitmap == null) return null;
@@ -68,7 +66,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     public Image readImage(Assets assets, String input, int type) {
         Objects.requireNonNull(input);
         try {
-            AnimatedImage framedImage = readAnimatedImage(assets, Util.removeStartSeparator(input), type);
+            MultiFrameImage framedImage = readMultiFrameImage(assets, Util.removeStartSeparator(input), type);
             if (framedImage != null) return framedImage;
             Bitmap bitmap = BitmapIO.read(((AndroidAssets) assets).getAssets(), Util.removeStartSeparator(input), Util.toAndroidBitmapConfig(type));
             if (bitmap == null) return null;
@@ -79,120 +77,98 @@ public class AndroidGraphicsKit implements GraphicsKit {
     }
 
     @Override
-    public AnimatedImage readAnimatedImage(File input, int type) {
+    public MultiFrameImage readMultiFrameImage(File input, int type) {
         try {
-            return AnimatedBitmapIO.read(input, Util.toAndroidBitmapConfig(type));
+            return MultiFrameBitmapIO.read(input, Util.toAndroidBitmapConfig(type));
         } catch (IOException e) {
             return null;
         }
     }
 
     @Override
-    public AnimatedImage readAnimatedImage(InputStream input, int type) {
+    public MultiFrameImage readMultiFrameImage(InputStream input, int type) {
         try {
-            return AnimatedBitmapIO.read(input, Util.toAndroidBitmapConfig(type));
+            return MultiFrameBitmapIO.read(input, Util.toAndroidBitmapConfig(type));
         } catch (IOException e) {
             return null;
         }
     }
 
     @Override
-    public AnimatedImage readAnimatedImage(URL input, int type) {
+    public MultiFrameImage readMultiFrameImage(URL input, int type) {
         try {
-            return AnimatedBitmapIO.read(input, Util.toAndroidBitmapConfig(type));
+            return MultiFrameBitmapIO.read(input, Util.toAndroidBitmapConfig(type));
         } catch (IOException e) {
             return null;
         }
     }
 
     @Override
-    public AnimatedImage readAnimatedImage(Assets assets, String input, int type) {
+    public MultiFrameImage readMultiFrameImage(Assets assets, String input, int type) {
         Objects.requireNonNull(input);
         try {
-            return AnimatedBitmapIO.read(((AndroidAssets) assets).getAssets(), Util.removeStartSeparator(input), Util.toAndroidBitmapConfig(type));
+            return MultiFrameBitmapIO.read(((AndroidAssets) assets).getAssets(), Util.removeStartSeparator(input), Util.toAndroidBitmapConfig(type));
         } catch (IOException e) {
             return null;
         }
     }
 
     @Override
-    public boolean writeImage(Image image, String formatName, int quality, File output) {
+    public boolean writeImage(Image image, String mimeType, int quality, File output) {
         try {
-            if (image instanceof AnimatedImage) return writeAnimatedImage((AnimatedImage) image, formatName, quality, output);
-            return BitmapIO.write(output, ((AndroidImage)image).getBitmap(), formatName, quality);
+            if (image instanceof MultiFrameImage) return writeMultiFrameImage((MultiFrameImage) image, mimeType, quality, output);
+            return BitmapIO.write(output, ((AndroidImage)image).getBitmap(), mimeType, quality);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public boolean writeImage(Image image, String formatName, int quality, OutputStream output) {
+    public boolean writeImage(Image image, String mimeType, int quality, OutputStream output) {
         try {
-            if (image instanceof AnimatedImage) return writeAnimatedImage((AnimatedImage) image, formatName, quality, output);
-            return BitmapIO.write(output, ((AndroidImage)image).getBitmap(), formatName, quality);
+            if (image instanceof MultiFrameImage) return writeMultiFrameImage((MultiFrameImage) image, mimeType, quality, output);
+            return BitmapIO.write(output, ((AndroidImage)image).getBitmap(), mimeType, quality);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public boolean writeAnimatedImage(AnimatedImage image, String formatName, int quality, File output) {
+    public boolean writeMultiFrameImage(MultiFrameImage image, String mimeType, int quality, File output) {
         try {
-            return AnimatedBitmapIO.write(output, image, formatName, quality);
+            return MultiFrameBitmapIO.write(output, image, mimeType, quality);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public boolean writeAnimatedImage(AnimatedImage image, String formatName, int quality, OutputStream output) {
+    public boolean writeMultiFrameImage(MultiFrameImage image, String mimeType, int quality, OutputStream output) {
         try {
-            return AnimatedBitmapIO.write(output, image, formatName, quality);
+            return MultiFrameBitmapIO.write(output, image, mimeType, quality);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public String[] getImageReaderFormatNames() {
-        Set<String> formatNames = new HashSet<>();
-        for (String formatName : BitmapIO.getReaderFormatNames()) {
-            formatNames.add(formatName.toLowerCase());
-        }
-        for (String formatName : AnimatedBitmapIO.getReaderFormatNames()) {
-            formatNames.remove(formatName.toLowerCase());
-        }
-        return formatNames.toArray(new String[0]);
+    public String[] getImageReaderMIMETypes() {
+        return BitmapIO.getReaderMIMETypes();
     }
 
     @Override
-    public String[] getImageWriterFormatNames() {
-        Set<String> formatNames = new HashSet<>();
-        for (String formatName : BitmapIO.getWriterFormatNames()) {
-            formatNames.add(formatName.toLowerCase());
-        }
-        for (String formatName : AnimatedBitmapIO.getWriterFormatNames()) {
-            formatNames.remove(formatName.toLowerCase());
-        }
-        return formatNames.toArray(new String[0]);
+    public String[] getImageWriterMIMETypes() {
+        return BitmapIO.getWriterMIMETypes();
     }
 
     @Override
-    public String[] getAnimatedImageReaderFormatNames() {
-        Set<String> formatNames = new HashSet<>();
-        for (String formatName : AnimatedBitmapIO.getReaderFormatNames()) {
-            formatNames.add(formatName.toLowerCase());
-        }
-        return formatNames.toArray(new String[0]);
+    public String[] getMultiFrameImageReaderMIMETypes() {
+        return MultiFrameBitmapIO.getReaderMIMETypes();
     }
 
     @Override
-    public String[] getAnimatedImageWriterFormatNames() {
-        Set<String> formatNames = new HashSet<>();
-        for (String formatName : AnimatedBitmapIO.getWriterFormatNames()) {
-            formatNames.add(formatName.toLowerCase());
-        }
-        return formatNames.toArray(new String[0]);
+    public String[] getMultiFrameImageWriterMIMETypes() {
+        return MultiFrameBitmapIO.getWriterMIMETypes();
     }
 
     @Override

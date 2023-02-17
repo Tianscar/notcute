@@ -9,18 +9,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.RandomAccess;
 
-public class AnimatedImage extends FilterList<Image.Frame> implements RandomAccess, Image, SwapCloneable {
+public class MultiFrameImage extends FilterList<Image.Frame> implements RandomAccess, Image, SwapCloneable {
     
     private volatile int index = 0;
     private volatile boolean disposed = false;
     private volatile int loops = 0;
 
-    public AnimatedImage(Collection<Frame> frames) {
+    public MultiFrameImage(Collection<Frame> frames) {
         super(new ArrayList<>(frames.size()));
         list.addAll(frames);
     }
 
-    public AnimatedImage(Frame... frames) {
+    public MultiFrameImage(Frame... frames) {
         super(new ArrayList<>(frames.length));
         list.addAll(Arrays.asList(frames));
     }
@@ -131,20 +131,20 @@ public class AnimatedImage extends FilterList<Image.Frame> implements RandomAcce
     }
 
     @Override
-    public AnimatedImage clone() {
+    public MultiFrameImage clone() {
         if (isDisposed()) throw new AlreadyDisposedException();
         try {
-            AnimatedImage image = (AnimatedImage) super.clone();
+            MultiFrameImage image = (MultiFrameImage) super.clone();
             image.setFrames(this);
             return image;
         } catch (CloneNotSupportedException e) {
-            return new AnimatedImage(this);
+            return new MultiFrameImage(this);
         }
     }
 
     @Override
     public void to(Object dst) {
-        AnimatedImage image = (AnimatedImage) dst;
+        MultiFrameImage image = (MultiFrameImage) dst;
         image.setFrames(this);
     }
 

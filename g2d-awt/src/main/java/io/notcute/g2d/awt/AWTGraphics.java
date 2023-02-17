@@ -51,7 +51,7 @@ public class AWTGraphics implements Graphics {
         this.height = height;
         info = new Info();
         cacheInfo = new Info();
-        applyInfo();
+        apply();
     }
 
     public Graphics2D getGraphics2D() {
@@ -60,7 +60,7 @@ public class AWTGraphics implements Graphics {
     }
 
     @Override
-    public void applyInfo() {
+    public void apply() {
         if (isDisposed()) throw new AlreadyDisposedException();
         AffineTransform transform = info.getTransform();
         if (transform == null) graphics2D.getTransform().setToIdentity();

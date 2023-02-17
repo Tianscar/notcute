@@ -47,19 +47,19 @@ public final class BIORegistry {
         return providers.values();
     }
 
-    public static BIOServiceProvider getReader(String readerFormat) {
+    public static BIOServiceProvider getReader(String mimeType) {
         for (BIOServiceProvider provider : getServiceProviders()) {
-            for (String mReaderFormat : provider.getReaderFormatNames()) {
-                if (mReaderFormat.equalsIgnoreCase(readerFormat)) return provider;
+            for (String mReaderFormat : provider.getReaderMIMETypes()) {
+                if (mReaderFormat.equalsIgnoreCase(mimeType)) return provider;
             }
         }
         return null;
     }
 
-    public static BIOServiceProvider getWriter(String writerFormat) {
+    public static BIOServiceProvider getWriter(String mimeType) {
         for (BIOServiceProvider provider : getServiceProviders()) {
-            for (String mWriterFormat : provider.getWriterFormatNames()) {
-                if (mWriterFormat.equalsIgnoreCase(writerFormat)) return provider;
+            for (String mWriterFormat : provider.getWriterMIMETypes()) {
+                if (mWriterFormat.equalsIgnoreCase(mimeType)) return provider;
             }
         }
         return null;

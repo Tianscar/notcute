@@ -6,7 +6,6 @@ import io.notcute.util.SwapCloneable;
 import io.notcute.util.signalslot.VoidSignal1;
 
 import java.io.File;
-import java.io.FileFilter;
 
 public interface FileChooser {
 
@@ -22,34 +21,32 @@ public interface FileChooser {
 
         private int mode;
         private boolean multiple;
-        private File directory;
-        private File file;
+        private File pathname;
         private CharSequence title;
-        private FileFilter fileFilter;
+        private String[] filterMIMETypes;
 
         public Info() {
             reset();
         }
 
         public Info(Info info) {
-            this(info.getMode(), info.isMultiple(), info.getDirectory(), info.getFile(), info.getTitle(), info.getFileFilter());
+            this(info.getMode(), info.isMultiple(), info.getPathname(), info.getTitle(), info.getFilterMIMETypes());
         }
 
-        public Info(int mode, boolean multiple, File directory, File file, CharSequence title, FileFilter fileFilter) {
-            setInfo(mode, multiple, directory, file, title, fileFilter);
+        public Info(int mode, boolean multiple, File pathname, CharSequence title, String... filterMIMETypes) {
+            setInfo(mode, multiple, pathname, title, filterMIMETypes);
         }
 
         public void setInfo(Info info) {
-            setInfo(info.getMode(), info.isMultiple(), info.getDirectory(), info.getFile(), info.getTitle(), info.getFileFilter());
+            setInfo(info.getMode(), info.isMultiple(), info.getPathname(), info.getTitle(), info.getFilterMIMETypes());
         }
 
-        public void setInfo(int mode, boolean multiple, File directory, File file, CharSequence title, FileFilter fileFilter) {
+        public void setInfo(int mode, boolean multiple, File pathname, CharSequence title, String... filterMIMETypes) {
             this.mode = mode;
             this.multiple = multiple;
-            this.directory = directory;
-            this.file = file;
+            this.pathname = pathname;
             this.title = title;
-            this.fileFilter = fileFilter;
+            this.filterMIMETypes = filterMIMETypes;
         }
 
         public int getMode() {
@@ -68,20 +65,12 @@ public interface FileChooser {
             this.multiple = multiple;
         }
 
-        public File getDirectory() {
-            return directory;
+        public File getPathname() {
+            return pathname;
         }
 
-        public void setDirectory(File directory) {
-            this.directory = directory;
-        }
-
-        public File getFile() {
-            return file;
-        }
-
-        public void setFile(File file) {
-            this.file = file;
+        public void setPathname(File pathname) {
+            this.pathname = pathname;
         }
 
         public CharSequence getTitle() {
@@ -92,21 +81,21 @@ public interface FileChooser {
             this.title = title;
         }
 
-        public FileFilter getFileFilter() {
-            return fileFilter;
+        public String[] getFilterMIMETypes() {
+            return filterMIMETypes;
         }
 
-        public void setFileFilter(FileFilter fileFilter) {
-            this.fileFilter = fileFilter;
+        public void setFilterMIMETypes(String... filterMIMETypes) {
+            this.filterMIMETypes = filterMIMETypes;
         }
 
         @Override
         public void reset() {
             mode = Mode.LOAD;
             multiple = true;
-            directory = file = null;
+            pathname = null;
             title = null;
-            fileFilter = null;
+            filterMIMETypes = null;
         }
 
         @Override
@@ -114,6 +103,7 @@ public interface FileChooser {
             try {
                 Info clone = (Info) super.clone();
                 if (title != null) clone.setTitle(title.subSequence(0, title.length()));
+                if (filterMIMETypes != null) clone.setFilterMIMETypes(filterMIMETypes.clone());
                 return clone;
             } catch (CloneNotSupportedException e) {
                 return new Info(this);

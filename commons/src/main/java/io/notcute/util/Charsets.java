@@ -2,9 +2,9 @@ package io.notcute.util;
 
 import java.nio.charset.Charset;
 
-public final class CharsetUtils {
+public final class Charsets {
 
-    private CharsetUtils() {
+    private Charsets() {
         throw new UnsupportedOperationException();
     }
 

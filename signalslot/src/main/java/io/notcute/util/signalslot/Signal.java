@@ -120,7 +120,7 @@ public abstract class Signal<R> {
 		if (dispatcher == null) dispatcher = Dispatcher.getDefaultDispatcher();
 		final boolean unique = (type & UNIQUE) == UNIQUE;
 		final boolean singleShot = (type & SINGLE_SHOT) == SINGLE_SHOT;
-		type = type << 29 >> 29;
+		type = type << 29 >>> 29;
 		boolean broken = false;
 		if (uniques.contains(slot)) broken = true;
 		else if (unique) uniques.add(slot);

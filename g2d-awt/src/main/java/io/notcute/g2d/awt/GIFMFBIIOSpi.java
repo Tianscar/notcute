@@ -1,6 +1,6 @@
 package io.notcute.g2d.awt;
 
-import io.notcute.g2d.AnimatedImage;
+import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Image;
 import io.notcute.util.MathUtils;
 
@@ -9,28 +9,23 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
-public final class GIFAIIOSpi implements AIIOServiceProvider {
+public final class GIFMFBIIOSpi implements MFBIIOServiceProvider {
 
     private static final String NATIVE_FORMAT_NAME = "javax_imageio_gif_image_1.0";
 
-    private static final String[] READER_FORMAT_NAMES = new String[] { "gif" };
-    private static final String[] WRITER_FORMAT_NAMES = new String[] { "gif" };
+    private static final String[] READER_MIME_TYPES = new String[] { "image/gif" };
+    private static final String[] WRITER_MIME_TYPES = new String[] { "image/gif" };
 
     @Override
-    public AnimatedImage read(ImageInputStream stream) throws IOException {
-        stream.mark();
-        try {
-            if (!isGif(stream)) return null;
-        }
-        finally {
-            stream.reset();
-        }
-        ImageReader reader = getGifImageReader();
+    public MultiFrameImage read(ImageInputStream stream) throws IOException {
+        if (!isGIF(stream)) return null;
+        ImageReader reader = getGIFImageReader();
         if (reader == null) return null;
         reader.setInput(stream);
         Image.Frame[] frames = new Image.Frame[reader.getNumImages(true)];
@@ -75,28 +70,37 @@ public final class GIFAIIOSpi implements AIIOServiceProvider {
         catch (IOException ignored) {
         }
         reader.dispose();
-        AnimatedImage result = new AnimatedImage(frames);
+        MultiFrameImage result = new MultiFrameImage(frames);
         result.setLooping(loops);
         return result;
     }
 
-    private static ImageReader getGifImageReader() {
-        Iterator<ImageReader> it = ImageIO.getImageReadersByFormatName("gif");
+    private static ImageReader getGIFImageReader() {
+        Iterator<ImageReader> it = ImageIO.getImageReadersByMIMEType("image/gif");
         if (it.hasNext()) return it.next();
         return null;
     }
 
-    private static boolean isGif(ImageInputStream stream) throws IOException {
+    private static boolean isGIF(ImageInputStream stream) throws IOException {
         StringBuilder id = new StringBuilder();
-        for (int i = 0; i < 6; i ++) {
-            id.append((char) stream.read());
+        stream.mark();
+        try {
+            for (int i = 0; i < 6; i ++) {
+                id.append((char) stream.read());
+            }
+        }
+        catch (EOFException e) {
+            return false;
+        }
+        finally {
+            stream.reset();
         }
         return id.toString().startsWith("GIF");
     }
 
     @Override
-    public boolean write(AnimatedImage im, String formatName, float quality, ImageOutputStream output) throws IOException {
-        ImageWriter writer = getGifImageWriter(formatName);
+    public boolean write(MultiFrameImage im, String mimeType, float quality, ImageOutputStream output) throws IOException {
+        ImageWriter writer = getGIFImageWriter();
         if (writer == null) return false;
         writer.setOutput(output);
         ImageWriteParam param = writer.getDefaultWriteParam();
@@ -108,7 +112,7 @@ public final class GIFAIIOSpi implements AIIOServiceProvider {
         IIOMetadata metadata = writer.getDefaultImageMetadata(specifier, param);
         IIOMetadataNode metadataTree = (IIOMetadataNode) metadata.getAsTree(NATIVE_FORMAT_NAME);
         mergeMetadata(metadataTree, im);
-        for (AnimatedImage.Frame frame : im) {
+        for (MultiFrameImage.Frame frame : im) {
             mergeMetadata(metadataTree, frame);
             metadata.mergeTree(NATIVE_FORMAT_NAME, metadataTree);
             writer.writeToSequence(new IIOImage(((AWTImage)frame.getImage()).getBufferedImage(), null, metadata), param);
@@ -119,7 +123,7 @@ public final class GIFAIIOSpi implements AIIOServiceProvider {
         return true;
     }
 
-    private static void mergeMetadata(IIOMetadataNode root, AnimatedImage image) {
+    private static void mergeMetadata(IIOMetadataNode root, MultiFrameImage image) {
         IIOMetadataNode node = new IIOMetadataNode("ApplicationExtensions");
         IIOMetadataNode appExtNode = new IIOMetadataNode("ApplicationExtension");
         appExtNode.setAttribute("applicationID", "NETSCAPE");
@@ -152,18 +156,20 @@ public final class GIFAIIOSpi implements AIIOServiceProvider {
         }
     }
 
-    private static ImageWriter getGifImageWriter(String formatName) {
-        return Util.getImageWriter(WRITER_FORMAT_NAMES, formatName);
+    private static ImageWriter getGIFImageWriter() {
+        Iterator<ImageWriter> it = ImageIO.getImageWritersByMIMEType("image/gif");
+        if (it.hasNext()) return it.next();
+        else return null;
     }
 
     @Override
-    public String[] getReaderFormatNames() {
-        return READER_FORMAT_NAMES.clone();
+    public String[] getReaderMIMETypes() {
+        return READER_MIME_TYPES.clone();
     }
 
     @Override
-    public String[] getWriterFormatNames() {
-        return WRITER_FORMAT_NAMES.clone();
+    public String[] getWriterMIMETypes() {
+        return WRITER_MIME_TYPES.clone();
     }
 
 }

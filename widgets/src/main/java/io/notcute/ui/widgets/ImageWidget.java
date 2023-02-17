@@ -36,6 +36,9 @@ public class ImageWidget extends Widget {
         super.paint(context, graphics, snapshot);
         if (image != null) {
             graphics.save();
+            Graphics.Info info = graphics.getInfo();
+            info.reset();
+            graphics.apply();
             graphics.drawImage(image, imageTransform);
             graphics.restore();
         }

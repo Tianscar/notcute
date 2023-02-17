@@ -19,7 +19,7 @@ public interface AudioPlayer {
     void unloadSound(Sound sound);
     void unloadMusic(Music music);
 
-    String[] getAudioLoaderFormatNames();
+    String[] getAudioLoaderMIMETypes();
 
     void prepareMusic(Music music) throws IOException;
     boolean isMusicPrepared(Music music);

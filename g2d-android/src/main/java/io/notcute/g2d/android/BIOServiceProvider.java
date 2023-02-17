@@ -39,10 +39,10 @@ public interface BIOServiceProvider {
     Bitmap read(URL url, Bitmap.Config config) throws IOException;
     Bitmap read(URL url, Rect region, Bitmap.Config config) throws IOException;
 
-    boolean write(File output, Bitmap bitmap, String formatName, int quality) throws IOException;
-    boolean write(OutputStream output, Bitmap bitmap, String formatName, int quality) throws IOException;
+    boolean write(File output, Bitmap bitmap, String mimeType, int quality) throws IOException;
+    boolean write(OutputStream output, Bitmap bitmap, String mimeType, int quality) throws IOException;
 
-    String[] getReaderFormatNames();
-    String[] getWriterFormatNames();
+    String[] getReaderMIMETypes();
+    String[] getWriterMIMETypes();
 
 }

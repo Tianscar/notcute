@@ -1,12 +1,12 @@
 package io.notcute.g2d.awt;
 
-import com.twelvemonkeys.imageio.metadata.tiff.TIFF;
-import io.notcute.g2d.AnimatedImage;
+import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Image;
 
 import javax.imageio.*;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
+import javax.imageio.plugins.tiff.BaselineTIFFTagSet;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.io.EOFException;
@@ -15,23 +15,17 @@ import java.util.Iterator;
 
 import static io.notcute.app.javase.JavaSEPlatform.BASELINE_DPI;
 
-public final class TIFFAIIOSpi implements AIIOServiceProvider {
+public final class TIFFMFBIIOSpi implements MFBIIOServiceProvider {
 
     private static final String NATIVE_FORMAT_NAME = "com_sun_media_imageio_plugins_tiff_image_1.0";
 
-    private static final String[] READER_FORMAT_NAMES = new String[] { "tif", "tiff", "bigtiff" };
-    private static final String[] WRITER_FORMAT_NAMES = new String[] { "tif", "tiff", "bigtiff" };
+    private static final String[] READER_MIME_TYPES = new String[] { "image/tiff" };
+    private static final String[] WRITER_MIME_TYPES = new String[] { "image/tiff" };
 
     @Override
-    public AnimatedImage read(ImageInputStream stream) throws IOException {
-        stream.mark();
-        try {
-            if (!(isTiff(stream, TIFF.TIFF_MAGIC) || isTiff(stream, TIFF.BIGTIFF_MAGIC))) return null;
-        }
-        finally {
-            stream.reset();
-        }
-        ImageReader reader = getTiffImageReader();
+    public MultiFrameImage read(ImageInputStream stream) throws IOException {
+        if (!isTIFF(stream)) return null;
+        ImageReader reader = getTIFFImageReader();
         if (reader == null) return null;
         reader.setInput(stream);
         Image.Frame[] frames = new Image.Frame[reader.getNumImages(true)];
@@ -46,22 +40,22 @@ public final class TIFFAIIOSpi implements AIIOServiceProvider {
             while (node != null) {
                 if ("TIFFField".equals(node.getNodeName())) {
                     switch (Integer.parseInt(node.getAttribute("number"))) {
-                        case TIFF.TAG_X_RESOLUTION:
+                        case BaselineTIFFTagSet.TAG_X_RESOLUTION:
                             tmp = ((IIOMetadataNode) node.getFirstChild().getFirstChild()).getAttribute("value").split("/");
                             xrf = Long.parseLong(tmp[0]);
                             xrd = Long.parseLong(tmp[1]);
                             break;
-                        case TIFF.TAG_Y_RESOLUTION:
+                        case BaselineTIFFTagSet.TAG_Y_RESOLUTION:
                             tmp = ((IIOMetadataNode) node.getFirstChild().getFirstChild()).getAttribute("value").split("/");
                             yrf = Long.parseLong(tmp[0]);
                             yrd = Long.parseLong(tmp[1]);
                             break;
-                        case TIFF.TAG_X_POSITION:
+                        case BaselineTIFFTagSet.TAG_X_POSITION:
                             tmp = ((IIOMetadataNode) node.getFirstChild().getFirstChild()).getAttribute("value").split("/");
                             xpf = Long.parseLong(tmp[0]);
                             xpd = Long.parseLong(tmp[1]);
                             break;
-                        case TIFF.TAG_Y_POSITION:
+                        case BaselineTIFFTagSet.TAG_Y_POSITION:
                             tmp = ((IIOMetadataNode) node.getFirstChild().getFirstChild()).getAttribute("value").split("/");
                             ypf = Long.parseLong(tmp[0]);
                             ypd = Long.parseLong(tmp[1]);
@@ -79,24 +73,37 @@ public final class TIFFAIIOSpi implements AIIOServiceProvider {
         catch (IOException ignored) {
         }
         reader.dispose();
-        return new AnimatedImage(frames);
+        return new MultiFrameImage(frames);
     }
 
-    private static boolean isTiff(ImageInputStream stream, int versionMagic) throws IOException {
+    private static boolean isTIFF(ImageInputStream stream) throws IOException {
+        byte[] b = new byte[4];
+        stream.mark();
         try {
-            byte[] magic = new byte[4];
-            stream.readFully(magic, 0, magic.length);
-            return magic[0] == 'I' && magic[1] == 'I' && magic[2] == (versionMagic & 0xFF) && magic[3] == (versionMagic >>> 8)
-                    || magic[0] == 'M' && magic[1] == 'M' && magic[2] == (versionMagic >>> 8) && magic[3] == (versionMagic & 0xFF);
+            stream.readFully(b);
         }
         catch (EOFException e) {
             return false;
         }
+        finally {
+            stream.reset();
+        }
+        return ((
+                        b[0] == (byte) 0x49 &&
+                        b[1] == (byte) 0x49 &&
+                        b[2] == (byte) 0x2a &&
+                        b[3] == (byte) 0x00
+                ) || (
+                        b[0] == (byte) 0x4d &&
+                        b[1] == (byte) 0x4d &&
+                        b[2] == (byte) 0x00 &&
+                        b[3] == (byte) 0x2a
+                ));
     }
 
     @Override
-    public boolean write(AnimatedImage im, String formatName, float quality, ImageOutputStream output) throws IOException {
-        ImageWriter writer = getTiffImageWriter(formatName);
+    public boolean write(MultiFrameImage im, String mimeType, float quality, ImageOutputStream output) throws IOException {
+        ImageWriter writer = getTIFFImageWriter();
         if (writer == null) return false;
         writer.setOutput(output);
         ImageWriteParam param = writer.getDefaultWriteParam();
@@ -119,10 +126,10 @@ public final class TIFFAIIOSpi implements AIIOServiceProvider {
     private static IIOMetadataNode generateMetadata(Image.Frame frame) {
         IIOMetadataNode root = new IIOMetadataNode(NATIVE_FORMAT_NAME);
         IIOMetadataNode ifd = new IIOMetadataNode("TIFFIFD");
-        ifd.appendChild(generateTIFFRational(TIFF.TAG_X_RESOLUTION, BASELINE_DPI, 1));
-        ifd.appendChild(generateTIFFRational(TIFF.TAG_Y_RESOLUTION, BASELINE_DPI, 1));
-        ifd.appendChild(generateTIFFRational(TIFF.TAG_X_POSITION, frame.getHotSpotX(), BASELINE_DPI));
-        ifd.appendChild(generateTIFFRational(TIFF.TAG_Y_POSITION, frame.getHotSpotY(), BASELINE_DPI));
+        ifd.appendChild(generateTIFFRational(BaselineTIFFTagSet.TAG_X_RESOLUTION, BASELINE_DPI, 1));
+        ifd.appendChild(generateTIFFRational(BaselineTIFFTagSet.TAG_Y_RESOLUTION, BASELINE_DPI, 1));
+        ifd.appendChild(generateTIFFRational(BaselineTIFFTagSet.TAG_X_POSITION, frame.getHotSpotX(), BASELINE_DPI));
+        ifd.appendChild(generateTIFFRational(BaselineTIFFTagSet.TAG_Y_POSITION, frame.getHotSpotY(), BASELINE_DPI));
         root.appendChild(ifd);
         return root;
     }
@@ -138,26 +145,26 @@ public final class TIFFAIIOSpi implements AIIOServiceProvider {
         return field;
     }
 
-    private static ImageReader getTiffImageReader() {
-        Iterator<ImageReader> it = ImageIO.getImageReadersByFormatName("tif");
+    private static ImageReader getTIFFImageReader() {
+        Iterator<ImageReader> it = ImageIO.getImageReadersByMIMEType("image/tiff");
         if (it.hasNext()) return it.next();
-        it = ImageIO.getImageReadersByFormatName("bigtiff");
-        if (it.hasNext()) return it.next();
-        return null;
+        else return null;
     }
 
-    private static ImageWriter getTiffImageWriter(String formatName) {
-        return Util.getImageWriter(WRITER_FORMAT_NAMES, formatName);
+    private static ImageWriter getTIFFImageWriter() {
+        Iterator<ImageWriter> it = ImageIO.getImageWritersByMIMEType("image/tiff");
+        if (it.hasNext()) return it.next();
+        else return null;
     }
 
     @Override
-    public String[] getReaderFormatNames() {
-        return READER_FORMAT_NAMES.clone();
+    public String[] getReaderMIMETypes() {
+        return READER_MIME_TYPES.clone();
     }
 
     @Override
-    public String[] getWriterFormatNames() {
-        return WRITER_FORMAT_NAMES.clone();
+    public String[] getWriterMIMETypes() {
+        return WRITER_MIME_TYPES.clone();
     }
 
 }

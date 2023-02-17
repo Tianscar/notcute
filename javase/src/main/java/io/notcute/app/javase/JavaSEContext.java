@@ -68,8 +68,8 @@ public class JavaSEContext implements Context {
         }
     }
     public static final Producer PRODUCER = new Producer();
-    public static final String COMPANY_NAME = System.getProperty("io.notcute.app.javase.companyname", "");
-    public static final String APP_NAME = System.getProperty("io.notcute.app.javase.appname", "");
+    public static final String ORGANIZATION_NAME = System.getProperty("io.notcute.app.javase.organizationname", "");
+    public static final String APPLICATION_NAME = System.getProperty("io.notcute.app.javase.applicationname", "");
 
     protected static class Holder implements Context.Holder {
         private final JavaSEContext context;
@@ -119,7 +119,7 @@ public class JavaSEContext implements Context {
             String ext;
             if (JavaSEPlatform.isWindows) ext = "Settings";
             else ext = "";
-            File configDir = new File(BASE_CONFIG_DIR, COMPANY_NAME + "/" + APP_NAME + "/" + ext);
+            File configDir = new File(BASE_CONFIG_DIR, ORGANIZATION_NAME + "/" + APPLICATION_NAME + "/" + ext);
             Util.createDirIfNotExist(configDir);
             return configDir;
         }
@@ -128,14 +128,14 @@ public class JavaSEContext implements Context {
             String ext;
             if (JavaSEPlatform.isWindows) ext = "Cache";
             else ext = "";
-            File cacheDir = new File(BASE_CACHE_DIR, COMPANY_NAME + "/" + APP_NAME + "/" + ext);
+            File cacheDir = new File(BASE_CACHE_DIR, ORGANIZATION_NAME + "/" + APPLICATION_NAME + "/" + ext);
             Util.createDirIfNotExist(cacheDir);
             return cacheDir;
         }
         @Override
         public File getFilesDir(String type) {
             if (type == null) type = "";
-            File filesDir = new File(new File(BASE_FILES_DIR, COMPANY_NAME + "/" + APP_NAME), type);
+            File filesDir = new File(new File(BASE_FILES_DIR, ORGANIZATION_NAME + "/" + APPLICATION_NAME), type);
             Util.createDirIfNotExist(filesDir);
             return filesDir;
         }

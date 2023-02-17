@@ -1,6 +1,7 @@
 package io.notcute.ui.awt;
 
 import io.notcute.app.awt.AWTPlatform;
+import io.notcute.util.IOUtils;
 
 import java.awt.EventQueue;
 import java.io.File;
@@ -14,10 +15,11 @@ public final class Desktop {
     }
 
     public static boolean open(File file) {
-        if (file == null) return false;
+        if (file == null || !file.exists()) return false;
         if (AWTPlatform.isX11) {
             try {
-                new ProcessBuilder("xdg-open", file.getAbsolutePath()).inheritIO().start();
+                Process process = new ProcessBuilder("xdg-open", file.getAbsolutePath()).start();
+                IOUtils.skipAllBytes(process.getInputStream());
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -25,7 +27,8 @@ public final class Desktop {
         }
         else if (AWTPlatform.isMac) {
             try {
-                new ProcessBuilder("open", file.getAbsolutePath()).inheritIO().start();
+                Process process = new ProcessBuilder("open", file.getAbsolutePath()).start();
+                IOUtils.skipAllBytes(process.getInputStream());
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -54,7 +57,8 @@ public final class Desktop {
         if (uri == null) return false;
         if (AWTPlatform.isX11) {
             try {
-                new ProcessBuilder("xdg-open", uri.toString()).inheritIO().start();
+                Process process = new ProcessBuilder("xdg-open", uri.toString()).start();
+                IOUtils.skipAllBytes(process.getInputStream());
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -62,7 +66,8 @@ public final class Desktop {
         }
         else if (AWTPlatform.isMac) {
             try {
-                new ProcessBuilder("open", uri.toString()).inheritIO().start();
+                Process process = new ProcessBuilder("open", uri.toString()).start();
+                IOUtils.skipAllBytes(process.getInputStream());
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -91,7 +96,8 @@ public final class Desktop {
         if (mailtoURI == null) return false;
         if (AWTPlatform.isX11) {
             try {
-                new ProcessBuilder("xdg-open", mailtoURI.toString()).inheritIO().start();
+                Process process = new ProcessBuilder("xdg-open", mailtoURI.toString()).start();
+                IOUtils.skipAllBytes(process.getInputStream());
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -99,7 +105,8 @@ public final class Desktop {
         }
         else if (AWTPlatform.isMac) {
             try {
-                new ProcessBuilder("open", mailtoURI.toString()).inheritIO().start();
+                Process process = new ProcessBuilder("open", mailtoURI.toString()).start();
+                IOUtils.skipAllBytes(process.getInputStream());
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();

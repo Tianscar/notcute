@@ -15,20 +15,20 @@ public interface GraphicsKit {
     Image readImage(InputStream input, int type);
     Image readImage(URL input, int type);
     Image readImage(Assets assets, String input, int type);
-    AnimatedImage readAnimatedImage(File input, int type);
-    AnimatedImage readAnimatedImage(InputStream input, int type);
-    AnimatedImage readAnimatedImage(URL input, int type);
-    AnimatedImage readAnimatedImage(Assets assets, String input, int type);
+    MultiFrameImage readMultiFrameImage(File input, int type);
+    MultiFrameImage readMultiFrameImage(InputStream input, int type);
+    MultiFrameImage readMultiFrameImage(URL input, int type);
+    MultiFrameImage readMultiFrameImage(Assets assets, String input, int type);
 
-    boolean writeImage(Image image, String formatName, int quality, File output);
-    boolean writeImage(Image image, String formatName, int quality, OutputStream output);
-    boolean writeAnimatedImage(AnimatedImage image, String formatName, int quality, File output);
-    boolean writeAnimatedImage(AnimatedImage image, String formatName, int quality, OutputStream output);
+    boolean writeImage(Image image, String mimeType, int quality, File output);
+    boolean writeImage(Image image, String mimeType, int quality, OutputStream output);
+    boolean writeMultiFrameImage(MultiFrameImage image, String mimeType, int quality, File output);
+    boolean writeMultiFrameImage(MultiFrameImage image, String mimeType, int quality, OutputStream output);
 
-    String[] getImageReaderFormatNames();
-    String[] getImageWriterFormatNames();
-    String[] getAnimatedImageReaderFormatNames();
-    String[] getAnimatedImageWriterFormatNames();
+    String[] getImageReaderMIMETypes();
+    String[] getImageWriterMIMETypes();
+    String[] getMultiFrameImageReaderMIMETypes();
+    String[] getMultiFrameImageWriterMIMETypes();
 
     Font getFont(String familyName, int style);
     Font getDefaultFont();

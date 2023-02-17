@@ -38,9 +38,9 @@ import android.os.ParcelFileDescriptor;
 import java.io.*;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 public final class BitmapIO {
 
@@ -346,56 +346,56 @@ public final class BitmapIO {
         return read(url, region, null);
     }
 
-    public static boolean write(File output, Bitmap bitmap, String formatName, int quality) throws IOException {
+    public static boolean write(File output, Bitmap bitmap, String mimeType, int quality) throws IOException {
         if (bitmap == null) {
             throw new IllegalArgumentException("bitmap cannot be NULL");
         }
-        if (formatName == null) {
-            throw new IllegalArgumentException("format name cannot be NULL");
+        if (mimeType == null) {
+            throw new IllegalArgumentException("MIME Type cannot be NULL");
         }
         if (output == null) {
             throw new IllegalArgumentException("output cannot be NULL");
         }
         boolean result = false;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
-            result = provider.write(output, bitmap, formatName, quality);
+            result = provider.write(output, bitmap, mimeType, quality);
             if (result) break;
         }
         return result;
     }
 
-    public static boolean write(OutputStream output, Bitmap bitmap, String formatName, int quality) throws IOException {
+    public static boolean write(OutputStream output, Bitmap bitmap, String mimeType, int quality) throws IOException {
         if (bitmap == null) {
             throw new IllegalArgumentException("bitmap cannot be NULL");
         }
-        if (formatName == null) {
-            throw new IllegalArgumentException("format name cannot be NULL");
+        if (mimeType == null) {
+            throw new IllegalArgumentException("MIME Type cannot be NULL");
         }
         if (output == null) {
             throw new IllegalArgumentException("output cannot be NULL");
         }
         boolean result = false;
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
-            result = provider.write(output, bitmap, formatName, quality);
+            result = provider.write(output, bitmap, mimeType, quality);
             if (result) break;
         }
         return result;
     }
 
-    public static String[] getReaderFormatNames() {
-        List<String> formatNames = new ArrayList<>();
+    public static String[] getReaderMIMETypes() {
+        Set<String> mimeTypes = new HashSet<>();
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
-            formatNames.addAll(Arrays.asList(provider.getReaderFormatNames()));
+            mimeTypes.addAll(Arrays.asList(provider.getReaderMIMETypes()));
         }
-        return formatNames.toArray(new String[0]);
+        return mimeTypes.toArray(new String[0]);
     }
 
-    public static String[] getWriterFormatNames() {
-        List<String> formatNames = new ArrayList<>();
+    public static String[] getWriterMIMETypes() {
+        Set<String> mimeTypes = new HashSet<>();
         for (BIOServiceProvider provider : BIORegistry.getServiceProviders()) {
-            formatNames.addAll(Arrays.asList(provider.getWriterFormatNames()));
+            mimeTypes.addAll(Arrays.asList(provider.getWriterMIMETypes()));
         }
-        return formatNames.toArray(new String[0]);
+        return mimeTypes.toArray(new String[0]);
     }
 
 }

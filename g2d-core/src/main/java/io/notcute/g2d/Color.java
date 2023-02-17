@@ -1,4 +1,4 @@
-package io.notcute.util;
+package io.notcute.g2d;
 
 public final class Color {
 

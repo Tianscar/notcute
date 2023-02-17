@@ -6,6 +6,12 @@ An abstract graphics layer based on Android GUI, AWT, SWT and so on.
 "Any problem in computer science can be solved with another layer of indirection [except the problem of too many layers of indirection]."  
 Notcute is not a framework built from scratch, just an indirection layer over existing frameworks.
 
+## Compatibility
+- Java SE: Java 11 or above
+- Android: SDK 16 (version 4.1) or above
+- All source are Java 8 compatible (the project is non-modular) grammatically, but the Java SE backend using some Java 11 features
+- If you want to share code between platforms, you should use [a subset of Java 8](https://developer.android.com/studio/write/java8-support-table)
+
 ## Design
 - A cross-platform desktop/mobile Widget Toolkit/Game Engine for Java.
 - Modular and flexible.
@@ -28,10 +34,6 @@ ui-core
 │           ├── *nix⁄X11
 │           └── XWayland
 │               └── *nix⁄Wayland
-├── (WIP) ui-gwt
-│   └── GWT
-│       └── HTML5
-│           └── Modern Browsers
 ├── (WIP) ui-ikvm
 │   ├── UWP
 │   │   ├── Windows Phone
@@ -77,7 +79,7 @@ ui-core
 ```
 
 ## TODO List
-- Port to SWT, TeaVM, GWT, JavaFX, Qt-Jambi, RoboVM, IKVM.NET.
+- Port to SWT, TeaVM, JavaFX, Qt-Jambi, RoboVM, IKVM.NET.
 - [The pluggable system-independent widgets library](/widgets).
 - 2D particle library.
 - Scaffolding libraries for several kinds of games: STG, AVG, RTS, Roguelike and so on.
@@ -103,7 +105,6 @@ Apache-2.0 [Apache Harmony](https://harmony.apache.org)
 [MIT](https://github.com/philfrei/AudioCue-maven/blob/main/LICENSE) [AudioCue-Maven](https://github.com/philfrei/AudioCue-maven)  
 [MIT](https://github.com/msteinbeck/sig4j/blob/master/LICENSE) [sig4j](https://github.com/msteinbeck/sig4j)
 ### This project currently uses the following libraries as dependencies:
-[BSD-3-Clause](https://github.com/haraldk/TwelveMonkeys/blob/master/LICENSE.txt) [TwelveMonkeys](http://haraldk.github.io/TwelveMonkeys/)  
 [Apache-2.0](https://github.com/jnr/jnr-ffi/blob/master/LICENSE) [jnr-ffi](https://github.com/jnr/jnr-ffi)  
 LGPL-2.1 [MP3SPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/mp3spi/1.9.5.4)  
 LGPL-2.1 [VorbisSPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/vorbisspi/1.0.3.3)  

@@ -3,7 +3,6 @@ package io.notcute.g2d;
 import io.notcute.g2d.geom.PathIterator;
 import io.notcute.g2d.geom.Rectangle;
 import io.notcute.g2d.geom.Shape;
-import io.notcute.util.Color;
 import io.notcute.util.Disposable;
 import io.notcute.util.Resetable;
 import io.notcute.util.SwapCloneable;
@@ -438,8 +437,8 @@ public interface Graphics extends Disposable {
     default void setInfo(Info info) {
         info.to(getInfo());
     }
-    void applyInfo();
 
+    void apply();
     void save();
     void restore();
 

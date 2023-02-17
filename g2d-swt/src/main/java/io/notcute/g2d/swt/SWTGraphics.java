@@ -11,10 +11,10 @@ import io.notcute.util.AlreadyDisposedException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 
-import static io.notcute.util.Color.intRed;
-import static io.notcute.util.Color.intGreen;
-import static io.notcute.util.Color.intBlue;
-import static io.notcute.util.Color.intAlpha;
+import static io.notcute.g2d.Color.intRed;
+import static io.notcute.g2d.Color.intGreen;
+import static io.notcute.g2d.Color.intBlue;
+import static io.notcute.g2d.Color.intAlpha;
 
 import java.util.Objects;
 
@@ -32,7 +32,7 @@ public class SWTGraphics implements Graphics {
         this.height = height;
         info = new Info();
         cacheInfo = new Info();
-        applyInterpolationInfo();
+        apply();
     }
 
     private volatile boolean filterImage;
@@ -175,7 +175,7 @@ public class SWTGraphics implements Graphics {
     }
 
     @Override
-    public void applyInfo() {
+    public void apply() {
         Device device = gc.getDevice();
         if (transform != null) transform.dispose();
         transform = info.getTransform() == null ? null : Util.toSWTTransform(device, info.getTransform());
@@ -195,10 +195,10 @@ public class SWTGraphics implements Graphics {
         gc.setAntialias(info.isAntiAlias() ? SWT.ON : SWT.OFF);
         gc.setTextAntialias(info.isAntiAlias() ? SWT.ON : SWT.OFF);
 
-        applyInterpolationInfo();
+        applyInterpolation();
     }
 
-    private void applyInterpolationInfo() {
+    private void applyInterpolation() {
         filterImage = info.isFilterImage();
         subpixelText = info.isSubpixelText();
         dither = info.isDither();

@@ -11,11 +11,11 @@ import java.io.OutputStream;
 public interface SIIOServiceProvider {
 
     Image read(Device device, InputStream stream) throws IOException, SWTException;
-    boolean write(Image im, String formatName, int quality, OutputStream output) throws IOException, SWTException;
+    boolean write(Image im, String mimeType, int quality, OutputStream output) throws IOException, SWTException;
 
-    String[] getReaderFormatNames();
-    String[] getWriterFormatNames();
-    String[] getAnimatedImageReaderFormatNames();
-    String[] getAnimatedImageWriterFormatNames();
+    String[] getReaderMIMETypes();
+    String[] getWriterMIMETypes();
+    String[] getMultiFrameImageReaderMIMETypes();
+    String[] getMultiFrameImageWriterMIMETypes();
 
 }

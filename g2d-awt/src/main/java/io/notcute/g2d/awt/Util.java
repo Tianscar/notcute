@@ -5,7 +5,6 @@ import io.notcute.g2d.Graphics;
 import io.notcute.g2d.geom.Rectangle;
 import io.notcute.util.ArrayUtils;
 
-import javax.imageio.ImageWriter;
 import java.awt.*;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
@@ -16,7 +15,6 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.Objects;
 
 import static io.notcute.g2d.Font.Style.*;
@@ -26,9 +24,9 @@ import static io.notcute.g2d.Graphics.Join.BEVEL;
 import static io.notcute.g2d.Graphics.Join.MITER;
 import static io.notcute.g2d.Image.Type.ARGB_8888;
 import static io.notcute.g2d.Image.Type.RGB_565;
+import static io.notcute.g2d.geom.PathIterator.SegmentType.*;
 import static io.notcute.g2d.geom.PathIterator.WindingRule.EVEN_ODD;
 import static io.notcute.g2d.geom.PathIterator.WindingRule.NON_ZERO;
-import static io.notcute.g2d.geom.PathIterator.SegmentType.*;
 
 final class Util {
 
@@ -192,13 +190,6 @@ final class Util {
             }
         }
         return font;
-    }
-
-    public static ImageWriter getImageWriter(String[] writerFormatNames, String formatName) {
-        if (!containsIgnoreCase(writerFormatNames, formatName)) return null;
-        Iterator<ImageWriter> it = ImageIO.getImageWritersByFormatName(formatName);
-        if (it.hasNext()) return it.next();
-        return null;
     }
 
     public static boolean containsIgnoreCase(String[] array, String string) {

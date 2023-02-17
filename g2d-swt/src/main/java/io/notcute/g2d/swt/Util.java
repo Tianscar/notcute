@@ -276,7 +276,7 @@ final class Util {
         return resultData;
     }
 
-    public static java.awt.Font readFont(File input) throws IOException {
+    public static java.awt.Font readAWTFont(File input) throws IOException {
         Objects.requireNonNull(input);
         java.awt.Font font = null;
         try {

@@ -49,7 +49,7 @@ public final class SIIORegistry {
 
     public static SIIOServiceProvider getReader(String readerFormat) {
         for (SIIOServiceProvider provider : getServiceProviders()) {
-            for (String mReaderFormat : provider.getReaderFormatNames()) {
+            for (String mReaderFormat : provider.getReaderMIMETypes()) {
                 if (mReaderFormat.equalsIgnoreCase(readerFormat)) return provider;
             }
         }
@@ -58,7 +58,7 @@ public final class SIIORegistry {
 
     public static SIIOServiceProvider getWriter(String writerFormat) {
         for (SIIOServiceProvider provider : getServiceProviders()) {
-            for (String mWriterFormat : provider.getWriterFormatNames()) {
+            for (String mWriterFormat : provider.getWriterMIMETypes()) {
                 if (mWriterFormat.equalsIgnoreCase(writerFormat)) return provider;
             }
         }

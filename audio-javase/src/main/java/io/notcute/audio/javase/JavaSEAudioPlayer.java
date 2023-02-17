@@ -11,12 +11,15 @@ import io.notcute.util.MathUtils;
 import io.notcute.util.signalslot.VoidSignal1;
 import io.notcute.util.signalslot.VoidSignal2;
 
-import javax.sound.sampled.*;
-import javax.sound.sampled.spi.FormatConversionProvider;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
@@ -66,8 +69,8 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
         return audioMixer;
     }
 
-    protected final List<AWTMusic> musics = new CopyOnWriteArrayList<>();
-    protected final List<AWTSound> sounds = new CopyOnWriteArrayList<>();
+    protected final List<JavaSEMusic> musics = new CopyOnWriteArrayList<>();
+    protected final List<JavaSESound> sounds = new CopyOnWriteArrayList<>();
 
     @Override
     public Sound loadSound(File input) {
@@ -76,7 +79,7 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
             AudioInputStream ais = AudioSystem.getAudioInputStream(input);
             ais = getSupportedAudioInputStream(ais);
             float[] cue = loadAudioInputStream(ais);
-            AWTSound sound = new AWTSound(AudioCue.makeStereoCue(cue, input.toURI().toString(), 1));
+            JavaSESound sound = new JavaSESound(AudioCue.makeStereoCue(cue, input.toURI().toString(), 1));
             sounds.add(sound);
             onSoundLoad.emit(sound);
             return sound;
@@ -92,7 +95,7 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
             AudioInputStream ais = AudioSystem.getAudioInputStream(assets.readAsset(input));
             ais = getSupportedAudioInputStream(ais);
             float[] cue = loadAudioInputStream(ais);
-            AWTSound sound = new AWTSound(AudioCue.makeStereoCue(cue, input, 1));
+            JavaSESound sound = new JavaSESound(AudioCue.makeStereoCue(cue, input, 1));
             sounds.add(sound);
             onSoundLoad.emit(sound);
             return sound;
@@ -105,7 +108,7 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     @Override
     public Music loadMusic(File input) {
         Objects.requireNonNull(input);
-        AWTMusic music = new AWTMusic(input);
+        JavaSEMusic music = new JavaSEMusic(input);
         musics.add(music);
         onMusicLoad.emit(music);
         return music;
@@ -113,56 +116,38 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
 
     @Override
     public Music loadMusic(Assets assets, String input) {
-        AWTMusic music = new AWTMusic(input);
+        JavaSEMusic music = new JavaSEMusic(input);
         musics.add(music);
         onMusicLoad.emit(music);
         return music;
     }
 
-    // I have no better way :(
+    private static final String[] LOADER_MIME_TYPES = new String[] {
+            "audio/wav", "audio/mpeg", "audio/ogg", "audio/basic",
+            "audio/flac", "audio/aiff", "audio/x-aiff", "audio/midi", "audio/x-midi" };
+
     @Override
-    public String[] getAudioLoaderFormatNames() {
-        Set<String> formatNames = new HashSet<>();
-        // JDK
-        for (AudioFileFormat.Type type : AudioSystem.getAudioFileTypes()) {
-            formatNames.add(type.getExtension().toLowerCase());
-            if (type.toString().equalsIgnoreCase("aiff")) formatNames.add("aiff");
-        }
-        formatNames.add("mid");
-        formatNames.add("midi");
-        // SPI
-        ServiceLoader<FormatConversionProvider> serviceLoader = ServiceLoader.load(FormatConversionProvider.class);
-        String encodingString;
-        for (FormatConversionProvider provider : serviceLoader) {
-            for (AudioFormat.Encoding encoding : provider.getSourceEncodings()) {
-                if (encoding.equals(AudioFormat.Encoding.PCM_SIGNED) || encoding.equals(AudioFormat.Encoding.PCM_UNSIGNED) ||
-                        encoding.equals(AudioFormat.Encoding.PCM_FLOAT) || encoding.equals(AudioFormat.Encoding.ALAW) ||
-                        encoding.equals(AudioFormat.Encoding.ULAW)) continue;
-                encodingString = encoding.toString().toLowerCase();
-                if (encodingString.contains("vorbis")) formatNames.add("ogg");
-                else formatNames.add(encodingString);
-            }
-        }
-        return formatNames.toArray(new String[0]);
+    public String[] getAudioLoaderMIMETypes() {
+        return LOADER_MIME_TYPES.clone();
     }
 
     @Override
     public void prepareMusic(Music music) throws IOException {
-        AudioCue audioCue = ((AWTMusic) music).audioCue;
-        if (audioCue != null && !((AWTMusic) music).isPrepared()) {
-            ((AWTMusic) music).setInstanceID(audioCue.obtainInstance());
+        AudioCue audioCue = ((JavaSEMusic) music).audioCue;
+        if (audioCue != null && !((JavaSEMusic) music).isPrepared()) {
+            ((JavaSEMusic) music).setInstanceID(audioCue.obtainInstance());
             return;
         }
         try {
             String name;
             AudioInputStream ais;
-            File file = ((AWTMusic) music).file;
+            File file = ((JavaSEMusic) music).file;
             if (file != null) {
                 ais = AudioSystem.getAudioInputStream(file);
                 name = file.getAbsolutePath();
             }
             else {
-                String assetName = ((AWTMusic) music).assetName;
+                String assetName = ((JavaSEMusic) music).assetName;
                 InputStream input = JavaSEAssets.class.getClassLoader().getResourceAsStream(assetName);
                 Objects.requireNonNull(input);
                 ais = AudioSystem.getAudioInputStream(input);
@@ -170,11 +155,11 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
             }
             ais = getSupportedAudioInputStream(ais);
             float[] cue = loadAudioInputStream(ais);
-            ((AWTMusic) music).setAudioCue(AudioCue.makeStereoCue(cue, name, 1));
-            audioCue = ((AWTMusic) music).audioCue;
-            ((AWTMusic) music).setInstanceID(audioCue.obtainInstance());
-            ((AWTMusic) music).setLength((int) (audioCue.getFrameLength() * 1000.0 / AudioCue.audioFormat.getFrameRate()));
-            ((AWTMusic) music).setPrepared(true);
+            ((JavaSEMusic) music).setAudioCue(AudioCue.makeStereoCue(cue, name, 1));
+            audioCue = ((JavaSEMusic) music).audioCue;
+            ((JavaSEMusic) music).setInstanceID(audioCue.obtainInstance());
+            ((JavaSEMusic) music).setLength((int) (audioCue.getFrameLength() * 1000.0 / AudioCue.audioFormat.getFrameRate()));
+            ((JavaSEMusic) music).setPrepared(true);
             onMusicPrepare.emit(music);
         }
         catch (UnsupportedAudioFileException e) {
@@ -185,11 +170,11 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     @Override
     public boolean isMusicPrepared(Music music) {
         Objects.requireNonNull(music);
-        return ((AWTMusic) music).prepared;
+        return ((JavaSEMusic) music).prepared;
     }
 
     private void checkMusicPrepared(Music music) {
-        if (!((AWTMusic) music).prepared) throw new IllegalStateException("Please prepare the music first!");
+        if (!((JavaSEMusic) music).prepared) throw new IllegalStateException("Please prepare the music first!");
     }
 
     @Override
@@ -204,11 +189,11 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
                 return;
             }
         }
-        AudioCue audioCue = ((AWTMusic)music).audioCue;
-        int instanceID = ((AWTMusic)music).instanceID;
+        AudioCue audioCue = ((JavaSEMusic)music).audioCue;
+        int instanceID = ((JavaSEMusic)music).instanceID;
         if (!audioCue.isPlayerRunning()) audioCue.open(audioMixer);
         if (!audioCue.isPlaying(instanceID)) {
-            ((AWTMusic)music).apply();
+            ((JavaSEMusic)music).apply();
             audioCue.setFramePosition(instanceID, 0);
             audioCue.start(instanceID);
             onMusicStart.emit(music);
@@ -219,8 +204,8 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     public void pauseMusic(Music music) {
         Objects.requireNonNull(music);
         checkMusicPrepared(music);
-        AudioCue audioCue = ((AWTMusic)music).audioCue;
-        int instanceID = ((AWTMusic)music).instanceID;
+        AudioCue audioCue = ((JavaSEMusic)music).audioCue;
+        int instanceID = ((JavaSEMusic)music).instanceID;
         audioCue.stop(instanceID);
         onMusicPause.emit(music);
     }
@@ -229,8 +214,8 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     public void resumeMusic(Music music) {
         Objects.requireNonNull(music);
         checkMusicPrepared(music);
-        AudioCue audioCue = ((AWTMusic)music).audioCue;
-        int instanceID = ((AWTMusic)music).instanceID;
+        AudioCue audioCue = ((JavaSEMusic)music).audioCue;
+        int instanceID = ((JavaSEMusic)music).instanceID;
         audioCue.start(instanceID);
         onMusicResume.emit(music);
     }
@@ -239,14 +224,14 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     public void stopMusic(Music music) {
         Objects.requireNonNull(music);
         checkMusicPrepared(music);
-        AudioCue audioCue = ((AWTMusic)music).audioCue;
-        int instanceID = ((AWTMusic)music).instanceID;
+        AudioCue audioCue = ((JavaSEMusic)music).audioCue;
+        int instanceID = ((JavaSEMusic)music).instanceID;
         if (audioCue.isPlaying(instanceID)) audioCue.stop(instanceID);
         if (audioCue.isPlayerRunning()) {
             audioCue.close();
             audioCue.releaseInstance(instanceID);
-            ((AWTMusic) music).setInstanceID(-1);
-            ((AWTMusic) music).setPrepared(false);
+            ((JavaSEMusic) music).setInstanceID(-1);
+            ((JavaSEMusic) music).setPrepared(false);
         }
         if (audioMixer.getTrackCacheCount() < 1) {
             if (audioMixer.isMixerRunning()) audioMixer.stop();
@@ -256,8 +241,8 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     @Override
     public void unloadMusic(Music music) {
         Objects.requireNonNull(music);
-        musics.remove(((AWTMusic) music));
-        AudioCue audioCue = ((AWTMusic)music).audioCue;
+        musics.remove(((JavaSEMusic) music));
+        AudioCue audioCue = ((JavaSEMusic)music).audioCue;
         if (audioCue.isPlayerRunning()) {
             audioCue.close();
         }
@@ -278,11 +263,11 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
                 return;
             }
         }
-        AudioCue audioCue = ((AWTSound)sound).audioCue;
-        int instanceID = ((AWTSound)sound).instanceID;
+        AudioCue audioCue = ((JavaSESound)sound).audioCue;
+        int instanceID = ((JavaSESound)sound).instanceID;
         if (!audioCue.isPlayerRunning()) audioCue.open(audioMixer);
         if (!audioCue.isPlaying(instanceID)) {
-            ((AWTSound)sound).apply();
+            ((JavaSESound)sound).apply();
             audioCue.setFramePosition(instanceID, 0);
             audioCue.start(instanceID);
             onSoundStart.emit(sound);
@@ -292,8 +277,8 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     @Override
     public void pauseSound(Sound sound) {
         Objects.requireNonNull(sound);
-        AudioCue audioCue = ((AWTSound)sound).audioCue;
-        int instanceID = ((AWTSound)sound).instanceID;
+        AudioCue audioCue = ((JavaSESound)sound).audioCue;
+        int instanceID = ((JavaSESound)sound).instanceID;
         audioCue.stop(instanceID);
         onSoundPause.emit(sound);
     }
@@ -301,8 +286,8 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     @Override
     public void resumeSound(Sound sound) {
         Objects.requireNonNull(sound);
-        AudioCue audioCue = ((AWTSound)sound).audioCue;
-        int instanceID = ((AWTSound)sound).instanceID;
+        AudioCue audioCue = ((JavaSESound)sound).audioCue;
+        int instanceID = ((JavaSESound)sound).instanceID;
         audioCue.start(instanceID);
         onSoundResume.emit(sound);
     }
@@ -310,13 +295,13 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     @Override
     public void stopSound(Sound sound) {
         Objects.requireNonNull(sound);
-        AudioCue audioCue = ((AWTSound)sound).audioCue;
-        int instanceID = ((AWTSound)sound).instanceID;
+        AudioCue audioCue = ((JavaSESound)sound).audioCue;
+        int instanceID = ((JavaSESound)sound).instanceID;
         if (audioCue.isPlaying(instanceID)) audioCue.stop(instanceID);
         if (audioCue.isPlayerRunning()) {
             audioCue.close();
             audioCue.releaseInstance(instanceID);
-            ((AWTSound)sound).setInstanceID(audioCue.obtainInstance());
+            ((JavaSESound)sound).setInstanceID(audioCue.obtainInstance());
         }
         if (audioMixer.getTrackCacheCount() < 1) {
             if (audioMixer.isMixerRunning()) audioMixer.stop();
@@ -398,8 +383,8 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
     @Override
     public void unloadSound(Sound sound) {
         Objects.requireNonNull(sound);
-        sounds.remove(((AWTSound) sound));
-        AudioCue audioCue = ((AWTSound)sound).audioCue;
+        sounds.remove(((JavaSESound) sound));
+        AudioCue audioCue = ((JavaSESound)sound).audioCue;
         if (audioCue.isPlayerRunning()) {
             audioCue.close();
         }
@@ -419,7 +404,7 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
 
     @Override
     public void instanceEventOccurred(AudioCueInstanceEvent event) {
-        for (AWTMusic music : musics) {
+        for (JavaSEMusic music : musics) {
             if (event.source == music.audioCue && event.instanceID == music.instanceID) {
                 switch (event.type) {
                     case LOOP:
@@ -436,15 +421,15 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
 
     @Override
     public void unloadAll() {
-        for (AWTMusic music : musics) {
+        for (JavaSEMusic music : musics) {
             unloadMusic(music);
         }
-        for (AWTSound sound : sounds) {
+        for (JavaSESound sound : sounds) {
             unloadSound(sound);
         }
     }
 
-    public static class AWTMusic implements Music {
+    public static class JavaSEMusic implements Music {
 
         private volatile float volume;
         private volatile int loops;
@@ -458,14 +443,14 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
         protected volatile int instanceID = -1;
         private volatile int length = -1;
 
-        public AWTMusic(File file) {
+        public JavaSEMusic(File file) {
             Objects.requireNonNull(file);
             this.file = file;
             this.assetName = null;
             reset();
         }
 
-        public AWTMusic(String assetName) {
+        public JavaSEMusic(String assetName) {
             Objects.requireNonNull(assetName);
             this.file = null;
             this.assetName = assetName;
@@ -552,7 +537,7 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
 
     }
 
-    public static class AWTSound implements Sound {
+    public static class JavaSESound implements Sound {
 
         private volatile float volume;
         private volatile float speed;
@@ -561,7 +546,7 @@ public class JavaSEAudioPlayer implements AudioPlayer, AudioCueListener {
         protected final AudioCue audioCue;
         protected volatile int instanceID;
 
-        public AWTSound(AudioCue audioCue) {
+        public JavaSESound(AudioCue audioCue) {
             this.audioCue = audioCue;
             this.instanceID = audioCue.obtainInstance();
             reset();

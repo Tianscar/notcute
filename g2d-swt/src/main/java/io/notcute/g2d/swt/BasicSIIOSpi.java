@@ -1,8 +1,7 @@
 package io.notcute.g2d.swt;
 
-import io.notcute.g2d.AnimatedImage;
+import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Image;
-import io.notcute.util.ArrayUtils;
 import io.notcute.util.MathUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -14,9 +13,10 @@ import java.io.OutputStream;
 
 public final class BasicSIIOSpi implements SIIOServiceProvider {
 
-    private static final String[] READER_FORMAT_NAMES = new String[] {"bmp", "png", "jpeg", "jpg"};
-    private static final String[] WRITER_FORMAT_NAMES = new String[] {"bmp", "png", "jpeg", "jpg"};
-    private static final String[] ANIMATED_READER_FORMAT_NAMES = new String[] {"ico", "tiff", "gif"};
+    private static final String[] READER_MIME_TYPES = new String[] { "image/bmp", "image/jpeg", "image/png", "image/x-png"};
+    private static final String[] WRITER_MIME_TYPES = new String[] { "image/bmp", "image/jpeg", "image/png", "image/x-png"};
+    private static final String[] MULTI_FRAME_READER_MIME_TYPES = new String[] { "image/gif", "image/tiff", "image/x-icon",
+            "image/ico", "image/vnd.microsoft.icon" };
     
     @Override
     public Image read(Device device, InputStream stream) throws IOException, SWTException {
@@ -94,18 +94,17 @@ public final class BasicSIIOSpi implements SIIOServiceProvider {
                 }
             }
             if (prev != null) prev.dispose(); // prev FREE
-            AnimatedImage image = new AnimatedImage(frames);
+            MultiFrameImage image = new MultiFrameImage(frames);
             image.setLooping(loader.repeatCount - 1);
             return image;
         }
     }
 
     @Override
-    public boolean write(Image im, String formatName, int quality, OutputStream output) throws IOException, SWTException {
-        if (im instanceof AnimatedImage) return false;
+    public boolean write(Image im, String mimeType, int quality, OutputStream output) throws IOException, SWTException {
+        if (im instanceof MultiFrameImage) return false;
         else {
-            if (!ArrayUtils.containsIgnoreCase(WRITER_FORMAT_NAMES, formatName)) return false;
-            if (formatName.equalsIgnoreCase("png")) {
+            if (mimeType.equalsIgnoreCase("png")) {
                 ImageLoader loader = new ImageLoader();
                 loader.data = new ImageData[] {((SWTImage) im).getImageData()};
                 loader.compression = 3;
@@ -113,7 +112,7 @@ public final class BasicSIIOSpi implements SIIOServiceProvider {
                 output.flush();
                 return true;
             }
-            else if (formatName.equalsIgnoreCase("jpg") || formatName.equalsIgnoreCase("jpeg")) {
+            else if (mimeType.equalsIgnoreCase("jpg") || mimeType.equalsIgnoreCase("jpeg")) {
                 ImageLoader loader = new ImageLoader();
                 loader.data = new ImageData[] {((SWTImage) im).getImageData()};
                 loader.compression = MathUtils.clamp(quality, 0, 100);
@@ -121,7 +120,7 @@ public final class BasicSIIOSpi implements SIIOServiceProvider {
                 output.flush();
                 return true;
             }
-            else if (formatName.equalsIgnoreCase("bmp")) {
+            else if (mimeType.equalsIgnoreCase("bmp")) {
                 ImageLoader loader = new ImageLoader();
                 loader.data = new ImageData[] {((SWTImage) im).getImageData()};
                 loader.save(output, SWT.IMAGE_BMP);
@@ -133,22 +132,22 @@ public final class BasicSIIOSpi implements SIIOServiceProvider {
     }
 
     @Override
-    public String[] getReaderFormatNames() {
-        return READER_FORMAT_NAMES.clone();
+    public String[] getReaderMIMETypes() {
+        return READER_MIME_TYPES.clone();
     }
 
     @Override
-    public String[] getWriterFormatNames() {
-        return WRITER_FORMAT_NAMES.clone();
+    public String[] getWriterMIMETypes() {
+        return WRITER_MIME_TYPES.clone();
     }
 
     @Override
-    public String[] getAnimatedImageReaderFormatNames() {
-        return ANIMATED_READER_FORMAT_NAMES.clone();
+    public String[] getMultiFrameImageReaderMIMETypes() {
+        return MULTI_FRAME_READER_MIME_TYPES.clone();
     }
 
     @Override
-    public String[] getAnimatedImageWriterFormatNames() {
+    public String[] getMultiFrameImageWriterMIMETypes() {
         return new String[0];
     }
 

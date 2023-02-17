@@ -1,8 +1,12 @@
 package io.notcute.g2d.awt;
 
 import io.notcute.app.Assets;
-import io.notcute.g2d.*;
+import io.notcute.g2d.MultiFrameImage;
+import io.notcute.g2d.Font;
+import io.notcute.g2d.GraphicsKit;
+import io.notcute.g2d.Image;
 
+import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
@@ -11,16 +15,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
 
 public class AWTGraphicsKit implements GraphicsKit {
 
     protected static BufferedImage getSupportedImage(BufferedImage source, String format) {
-        if (format.equalsIgnoreCase("jpg") || format.equalsIgnoreCase("jpeg")) {
+        if (format.equals("image/jpeg")) {
             return Util.getImage(source, BufferedImage.TYPE_USHORT_565_RGB);
         }
-        else if (format.equalsIgnoreCase("bmp")) {
+        else if (format.equals("image/bmp")) {
             return Util.getImage(source, BufferedImage.TYPE_3BYTE_BGR);
         }
         else return Util.getImage(source, BufferedImage.TYPE_INT_ARGB);
@@ -28,19 +30,19 @@ public class AWTGraphicsKit implements GraphicsKit {
 
     public Image readImage(ImageInputStream input, int type) {
         try {
-            AnimatedImage framedImage = readAnimatedImage(input, type);
+            MultiFrameImage framedImage = readMultiFrameImage(input, type);
             if (framedImage != null) return framedImage;
-            BufferedImage image = ImageIO.read(input);
+            BufferedImage image = BufferedImageIO.read(input, Util.toAWTBufferedImageType(type));
             if (image == null) return null;
-            else return new AWTImage(Util.getImage(image, Util.toAWTBufferedImageType(type)));
+            else return new AWTImage(image);
         } catch (IOException e) {
             return null;
         }
     }
 
-    public AnimatedImage readAnimatedImage(ImageInputStream input, int type) {
+    public MultiFrameImage readMultiFrameImage(ImageInputStream input, int type) {
         try {
-            return AnimatedImageIO.read(input, Util.toAWTBufferedImageType(type));
+            return MultiFrameBufferedImageIO.read(input, Util.toAWTBufferedImageType(type));
         } catch (IOException e) {
             return null;
         }
@@ -84,130 +86,108 @@ public class AWTGraphicsKit implements GraphicsKit {
     }
 
     @Override
-    public AnimatedImage readAnimatedImage(File input, int type) {
+    public MultiFrameImage readMultiFrameImage(File input, int type) {
         try {
-            return readAnimatedImage(ImageIO.createImageInputStream(input), type);
+            return readMultiFrameImage(ImageIO.createImageInputStream(input), type);
         } catch (IOException e) {
             return null;
         }
     }
 
     @Override
-    public AnimatedImage readAnimatedImage(InputStream input, int type) {
+    public MultiFrameImage readMultiFrameImage(InputStream input, int type) {
         try {
-            return readAnimatedImage(ImageIO.createImageInputStream(input), type);
+            return readMultiFrameImage(ImageIO.createImageInputStream(input), type);
         } catch (IOException e) {
             return null;
         }
     }
 
     @Override
-    public AnimatedImage readAnimatedImage(URL input, int type) {
+    public MultiFrameImage readMultiFrameImage(URL input, int type) {
         try {
-            return readAnimatedImage(ImageIO.createImageInputStream(input), type);
+            return readMultiFrameImage(ImageIO.createImageInputStream(input), type);
         } catch (IOException e) {
             return null;
         }
     }
 
     @Override
-    public AnimatedImage readAnimatedImage(Assets assets, String input, int type) {
-        return readAnimatedImage(assets.readAsset(input), type);
+    public MultiFrameImage readMultiFrameImage(Assets assets, String input, int type) {
+        return readMultiFrameImage(assets.readAsset(input), type);
     }
 
-    public boolean writeImage(Image image, String formatName, int quality, ImageOutputStream output) {
+    public boolean writeImage(Image image, String mimeType, int quality, ImageOutputStream output) {
         try {
-            if (image instanceof AnimatedImage) return writeAnimatedImage((AnimatedImage) image, formatName, quality, output);
-            return ImageIO.write(getSupportedImage(((AWTImage)image).getBufferedImage(), formatName), formatName, quality / 100f, output);
+            if (image instanceof MultiFrameImage) return writeMultiFrameImage((MultiFrameImage) image, mimeType, quality, output);
+            return BufferedImageIO.write(getSupportedImage(((AWTImage) image).getBufferedImage(), mimeType), mimeType, quality / 100f, output);
         } catch (IOException e) {
             return false;
         }
     }
 
-    public boolean writeAnimatedImage(AnimatedImage image, String formatName, int quality, ImageOutputStream output) {
+    public boolean writeMultiFrameImage(MultiFrameImage image, String mimeType, int quality, ImageOutputStream output) {
         try {
-            return AnimatedImageIO.write(image, formatName, quality / 100f, output);
+            return MultiFrameBufferedImageIO.write(image, mimeType, quality / 100f, output);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public boolean writeImage(Image image, String formatName, int quality, File output) {
+    public boolean writeImage(Image image, String mimeType, int quality, File output) {
         try (ImageOutputStream stream = ImageIO.createImageOutputStream(output)) {
-            return writeImage(image, formatName, quality, stream);
+            return writeImage(image, mimeType, quality, stream);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public boolean writeImage(Image image, String formatName, int quality, OutputStream output) {
+    public boolean writeImage(Image image, String mimeType, int quality, OutputStream output) {
         try (ImageOutputStream stream = ImageIO.createImageOutputStream(output)) {
-            return writeImage(image, formatName, quality, stream);
+            return writeImage(image, mimeType, quality, stream);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public boolean writeAnimatedImage(AnimatedImage image, String formatName, int quality, File output) {
+    public boolean writeMultiFrameImage(MultiFrameImage image, String mimeType, int quality, File output) {
         try (ImageOutputStream stream = ImageIO.createImageOutputStream(output)) {
-            return writeAnimatedImage(image, formatName, quality, stream);
+            return writeMultiFrameImage(image, mimeType, quality, stream);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public boolean writeAnimatedImage(AnimatedImage image, String formatName, int quality, OutputStream output) {
+    public boolean writeMultiFrameImage(MultiFrameImage image, String mimeType, int quality, OutputStream output) {
         try (ImageOutputStream stream = ImageIO.createImageOutputStream(output)) {
-            return writeAnimatedImage(image, formatName, quality, stream);
+            return writeMultiFrameImage(image, mimeType, quality, stream);
         } catch (IOException e) {
             return false;
         }
     }
 
     @Override
-    public String[] getImageReaderFormatNames() {
-        Set<String> formatNames = new HashSet<>();
-        for (String formatName : ImageIO.getReaderFormatNames()) {
-            formatNames.add(formatName.toLowerCase());
-        }
-        for (String formatName : AnimatedImageIO.getReaderFormatNames()) {
-            formatNames.remove(formatName.toLowerCase());
-        }
-        return formatNames.toArray(new String[0]);
+    public String[] getImageReaderMIMETypes() {
+        return BufferedImageIO.getReaderMIMETypes();
     }
 
     @Override
-    public String[] getImageWriterFormatNames() {
-        Set<String> formatNames = new HashSet<>();
-        for (String formatName : ImageIO.getWriterFormatNames()) {
-            formatNames.add(formatName.toLowerCase());
-        }
-        for (String formatName : AnimatedImageIO.getWriterFormatNames()) {
-            formatNames.remove(formatName.toLowerCase());
-        }
-        return formatNames.toArray(new String[0]);
+    public String[] getImageWriterMIMETypes() {
+        return BufferedImageIO.getWriterMIMETypes();
     }
 
     @Override
-    public String[] getAnimatedImageReaderFormatNames() {
-        Set<String> formatNames = new HashSet<>();
-        for (String formatName : AnimatedImageIO.getReaderFormatNames()) {
-            formatNames.add(formatName.toLowerCase());
-        }
-        return formatNames.toArray(new String[0]);
+    public String[] getMultiFrameImageReaderMIMETypes() {
+        return MultiFrameBufferedImageIO.getReaderMIMETypes();
     }
 
     @Override
-    public String[] getAnimatedImageWriterFormatNames() {
-        Set<String> formatNames = new HashSet<>();
-        for (String formatName : AnimatedImageIO.getWriterFormatNames()) {
-            formatNames.add(formatName.toLowerCase());
-        }
-        return formatNames.toArray(new String[0]);
+    public String[] getMultiFrameImageWriterMIMETypes() {
+        return MultiFrameBufferedImageIO.getWriterMIMETypes();
     }
 
     @Override

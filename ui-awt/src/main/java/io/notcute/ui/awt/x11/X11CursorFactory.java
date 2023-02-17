@@ -1,4 +1,4 @@
-package io.notcute.ui.awt.X11;
+package io.notcute.ui.awt.x11;
 
 import sun.awt.X11.XToolkit;
 

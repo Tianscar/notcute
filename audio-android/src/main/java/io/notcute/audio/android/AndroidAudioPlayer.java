@@ -124,11 +124,13 @@ public class AndroidAudioPlayer implements AudioPlayer, MediaPlayer.OnCompletion
         onMusicUnload.emit(music);
     }
 
-    private static final String[] LOADER_FORMAT_NAMES = new String[] {"wav", "mp3", "ogg", "flac", "3gp", "aac", "midi", "mid"};
+    private static final String[] LOADER_MIME_TYPES = new String[] {
+            "audio/wav", "audio/mpeg", "audio/ogg",
+            "audio/flac", "audio/3gpp", "audio/aac", "audio/midi", "audio/x-midi" };
 
     @Override
-    public String[] getAudioLoaderFormatNames() {
-        return LOADER_FORMAT_NAMES.clone();
+    public String[] getAudioLoaderMIMETypes() {
+        return LOADER_MIME_TYPES.clone();
     }
 
     @Override

@@ -26,7 +26,7 @@ import io.notcute.input.Input;
 import io.notcute.ui.Cursor;
 import io.notcute.ui.G2DContext;
 import io.notcute.ui.UIKit;
-import io.notcute.util.Color;
+import io.notcute.g2d.Color;
 import io.notcute.util.collections.CollectionUtils;
 import io.notcute.util.signalslot.*;
 

@@ -4,11 +4,12 @@ import io.notcute.g2d.AffineTransform;
 import io.notcute.g2d.Graphics;
 import io.notcute.g2d.geom.Rectangle;
 import io.notcute.ui.G2DContext;
-import io.notcute.util.Color;
+import io.notcute.g2d.Color;
+import io.notcute.ui.Paintable;
 
 import java.util.Objects;
 
-public class Widget {
+public class Widget implements Paintable {
 
     private transient final G2DContext g2DContext;
 
@@ -50,11 +51,13 @@ public class Widget {
         else this.backgroundTransform.from(backgroundTransform);
     }
 
+    @Override
     public void paint(G2DContext context, Graphics graphics, boolean snapshot) {
         graphics.save();
         Graphics.Info info = graphics.getInfo();
         info.setColor(backgroundColor);
         info.setStyle(Graphics.Style.FILL);
+        graphics.apply();
         graphics.drawShape(bounds, backgroundTransform);
         graphics.restore();
     }

@@ -19,8 +19,8 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
 
-    private static final String[] READER_FORMAT_NAMES = new String[]{"bmp", "webp", "png", "jpeg", "jpg"};
-    private static final String[] WRITER_FORMAT_NAMES = new String[]{"bmp", "webp", "png", "jpeg", "jpg"};
+    private static final String[] READER_MIME_TYPES = new String[] { "image/bmp", "image/jpeg", "image/png", "image/x-png"};
+    private static final String[] WRITER_MIME_TYPES = new String[] { "image/bmp", "image/jpeg", "image/png", "image/x-png"};
 
     @Override
     public Bitmap read(InputStream stream, Bitmap.Config config) throws IOException {
@@ -316,46 +316,33 @@ public final class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public boolean write(File output, Bitmap bitmap, String formatName, int quality) throws IOException {
-        if (!Util.containsIgnoreCase(WRITER_FORMAT_NAMES, formatName)) return false;
+    public boolean write(File output, Bitmap bitmap, String mimeType, int quality) throws IOException {
+        if (!Util.containsIgnoreCase(WRITER_MIME_TYPES, mimeType)) return false;
         if (output.exists()) {
             if (!output.delete()) return false;
         }
         if (!output.createNewFile()) return false;
         try (FileOutputStream fos = new FileOutputStream(output)) {
-            return write(fos, bitmap, formatName, quality);
+            return write(fos, bitmap, mimeType, quality);
         }
     }
 
     @Override
-    public boolean write(OutputStream output, Bitmap bitmap, String formatName, int quality) throws IOException {
-        if (!Util.containsIgnoreCase(WRITER_FORMAT_NAMES, formatName)) return false;
+    public boolean write(OutputStream output, Bitmap bitmap, String mimeType, int quality) throws IOException {
+        if (!Util.containsIgnoreCase(WRITER_MIME_TYPES, mimeType)) return false;
         quality = MathUtils.clamp(quality, 0, 100);
         boolean result = false;
-        String format = formatName.trim().toLowerCase();
-        if (format.equals("png")) {
-            result = bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
-        }
-        else if (format.equals("jpg") || format.equals("jpeg")) {
-            result = bitmap.compress(Bitmap.CompressFormat.JPEG, quality, output);
-        }
-        else if (format.equals("webp")) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (quality == 100) {
-                    result = bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS,
-                            quality, output);
-                }
-                else {
-                    result = bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY,
-                            quality, output);
-                }
-            }
-            else {
-                result = bitmap.compress(Bitmap.CompressFormat.WEBP, quality, output);
-            }
-        }
-        else if (format.equals("bmp")) {
-            result = BMPEncoder.compress(bitmap, output);
+        switch (mimeType) {
+            case "image/png":
+            case "image/x-png":
+                result = bitmap.compress(Bitmap.CompressFormat.PNG, 100, output);
+                break;
+            case "image/jpeg":
+                result = bitmap.compress(Bitmap.CompressFormat.JPEG, quality, output);
+                break;
+            case "image/bmp":
+                result = BMPEncoder.compress(bitmap, output);
+                break;
         }
         output.flush();
         //output.close();
@@ -363,13 +350,13 @@ public final class BasicBIOSpi implements BIOServiceProvider {
     }
 
     @Override
-    public String[] getReaderFormatNames() {
-        return READER_FORMAT_NAMES.clone();
+    public String[] getReaderMIMETypes() {
+        return READER_MIME_TYPES.clone();
     }
 
     @Override
-    public String[] getWriterFormatNames() {
-        return WRITER_FORMAT_NAMES.clone();
+    public String[] getWriterMIMETypes() {
+        return WRITER_MIME_TYPES.clone();
     }
 
 }
