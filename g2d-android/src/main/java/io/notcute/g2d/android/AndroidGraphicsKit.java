@@ -8,6 +8,8 @@ import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Font;
 import io.notcute.g2d.GraphicsKit;
 import io.notcute.g2d.Image;
+import io.notcute.internal.android.AndroidG2DUtils;
+import io.notcute.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +22,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
 
     @Override
     public Image createImage(int width, int height, int type) {
-        return new AndroidImage(Bitmap.createBitmap(width, height, Util.toAndroidBitmapConfig(type)));
+        return new AndroidImage(Bitmap.createBitmap(width, height, AndroidG2DUtils.toAndroidBitmapConfig(type)));
     }
 
     @Override
@@ -28,7 +30,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
         try {
             MultiFrameImage framedImage = readMultiFrameImage(input, type);
             if (framedImage != null) return framedImage;
-            Bitmap bitmap = BitmapIO.read(input, Util.toAndroidBitmapConfig(type));
+            Bitmap bitmap = BitmapIO.read(input, AndroidG2DUtils.toAndroidBitmapConfig(type));
             if (bitmap == null) return null;
             else return new AndroidImage(bitmap);
         } catch (IOException e) {
@@ -41,7 +43,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
         try {
             MultiFrameImage framedImage = readMultiFrameImage(input, type);
             if (framedImage != null) return framedImage;
-            Bitmap bitmap = BitmapIO.read(input, Util.toAndroidBitmapConfig(type));
+            Bitmap bitmap = BitmapIO.read(input, AndroidG2DUtils.toAndroidBitmapConfig(type));
             if (bitmap == null) return null;
             else return new AndroidImage(bitmap);
         } catch (IOException e) {
@@ -54,7 +56,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
         try {
             MultiFrameImage framedImage = readMultiFrameImage(input, type);
             if (framedImage != null) return framedImage;
-            Bitmap bitmap = BitmapIO.read(input, Util.toAndroidBitmapConfig(type));
+            Bitmap bitmap = BitmapIO.read(input, AndroidG2DUtils.toAndroidBitmapConfig(type));
             if (bitmap == null) return null;
             else return new AndroidImage(bitmap);
         } catch (IOException e) {
@@ -66,9 +68,9 @@ public class AndroidGraphicsKit implements GraphicsKit {
     public Image readImage(Assets assets, String input, int type) {
         Objects.requireNonNull(input);
         try {
-            MultiFrameImage framedImage = readMultiFrameImage(assets, Util.removeStartSeparator(input), type);
+            MultiFrameImage framedImage = readMultiFrameImage(assets, FileUtils.removeStartSeparator(input), type);
             if (framedImage != null) return framedImage;
-            Bitmap bitmap = BitmapIO.read(((AndroidAssets) assets).getAssets(), Util.removeStartSeparator(input), Util.toAndroidBitmapConfig(type));
+            Bitmap bitmap = BitmapIO.read(((AndroidAssets) assets).getAssets(), FileUtils.removeStartSeparator(input), AndroidG2DUtils.toAndroidBitmapConfig(type));
             if (bitmap == null) return null;
             else return new AndroidImage(bitmap);
         } catch (IOException e) {
@@ -79,7 +81,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     @Override
     public MultiFrameImage readMultiFrameImage(File input, int type) {
         try {
-            return MultiFrameBitmapIO.read(input, Util.toAndroidBitmapConfig(type));
+            return MultiFrameBitmapIO.read(input, AndroidG2DUtils.toAndroidBitmapConfig(type));
         } catch (IOException e) {
             return null;
         }
@@ -88,7 +90,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     @Override
     public MultiFrameImage readMultiFrameImage(InputStream input, int type) {
         try {
-            return MultiFrameBitmapIO.read(input, Util.toAndroidBitmapConfig(type));
+            return MultiFrameBitmapIO.read(input, AndroidG2DUtils.toAndroidBitmapConfig(type));
         } catch (IOException e) {
             return null;
         }
@@ -97,7 +99,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     @Override
     public MultiFrameImage readMultiFrameImage(URL input, int type) {
         try {
-            return MultiFrameBitmapIO.read(input, Util.toAndroidBitmapConfig(type));
+            return MultiFrameBitmapIO.read(input, AndroidG2DUtils.toAndroidBitmapConfig(type));
         } catch (IOException e) {
             return null;
         }
@@ -107,7 +109,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     public MultiFrameImage readMultiFrameImage(Assets assets, String input, int type) {
         Objects.requireNonNull(input);
         try {
-            return MultiFrameBitmapIO.read(((AndroidAssets) assets).getAssets(), Util.removeStartSeparator(input), Util.toAndroidBitmapConfig(type));
+            return MultiFrameBitmapIO.read(((AndroidAssets) assets).getAssets(), FileUtils.removeStartSeparator(input), AndroidG2DUtils.toAndroidBitmapConfig(type));
         } catch (IOException e) {
             return null;
         }
@@ -174,7 +176,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     @Override
     public Font getFont(String familyName, int style) {
         Objects.requireNonNull(familyName);
-        return new AndroidFont(Typeface.create(familyName, Util.toAndroidTypefaceStyle(style)));
+        return new AndroidFont(Typeface.create(familyName, AndroidG2DUtils.toAndroidTypefaceStyle(style)));
     }
 
     @Override
@@ -185,7 +187,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     @Override
     public Font readFont(File input) {
         try {
-            Typeface typeface = Util.readTypeface(input);
+            Typeface typeface = AndroidG2DUtils.readTypeface(input);
             return typeface == null ? null : new AndroidFont(typeface);
         } catch (IOException e) {
             return null;
@@ -196,7 +198,7 @@ public class AndroidGraphicsKit implements GraphicsKit {
     public Font readFont(Assets assets, String input) {
         Objects.requireNonNull(input);
         try {
-            Typeface typeface = Util.readTypeface(((AndroidAssets) assets).getAssets(), Util.removeStartSeparator(input));
+            Typeface typeface = AndroidG2DUtils.readTypeface(((AndroidAssets) assets).getAssets(), FileUtils.removeStartSeparator(input));
             return typeface == null ? null : new AndroidFont(typeface);
         } catch (IOException e) {
             return null;

@@ -2,6 +2,7 @@ package io.notcute.app.android;
 
 import android.content.res.AssetManager;
 import io.notcute.app.Assets;
+import io.notcute.util.FileUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,7 @@ public class AndroidAssets implements Assets {
         Objects.requireNonNull(asset);
         try {
             return assets.open(
-                    asset.charAt(0) == '/' ? asset.substring(1) : asset,
+                    FileUtils.removeStartSeparator(asset),
                     AssetManager.ACCESS_STREAMING);
         } catch (IOException ignored) {
         }

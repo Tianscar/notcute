@@ -34,6 +34,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import io.notcute.internal.android.AndroidG2DUtils;
+import io.notcute.util.IOUtils;
 
 import java.io.*;
 import java.net.URI;
@@ -55,7 +57,7 @@ public final class BitmapIO {
             bitmap = provider.read(stream, config);
             if (bitmap != null) break;
         }
-        Util.closeQuietly(stream);
+        IOUtils.closeQuietly(stream);
         return bitmap;
     }
 
@@ -70,7 +72,7 @@ public final class BitmapIO {
             bitmap = provider.read(stream, region, config);
             if (bitmap != null) break;
         }
-        Util.closeQuietly(stream);
+        IOUtils.closeQuietly(stream);
         return bitmap;
     }
 

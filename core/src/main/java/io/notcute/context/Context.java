@@ -5,6 +5,8 @@ import io.notcute.app.Logger;
 import io.notcute.app.Platform;
 import io.notcute.app.Preferences;
 import io.notcute.util.Disposable;
+import io.notcute.util.I18NText;
+import io.notcute.util.MIMETypes;
 import io.notcute.util.signalslot.Dispatcher;
 
 import java.io.File;
@@ -15,7 +17,6 @@ public interface Context extends Disposable {
 
         Context getContext();
 
-        Producer getProducer();
         Dispatcher getDispatcher();
 
         Preferences getPreferences(String name);
@@ -30,6 +31,8 @@ public interface Context extends Disposable {
         Assets getAssets();
         Logger getLogger();
         Platform getPlatform();
+        I18NText getI18NText();
+        MIMETypes getMIMETypes();
 
     }
 

@@ -4,17 +4,18 @@ import io.notcute.app.Clipboard;
 import io.notcute.app.awt.AWTClipboard;
 import io.notcute.app.awt.AWTPlatform;
 import io.notcute.audio.AudioPlayer;
-import io.notcute.audio.javase.JavaSEAudioPlayer;
-import io.notcute.g2d.awt.AWTGraphics;
-import io.notcute.g2d.awt.AWTGraphicsKit;
-import io.notcute.g2d.awt.AWTImage;
 import io.notcute.context.Context;
 import io.notcute.context.Identifier;
-import io.notcute.context.Initializer;
+import io.notcute.context.Producer;
 import io.notcute.g2d.Graphics;
 import io.notcute.g2d.GraphicsKit;
 import io.notcute.g2d.Image;
+import io.notcute.g2d.awt.AWTGraphics;
+import io.notcute.g2d.awt.AWTImage;
 import io.notcute.input.Input;
+import io.notcute.internal.awt.Desktop;
+import io.notcute.internal.awt.AWTUIUtils;
+import io.notcute.internal.awt.MouseInputListener;
 import io.notcute.ui.Cursor;
 import io.notcute.ui.G2DContext;
 import io.notcute.ui.UIKit;
@@ -27,17 +28,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URI;
 import java.util.Objects;
-import java.util.ServiceLoader;
 
 public class AWTG2DContext extends Canvas implements G2DContext, ComponentListener, FocusListener, MouseInputListener,
         MouseWheelListener, KeyListener, HierarchyListener {
-
-    static {
-        ServiceLoader<Initializer> serviceLoader = ServiceLoader.load(Initializer.class, Initializer.class.getClassLoader());
-        for (Initializer initializer : serviceLoader) {
-            initializer.initialize();
-        }
-    }
 
     private static final long serialVersionUID = 8419282102874603985L;
 
@@ -87,12 +80,12 @@ public class AWTG2DContext extends Canvas implements G2DContext, ComponentListen
 
     @Override
     public void mousePressed(MouseEvent e) {
-        holder.onPointerDown.emit(this, (float) e.getX(), (float) e.getY(), e.getClickCount() - 1, Util.toNotcuteButton(e.getButton()));
+        holder.onPointerDown.emit(this, (float) e.getX(), (float) e.getY(), e.getClickCount() - 1, AWTUIUtils.toNotcuteButton(e.getButton()));
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        holder.onPointerUp.emit(this, (float) e.getX(), (float) e.getY(), e.getClickCount() - 1, Util.toNotcuteButton(e.getButton()));
+        holder.onPointerUp.emit(this, (float) e.getX(), (float) e.getY(), e.getClickCount() - 1, AWTUIUtils.toNotcuteButton(e.getButton()));
     }
 
     @Override
@@ -117,7 +110,7 @@ public class AWTG2DContext extends Canvas implements G2DContext, ComponentListen
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        int scrollType = Util.toNotcuteScrollType(e.getScrollType());
+        int scrollType = AWTUIUtils.toNotcuteScrollType(e.getScrollType());
         double amount = 0;
         if (scrollType == Input.ScrollType.UNIT) {
             amount = Math.abs(e.getUnitsToScroll()) * e.getPreciseWheelRotation();
@@ -133,12 +126,12 @@ public class AWTG2DContext extends Canvas implements G2DContext, ComponentListen
 
     @Override
     public void keyPressed(KeyEvent e) {
-        holder.onKeyDown.emit(this, e.getExtendedKeyCode(), Util.toNotcuteKeyLocation(e.getKeyLocation()));
+        holder.onKeyDown.emit(this, e.getExtendedKeyCode(), AWTUIUtils.toNotcuteKeyLocation(e.getKeyLocation()));
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        holder.onKeyUp.emit(this, e.getExtendedKeyCode(), Util.toNotcuteKeyLocation(e.getKeyLocation()));
+        holder.onKeyUp.emit(this, e.getExtendedKeyCode(), AWTUIUtils.toNotcuteKeyLocation(e.getKeyLocation()));
     }
 
     protected static class Holder implements G2DContext.Holder {
@@ -146,9 +139,6 @@ public class AWTG2DContext extends Canvas implements G2DContext, ComponentListen
         private final AWTG2DContext context;
         public Holder(AWTG2DContext context) {
             this.context = Objects.requireNonNull(context);
-            AWTContext.PRODUCER.putIfAbsent(new Identifier("notcute", "graphicsKit"), this::getGraphicsKit);
-            AWTContext.PRODUCER.putIfAbsent(new Identifier("notcute", "uiKit"), this::getUIKit);
-            AWTContext.PRODUCER.putIfAbsent(new Identifier("notcute", "audioPlayer"), this::getAudioPlayer);
         }
 
         @Override
@@ -375,25 +365,19 @@ public class AWTG2DContext extends Canvas implements G2DContext, ComponentListen
             return Desktop.open(file);
         }
 
-        private static volatile AWTGraphicsKit graphicsKit = null;
         @Override
         public GraphicsKit getGraphicsKit() {
-            if (graphicsKit == null) graphicsKit = new AWTGraphicsKit();
-            return graphicsKit;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "graphicsKit"), GraphicsKit.class);
         }
 
-        private static volatile AWTUIKit uiKit = null;
         @Override
         public UIKit getUIKit() {
-            if (uiKit == null) uiKit = new AWTUIKit();
-            return uiKit;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "uiKit"), UIKit.class);
         }
 
-        private static volatile JavaSEAudioPlayer audioPlayer = null;
         @Override
         public AudioPlayer getAudioPlayer() {
-            if (audioPlayer == null) audioPlayer = new JavaSEAudioPlayer();
-            return audioPlayer;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "audioPlayer"), AudioPlayer.class);
         }
 
     }

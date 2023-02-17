@@ -1,5 +1,7 @@
 package io.notcute.g2d.awt;
 
+import io.notcute.internal.awt.AWTG2DUtils;
+
 import java.awt.*;
 import java.util.Objects;
 
@@ -19,7 +21,7 @@ public class AWTFont implements io.notcute.g2d.Font {
 
     @Override
     public int getStyle() {
-        return Util.toNotcuteFontStyle(font.getStyle());
+        return AWTG2DUtils.toNotcuteFontStyle(font.getStyle());
     }
 
     @Override

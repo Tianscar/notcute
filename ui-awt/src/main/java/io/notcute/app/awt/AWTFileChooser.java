@@ -1,10 +1,12 @@
 package io.notcute.app.awt;
 
 import io.notcute.app.FileChooser;
+import io.notcute.internal.awt.AWTUIUtils;
 import io.notcute.ui.Container;
 import io.notcute.ui.awt.AWTContainer;
 import io.notcute.util.Charsets;
 import io.notcute.util.IOUtils;
+import io.notcute.util.MIMETypes;
 import io.notcute.util.signalslot.*;
 
 import java.awt.FileDialog;
@@ -15,7 +17,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
@@ -81,7 +82,7 @@ public class AWTFileChooser implements FileChooser {
         CharSequence title = info.getTitle();
         String[] filterMIMETypes = info.getFilterMIMETypes();
         File pathname = info.getPathname();
-        if (AWTPlatform.isX11 && "KDE".equals(System.getenv("XDG_CURRENT_DESKTOP"))) {
+        if (!AWTPlatform.isX11 && "KDE".equals(System.getenv("XDG_CURRENT_DESKTOP"))) {
             // AWT's FileDialog is not native on KDE, we fix it by call kdialog via Java Process API
             long window = getX11Window((AWTContainer) container);
             if (window != 0L) {
@@ -125,22 +126,35 @@ public class AWTFileChooser implements FileChooser {
                 }
             }
         }
-        FileDialog fileDialog = new FileDialog((AWTContainer) container, title == null ? "" : title.toString(), Util.toAWTFileDialogMode(info.getMode()));
+        FileDialog fileDialog = new FileDialog((AWTContainer) container, title == null ? "" : title.toString(), AWTUIUtils.toAWTFileDialogMode(info.getMode()));
         fileDialog.setMultipleMode(info.isMultiple());
         fileDialog.setDirectory(pathname == null ? null : (pathname.isDirectory() ? pathname.getAbsolutePath() : pathname.getParent()));
-        fileDialog.setFile(pathname == null ? null : (pathname.isFile() ? pathname.getName() : null));
         if (filterMIMETypes != null) {
-            Set<String> filterMIMETypeSet = new HashSet<>(Arrays.asList(filterMIMETypes));
-            fileDialog.setFilenameFilter(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    try {
-                        return filterMIMETypeSet.contains(Files.probeContentType(new File(dir, name).toPath()));
-                    } catch (IOException e) {
-                        return true;
+            MIMETypes mimeTypes = container.getContextHolder().getMIMETypes();
+            if (AWTPlatform.isWindows) {
+                StringBuilder extensions = new StringBuilder();
+                for (String mimeType : filterMIMETypes) {
+                    for (String extension : mimeTypes.getExtensions(mimeType)) {
+                        extensions.append("*.").append(extension).append(", ");
                     }
                 }
-            });
+                if (extensions.length() > 0) extensions
+                        .deleteCharAt(extensions.length() - 1)
+                        .deleteCharAt(extensions.length() - 1);
+                fileDialog.setFile(extensions.toString());
+            }
+            else {
+                Set<String> filterMIMETypeSet = new HashSet<>(Arrays.asList(filterMIMETypes));
+                fileDialog.setFilenameFilter(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        for (String mimeType : mimeTypes.getMIMETypes(name.substring(name.lastIndexOf('.')))) {
+                            if (filterMIMETypeSet.contains(mimeType)) return true;
+                        }
+                        return false;
+                    }
+                });
+            }
         }
         fileDialog.setLocation(-1, -1); // Make the FileDialog center of the screen
         onShow.emit(fileDialog);

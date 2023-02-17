@@ -33,6 +33,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import io.notcute.g2d.MultiFrameImage;
+import io.notcute.internal.android.AndroidG2DUtils;
+import io.notcute.util.IOUtils;
 
 import java.io.*;
 import java.net.URI;
@@ -54,7 +56,7 @@ public final class MultiFrameBitmapIO {
             image = provider.read(stream, config);
             if (image != null) break;
         }
-        Util.closeQuietly(stream);
+        IOUtils.closeQuietly(stream);
         return image;
     }
 

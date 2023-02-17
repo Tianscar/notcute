@@ -6,7 +6,11 @@ import io.notcute.app.Platform;
 import io.notcute.app.Preferences;
 import io.notcute.context.Context;
 import io.notcute.context.Identifier;
+import io.notcute.context.Initializer;
 import io.notcute.context.Producer;
+import io.notcute.util.FileUtils;
+import io.notcute.util.I18NText;
+import io.notcute.util.MIMETypes;
 import io.notcute.util.signalslot.Dispatcher;
 
 import java.io.File;
@@ -15,6 +19,10 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JavaSEContext implements Context {
+
+    static {
+        Initializer.runInitializers();
+    }
 
     public static final File HOME = new File(System.getProperty("user.home"));
     public static final File TMPDIR = new File(System.getProperty("java.io.tmpdir"));
@@ -67,7 +75,6 @@ public class JavaSEContext implements Context {
             BASE_FILES_DIR = new File(HOME, ".local/share");
         }
     }
-    public static final Producer PRODUCER = new Producer();
     public static final String ORGANIZATION_NAME = System.getProperty("io.notcute.app.javase.organizationname", "");
     public static final String APPLICATION_NAME = System.getProperty("io.notcute.app.javase.applicationname", "");
 
@@ -75,17 +82,10 @@ public class JavaSEContext implements Context {
         private final JavaSEContext context;
         public Holder(JavaSEContext context) {
             this.context = Objects.requireNonNull(context);
-            PRODUCER.putIfAbsent(new Identifier("notcute", "assets"), this::getAssets);
-            PRODUCER.putIfAbsent(new Identifier("notcute", "logger"), this::getLogger);
-            PRODUCER.putIfAbsent(new Identifier("notcute", "platform"), this::getPlatform);
         }
         @Override
         public Context getContext() {
             return context;
-        }
-        @Override
-        public Producer getProducer() {
-            return JavaSEContext.PRODUCER;
         }
         @Override
         public Dispatcher getDispatcher() {
@@ -120,7 +120,7 @@ public class JavaSEContext implements Context {
             if (JavaSEPlatform.isWindows) ext = "Settings";
             else ext = "";
             File configDir = new File(BASE_CONFIG_DIR, ORGANIZATION_NAME + "/" + APPLICATION_NAME + "/" + ext);
-            Util.createDirIfNotExist(configDir);
+            FileUtils.createDirIfNotExist(configDir);
             return configDir;
         }
         @Override
@@ -129,14 +129,14 @@ public class JavaSEContext implements Context {
             if (JavaSEPlatform.isWindows) ext = "Cache";
             else ext = "";
             File cacheDir = new File(BASE_CACHE_DIR, ORGANIZATION_NAME + "/" + APPLICATION_NAME + "/" + ext);
-            Util.createDirIfNotExist(cacheDir);
+            FileUtils.createDirIfNotExist(cacheDir);
             return cacheDir;
         }
         @Override
         public File getFilesDir(String type) {
             if (type == null) type = "";
             File filesDir = new File(new File(BASE_FILES_DIR, ORGANIZATION_NAME + "/" + APPLICATION_NAME), type);
-            Util.createDirIfNotExist(filesDir);
+            FileUtils.createDirIfNotExist(filesDir);
             return filesDir;
         }
         @Override
@@ -147,23 +147,25 @@ public class JavaSEContext implements Context {
         public File getTmpDir() {
             return TMPDIR;
         }
-        private static volatile JavaSEAssets assets = null;
         @Override
         public Assets getAssets() {
-            if (assets == null) assets = new JavaSEAssets();
-            return assets;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "assets"), Assets.class);
         }
-        private static volatile JavaSELogger logger = null;
         @Override
         public Logger getLogger() {
-            if (logger == null) logger = new JavaSELogger();
-            return logger;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "logger"), Logger.class);
         }
-        private static volatile JavaSEPlatform platform = null;
         @Override
         public Platform getPlatform() {
-            if (platform == null) platform = new JavaSEPlatform();
-            return platform;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "platform"), Platform.class);
+        }
+        @Override
+        public I18NText getI18NText() {
+            return Producer.GLOBAL.produce(new Identifier("notcute", "i18NText"), I18NText.class);
+        }
+        @Override
+        public MIMETypes getMIMETypes() {
+            return Producer.GLOBAL.produce(new Identifier("notcute", "mimeTypes"), MIMETypes.class);
         }
     }
 

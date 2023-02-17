@@ -1,9 +1,7 @@
 package io.notcute.ui.awt;
 
-import io.notcute.app.Platform;
-import io.notcute.app.awt.AWTPlatform;
-import io.notcute.context.Context;
 import io.notcute.app.javase.JavaSEContext;
+import io.notcute.context.Context;
 import io.notcute.util.signalslot.Dispatcher;
 
 public class AWTContext extends JavaSEContext {
@@ -15,12 +13,6 @@ public class AWTContext extends JavaSEContext {
         @Override
         public Dispatcher getDispatcher() {
             return AWTDispatcher.INSTANCE;
-        }
-        private static volatile AWTPlatform platform = null;
-        @Override
-        public Platform getPlatform() {
-            if (platform == null) platform = new AWTPlatform();
-            return platform;
         }
     }
 

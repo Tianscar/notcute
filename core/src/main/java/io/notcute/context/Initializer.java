@@ -1,7 +1,19 @@
 package io.notcute.context;
 
-public interface Initializer {
+import java.util.ServiceLoader;
 
-    void initialize();
+public abstract class Initializer {
+
+    private static volatile boolean allInitialized = false;
+    public static void runInitializers() {
+        if (allInitialized) return;
+        allInitialized = true;
+        ServiceLoader<Initializer> serviceLoader = ServiceLoader.load(Initializer.class, Initializer.class.getClassLoader());
+        for (Initializer initializer : serviceLoader) {
+            initializer.initialize();
+        }
+    }
+
+    public abstract void initialize();
 
 }

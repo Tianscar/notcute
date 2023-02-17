@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelFileDescriptor;
+import io.notcute.internal.android.AndroidG2DUtils;
+import io.notcute.util.ArrayUtils;
 import io.notcute.util.MathUtils;
 
 import java.io.*;
@@ -317,7 +319,7 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     @Override
     public boolean write(File output, Bitmap bitmap, String mimeType, int quality) throws IOException {
-        if (!Util.containsIgnoreCase(WRITER_MIME_TYPES, mimeType)) return false;
+        if (!ArrayUtils.containsIgnoreCase(WRITER_MIME_TYPES, mimeType)) return false;
         if (output.exists()) {
             if (!output.delete()) return false;
         }
@@ -329,7 +331,7 @@ public final class BasicBIOSpi implements BIOServiceProvider {
 
     @Override
     public boolean write(OutputStream output, Bitmap bitmap, String mimeType, int quality) throws IOException {
-        if (!Util.containsIgnoreCase(WRITER_MIME_TYPES, mimeType)) return false;
+        if (!ArrayUtils.containsIgnoreCase(WRITER_MIME_TYPES, mimeType)) return false;
         quality = MathUtils.clamp(quality, 0, 100);
         boolean result = false;
         switch (mimeType) {

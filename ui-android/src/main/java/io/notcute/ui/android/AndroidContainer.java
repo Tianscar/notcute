@@ -14,6 +14,7 @@ import io.notcute.context.Context;
 import io.notcute.g2d.Image;
 import io.notcute.g2d.android.AndroidImage;
 import io.notcute.input.Input;
+import io.notcute.internal.android.AndroidUIUtils;
 import io.notcute.ui.Container;
 import io.notcute.ui.G2DContext;
 import io.notcute.util.signalslot.*;
@@ -91,7 +92,7 @@ public class AndroidContainer extends Activity implements Container, View.OnLayo
             case MotionEvent.ACTION_BUTTON_PRESS:
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
-                holder.onPointerDown.emit(this, x, y, pointerIndex, Util.toNotcuteButton(buttonState));
+                holder.onPointerDown.emit(this, x, y, pointerIndex, AndroidUIUtils.toNotcuteButton(buttonState));
                 return true;
             case MotionEvent.ACTION_MOVE:
                 holder.onPointerDrag.emit(this, x, y, pointerIndex);
@@ -99,7 +100,7 @@ public class AndroidContainer extends Activity implements Container, View.OnLayo
             case MotionEvent.ACTION_BUTTON_RELEASE:
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-                holder.onPointerUp.emit(this, x, y, pointerIndex, Util.toNotcuteButton(buttonState));
+                holder.onPointerUp.emit(this, x, y, pointerIndex, AndroidUIUtils.toNotcuteButton(buttonState));
                 return true;
             default:
                 return super.onTouchEvent(event);

@@ -1,6 +1,5 @@
 package io.notcute.ui.android;
 
-import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -12,38 +11,30 @@ import io.notcute.app.Clipboard;
 import io.notcute.app.android.AndroidClipboard;
 import io.notcute.app.android.AndroidContext;
 import io.notcute.audio.AudioPlayer;
-import io.notcute.audio.android.AndroidAudioPlayer;
 import io.notcute.context.Context;
 import io.notcute.context.Identifier;
-import io.notcute.context.Initializer;
+import io.notcute.context.Producer;
+import io.notcute.g2d.Color;
 import io.notcute.g2d.Graphics;
 import io.notcute.g2d.GraphicsKit;
 import io.notcute.g2d.Image;
 import io.notcute.g2d.android.AndroidGraphics;
-import io.notcute.g2d.android.AndroidGraphicsKit;
 import io.notcute.g2d.android.AndroidImage;
 import io.notcute.input.Input;
+import io.notcute.internal.android.AndroidUIInitializer;
+import io.notcute.internal.android.AndroidShared;
+import io.notcute.internal.android.AndroidUIUtils;
 import io.notcute.ui.Cursor;
 import io.notcute.ui.G2DContext;
 import io.notcute.ui.UIKit;
-import io.notcute.g2d.Color;
-import io.notcute.util.collections.CollectionUtils;
 import io.notcute.util.signalslot.*;
 
 import java.io.File;
 import java.net.URI;
 import java.util.Objects;
-import java.util.ServiceLoader;
 
 public class AndroidG2DContext extends SurfaceView implements G2DContext, SurfaceHolder.Callback,
         View.OnLayoutChangeListener, View.OnTouchListener, View.OnHoverListener, View.OnKeyListener, View.OnGenericMotionListener {
-
-    static {
-        ServiceLoader<Initializer> serviceLoader = ServiceLoader.load(Initializer.class, Initializer.class.getClassLoader());
-        for (Initializer initializer : serviceLoader) {
-            initializer.initialize();
-        }
-    }
 
     @Override
     public boolean onGenericMotion(View v, MotionEvent event) {
@@ -110,7 +101,7 @@ public class AndroidG2DContext extends SurfaceView implements G2DContext, Surfac
             case MotionEvent.ACTION_BUTTON_PRESS:
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
-                holder.onPointerDown.emit(this, x, y, pointerIndex, Util.toNotcuteButton(buttonState));
+                holder.onPointerDown.emit(this, x, y, pointerIndex, AndroidUIUtils.toNotcuteButton(buttonState));
                 return true;
             case MotionEvent.ACTION_MOVE:
                 holder.onPointerDrag.emit(this, x, y, pointerIndex);
@@ -118,7 +109,7 @@ public class AndroidG2DContext extends SurfaceView implements G2DContext, Surfac
             case MotionEvent.ACTION_BUTTON_RELEASE:
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-                holder.onPointerUp.emit(this, x, y, pointerIndex, Util.toNotcuteButton(buttonState));
+                holder.onPointerUp.emit(this, x, y, pointerIndex, AndroidUIUtils.toNotcuteButton(buttonState));
                 return true;
             default:
                 return false;
@@ -131,9 +122,6 @@ public class AndroidG2DContext extends SurfaceView implements G2DContext, Surfac
         private final AndroidG2DContext context;
         public Holder(AndroidG2DContext context) {
             this.context = Objects.requireNonNull(context);
-            CollectionUtils.putIfAbsent(AndroidContext.PRODUCER, new Identifier("notcute", "graphicsKit"), this::getGraphicsKit);
-            CollectionUtils.putIfAbsent(AndroidContext.PRODUCER, new Identifier("notcute", "uiKit"), this::getUIKit);
-            CollectionUtils.putIfAbsent(AndroidContext.PRODUCER, new Identifier("notcute", "audioPlayer"), this::getAudioPlayer);
             cursor = AndroidCursor.getDefaultCursor(context.getContext());
         }
 
@@ -354,34 +342,27 @@ public class AndroidG2DContext extends SurfaceView implements G2DContext, Surfac
 
         @Override
         public boolean open(URI uri) {
-            return Util.open(context.getContext(), Uri.parse(uri.toString()));
+            return AndroidUIUtils.open(context.getContext(), Uri.parse(uri.toString()));
         }
 
         @Override
         public boolean open(File file) {
-            return Util.open(context.getContext(), Uri.parse(file.getAbsolutePath()));
+            return AndroidUIUtils.open(context.getContext(), Uri.parse(file.getAbsolutePath()));
         }
 
-        private static volatile AndroidGraphicsKit graphicsKit = null;
         @Override
         public GraphicsKit getGraphicsKit() {
-            if (graphicsKit == null) graphicsKit = new AndroidGraphicsKit();
-            return graphicsKit;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "graphicsKit"), GraphicsKit.class);
         }
 
-        @SuppressLint("StaticFieldLeak")
-        static volatile AndroidUIKit uiKit = null;
         @Override
         public UIKit getUIKit() {
-            if (uiKit == null) uiKit = new AndroidUIKit(context.getContext());
-            return uiKit;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "uiKit"), UIKit.class);
         }
 
-        private static volatile AndroidAudioPlayer audioPlayer = null;
         @Override
         public AudioPlayer getAudioPlayer() {
-            if (audioPlayer == null) audioPlayer = new AndroidAudioPlayer();
-            return audioPlayer;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "audioPlayer"), AudioPlayer.class);
         }
 
     }
@@ -399,6 +380,7 @@ public class AndroidG2DContext extends SurfaceView implements G2DContext, Surfac
     private volatile boolean disposed = false;
     public AndroidG2DContext(android.content.Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        AndroidShared.setContext(context);
         androidContext = new AndroidContext(context);
         holder = new Holder(this);
         surfaceHolder = getHolder();
@@ -466,7 +448,8 @@ public class AndroidG2DContext extends SurfaceView implements G2DContext, Surfac
     public void dispose() {
         if (isDisposed()) return;
         disposed = true;
-        Holder.uiKit = null;
+        AndroidUIInitializer.releaseContext();
+        AndroidShared.releaseContext();
     }
 
     @Override

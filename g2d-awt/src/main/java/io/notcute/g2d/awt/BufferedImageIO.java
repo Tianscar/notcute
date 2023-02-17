@@ -1,5 +1,6 @@
 package io.notcute.g2d.awt;
 
+import io.notcute.internal.awt.AWTG2DUtils;
 import io.notcute.util.MathUtils;
 
 import javax.imageio.ImageIO;
@@ -40,7 +41,7 @@ public final class BufferedImageIO {
             image = provider.read(input);
             if (image != null) {
                 if (image.getType() != type) {
-                    image = Util.getImage(image, type);
+                    image = AWTG2DUtils.getImage(image, type);
                 }
                 break;
             }

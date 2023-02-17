@@ -2,6 +2,7 @@ package io.notcute.g2d.awt;
 
 import io.notcute.g2d.Graphics;
 import io.notcute.g2d.Image;
+import io.notcute.internal.awt.AWTG2DUtils;
 import io.notcute.util.AlreadyDisposedException;
 
 import java.awt.image.BufferedImage;
@@ -22,7 +23,7 @@ public class AWTImage implements Image {
     }
 
     private static void copy(AWTImage src, AWTImage dst) {
-        dst.bufferedImage = Util.copyBufferedImage(src.bufferedImage);
+        dst.bufferedImage = AWTG2DUtils.copyBufferedImage(src.bufferedImage);
         if (src.graphics != null) {
             dst.graphics = new AWTGraphics(dst.bufferedImage);
             dst.graphics.setInfo(src.graphics.getInfo());
@@ -45,7 +46,7 @@ public class AWTImage implements Image {
     @Override
     public int getType() {
         if (isDisposed()) throw new AlreadyDisposedException();
-        return Util.toNotcuteImageType(bufferedImage.getType());
+        return AWTG2DUtils.toNotcuteImageType(bufferedImage.getType());
     }
 
     @Override

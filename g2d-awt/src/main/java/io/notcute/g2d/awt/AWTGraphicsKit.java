@@ -5,6 +5,7 @@ import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Font;
 import io.notcute.g2d.GraphicsKit;
 import io.notcute.g2d.Image;
+import io.notcute.internal.awt.AWTG2DUtils;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
@@ -20,19 +21,19 @@ public class AWTGraphicsKit implements GraphicsKit {
 
     protected static BufferedImage getSupportedImage(BufferedImage source, String format) {
         if (format.equals("image/jpeg")) {
-            return Util.getImage(source, BufferedImage.TYPE_USHORT_565_RGB);
+            return AWTG2DUtils.getImage(source, BufferedImage.TYPE_USHORT_565_RGB);
         }
         else if (format.equals("image/bmp")) {
-            return Util.getImage(source, BufferedImage.TYPE_3BYTE_BGR);
+            return AWTG2DUtils.getImage(source, BufferedImage.TYPE_3BYTE_BGR);
         }
-        else return Util.getImage(source, BufferedImage.TYPE_INT_ARGB);
+        else return AWTG2DUtils.getImage(source, BufferedImage.TYPE_INT_ARGB);
     }
 
     public Image readImage(ImageInputStream input, int type) {
         try {
             MultiFrameImage framedImage = readMultiFrameImage(input, type);
             if (framedImage != null) return framedImage;
-            BufferedImage image = BufferedImageIO.read(input, Util.toAWTBufferedImageType(type));
+            BufferedImage image = BufferedImageIO.read(input, AWTG2DUtils.toAWTBufferedImageType(type));
             if (image == null) return null;
             else return new AWTImage(image);
         } catch (IOException e) {
@@ -42,7 +43,7 @@ public class AWTGraphicsKit implements GraphicsKit {
 
     public MultiFrameImage readMultiFrameImage(ImageInputStream input, int type) {
         try {
-            return MultiFrameBufferedImageIO.read(input, Util.toAWTBufferedImageType(type));
+            return MultiFrameBufferedImageIO.read(input, AWTG2DUtils.toAWTBufferedImageType(type));
         } catch (IOException e) {
             return null;
         }
@@ -50,7 +51,7 @@ public class AWTGraphicsKit implements GraphicsKit {
 
     @Override
     public Image createImage(int width, int height, int type) {
-        return new AWTImage(new BufferedImage(width, height, Util.toAWTBufferedImageType(type)));
+        return new AWTImage(new BufferedImage(width, height, AWTG2DUtils.toAWTBufferedImageType(type)));
     }
 
     @Override
@@ -194,7 +195,7 @@ public class AWTGraphicsKit implements GraphicsKit {
     public Font getFont(String familyName, int style) {
         java.awt.Font font = java.awt.Font.decode(familyName);
         if (!familyName.equals(java.awt.Font.DIALOG) && font.getFamily().equals(java.awt.Font.DIALOG)) return null;
-        return new AWTFont(font.deriveFont(Util.toAWTFontStyle(style)));
+        return new AWTFont(font.deriveFont(AWTG2DUtils.toAWTFontStyle(style)));
     }
     
     @Override
@@ -205,7 +206,7 @@ public class AWTGraphicsKit implements GraphicsKit {
     @Override
     public Font readFont(File input) {
         try {
-            java.awt.Font font = Util.readFont(input);
+            java.awt.Font font = AWTG2DUtils.readFont(input);
             return font == null ? null : new AWTFont(font);
         } catch (IOException e) {
             return null;
@@ -215,7 +216,7 @@ public class AWTGraphicsKit implements GraphicsKit {
     @Override
     public Font readFont(Assets assets, String input) {
         try {
-            java.awt.Font font = Util.readFont(assets.readAsset(input));
+            java.awt.Font font = AWTG2DUtils.readFont(assets.readAsset(input));
             return font == null ? null : new AWTFont(font);
         } catch (IOException e) {
             return null;

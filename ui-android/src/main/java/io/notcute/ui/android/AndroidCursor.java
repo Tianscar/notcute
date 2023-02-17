@@ -5,6 +5,7 @@ import android.os.Build;
 import android.view.PointerIcon;
 import io.notcute.g2d.Image;
 import io.notcute.g2d.android.AndroidImage;
+import io.notcute.internal.android.AndroidUIUtils;
 import io.notcute.ui.Cursor;
 
 import java.util.Map;
@@ -35,7 +36,7 @@ public class AndroidCursor implements Cursor {
         this.type = type;
         this.hotSpotX = this.hotSpotY = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            pointerIcon = PointerIcon.getSystemIcon(context, Util.toAndroidPointerType(type));
+            pointerIcon = PointerIcon.getSystemIcon(context, AndroidUIUtils.toAndroidPointerType(type));
         }
         else {
             pointerIcon = null;

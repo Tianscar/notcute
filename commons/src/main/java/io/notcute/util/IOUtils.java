@@ -1,5 +1,6 @@
 package io.notcute.util;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -108,6 +109,15 @@ public final class IOUtils {
         }
 
         return result;
+    }
+
+    public static void closeQuietly(Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception ignored) {
+        }
     }
 
 }

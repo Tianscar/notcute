@@ -1,5 +1,7 @@
 package io.notcute.app.awt;
 
+import io.notcute.internal.awt.AWTUIUtils;
+
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -41,7 +43,7 @@ public class AWTClipboard implements io.notcute.app.Clipboard {
 
     @Override
     public int getContentType() {
-        return Util.toNotcuteContentType(getDataFlavor());
+        return AWTUIUtils.toNotcuteContentType(getDataFlavor());
     }
 
     @Override
@@ -50,26 +52,26 @@ public class AWTClipboard implements io.notcute.app.Clipboard {
     }
 
     public DataFlavor getDataFlavor() {
-        return Util.getClipboardContentDataFlavor(getClipboard());
+        return AWTUIUtils.getClipboardContentDataFlavor(getClipboard());
     }
 
     public void setContents(Transferable contents) {
-        Util.putContentsToClipboard(getClipboard(), contents);
+        AWTUIUtils.putContentsToClipboard(getClipboard(), contents);
     }
 
     public Object getContents(DataFlavor dataFlavor) {
-        return Util.getContentsFromClipboard(getClipboard(), dataFlavor);
+        return AWTUIUtils.getContentsFromClipboard(getClipboard(), dataFlavor);
     }
 
     @Override
     public void setPlainText(CharSequence text) {
-        Util.putPlainTextToClipboard(getClipboard(), text);
+        AWTUIUtils.putPlainTextToClipboard(getClipboard(), text);
     }
 
     @Override
     public CharSequence getPlainText() {
         try {
-            return Util.getPlainTextFromClipboard(getClipboard());
+            return AWTUIUtils.getPlainTextFromClipboard(getClipboard());
         } catch (IOException | UnsupportedFlavorException ignored) {
             return null;
         }
@@ -77,13 +79,13 @@ public class AWTClipboard implements io.notcute.app.Clipboard {
 
     @Override
     public void setHTMLText(String html) {
-        Util.putHTMLTextToClipboard(getClipboard(), html);
+        AWTUIUtils.putHTMLTextToClipboard(getClipboard(), html);
     }
 
     @Override
     public String getHTMLText() {
         try {
-            return Util.getHTMLTextFromClipboard(getClipboard());
+            return AWTUIUtils.getHTMLTextFromClipboard(getClipboard());
         } catch (IOException | UnsupportedFlavorException e) {
             return null;
         }
@@ -91,13 +93,13 @@ public class AWTClipboard implements io.notcute.app.Clipboard {
 
     @Override
     public void setURIs(URI[] uris) {
-        Util.putURIsToClipboard(getClipboard(), uris);
+        AWTUIUtils.putURIsToClipboard(getClipboard(), uris);
     }
 
     @Override
     public URI[] getURIs() {
         try {
-            return Util.getURIsFromClipboard(getClipboard());
+            return AWTUIUtils.getURIsFromClipboard(getClipboard());
         } catch (IOException | UnsupportedFlavorException e) {
             return null;
         }

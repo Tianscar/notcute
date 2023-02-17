@@ -5,6 +5,7 @@ import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Font;
 import io.notcute.g2d.GraphicsKit;
 import io.notcute.g2d.Image;
+import io.notcute.internal.swt.SWTG2DUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Device;
@@ -28,7 +29,7 @@ public class SWTGraphicsKit implements GraphicsKit {
 
     @Override
     public Image createImage(int width, int height, int type) {
-        return new SWTImage(new ImageData(width, height, Util.toSWTImageDepth(type), new PaletteData()));
+        return new SWTImage(new ImageData(width, height, SWTG2DUtils.toSWTImageDepth(type), new PaletteData()));
     }
 
     @Override
@@ -161,7 +162,7 @@ public class SWTGraphicsKit implements GraphicsKit {
 
     @Override
     public Font getFont(String familyName, int style) {
-        return new SWTFont(device, new FontData(familyName, 12, Util.toSWTFontStyle(style)));
+        return new SWTFont(device, new FontData(familyName, 12, SWTG2DUtils.toSWTFontStyle(style)));
     }
 
     @Override
@@ -172,10 +173,10 @@ public class SWTGraphicsKit implements GraphicsKit {
     @Override
     public Font readFont(File input) {
         try {
-            java.awt.Font font = Util.readAWTFont(input);
+            java.awt.Font font = SWTG2DUtils.readAWTFont(input);
             if (font != null) {
                 if (!device.loadFont(input.getAbsolutePath())) {
-                    return new SWTFont(device, new FontData(font.getFontName(), 12, Util.fromAWTtoSWTFontStyle(font.getStyle())));
+                    return new SWTFont(device, new FontData(font.getFontName(), 12, SWTG2DUtils.fromAWTtoSWTFontStyle(font.getStyle())));
                 }
             }
         } catch (IOException ignored) {

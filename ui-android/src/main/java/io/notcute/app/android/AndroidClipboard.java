@@ -1,6 +1,7 @@
 package io.notcute.app.android;
 
 import android.content.ClipboardManager;
+import io.notcute.internal.android.AndroidUIUtils;
 
 import java.net.URI;
 import java.util.Objects;
@@ -47,7 +48,7 @@ public class AndroidClipboard implements io.notcute.app.Clipboard {
 
     @Override
     public int getContentType() {
-        return Util.getClipboardContentType(clipboard);
+        return AndroidUIUtils.getClipboardContentType(clipboard);
     }
 
     @Override
@@ -57,32 +58,32 @@ public class AndroidClipboard implements io.notcute.app.Clipboard {
 
     @Override
     public void setPlainText(CharSequence text) {
-        Util.putPlainTextToClipboard(clipboard, text);
+        AndroidUIUtils.putPlainTextToClipboard(clipboard, text);
     }
 
     @Override
     public CharSequence getPlainText() {
-        return Util.getPlainTextFromClipboard(clipboard);
+        return AndroidUIUtils.getPlainTextFromClipboard(clipboard);
     }
 
     @Override
     public void setHTMLText(String html) {
-        Util.putHTMLTextToClipboard(clipboard, html);
+        AndroidUIUtils.putHTMLTextToClipboard(clipboard, html);
     }
 
     @Override
     public String getHTMLText() {
-        return Util.getHTMLTextFromClipboard(clipboard);
+        return AndroidUIUtils.getHTMLTextFromClipboard(clipboard);
     }
 
     @Override
     public void setURIs(URI[] uris) {
-        Util.putURIsToClipboard(clipboard, uris);
+        AndroidUIUtils.putURIsToClipboard(clipboard, uris);
     }
 
     @Override
     public URI[] getURIs() {
-        return Util.getURIsFromClipboard(clipboard);
+        return AndroidUIUtils.getURIsFromClipboard(clipboard);
     }
 
 }

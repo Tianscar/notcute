@@ -1,11 +1,14 @@
 package io.notcute.ui.awt;
 
 import io.notcute.app.FileChooser;
-import io.notcute.app.awt.AWTFileChooser;
 import io.notcute.context.Context;
 import io.notcute.context.Identifier;
+import io.notcute.context.Producer;
 import io.notcute.g2d.Image;
 import io.notcute.input.Input;
+import io.notcute.internal.awt.AWTShared;
+import io.notcute.internal.awt.AWTUIUtils;
+import io.notcute.internal.awt.MouseInputListener;
 import io.notcute.ui.Container;
 import io.notcute.ui.G2DContext;
 import io.notcute.util.signalslot.*;
@@ -43,12 +46,12 @@ public class AWTContainer extends Frame implements Container, ComponentListener,
 
     @Override
     public void mousePressed(MouseEvent e) {
-        holder.onPointerDown.emit(this, (float) e.getX(), (float) e.getY(), e.getClickCount() - 1, Util.toNotcuteButton(e.getButton()));
+        holder.onPointerDown.emit(this, (float) e.getX(), (float) e.getY(), e.getClickCount() - 1, AWTUIUtils.toNotcuteButton(e.getButton()));
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        holder.onPointerUp.emit(this, (float) e.getX(), (float) e.getY(), e.getClickCount() - 1, Util.toNotcuteButton(e.getButton()));
+        holder.onPointerUp.emit(this, (float) e.getX(), (float) e.getY(), e.getClickCount() - 1, AWTUIUtils.toNotcuteButton(e.getButton()));
     }
 
     @Override
@@ -73,7 +76,7 @@ public class AWTContainer extends Frame implements Container, ComponentListener,
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        int scrollType = Util.toNotcuteScrollType(e.getScrollType());
+        int scrollType = AWTUIUtils.toNotcuteScrollType(e.getScrollType());
         double amount = 0;
         if (scrollType == Input.ScrollType.UNIT) {
             amount = Math.abs(e.getUnitsToScroll()) * e.getPreciseWheelRotation();
@@ -89,12 +92,12 @@ public class AWTContainer extends Frame implements Container, ComponentListener,
 
     @Override
     public void keyPressed(KeyEvent e) {
-        holder.onKeyDown.emit(this, e.getExtendedKeyCode(), Util.toNotcuteKeyLocation(e.getKeyLocation()));
+        holder.onKeyDown.emit(this, e.getExtendedKeyCode(), AWTUIUtils.toNotcuteKeyLocation(e.getKeyLocation()));
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        holder.onKeyUp.emit(this, e.getExtendedKeyCode(), Util.toNotcuteKeyLocation(e.getKeyLocation()));
+        holder.onKeyUp.emit(this, e.getExtendedKeyCode(), AWTUIUtils.toNotcuteKeyLocation(e.getKeyLocation()));
     }
 
     @Override
@@ -150,7 +153,6 @@ public class AWTContainer extends Frame implements Container, ComponentListener,
         private final AWTContainer container;
         public Holder(AWTContainer container) {
             this.container = Objects.requireNonNull(container);
-            AWTContext.PRODUCER.putIfAbsent(new Identifier("notcute", "fileChooser"), this::getFileChooser);
         }
 
         @Override
@@ -160,12 +162,12 @@ public class AWTContainer extends Frame implements Container, ComponentListener,
 
         @Override
         public void setIconImages(Image... images) {
-            container.setIconImages(Util.toAWTBufferedImages(images));
+            container.setIconImages(AWTUIUtils.toAWTBufferedImages(images));
         }
 
         @Override
         public Image[] getIconImages() {
-            return Util.toNotcuteImages(container.getIconImages());
+            return AWTUIUtils.toNotcuteImages(container.getIconImages());
         }
 
         @Override
@@ -310,23 +312,21 @@ public class AWTContainer extends Frame implements Container, ComponentListener,
         @Override
         public void setFullscreen(final boolean fullscreen) {
             if (fullscreen) {
-                Shared.setFullscreenWindow(container);
+                AWTShared.setFullscreenWindow(container);
             }
             else {
-                Shared.setFullscreenWindow(null);
+                AWTShared.setFullscreenWindow(null);
             }
         }
 
         @Override
         public boolean isFullscreen() {
-            return Shared.getFullscreenWindow() == container;
+            return AWTShared.getFullscreenWindow() == container;
         }
 
-        private volatile AWTFileChooser fileChooser;
         @Override
         public FileChooser getFileChooser() {
-            if (fileChooser == null) fileChooser = new AWTFileChooser();
-            return fileChooser;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "fileChooser"), FileChooser.class);
         }
 
     }

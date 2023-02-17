@@ -7,6 +7,7 @@ import io.notcute.g2d.Image;
 import io.notcute.g2d.geom.PathIterator;
 import io.notcute.g2d.geom.Rectangle;
 import io.notcute.g2d.geom.Shape;
+import io.notcute.internal.awt.AWTG2DUtils;
 import io.notcute.util.AlreadyDisposedException;
 
 import java.awt.*;
@@ -64,15 +65,15 @@ public class AWTGraphics implements Graphics {
         if (isDisposed()) throw new AlreadyDisposedException();
         AffineTransform transform = info.getTransform();
         if (transform == null) graphics2D.getTransform().setToIdentity();
-        else graphics2D.setTransform(Util.toAWTTransform(transform));
+        else graphics2D.setTransform(AWTG2DUtils.toAWTTransform(transform));
         Shape clip = info.getClip();
-        graphics2D.setClip(clip == null ? null : Util.toAWTPath2D(clip.getPathIterator()));
+        graphics2D.setClip(clip == null ? null : AWTG2DUtils.toAWTPath2D(clip.getPathIterator()));
         graphics2D.setColor(new Color(info.getColor(), true));
         graphics2D.setStroke(
                 new BasicStroke(
                         info.getStrokeWidth(),
-                        Util.toAWTStrokeCap(info.getStrokeCap()),
-                        Util.toAWTStrokeJoin(info.getStrokeJoin()),
+                        AWTG2DUtils.toAWTStrokeCap(info.getStrokeCap()),
+                        AWTG2DUtils.toAWTStrokeJoin(info.getStrokeJoin()),
                         info.getStrokeMiter()));
         java.awt.Font font = info.getFont() == null ? (graphics2D.getFont() == null ? null : graphics2D.getFont()) : ((AWTFont)info.getFont()).getFont();
         if (font != null) {
@@ -115,7 +116,7 @@ public class AWTGraphics implements Graphics {
     @Override
     public void drawImage(Image image, AffineTransform transform) {
         if (isDisposed()) throw new AlreadyDisposedException();
-        graphics2D.drawImage(((AWTImage)image).getBufferedImage(), Util.toAWTTransform(transform), null);
+        graphics2D.drawImage(((AWTImage)image).getBufferedImage(), AWTG2DUtils.toAWTTransform(transform), null);
     }
 
     @Override
@@ -138,11 +139,11 @@ public class AWTGraphics implements Graphics {
     @Override
     public void drawPathIterator(PathIterator iterator) {
         if (isDisposed()) throw new AlreadyDisposedException();
-        draw(Util.toAWTPath2D(iterator));
+        draw(AWTG2DUtils.toAWTPath2D(iterator));
     }
 
     private AttributedCharacterIterator getAttributedCharacterIterator(String text, int start, int end, AffineTransform transform) {
-        java.awt.Font font = info.getFont() == null ? null : ((AWTFont)info.getFont()).getFont().deriveFont(Util.toAWTTransform(transform));
+        java.awt.Font font = info.getFont() == null ? null : ((AWTFont)info.getFont()).getFont().deriveFont(AWTG2DUtils.toAWTTransform(transform));
         HashMap<AttributedCharacterIterator.Attribute, Object> attributes = new HashMap<>();
         if (font != null) attributes.put(TextAttribute.FONT, font);
         attributes.put(TextAttribute.SIZE, info.getTextSize());
@@ -191,7 +192,7 @@ public class AWTGraphics implements Graphics {
     public void getTextBounds(CharSequence text, int start, int end, Rectangle bounds) {
         Objects.requireNonNull(bounds);
         if (isDisposed()) throw new AlreadyDisposedException();
-        Rectangle2D.Float stringBounds = Util.floatRectangle2D(graphics2D.getFont().getStringBounds(text.toString(), start, end,
+        Rectangle2D.Float stringBounds = AWTG2DUtils.floatRectangle2D(graphics2D.getFont().getStringBounds(text.toString(), start, end,
                     graphics2D.getFontRenderContext()));
         bounds.setRect(stringBounds.x, stringBounds.y, stringBounds.width, stringBounds.height);
     }
@@ -200,7 +201,7 @@ public class AWTGraphics implements Graphics {
     public void getTextBounds(char[] text, int offset, int length, Rectangle bounds) {
         Objects.requireNonNull(bounds);
         if (isDisposed()) throw new AlreadyDisposedException();
-        Rectangle2D.Float stringBounds = Util.floatRectangle2D(graphics2D.getFont().getStringBounds(text, offset, offset + length,
+        Rectangle2D.Float stringBounds = AWTG2DUtils.floatRectangle2D(graphics2D.getFont().getStringBounds(text, offset, offset + length,
                 graphics2D.getFontRenderContext()));
         bounds.setRect(stringBounds.x, stringBounds.y, stringBounds.width, stringBounds.height);
     }

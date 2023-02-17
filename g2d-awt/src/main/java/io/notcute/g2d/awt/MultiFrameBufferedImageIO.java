@@ -1,6 +1,7 @@
 package io.notcute.g2d.awt;
 
 import io.notcute.g2d.MultiFrameImage;
+import io.notcute.internal.awt.AWTG2DUtils;
 import io.notcute.util.MathUtils;
 
 import javax.imageio.ImageIO;
@@ -43,7 +44,7 @@ public final class MultiFrameBufferedImageIO {
                 for (io.notcute.g2d.Image.Frame value : image) {
                     frame = value;
                     if (frame.getImage().getType() != type) {
-                        frame.setImage(new AWTImage(Util.getImage(((AWTImage) frame.getImage()).getBufferedImage(), type)));
+                        frame.setImage(new AWTImage(AWTG2DUtils.getImage(((AWTImage) frame.getImage()).getBufferedImage(), type)));
                     }
                 }
                 break;

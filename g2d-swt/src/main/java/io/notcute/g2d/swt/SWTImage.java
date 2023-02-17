@@ -1,6 +1,7 @@
 package io.notcute.g2d.swt;
 
 import io.notcute.g2d.Graphics;
+import io.notcute.internal.swt.SWTG2DUtils;
 import io.notcute.util.AlreadyDisposedException;
 import org.eclipse.swt.graphics.ImageData;
 
@@ -77,19 +78,19 @@ public class SWTImage implements io.notcute.g2d.Image {
     @Override
     public void getPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
         if (isDisposed()) throw new AlreadyDisposedException();
-        Util.getPixels(imageData, x, y, width * height, pixels, offset, stride);
+        SWTG2DUtils.getPixels(imageData, x, y, width * height, pixels, offset, stride);
     }
 
     @Override
     public void setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
         if (isDisposed()) throw new AlreadyDisposedException();
-        Util.setPixels(imageData, x, y, width * height, pixels, offset, stride);
+        SWTG2DUtils.setPixels(imageData, x, y, width * height, pixels, offset, stride);
     }
 
     @Override
     public int getType() {
         if (isDisposed()) throw new AlreadyDisposedException();
-        return Util.toNotcuteImageType(imageData.depth);
+        return SWTG2DUtils.toNotcuteImageType(imageData.depth);
     }
 
 }

@@ -1,5 +1,6 @@
 package io.notcute.g2d.swt;
 
+import io.notcute.internal.swt.SWTG2DUtils;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -34,7 +35,7 @@ public class SWTFont implements io.notcute.g2d.Font {
 
     @Override
     public int getStyle() {
-        return Util.toNotcuteFontStyle(fontData.getStyle());
+        return SWTG2DUtils.toNotcuteFontStyle(fontData.getStyle());
     }
 
     @Override

@@ -7,6 +7,7 @@ import io.notcute.g2d.Image;
 import io.notcute.g2d.geom.Line;
 import io.notcute.g2d.geom.PathIterator;
 import io.notcute.g2d.geom.Rectangle;
+import io.notcute.internal.swt.SWTG2DUtils;
 import io.notcute.util.AlreadyDisposedException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
@@ -80,9 +81,9 @@ public class SWTGraphics implements Graphics {
         Device device = gc.getDevice();
         Transform originalTransform = new Transform(device);
         gc.getTransform(originalTransform);
-        AffineTransform at = Util.toNotcuteAffineTransform(originalTransform);
+        AffineTransform at = SWTG2DUtils.toNotcuteAffineTransform(originalTransform);
         at.concatenate(transform);
-        Transform tmpTransform = Util.toSWTTransform(device, at);
+        Transform tmpTransform = SWTG2DUtils.toSWTTransform(device, at);
         gc.setTransform(tmpTransform);
         org.eclipse.swt.graphics.Image tmpImage = new org.eclipse.swt.graphics.Image(device, ((SWTImage) image).getImageData());
         gc.drawImage(tmpImage, 0, 0);
@@ -102,9 +103,9 @@ public class SWTGraphics implements Graphics {
     public void drawPathIterator(PathIterator iterator) {
         if (isDisposed()) throw new AlreadyDisposedException();
         Device device = gc.getDevice();
-        Path tmpPath = Util.toSWTPath(device, iterator);
+        Path tmpPath = SWTG2DUtils.toSWTPath(device, iterator);
         int original = gc.getFillRule();
-        gc.setFillRule(Util.toSWTGCFillRule(iterator.getWindingRule()));
+        gc.setFillRule(SWTG2DUtils.toSWTGCFillRule(iterator.getWindingRule()));
         gc.drawPath(tmpPath);
         gc.setFillRule(original);
         tmpPath.dispose();
@@ -117,9 +118,9 @@ public class SWTGraphics implements Graphics {
         Device device = gc.getDevice();
         Transform originalTransform = new Transform(device);
         gc.getTransform(originalTransform);
-        AffineTransform at = Util.toNotcuteAffineTransform(originalTransform);
+        AffineTransform at = SWTG2DUtils.toNotcuteAffineTransform(originalTransform);
         at.concatenate(transform);
-        Transform tmpTransform = Util.toSWTTransform(device, at);
+        Transform tmpTransform = SWTG2DUtils.toSWTTransform(device, at);
         gc.setTransform(tmpTransform);
         Path path = new Path(device);
         path.addString(text.subSequence(start, end).toString(), 0, 0, gc.getFont());
@@ -178,10 +179,10 @@ public class SWTGraphics implements Graphics {
     public void apply() {
         Device device = gc.getDevice();
         if (transform != null) transform.dispose();
-        transform = info.getTransform() == null ? null : Util.toSWTTransform(device, info.getTransform());
+        transform = info.getTransform() == null ? null : SWTG2DUtils.toSWTTransform(device, info.getTransform());
         gc.setTransform(transform);
         if (clip != null) clip.dispose();
-        clip = info.getClip() == null ? null : Util.toSWTPath(device, info.getClip().getPathIterator());
+        clip = info.getClip() == null ? null : SWTG2DUtils.toSWTPath(device, info.getClip().getPathIterator());
         gc.setClipping(clip);
         if (font != null) font.dispose();
         SWTFont swtFont = (SWTFont) info.getFont();
@@ -190,7 +191,7 @@ public class SWTGraphics implements Graphics {
 
         setColor(info.getColor());
         gc.setLineAttributes(new LineAttributes(info.getStrokeWidth(),
-                Util.toSWTLineCap(info.getStrokeCap()), Util.toSWTLineJoin(info.getStrokeJoin()),
+                SWTG2DUtils.toSWTLineCap(info.getStrokeCap()), SWTG2DUtils.toSWTLineJoin(info.getStrokeJoin()),
                 SWT.LINE_SOLID, null, 0, info.getStrokeMiter()));
         gc.setAntialias(info.isAntiAlias() ? SWT.ON : SWT.OFF);
         gc.setTextAntialias(info.isAntiAlias() ? SWT.ON : SWT.OFF);

@@ -2,6 +2,7 @@ package io.notcute.g2d.awt;
 
 import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Image;
+import io.notcute.internal.awt.AWTG2DUtils;
 
 import javax.imageio.*;
 import javax.imageio.metadata.IIOMetadata;
@@ -111,7 +112,7 @@ public final class TIFFMFBIIOSpi implements MFBIIOServiceProvider {
         param.setCompressionType(quality < 1.0f ? "Deflate" : "LZW");
         param.setCompressionQuality(quality);
         writer.prepareWriteSequence(null);
-        ImageTypeSpecifier specifier = ImageTypeSpecifier.createFromBufferedImageType(Util.toAWTBufferedImageType(im.getGeneralType()));
+        ImageTypeSpecifier specifier = ImageTypeSpecifier.createFromBufferedImageType(AWTG2DUtils.toAWTBufferedImageType(im.getGeneralType()));
         IIOMetadata metadata = writer.getDefaultImageMetadata(specifier, param);
         for (Image.Frame frame : im) {
             metadata.mergeTree(NATIVE_FORMAT_NAME, generateMetadata(frame));

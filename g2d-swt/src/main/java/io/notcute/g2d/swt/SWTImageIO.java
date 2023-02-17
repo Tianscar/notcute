@@ -2,6 +2,7 @@ package io.notcute.g2d.swt;
 
 import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Image;
+import io.notcute.internal.swt.SWTG2DUtils;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Device;
 
@@ -39,12 +40,12 @@ public final class SWTImageIO {
                     for (io.notcute.g2d.Image.Frame value : im) {
                         frame = value;
                         if (frame.getImage().getType() != type) {
-                            frame.setImage(new SWTImage(Util.getImageData(device, ((SWTImage) frame.getImage()).getImageData(), Util.toSWTImageDepth(type))));
+                            frame.setImage(new SWTImage(SWTG2DUtils.getImageData(device, ((SWTImage) frame.getImage()).getImageData(), SWTG2DUtils.toSWTImageDepth(type))));
                         }
                     }
                 }
                 else {
-                    image = new SWTImage(Util.getImageData(device, ((SWTImage) image).getImageData(), Util.toSWTImageDepth(type)));
+                    image = new SWTImage(SWTG2DUtils.getImageData(device, ((SWTImage) image).getImageData(), SWTG2DUtils.toSWTImageDepth(type)));
                 }
                 break;
             }

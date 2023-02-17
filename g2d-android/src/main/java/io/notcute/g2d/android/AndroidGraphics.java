@@ -7,7 +7,9 @@ import io.notcute.g2d.Graphics;
 import io.notcute.g2d.Image;
 import io.notcute.g2d.geom.PathIterator;
 import io.notcute.g2d.geom.Rectangle;
+import io.notcute.internal.android.AndroidG2DUtils;
 import io.notcute.util.AlreadyDisposedException;
+import io.notcute.util.TextUtils;
 
 import java.util.Objects;
 
@@ -40,13 +42,13 @@ public class AndroidGraphics implements Graphics {
     @Override
     public void apply() {
         if (isDisposed()) throw new AlreadyDisposedException();
-        canvas.setMatrix(Util.toAndroidMatrix(info.getTransform()));
-        canvas.clipPath(Util.toAndroidPath(info.getClip().getPathIterator()));
+        canvas.setMatrix(AndroidG2DUtils.toAndroidMatrix(info.getTransform()));
+        canvas.clipPath(AndroidG2DUtils.toAndroidPath(info.getClip().getPathIterator()));
         paint.setColor(info.getColor());
-        paint.setStyle(Util.toAndroidPaintStyle(info.getStyle()));
+        paint.setStyle(AndroidG2DUtils.toAndroidPaintStyle(info.getStyle()));
         paint.setStrokeWidth(info.getStrokeWidth());
-        paint.setStrokeJoin(Util.toAndroidPaintJoin(info.getStrokeJoin()));
-        paint.setStrokeCap(Util.toAndroidPaintCap(info.getStrokeCap()));
+        paint.setStrokeJoin(AndroidG2DUtils.toAndroidPaintJoin(info.getStrokeJoin()));
+        paint.setStrokeCap(AndroidG2DUtils.toAndroidPaintCap(info.getStrokeCap()));
         paint.setStrokeMiter(info.getStrokeMiter());
         Font font = info.getFont();
         if (font != null) paint.setTypeface(((AndroidFont) font).getTypeface());
@@ -95,7 +97,7 @@ public class AndroidGraphics implements Graphics {
     public void drawImage(Image image, AffineTransform transform) {
         if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
-        canvas.drawBitmap(((AndroidImage) image).getBitmap(), Util.toAndroidMatrix(transform), paint);
+        canvas.drawBitmap(((AndroidImage) image).getBitmap(), AndroidG2DUtils.toAndroidMatrix(transform), paint);
         canvas.restore();
     }
 
@@ -111,7 +113,7 @@ public class AndroidGraphics implements Graphics {
     public void drawPathIterator(PathIterator iterator) {
         if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
-        canvas.drawPath(Util.toAndroidPath(iterator), paint);
+        canvas.drawPath(AndroidG2DUtils.toAndroidPath(iterator), paint);
         canvas.restore();
     }
 
@@ -119,7 +121,7 @@ public class AndroidGraphics implements Graphics {
     public void drawText(CharSequence text, int start, int end, AffineTransform transform) {
         if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
-        canvas.concat(Util.toAndroidMatrix(transform));
+        canvas.concat(AndroidG2DUtils.toAndroidMatrix(transform));
         canvas.drawText(text, start, end, 0, 0, paint);
         canvas.restore();
     }
@@ -128,7 +130,7 @@ public class AndroidGraphics implements Graphics {
     public void drawText(char[] text, int offset, int length, AffineTransform transform) {
         if (isDisposed()) throw new AlreadyDisposedException();
         canvas.save();
-        canvas.setMatrix(Util.toAndroidMatrix(transform));
+        canvas.setMatrix(AndroidG2DUtils.toAndroidMatrix(transform));
         canvas.drawText(text, offset, length, 0, 0, paint);
         canvas.restore();
     }
@@ -155,7 +157,7 @@ public class AndroidGraphics implements Graphics {
     @Override
     public void getTextBounds(CharSequence text, int start, int end, Rectangle bounds) {
         if (isDisposed()) throw new AlreadyDisposedException();
-        getTextBounds(Util.getChars(text, start, end), start, end, bounds);
+        getTextBounds(TextUtils.getChars(text, start, end), start, end, bounds);
     }
 
     @Override

@@ -5,7 +5,13 @@ import io.notcute.app.Logger;
 import io.notcute.app.Platform;
 import io.notcute.app.Preferences;
 import io.notcute.context.Context;
+import io.notcute.context.Identifier;
+import io.notcute.context.Initializer;
 import io.notcute.context.Producer;
+import io.notcute.internal.android.AndroidUtils;
+import io.notcute.util.FileUtils;
+import io.notcute.util.I18NText;
+import io.notcute.util.MIMETypes;
 import io.notcute.util.signalslot.Dispatcher;
 
 import java.io.File;
@@ -15,14 +21,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AndroidContext implements Context {
 
+    static {
+        Initializer.runInitializers();
+    }
+
     public static final File TMPDIR;
     static {
         String tmpDirPath = System.getProperty("java.io.tmpdir");
         if (tmpDirPath == null) TMPDIR = null;
         else TMPDIR = new File(tmpDirPath);
     }
-
-    public static final Producer PRODUCER = new Producer();
 
     protected static class Holder implements Context.Holder {
 
@@ -34,11 +42,6 @@ public class AndroidContext implements Context {
         @Override
         public Context getContext() {
             return context;
-        }
-
-        @Override
-        public Producer getProducer() {
-            return PRODUCER;
         }
 
         @Override
@@ -59,33 +62,33 @@ public class AndroidContext implements Context {
         @Override
         public boolean deletePreferences(String name) {
             Objects.requireNonNull(name);
-            return Util.deleteSharedPreferences(context.androidContext, name);
+            return AndroidUtils.deleteSharedPreferences(context.androidContext, name);
         }
 
         @Override
         public File getConfigDir() {
-            return Util.getSharedPreferencesDir(context.androidContext);
+            return AndroidUtils.getSharedPreferencesDir(context.androidContext);
         }
 
         @Override
         public File getCacheDir() {
-            File cacheDir = Util.isExternalStorageWriteable() ? context.androidContext.getExternalCacheDir() : context.androidContext.getCacheDir();
-            Util.createDirIfNotExist(cacheDir);
+            File cacheDir = AndroidUtils.isExternalStorageWriteable() ? context.androidContext.getExternalCacheDir() : context.androidContext.getCacheDir();
+            FileUtils.createDirIfNotExist(cacheDir);
             return cacheDir;
         }
 
         @Override
         public File getFilesDir(String type) {
             if (type == null) type = "";
-            final File filesDir = Util.isExternalStorageWriteable() ? context.androidContext.getExternalFilesDir(type) :
+            final File filesDir = AndroidUtils.isExternalStorageWriteable() ? context.androidContext.getExternalFilesDir(type) :
                     new File(context.androidContext.getFilesDir(), type);
-            Util.createDirIfNotExist(filesDir);
+            FileUtils.createDirIfNotExist(filesDir);
             return filesDir;
         }
 
         @Override
         public File getHomeDir() {
-            return Util.getStorageDir();
+            return AndroidUtils.getStorageDir();
         }
 
         @Override
@@ -93,23 +96,29 @@ public class AndroidContext implements Context {
             return TMPDIR == null ? getFilesDir("tmp") : TMPDIR;
         }
 
-        private static volatile AndroidAssets assets = null;
         @Override
         public Assets getAssets() {
-            if (assets == null) assets = new AndroidAssets(context.androidContext.getAssets());
-            return assets;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "assets"), Assets.class);
         }
-        private static volatile AndroidLogger logger = null;
+
         @Override
         public Logger getLogger() {
-            if (logger == null) logger = new AndroidLogger();
-            return logger;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "logger"), Logger.class);
         }
-        private static volatile AndroidPlatform platform = null;
+
         @Override
         public Platform getPlatform() {
-            if (platform == null) platform = new AndroidPlatform();
-            return platform;
+            return Producer.GLOBAL.produce(new Identifier("notcute", "platform"), Platform.class);
+        }
+
+        @Override
+        public I18NText getI18NText() {
+            return Producer.GLOBAL.produce(new Identifier("notcute", "i18NText"), I18NText.class);
+        }
+
+        @Override
+        public MIMETypes getMIMETypes() {
+            return Producer.GLOBAL.produce(new Identifier("notcute", "mimeTypes"), MIMETypes.class);
         }
 
     }

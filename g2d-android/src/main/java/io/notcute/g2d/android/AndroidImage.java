@@ -3,6 +3,7 @@ package io.notcute.g2d.android;
 import android.graphics.Bitmap;
 import io.notcute.g2d.Graphics;
 import io.notcute.g2d.Image;
+import io.notcute.internal.android.AndroidG2DUtils;
 import io.notcute.util.AlreadyDisposedException;
 
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class AndroidImage implements Image {
     }
 
     private static void copy(AndroidImage src, AndroidImage dst) {
-        dst.bitmap = Util.copyBitmap(src.bitmap);
+        dst.bitmap = AndroidG2DUtils.copyBitmap(src.bitmap);
         if (src.graphics != null) {
             dst.graphics = new AndroidGraphics(dst.bitmap);
             dst.graphics.setInfo(src.graphics.getInfo());
@@ -93,7 +94,7 @@ public class AndroidImage implements Image {
     @Override
     public int getType() {
         if (isDisposed()) throw new AlreadyDisposedException();
-        return Util.toNotcuteImageType(bitmap.getConfig());
+        return AndroidG2DUtils.toNotcuteImageType(bitmap.getConfig());
     }
 
     @Override

@@ -2,6 +2,7 @@ package io.notcute.g2d.android;
 
 import android.graphics.Typeface;
 import io.notcute.g2d.Font;
+import io.notcute.internal.android.AndroidG2DUtils;
 
 import java.util.Objects;
 
@@ -21,7 +22,7 @@ public class AndroidFont implements Font {
 
     @Override
     public int getStyle() {
-        return Util.toNotcuteFontStyle(typeface.getStyle());
+        return AndroidG2DUtils.toNotcuteFontStyle(typeface.getStyle());
     }
 
     @Override

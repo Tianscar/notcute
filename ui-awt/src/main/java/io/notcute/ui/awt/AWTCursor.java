@@ -2,6 +2,8 @@ package io.notcute.ui.awt;
 
 import io.notcute.g2d.awt.AWTImage;
 import io.notcute.g2d.Image;
+import io.notcute.internal.awt.CursorFactory;
+import io.notcute.internal.awt.AWTUIUtils;
 
 import java.awt.Cursor;
 import java.awt.Point;
@@ -33,7 +35,7 @@ public class AWTCursor implements io.notcute.ui.Cursor {
         hotSpotX = 0;
         hotSpotY = 0;
         this.type = type;
-        cursor = CursorFactory.getPredefinedCursor(Util.toCursorFactoryCursorType(type));
+        cursor = CursorFactory.getPredefinedCursor(AWTUIUtils.toCursorFactoryCursorType(type));
     }
 
     public AWTCursor(AWTImage image, int hotSpotX, int hotSpotY) {

@@ -30,7 +30,7 @@ public interface FileChooser {
         }
 
         public Info(Info info) {
-            this(info.getMode(), info.isMultiple(), info.getPathname(), info.getTitle(), info.getFilterMIMETypes());
+            this(info.getMode(), info.isMultiple(), info.getPathname(), info.getTitle(), info.getFilterMIMETypes().clone());
         }
 
         public Info(int mode, boolean multiple, File pathname, CharSequence title, String... filterMIMETypes) {
