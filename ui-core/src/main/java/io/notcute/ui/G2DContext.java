@@ -6,6 +6,7 @@ import io.notcute.context.Context;
 import io.notcute.g2d.Graphics;
 import io.notcute.g2d.GraphicsKit;
 import io.notcute.g2d.Image;
+import io.notcute.g2d.geom.Rectangle;
 import io.notcute.util.signalslot.*;
 
 import java.io.File;
@@ -50,8 +51,9 @@ public interface G2DContext extends Context {
         VoidSignal3<G2DContext, Float, Float> onMouseExit();
         VoidSignal3<G2DContext, Float, Integer> onMouseWheelScroll();
 
-        int getScreenWidth();
-        int getScreenHeight();
+        Rectangle getScreenBounds();
+        Rectangle getScreenInsets();
+        Rectangle getScreenClientArea();
         int getDPI();
         float getDensity();
         float getScaledDensity();

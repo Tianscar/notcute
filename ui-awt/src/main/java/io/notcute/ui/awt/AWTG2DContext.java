@@ -12,9 +12,11 @@ import io.notcute.g2d.GraphicsKit;
 import io.notcute.g2d.Image;
 import io.notcute.g2d.awt.AWTGraphics;
 import io.notcute.g2d.awt.AWTImage;
+import io.notcute.g2d.geom.Rectangle;
 import io.notcute.input.Input;
-import io.notcute.internal.awt.Desktop;
+import io.notcute.internal.awt.AWTG2DUtils;
 import io.notcute.internal.awt.AWTUIUtils;
+import io.notcute.internal.awt.Desktop;
 import io.notcute.internal.awt.MouseInputListener;
 import io.notcute.ui.Cursor;
 import io.notcute.ui.G2DContext;
@@ -303,18 +305,29 @@ public class AWTG2DContext extends Canvas implements G2DContext, ComponentListen
         }
 
         @Override
-        public int getScreenWidth() {
-            return Toolkit.getDefaultToolkit().getScreenSize().width;
+        public Rectangle getScreenBounds() {
+            return AWTG2DUtils.toNotcuteRectangle(context.getGraphicsConfiguration().getBounds());
         }
 
         @Override
-        public int getScreenHeight() {
-            return Toolkit.getDefaultToolkit().getScreenSize().height;
+        public Rectangle getScreenInsets() {
+            return AWTUIUtils.toNotcuteRectangle(context.getToolkit().getScreenInsets(context.getGraphicsConfiguration()));
+        }
+
+        @Override
+        public Rectangle getScreenClientArea() {
+            java.awt.Rectangle bounds = context.getGraphicsConfiguration().getBounds();
+            Insets insets = context.getToolkit().getScreenInsets(context.getGraphicsConfiguration());
+            return new Rectangle(
+                    bounds.x + insets.left,
+                    bounds.y + insets.top,
+                    bounds.width - (insets.left + insets.right),
+                    bounds.height - (insets.top + insets.bottom));
         }
 
         @Override
         public int getDPI() {
-            return Toolkit.getDefaultToolkit().getScreenResolution();
+            return (int) (context.getToolkit().getScreenResolution() * AWTUIUtils.getDPIScale(context));
         }
 
         @Override
@@ -324,7 +337,7 @@ public class AWTG2DContext extends Canvas implements G2DContext, ComponentListen
 
         @Override
         public float getScaledDensity() {
-            return getDensity() * Float.parseFloat(System.getProperty("io.notcute.ui.awt.dpiscale", "1.0"));
+            return (float) AWTPlatform.BASELINE_SPI / getDPI() * Float.parseFloat(System.getProperty("io.notcute.ui.awt.dpiscale", "1.0"));
         }
 
         @Override

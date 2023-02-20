@@ -82,12 +82,11 @@ public class AWTFileChooser implements FileChooser {
         CharSequence title = info.getTitle();
         String[] filterMIMETypes = info.getFilterMIMETypes();
         File pathname = info.getPathname();
-        if (!AWTPlatform.isX11 && "KDE".equals(System.getenv("XDG_CURRENT_DESKTOP"))) {
+        if (AWTPlatform.isX11 && "KDE".equals(System.getenv("XDG_CURRENT_DESKTOP"))) {
             // AWT's FileDialog is not native on KDE, we fix it by call kdialog via Java Process API
             long window = getX11Window((AWTContainer) container);
             if (window != 0L) {
                 try {
-                    String titleOption = title == null ? "" : "--title";
                     String modeOption;
                     int mode = info.getMode();
                     switch (mode) {
@@ -111,13 +110,13 @@ public class AWTFileChooser implements FileChooser {
                             "kdialog",
                             "--attach",
                             Long.toString(window),
-                            titleOption,
-                            title == null ? "" : title.toString(),
                             modeOption,
                             pathname == null ? System.getProperty("user.dir") : pathname.getAbsolutePath(),
                             mimeTypes.toString(),
                             info.isMultiple() ? "--multiple" : "",
-                            "--separate-output"
+                            "--separate-output",
+                            title == null ? "" : "--title",
+                            title == null ? "" : title.toString()
                     ).start();
                     onShowKDE.emit((AWTContainer) container, process);
                     return;
@@ -126,7 +125,8 @@ public class AWTFileChooser implements FileChooser {
                 }
             }
         }
-        FileDialog fileDialog = new FileDialog((AWTContainer) container, title == null ? "" : title.toString(), AWTUIUtils.toAWTFileDialogMode(info.getMode()));
+        FileDialog fileDialog = new FileDialog((AWTContainer) container, title == null ? "" : title.toString(),
+                AWTUIUtils.toAWTFileDialogMode(info.getMode()));
         fileDialog.setMultipleMode(info.isMultiple());
         fileDialog.setDirectory(pathname == null ? null : (pathname.isDirectory() ? pathname.getAbsolutePath() : pathname.getParent()));
         if (filterMIMETypes != null) {

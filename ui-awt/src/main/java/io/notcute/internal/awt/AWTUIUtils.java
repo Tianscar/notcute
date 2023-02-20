@@ -1,17 +1,16 @@
 package io.notcute.internal.awt;
 
 import io.notcute.app.FileChooser;
+import io.notcute.app.awt.AWTManifest;
+import io.notcute.app.awt.AWTPlatform;
 import io.notcute.app.awt.URIListSelection;
 import io.notcute.g2d.awt.AWTImage;
+import io.notcute.g2d.geom.Rectangle;
 import io.notcute.input.Input;
 import io.notcute.util.FileUtils;
 
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.datatransfer.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -21,6 +20,7 @@ import java.awt.image.PixelGrabber;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -241,6 +241,32 @@ public final class AWTUIUtils {
             result[i] = new AWTImage(getBufferedImage(images.get(i)));
         }
         return result;
+    }
+
+    public static Rectangle toNotcuteRectangle(Insets insets) {
+        if (insets == null) return null;
+        else return new Rectangle(insets.left, insets.top, insets.right - insets.left, insets.bottom - insets.top);
+    }
+
+    public static double getDPIScale(Component component) {
+        Objects.requireNonNull(component);
+        if (AWTPlatform.isX11) {
+            if (AWTManifest.isUIScaleEnabled()) {
+                if (AWTManifest.isJava2DUIScaleDefined()) return AWTManifest.getJava2DUIScaleFactor();
+                else {
+                    try {
+                        return (double) Class.forName("io.notcute.internal.awt.x11.X11Utils")
+                                .getDeclaredMethod("getXFontDPI").invoke(null) /
+                                component.getToolkit().getScreenResolution();
+                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException |
+                             ClassNotFoundException ignored) {
+                        return 1.0;
+                    }
+                }
+            }
+            else return 1.0;
+        }
+        else return component.getGraphicsConfiguration().getDefaultTransform().getScaleX();
     }
 
 }

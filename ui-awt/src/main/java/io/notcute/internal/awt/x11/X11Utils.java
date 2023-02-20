@@ -1,5 +1,7 @@
 package io.notcute.internal.awt.x11;
 
+import jnr.ffi.Runtime;
+import jnr.ffi.byref.PointerByReference;
 import sun.awt.X11.XToolkit;
 
 import java.awt.Cursor;
@@ -11,7 +13,7 @@ import java.awt.GraphicsEnvironment;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class X11CursorFactory {
+public final class X11Utils {
 
     private static final long NULL = 0L;
 
@@ -127,6 +129,25 @@ public final class X11CursorFactory {
             if (!systemCursors.containsKey(name)) systemCursors.put(name, new X11SystemCursor(name, pData));
             return systemCursors.get(name);
         }
+    }
+
+    // adapted from https://github.com/glfw/glfw/issues/1019#issuecomment-302772498
+    public static double getXFontDPI() {
+        Xlib XLIB = Xlib.INSTANCE;
+        long resourceString = XLIB.XResourceManagerString(XToolkit.getDisplay());
+        long db;
+        Xlib.XrmValue value = new Xlib.XrmValue(Runtime.getRuntime(XLIB));
+        PointerByReference type = new PointerByReference();
+        XLIB.XrmInitialize(); /* Need to initialize the DB before calling Xrm* functions */
+        db = XLIB.XrmGetStringDatabase(resourceString);
+        if (resourceString != NULL) {
+            if (XLIB.XrmGetResource(db, "Xft.dpi", "String", type, value) == Xlib.True) {
+                if (value.addr.get().address() != NULL) {
+                    return Double.parseDouble(value.addr.get().getString(0));
+                }
+            }
+        }
+        return Toolkit.getDefaultToolkit().getScreenResolution();
     }
 
 }

@@ -50,6 +50,18 @@ public final class AWTG2DUtils {
                 (int) Math.ceil(rectangle.getWidth()), (int) Math.ceil(rectangle.getHeight()));
     }
 
+    public static Rectangle toNotcuteRectangle(Rectangle2D.Float rectangle2D) {
+        return new Rectangle(rectangle2D.x, rectangle2D.y, rectangle2D.width, rectangle2D.height);
+    }
+
+    public static Rectangle toNotcuteRectangle(java.awt.Rectangle rectangle) {
+        return new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+    }
+
+    public static Rectangle toNotcuteRectangle(Rectangle2D rectangle2D) {
+        return new Rectangle((float) rectangle2D.getX(), (float) rectangle2D.getY(), (float) rectangle2D.getWidth(), (float) rectangle2D.getHeight());
+    }
+
     public static Rectangle2D toAWTRectangle2D(Rectangle rectangle) {
         return new Rectangle2D.Float(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
     }

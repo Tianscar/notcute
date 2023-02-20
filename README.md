@@ -92,6 +92,7 @@ Add the following lines to the JVM args:
 --add-exports java.desktop/sun.awt.X11=ALL-UNNAMED
 ```
 ### Running on KDE, with AWT/X11 backend & Java 16+
+Add the following lines to the JVM args: 
 ```
 --add-opens java.desktop/java.awt=ALL-UNNAMED
 ```
