@@ -33,7 +33,7 @@ subprojects {
         libraryAndroidTargetCompatibility = JavaVersion.VERSION_1_8
 
         libraryJavaSESourceCompatibility = JavaVersion.VERSION_1_8
-        libraryJavaSETargetCompatibility = JavaVersion.VERSION_11
+        libraryJavaSETargetCompatibility = JavaVersion.VERSION_1_8
     }
 
     group libraryGroupName

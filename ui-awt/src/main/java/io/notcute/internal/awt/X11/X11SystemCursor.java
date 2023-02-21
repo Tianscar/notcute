@@ -1,4 +1,4 @@
-package io.notcute.internal.awt.x11;
+package io.notcute.internal.awt.X11;
 
 import sun.awt.AWTAccessor;
 import sun.awt.X11.XToolkit;

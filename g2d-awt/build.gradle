@@ -3,4 +3,7 @@ dependencies {
     apiElements project(':g2d-core')
     implementation project(':javase')
     apiElements project(':javase')
+
+    implementation 'net.gredler:jdk9-png-writer-backport:1.0.0'
+    implementation 'com.twelvemonkeys.imageio:imageio-tiff:3.9.4'
 }

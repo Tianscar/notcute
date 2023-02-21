@@ -54,4 +54,17 @@ public class JavaSEPlatform implements Platform {
         return true;
     }
 
+    public static final boolean isJava9;
+    static {
+        boolean hasModule;
+        try {
+            Class.forName("java.lang.Module");
+            hasModule = true;
+        }
+        catch (ClassNotFoundException e) {
+            hasModule = false;
+        }
+        isJava9 = hasModule;
+    }
+
 }

@@ -1,4 +1,4 @@
-package io.notcute.internal.awt.x11;
+package io.notcute.internal.awt.X11;
 
 public enum GtkFileChooserAction {
     GTK_FILE_CHOOSER_ACTION_OPEN,

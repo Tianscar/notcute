@@ -7,9 +7,8 @@ An abstract graphics layer based on Android GUI, AWT, SWT and so on.
 Notcute is not a framework built from scratch, just an indirection layer over existing frameworks.
 
 ## Compatibility
-- Java SE: Java 11 or above
-- Android: SDK 16 (version 4.1) or above
-- All source are Java 8 compatible (the project is non-modular) grammatically, but the Java SE backend using some Java 11 features
+- Java SE: Java 8 or later
+- Android: SDK 16 (version 4.1) or later
 - If you want to share code between platforms, you should use [a subset of Java 8](https://developer.android.com/studio/write/java8-support-table)
 
 ## Design
@@ -85,12 +84,16 @@ ui-core
 - Scaffolding libraries for several kinds of games: STG, AVG, RTS, Roguelike and so on.
 
 ## Notes
+### Running with AWT/Win32 or AWT/Cocoa backend & Java 16+
+Add the following lines to the JVM args:
+```
+--add-exports java.desktop/sun.awt=ALL-UNNAMED
+```
 ### Running with AWT/X11 backend & Java 16+
 Add the following lines to the JVM args: 
 ```
 --add-exports java.desktop/sun.awt=ALL-UNNAMED
 --add-exports java.desktop/sun.awt.X11=ALL-UNNAMED
---add-opens java.desktop/java.awt=ALL-UNNAMED
 ```
 
 ## Contributing
@@ -107,6 +110,8 @@ Apache-2.0 [Apache Harmony](https://harmony.apache.org)
 [MIT](https://github.com/msteinbeck/sig4j/blob/master/LICENSE) [sig4j](https://github.com/msteinbeck/sig4j)
 ### This project currently uses the following libraries as dependencies:
 [Apache-2.0](https://github.com/jnr/jnr-ffi/blob/master/LICENSE) [jnr-ffi](https://github.com/jnr/jnr-ffi)  
+[BSD-3-Clause](https://github.com/haraldk/TwelveMonkeys/blob/master/LICENSE.txt) [TwelveMonkeys](http://haraldk.github.io/TwelveMonkeys/)  
+[GPL-2.0+CE](https://github.com/gredler/jdk9-png-writer-backport/blob/master/LICENSE) [JDK9 PNG Writer Backport](https://github.com/gredler/jdk9-png-writer-backport)  
 LGPL-2.1 [MP3SPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/mp3spi/1.9.5.4)  
 LGPL-2.1 [VorbisSPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/vorbisspi/1.0.3.3)  
 LGPL-2.1 [jFLAC](https://jflac.sourceforge.net)

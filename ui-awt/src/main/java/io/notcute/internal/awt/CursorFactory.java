@@ -9,7 +9,7 @@ import java.awt.Point;
 import java.awt.AWTException;
 import java.lang.reflect.InvocationTargetException;
 
-import static io.notcute.internal.awt.x11.X11CursorConstants.*;
+import static io.notcute.internal.awt.X11.X11CursorConstants.*;
 
 public final class CursorFactory {
 
@@ -148,7 +148,7 @@ public final class CursorFactory {
 
     private static Cursor getXSystemCursor(final String name) {
         try {
-            return (Cursor) Class.forName("io.notcute.internal.awt.x11.X11Utils")
+            return (Cursor) Class.forName("io.notcute.internal.awt.X11.X11Utils")
                     .getDeclaredMethod("getXSystemCursor", String.class).invoke(null, name);
         } catch (ClassNotFoundException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             return Cursor.getDefaultCursor();
@@ -157,7 +157,7 @@ public final class CursorFactory {
 
     private static Cursor getXSystemCursor(final int type) {
         try {
-            return (Cursor) Class.forName("io.notcute.internal.awt.x11.X11Utils")
+            return (Cursor) Class.forName("io.notcute.internal.awt.X11.X11Utils")
                     .getDeclaredMethod("getXSystemCursor", int.class).invoke(null, type);
         } catch (ClassNotFoundException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             return Cursor.getDefaultCursor();
@@ -166,7 +166,7 @@ public final class CursorFactory {
 
     private static Cursor createXCustomCursor(final Image cursor, final Point hotSpot, final String name) {
         try {
-            return (Cursor) Class.forName("io.notcute.internal.awt.x11.X11Utils")
+            return (Cursor) Class.forName("io.notcute.internal.awt.X11.X11Utils")
                     .getDeclaredMethod("createXCustomCursor", Image.class, Point.class, String.class).invoke(null, cursor, hotSpot, name);
         } catch (ClassNotFoundException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             return Cursor.getDefaultCursor();

@@ -1,5 +1,6 @@
 package io.notcute.g2d.awt;
 
+import com.twelvemonkeys.imageio.metadata.tiff.TIFF;
 import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.Image;
 import io.notcute.internal.awt.AWTG2DUtils;
@@ -7,7 +8,6 @@ import io.notcute.internal.awt.AWTG2DUtils;
 import javax.imageio.*;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
-import javax.imageio.plugins.tiff.BaselineTIFFTagSet;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.io.EOFException;
@@ -20,8 +20,8 @@ public final class TIFFMFBIIOSpi implements MFBIIOServiceProvider {
 
     private static final String NATIVE_FORMAT_NAME = "com_sun_media_imageio_plugins_tiff_image_1.0";
 
-    private static final String[] READER_MIME_TYPES = new String[] { "image/tiff" };
-    private static final String[] WRITER_MIME_TYPES = new String[] { "image/tiff" };
+    private static final String[] READER_MIME_TYPES = new String[] { "image/tiff", "image/x-tiff" };
+    private static final String[] WRITER_MIME_TYPES = new String[] { "image/tiff", "image/x-tiff" };
 
     @Override
     public MultiFrameImage read(ImageInputStream stream) throws IOException {
@@ -41,22 +41,22 @@ public final class TIFFMFBIIOSpi implements MFBIIOServiceProvider {
             while (node != null) {
                 if ("TIFFField".equals(node.getNodeName())) {
                     switch (Integer.parseInt(node.getAttribute("number"))) {
-                        case BaselineTIFFTagSet.TAG_X_RESOLUTION:
+                        case TIFF.TAG_X_RESOLUTION:
                             tmp = ((IIOMetadataNode) node.getFirstChild().getFirstChild()).getAttribute("value").split("/");
                             xrf = Long.parseLong(tmp[0]);
                             xrd = Long.parseLong(tmp[1]);
                             break;
-                        case BaselineTIFFTagSet.TAG_Y_RESOLUTION:
+                        case TIFF.TAG_Y_RESOLUTION:
                             tmp = ((IIOMetadataNode) node.getFirstChild().getFirstChild()).getAttribute("value").split("/");
                             yrf = Long.parseLong(tmp[0]);
                             yrd = Long.parseLong(tmp[1]);
                             break;
-                        case BaselineTIFFTagSet.TAG_X_POSITION:
+                        case TIFF.TAG_X_POSITION:
                             tmp = ((IIOMetadataNode) node.getFirstChild().getFirstChild()).getAttribute("value").split("/");
                             xpf = Long.parseLong(tmp[0]);
                             xpd = Long.parseLong(tmp[1]);
                             break;
-                        case BaselineTIFFTagSet.TAG_Y_POSITION:
+                        case TIFF.TAG_Y_POSITION:
                             tmp = ((IIOMetadataNode) node.getFirstChild().getFirstChild()).getAttribute("value").split("/");
                             ypf = Long.parseLong(tmp[0]);
                             ypd = Long.parseLong(tmp[1]);
@@ -127,10 +127,10 @@ public final class TIFFMFBIIOSpi implements MFBIIOServiceProvider {
     private static IIOMetadataNode generateMetadata(Image.Frame frame) {
         IIOMetadataNode root = new IIOMetadataNode(NATIVE_FORMAT_NAME);
         IIOMetadataNode ifd = new IIOMetadataNode("TIFFIFD");
-        ifd.appendChild(generateTIFFRational(BaselineTIFFTagSet.TAG_X_RESOLUTION, BASELINE_DPI, 1));
-        ifd.appendChild(generateTIFFRational(BaselineTIFFTagSet.TAG_Y_RESOLUTION, BASELINE_DPI, 1));
-        ifd.appendChild(generateTIFFRational(BaselineTIFFTagSet.TAG_X_POSITION, frame.getHotSpotX(), BASELINE_DPI));
-        ifd.appendChild(generateTIFFRational(BaselineTIFFTagSet.TAG_Y_POSITION, frame.getHotSpotY(), BASELINE_DPI));
+        ifd.appendChild(generateTIFFRational(TIFF.TAG_X_RESOLUTION, BASELINE_DPI, 1));
+        ifd.appendChild(generateTIFFRational(TIFF.TAG_Y_RESOLUTION, BASELINE_DPI, 1));
+        ifd.appendChild(generateTIFFRational(TIFF.TAG_X_POSITION, frame.getHotSpotX(), BASELINE_DPI));
+        ifd.appendChild(generateTIFFRational(TIFF.TAG_Y_POSITION, frame.getHotSpotY(), BASELINE_DPI));
         root.appendChild(ifd);
         return root;
     }
@@ -153,7 +153,7 @@ public final class TIFFMFBIIOSpi implements MFBIIOServiceProvider {
     }
 
     private static ImageWriter getTIFFImageWriter() {
-        Iterator<ImageWriter> it = ImageIO.getImageWritersByMIMEType("image/tiff");
+        Iterator<ImageWriter> it = ImageIO.getImageWritersByFormatName("bigtiff");
         if (it.hasNext()) return it.next();
         else return null;
     }

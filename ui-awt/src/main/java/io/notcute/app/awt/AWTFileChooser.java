@@ -2,7 +2,7 @@ package io.notcute.app.awt;
 
 import io.notcute.app.FileChooser;
 import io.notcute.internal.awt.AWTUIUtils;
-import io.notcute.internal.awt.x11.*;
+import io.notcute.internal.awt.X11.*;
 import io.notcute.ui.Container;
 import io.notcute.ui.awt.AWTContainer;
 import io.notcute.util.MIMETypes;

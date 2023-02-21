@@ -1,7 +1,8 @@
-package io.notcute.internal.awt.x11;
+package io.notcute.internal.awt.X11;
 
 import jnr.ffi.Runtime;
 import jnr.ffi.byref.PointerByReference;
+import sun.awt.AWTAccessor;
 import sun.awt.X11.XToolkit;
 
 import java.awt.Component;
@@ -11,7 +12,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.HeadlessException;
 import java.awt.GraphicsEnvironment;
-import java.lang.reflect.Field;
+import java.awt.peer.ComponentPeer;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -153,14 +154,13 @@ public final class X11Utils {
     }
 
     public static long getXWindow(Component component) {
-        if (component == null) return 0L;
+        if (component == null) return NULL;
         try {
-            Field peer = Component.class.getDeclaredField("peer");
-            peer.setAccessible(true);
-            return (long) Class.forName("sun.awt.X11.XBaseWindow").getDeclaredMethod("getWindow").invoke(peer.get(component));
+            ComponentPeer peer = AWTAccessor.getComponentAccessor().getPeer(component);
+            return (long) peer.getClass().getMethod("getWindow").invoke(peer);
         }
         catch (Exception ignored) {
-            return 0L;
+            return NULL;
         }
     }
 

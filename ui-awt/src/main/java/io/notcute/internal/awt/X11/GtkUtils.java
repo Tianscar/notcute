@@ -1,4 +1,4 @@
-package io.notcute.internal.awt.x11;
+package io.notcute.internal.awt.X11;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;

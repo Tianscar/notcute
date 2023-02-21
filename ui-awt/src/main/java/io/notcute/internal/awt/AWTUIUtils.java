@@ -1,7 +1,6 @@
 package io.notcute.internal.awt;
 
 import io.notcute.app.FileChooser;
-import io.notcute.app.awt.AWTManifest;
 import io.notcute.app.awt.AWTPlatform;
 import io.notcute.app.awt.URIListSelection;
 import io.notcute.g2d.awt.AWTImage;
@@ -250,23 +249,19 @@ public final class AWTUIUtils {
 
     public static double getDPIScale(Component component) {
         Objects.requireNonNull(component);
-        if (AWTPlatform.isX11) {
-            if (AWTManifest.isUIScaleEnabled()) {
-                if (AWTManifest.isJava2DUIScaleDefined()) return AWTManifest.getJava2DUIScaleFactor();
-                else {
-                    try {
-                        return (double) Class.forName("io.notcute.internal.awt.x11.X11Utils")
-                                .getDeclaredMethod("getXFontDPI").invoke(null) /
-                                component.getToolkit().getScreenResolution();
-                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException |
-                             ClassNotFoundException ignored) {
-                        return 1.0;
-                    }
-                }
-            }
-            else return 1.0;
+        try {
+            if (AWTPlatform.isWindows) return ((Integer) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
+                    .getDeclaredMethod("getDpiForComponent", Component.class).invoke(null, component)) /
+                    (double) component.getToolkit().getScreenResolution();
+            else if (AWTPlatform.isMac) return (Integer) Class.forName("io.notcute.internal.awt.macosx.MacOSXUtils")
+                    .getDeclaredMethod("getScaleFactor").invoke(null);
+            else return (Double) Class.forName("io.notcute.internal.awt.X11.X11Utils")
+                    .getDeclaredMethod("getXFontDPI").invoke(null) /
+                    component.getToolkit().getScreenResolution();
         }
-        else return component.getGraphicsConfiguration().getDefaultTransform().getScaleX();
+        catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+            return 1.0;
+        }
     }
 
 }
