@@ -2,22 +2,17 @@ package io.notcute.app.awt;
 
 import io.notcute.app.FileChooser;
 import io.notcute.internal.awt.AWTUIUtils;
+import io.notcute.internal.awt.x11.*;
 import io.notcute.ui.Container;
 import io.notcute.ui.awt.AWTContainer;
-import io.notcute.util.Charsets;
-import io.notcute.util.IOUtils;
 import io.notcute.util.MIMETypes;
 import io.notcute.util.signalslot.*;
+import jnr.ffi.Runtime;
 
 import java.awt.FileDialog;
-import java.awt.Component;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
+import java.nio.file.FileSystems;
+import java.nio.file.PathMatcher;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -40,28 +35,75 @@ public class AWTFileChooser implements FileChooser {
         }, DISPATCHER);
     }
 
-    private final VoidSignal2<AWTContainer, Process> onShowKDE = new VoidSignal2<>();
+    private final VoidSignal2<AWTContainer, Long> onShowGtk3 = new VoidSignal2<>();
     {
-        onShowKDE.connect(new VoidSlot2<AWTContainer, Process>() {
+        onShowGtk3.connect(new VoidSlot2<AWTContainer, Long>() {
             @Override
-            public void accept(AWTContainer container, Process process) {
-                try {
-                    Thread shutdownHook = new Thread(process::destroy); // To prevent the kdialog process become orphan process
-                    Runtime.getRuntime().addShutdownHook(shutdownHook);
-                    Connection conn = container.getContainerHolder()
-                            .onCloseRequest().connect(container1 -> false); // make the parent container ignore close request
-                    process.waitFor();
-                    String[] paths = new String(IOUtils.readAllBytes(process.getInputStream()), Charsets.UTF_8).split("\n");
-                    Runtime.getRuntime().removeShutdownHook(shutdownHook); // The kdialog process exited, so remove the shutdown hook
-                    File[] files = new File[paths.length];
-                    for (int i = 0; i < paths.length; i ++) {
-                        files[i] = new File(paths[i]);
+            public void accept(AWTContainer container, Long window) {
+                CharSequence title = info.getTitle();
+                String[] filterMIMETypes = info.getFilterMIMETypes();
+                File pathname = info.getPathname();
+                Gtk3 GTK3 = Gtk3.INSTANCE;
+                long gdkDisplay = GTK3.gdk_display_get_default();
+                long gdkWindow = GTK3.gdk_x11_window_foreign_new_for_display(gdkDisplay, window);
+                long gtkWindow = GTK3.gtk_window_new(GtkWindowType.GTK_WINDOW_TOPLEVEL);
+                GTK3.gtk_widget_set_has_window(gtkWindow, true);
+                GTK3.gtk_widget_realize(gtkWindow);
+                GTK3.gtk_widget_set_window(gtkWindow, gdkWindow);
+                GTK3.gtk_widget_show_all(gtkWindow);
+                long fileChooser = GTK3.gtk_file_chooser_native_new(
+                        title == null ? "" : title.toString(),
+                        gtkWindow,
+                        info.getMode() == Mode.SAVE ? GtkFileChooserAction.GTK_FILE_CHOOSER_ACTION_SAVE :
+                                GtkFileChooserAction.GTK_FILE_CHOOSER_ACTION_OPEN,
+                        null, null);
+                GTK3.gtk_file_chooser_set_select_multiple(fileChooser, info.isMultiple());
+                if (filterMIMETypes != null && filterMIMETypes.length > 0) {
+                    long fileFilter = GTK3.gtk_file_filter_new();
+                    StringBuilder filterName = new StringBuilder();
+                    for (String mimeType : filterMIMETypes) {
+                        if (mimeType == null) continue;
+                        GTK3.gtk_file_filter_add_mime_type(fileFilter, mimeType);
+                        filterName.append(mimeType).append(", ");
                     }
-                    onFileChosen.emit(files);
-                    container.getContainerHolder()
-                            .onCloseRequest().disconnect(conn);
-                } catch (InterruptedException | IOException ignored) {
+                    if (filterName.length() >= 2)
+                        filterName.deleteCharAt(filterName.length() - 1).deleteCharAt(filterName.length() - 1);
+                    GTK3.gtk_file_filter_set_name(fileFilter, filterName.toString());
+                    GTK3.gtk_file_chooser_add_filter(fileChooser, fileFilter);
                 }
+                if (pathname != null) GTK3.gtk_file_chooser_set_current_folder(fileChooser,
+                        pathname.isFile() ? pathname.getParent() : pathname.getAbsolutePath());
+                Connection conn = container.getContainerHolder()
+                        .onCloseRequest().connect(container1 -> false); // make the parent container ignore close request
+                GtkResponseType result = GTK3.gtk_native_dialog_run(fileChooser);
+                while (GTK3.gtk_events_pending()) {
+                    GTK3.gtk_main_iteration();
+                }
+                Set<String> pathsSet = new HashSet<>();
+                if (result == GtkResponseType.GTK_RESPONSE_ACCEPT) {
+                    GSList list = GTK3.gtk_file_chooser_get_filenames(fileChooser);
+                    GSList file = list;
+                    while (file != null) {
+                        pathsSet.add(file.data.get().getString(0));
+                        GTK3.g_free(file.data.get().address());
+                        if (file.next.get() != null) {
+                            GSList gsList = new GSList(Runtime.getRuntime(GTK3));
+                            gsList.useMemory(file.next.get());
+                            file = gsList;
+                        }
+                        else file = null;
+                    }
+                    GTK3.g_slist_free(list);
+                }
+                GTK3.g_object_unref(fileChooser);
+                GTK3.g_object_unref(gdkWindow);
+                String[] paths = pathsSet.toArray(new String[0]);
+                File[] files = new File[paths.length];
+                for (int i = 0; i < paths.length; i ++) {
+                    files[i] = new File(paths[i]);
+                }
+                onFileChosen.emit(files);
+                container.getContainerHolder().onCloseRequest().disconnect(conn);
             }
         }, DISPATCHER);
     }
@@ -79,81 +121,39 @@ public class AWTFileChooser implements FileChooser {
     @Override
     public void attachContainer(Container container) {
         Objects.requireNonNull(container);
+        if (AWTPlatform.isX11 && GtkUtils.loadGtk() && GtkUtils.getGtkMajorVersion() == 3) {
+            long window = X11Utils.getXWindow((AWTContainer) container);
+            if (window != 0L) {
+                onShowGtk3.emit((AWTContainer) container, window);
+                return;
+            }
+        }
         CharSequence title = info.getTitle();
         String[] filterMIMETypes = info.getFilterMIMETypes();
         File pathname = info.getPathname();
-        if (AWTPlatform.isX11 && "KDE".equals(System.getenv("XDG_CURRENT_DESKTOP"))) {
-            // AWT's FileDialog is not native on KDE, we fix it by call kdialog via Java Process API
-            long window = getX11Window((AWTContainer) container);
-            if (window != 0L) {
-                try {
-                    String modeOption;
-                    int mode = info.getMode();
-                    switch (mode) {
-                        case Mode.LOAD:
-                            modeOption = "--getopenfilename";
-                            break;
-                        case Mode.SAVE:
-                            modeOption = "--getsavefilename";
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Invalid mode: " + mode);
-                    }
-                    StringBuilder mimeTypes = new StringBuilder();
-                    if (filterMIMETypes != null) {
-                        for (String mimeType : filterMIMETypes) {
-                            mimeTypes.append(mimeType).append(" ");
-                        }
-                        if (mimeTypes.length() > 0) mimeTypes.deleteCharAt(mimeTypes.length() - 1);
-                    }
-                    Process process = new ProcessBuilder(
-                            "kdialog",
-                            "--attach",
-                            Long.toString(window),
-                            modeOption,
-                            pathname == null ? System.getProperty("user.dir") : pathname.getAbsolutePath(),
-                            mimeTypes.toString(),
-                            info.isMultiple() ? "--multiple" : "",
-                            "--separate-output",
-                            title == null ? "" : "--title",
-                            title == null ? "" : title.toString()
-                    ).start();
-                    onShowKDE.emit((AWTContainer) container, process);
-                    return;
-                } catch (IOException ignored) {
-                    // kdialog not exist, or other io exception, fallback to AWT's FileDialog
-                }
-            }
-        }
         FileDialog fileDialog = new FileDialog((AWTContainer) container, title == null ? "" : title.toString(),
                 AWTUIUtils.toAWTFileDialogMode(info.getMode()));
         fileDialog.setMultipleMode(info.isMultiple());
         fileDialog.setDirectory(pathname == null ? null : (pathname.isDirectory() ? pathname.getAbsolutePath() : pathname.getParent()));
         if (filterMIMETypes != null) {
             MIMETypes mimeTypes = container.getContextHolder().getMIMETypes();
-            if (AWTPlatform.isWindows) {
-                StringBuilder extensions = new StringBuilder();
-                for (String mimeType : filterMIMETypes) {
-                    for (String extension : mimeTypes.getExtensions(mimeType)) {
-                        extensions.append("*.").append(extension).append(", ");
-                    }
+            StringBuilder extensions = new StringBuilder();
+            for (String mimeType : filterMIMETypes) {
+                for (String extension : mimeTypes.getExtensions(mimeType)) {
+                    extensions.append("*.").append(extension).append(", ");
                 }
-                if (extensions.length() > 0) extensions
-                        .deleteCharAt(extensions.length() - 1)
-                        .deleteCharAt(extensions.length() - 1);
-                fileDialog.setFile(extensions.toString());
             }
+            if (extensions.length() > 0) extensions
+                    .deleteCharAt(extensions.length() - 1)
+                    .deleteCharAt(extensions.length() - 1);
+            if (AWTPlatform.isWindows) fileDialog.setFile(extensions.toString());
             else {
-                Set<String> filterMIMETypeSet = new HashSet<>(Arrays.asList(filterMIMETypes));
-                fileDialog.setFilenameFilter(new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        for (String mimeType : mimeTypes.getMIMETypes(name.substring(name.lastIndexOf('.')))) {
-                            if (filterMIMETypeSet.contains(mimeType)) return true;
-                        }
-                        return false;
-                    }
-                });
+                PathMatcher matcher = FileSystems.getDefault()
+                        .getPathMatcher("glob:" + "*.{" +
+                                extensions.toString().replaceAll("\\*.", "")
+                                        .replaceAll(", ", ",")
+                                + "}");
+                fileDialog.setFilenameFilter((dir, name) -> matcher.matches(new File(dir, name).toPath().getFileName()));
             }
         }
         fileDialog.setLocation(-1, -1); // Make the FileDialog center of the screen
@@ -164,19 +164,6 @@ public class AWTFileChooser implements FileChooser {
     @Override
     public VoidSignal1<File[]> onFileChosen() {
         return onFileChosen;
-    }
-
-    private static long getX11Window(Component component) {
-        if (component == null) return 0L;
-        try {
-            Field peer = Component.class.getDeclaredField("peer");
-            peer.setAccessible(true);
-            return (long) Class.forName("sun.awt.X11.XBaseWindow").getDeclaredMethod("getWindow").invoke(peer.get(component));
-        }
-        catch (NoSuchFieldException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | NoSuchMethodException |
-                 InaccessibleObjectException ignored) {
-            return 0L;
-        }
     }
 
 }

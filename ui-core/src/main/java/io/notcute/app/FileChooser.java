@@ -92,7 +92,7 @@ public interface FileChooser {
         @Override
         public void reset() {
             mode = Mode.LOAD;
-            multiple = true;
+            multiple = false;
             pathname = null;
             title = null;
             filterMIMETypes = null;

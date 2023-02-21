@@ -4,12 +4,14 @@ import jnr.ffi.Runtime;
 import jnr.ffi.byref.PointerByReference;
 import sun.awt.X11.XToolkit;
 
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Toolkit;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.HeadlessException;
 import java.awt.GraphicsEnvironment;
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -136,7 +138,7 @@ public final class X11Utils {
         Xlib XLIB = Xlib.INSTANCE;
         long resourceString = XLIB.XResourceManagerString(XToolkit.getDisplay());
         long db;
-        Xlib.XrmValue value = new Xlib.XrmValue(Runtime.getRuntime(XLIB));
+        XrmValue value = new XrmValue(Runtime.getRuntime(XLIB));
         PointerByReference type = new PointerByReference();
         XLIB.XrmInitialize(); /* Need to initialize the DB before calling Xrm* functions */
         db = XLIB.XrmGetStringDatabase(resourceString);
@@ -148,6 +150,18 @@ public final class X11Utils {
             }
         }
         return Toolkit.getDefaultToolkit().getScreenResolution();
+    }
+
+    public static long getXWindow(Component component) {
+        if (component == null) return 0L;
+        try {
+            Field peer = Component.class.getDeclaredField("peer");
+            peer.setAccessible(true);
+            return (long) Class.forName("sun.awt.X11.XBaseWindow").getDeclaredMethod("getWindow").invoke(peer.get(component));
+        }
+        catch (Exception ignored) {
+            return 0L;
+        }
     }
 
 }

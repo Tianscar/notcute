@@ -2,8 +2,6 @@ package io.notcute.internal.awt.x11;
 
 import jnr.ffi.LibraryLoader;
 import jnr.ffi.Platform;
-import jnr.ffi.Runtime;
-import jnr.ffi.Struct;
 import jnr.ffi.annotations.In;
 import jnr.ffi.annotations.Out;
 import jnr.ffi.byref.PointerByReference;
@@ -26,13 +24,5 @@ public interface Xlib {
             @In String str_class,
             @Out PointerByReference str_type_return,
             @Out XrmValue value_return);
-
-    final class XrmValue extends Struct {
-        public final Unsigned32 size = new Unsigned32();
-        public final Pointer addr = new Pointer();
-        public XrmValue(Runtime runtime) {
-            super(runtime);
-        }
-    }
 
 }

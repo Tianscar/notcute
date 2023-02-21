@@ -26,7 +26,7 @@ final class X11CustomCursor extends CustomCursor {
             long pNativePixels = MemoryIO.getInstance().allocateMemory(pixels.length * 4L, false);
             Pointer nativePixels = Pointer.wrap(Runtime.getRuntime(XCURSOR), pNativePixels);
             nativePixels.put(0, pixels, 0, pixels.length);
-            Xcursor.XcursorImage xCursorImage = XCURSOR.XcursorImageCreate(width, height);
+            XcursorImage xCursorImage = XCURSOR.XcursorImageCreate(width, height);
             xCursorImage.xhot.set(xHotSpot);
             xCursorImage.yhot.set(yHotSpot);
             xCursorImage.pixels.set(nativePixels);
