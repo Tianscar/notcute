@@ -106,7 +106,7 @@ So contributions & PRs welcome!
 
 ### This project currently uses some code from the following projects:
 Apache-2.0 [Apache Harmony](https://harmony.apache.org)  
-[Apache-2.0](https://github.com/JFormDesigner/FlatLaf/blob/main/LICENSE) [FlatLaf](https://github.com/JFormDesigner/FlatLaf)  
+[Apache-2.0](https://github.com/JFormDesigner/FlatLaf/blob/main/LICENSE) [FlatLaf](https://www.formdev.com/flatlaf/)  
 [MIT](https://github.com/philfrei/AudioCue-maven/blob/main/LICENSE) [AudioCue-Maven](https://github.com/philfrei/AudioCue-maven)  
 [MIT](https://github.com/msteinbeck/sig4j/blob/master/LICENSE) [sig4j](https://github.com/msteinbeck/sig4j)
 ### This project currently uses the following libraries as dependencies:
