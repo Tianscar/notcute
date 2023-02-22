@@ -5,6 +5,4 @@ dependencies {
     apiElements project(':g2d-awt')
     implementation project(':audio-javase')
     apiElements project(':audio-javase')
-
-    implementation 'com.github.jnr:jnr-ffi:2.2.13'
 }

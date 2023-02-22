@@ -1,13 +1,14 @@
 package io.notcute.internal.awt.X11;
 
+import jnr.ffi.LibraryLoader;
+import jnr.ffi.Platform;
 import jnr.ffi.annotations.In;
 
 public interface Gtk2 extends Gtk {
 
-    /*
+
     Gtk2 INSTANCE = (Platform.getNativePlatform().getOS() == Platform.OS.WINDOWS || Platform.getNativePlatform().getOS() == Platform.OS.DARWIN)
             ? null : (GtkUtils.getGtkMajorVersion() == 2 ? LibraryLoader.create(Gtk2.class).load("gtk-x11-2.0") : null);
-     */
 
     long
     gtk_file_filter_new ();
@@ -22,15 +23,6 @@ public interface Gtk2 extends Gtk {
     gtk_file_filter_set_name (
             @In long filter,
             @In String name
-    );
-
-    long
-    gdk_display_get_default ();
-
-    long
-    gdk_x11_window_foreign_new_for_display (
-            @In long display,
-            @In long window
     );
 
     void

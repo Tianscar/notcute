@@ -1,5 +1,6 @@
 package io.notcute.internal.awt;
 
+import io.notcute.app.javase.JavaSEPlatform;
 import io.notcute.g2d.AffineTransform;
 import io.notcute.g2d.Graphics;
 import io.notcute.g2d.geom.Rectangle;
@@ -15,6 +16,7 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
 import static io.notcute.g2d.Font.Style.*;
@@ -239,6 +241,37 @@ public final class AWTG2DUtils {
         Rectangle2D.Float result = new Rectangle2D.Float();
         result.setRect(rectangle2D);
         return result;
+    }
+
+    private static final Font DEFAULT_FONT = Font.decode(null);
+    public static Font getAWTDefaultFont() {
+        return DEFAULT_FONT;
+    }
+
+    public static Font getSystemDefaultFont() {
+        try {
+            if (JavaSEPlatform.isWindows) return Font.decode((String) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
+                    .getDeclaredMethod("getDefaultFontName").invoke(null));
+            else if (JavaSEPlatform.isMac) return getAWTDefaultFont();
+            else return Font.decode((String) Class.forName("io.notcute.internal.awt.X11.GioUtils")
+                        .getDeclaredMethod("getDefaultFontName").invoke(null));
+        }
+        catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+            return getAWTDefaultFont();
+        }
+    }
+
+    public static double getFontScale() {
+        try {
+            if (JavaSEPlatform.isWindows) return (Integer) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
+                        .getDeclaredMethod("getTextScaleFactor").invoke(null) / 100.0;
+            else if (JavaSEPlatform.isMac) return 1.0;
+            else return (Double) Class.forName("io.notcute.internal.awt.X11.GioUtils")
+                        .getDeclaredMethod("getFontScaleFactor").invoke(null);
+        }
+        catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+            return 1.0;
+        }
     }
 
 }

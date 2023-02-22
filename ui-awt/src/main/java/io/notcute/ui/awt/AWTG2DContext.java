@@ -2,7 +2,6 @@ package io.notcute.ui.awt;
 
 import io.notcute.app.Clipboard;
 import io.notcute.app.awt.AWTClipboard;
-import io.notcute.app.awt.AWTPlatform;
 import io.notcute.audio.AudioPlayer;
 import io.notcute.context.Context;
 import io.notcute.context.Identifier;
@@ -327,17 +326,17 @@ public class AWTG2DContext extends Canvas implements G2DContext, ComponentListen
 
         @Override
         public int getDPI() {
-            return (int) (context.getToolkit().getScreenResolution() * AWTUIUtils.getDPIScale(context));
+            return (int) AWTUIUtils.getDPI(context);
         }
 
         @Override
         public float getDensity() {
-            return getDPI() / (float) AWTPlatform.BASELINE_DPI;
+            return (float) AWTUIUtils.getDPIScale(context);
         }
 
         @Override
         public float getScaledDensity() {
-            return (float) AWTPlatform.BASELINE_SPI / getDPI() * Float.parseFloat(System.getProperty("io.notcute.ui.awt.dpiscale", "1.0"));
+            return (float) (getDPI() * AWTG2DUtils.getFontScale());
         }
 
         @Override

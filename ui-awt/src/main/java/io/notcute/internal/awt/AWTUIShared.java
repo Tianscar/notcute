@@ -2,9 +2,9 @@ package io.notcute.internal.awt;
 
 import java.awt.*;
 
-public final class AWTShared {
+public final class AWTUIShared {
 
-    private AWTShared() {
+    private AWTUIShared() {
         throw new UnsupportedOperationException();
     }
 

@@ -2,6 +2,9 @@ package io.notcute.internal.awt.win32;
 
 import jnr.ffi.LibraryLoader;
 import jnr.ffi.Platform;
+import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
+import jnr.ffi.Struct;
 import jnr.ffi.annotations.In;
 
 public interface User32 {
@@ -15,7 +18,17 @@ public interface User32 {
 
     long MonitorFromWindow(
             @In long hwnd,
-            @In long dwFlags
+            @In int dwFlags
+    );
+
+    int SPI_GETNONCLIENTMETRICS = 41;
+
+
+    boolean SystemParametersInfoW(
+            @In long uiAction,
+            @In long uiParam,
+            LOGFONTW pvParam,
+            @In long fWinIni
     );
 
 }

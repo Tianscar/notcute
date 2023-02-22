@@ -57,17 +57,26 @@ public interface G2DContext extends Context {
         int getDPI();
         float getDensity();
         float getScaledDensity();
-        default float px2dp(float px) {
+        default float getPointDensity() {
+            return 72f / getDPI();
+        }
+        default float pxdp(float px) {
             return px / getDensity();
         }
-        default float dp2px(float dp) {
+        default float dppx(float dp) {
             return dp * getDensity();
         }
-        default float px2sp(float px) {
+        default float pxsp(float px) {
             return px / getScaledDensity();
         }
-        default float sp2px(float sp) {
+        default float sppx(float sp) {
             return sp * getScaledDensity();
+        }
+        default float pxpt(float px) {
+            return px / getPointDensity();
+        }
+        default float ptpx(float pt) {
+            return pt * getPointDensity();
         }
 
         Clipboard getClipboard();

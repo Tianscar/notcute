@@ -6,7 +6,7 @@ import io.notcute.context.Identifier;
 import io.notcute.context.Producer;
 import io.notcute.g2d.Image;
 import io.notcute.input.Input;
-import io.notcute.internal.awt.AWTShared;
+import io.notcute.internal.awt.AWTUIShared;
 import io.notcute.internal.awt.AWTUIUtils;
 import io.notcute.internal.awt.MouseInputListener;
 import io.notcute.ui.Container;
@@ -312,16 +312,16 @@ public class AWTContainer extends Frame implements Container, ComponentListener,
         @Override
         public void setFullscreen(final boolean fullscreen) {
             if (fullscreen) {
-                AWTShared.setFullscreenWindow(container);
+                AWTUIShared.setFullscreenWindow(container);
             }
             else {
-                AWTShared.setFullscreenWindow(null);
+                AWTUIShared.setFullscreenWindow(null);
             }
         }
 
         @Override
         public boolean isFullscreen() {
-            return AWTShared.getFullscreenWindow() == container;
+            return AWTUIShared.getFullscreenWindow() == container;
         }
 
         @Override

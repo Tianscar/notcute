@@ -20,6 +20,7 @@ import io.notcute.g2d.GraphicsKit;
 import io.notcute.g2d.Image;
 import io.notcute.g2d.android.AndroidGraphics;
 import io.notcute.g2d.android.AndroidImage;
+import io.notcute.g2d.geom.Rectangle;
 import io.notcute.input.Input;
 import io.notcute.internal.android.AndroidUIInitializer;
 import io.notcute.internal.android.AndroidShared;
@@ -287,13 +288,19 @@ public class AndroidG2DContext extends SurfaceView implements G2DContext, Surfac
         }
 
         @Override
-        public int getScreenWidth() {
-            return context.getResources().getDisplayMetrics().widthPixels;
+        public Rectangle getScreenBounds() {
+            return new Rectangle(0, 0, context.getResources().getDisplayMetrics().widthPixels,
+                    context.getResources().getDisplayMetrics().heightPixels);
         }
 
         @Override
-        public int getScreenHeight() {
-            return context.getResources().getDisplayMetrics().heightPixels;
+        public Rectangle getScreenInsets() {
+            return null;
+        }
+
+        @Override
+        public Rectangle getScreenClientArea() {
+            return null;
         }
 
         @Override

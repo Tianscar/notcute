@@ -121,7 +121,7 @@ public class AWTFileChooser implements FileChooser {
     @Override
     public void attachContainer(Container container) {
         Objects.requireNonNull(container);
-        if (AWTPlatform.isX11 && GtkUtils.loadGtk() && GtkUtils.getGtkMajorVersion() == 3) {
+        if (AWTPlatform.isX11 && GtkUtils.getGtkMajorVersion() == 3) {
             long window = X11Utils.getXWindow((AWTContainer) container);
             if (window != 0L) {
                 onShowGtk3.emit((AWTContainer) container, window);

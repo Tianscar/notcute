@@ -7,5 +7,6 @@ public final class Win32ErrorConstants {
     }
 
     public static final int S_OK = 0;
+    public static final int ERROR_SUCCESS = 0;
 
 }

@@ -2,12 +2,12 @@ package io.notcute.g2d.awt;
 
 import io.notcute.internal.awt.AWTG2DUtils;
 
-import java.awt.*;
+import java.awt.Font;
 import java.util.Objects;
 
 public class AWTFont implements io.notcute.g2d.Font {
 
-    public static final AWTFont DEFAULT_FONT = new AWTFont(Font.decode(null));
+    public static final AWTFont DEFAULT_FONT = new AWTFont(AWTG2DUtils.getSystemDefaultFont());
 
     private final Font font;
 

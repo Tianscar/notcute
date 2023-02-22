@@ -2,22 +2,7 @@ package io.notcute.internal.awt.X11;
 
 import jnr.ffi.annotations.In;
 
-public interface Gtk {
-
-    void
-    g_free (
-            @In long mem
-    );
-
-    void
-    g_slist_free (
-            GSList list
-    );
-
-    void
-    g_object_unref (
-            @In long object
-    );
+public interface Gtk extends Gdk, Gio {
 
     void
     gtk_widget_show_all (

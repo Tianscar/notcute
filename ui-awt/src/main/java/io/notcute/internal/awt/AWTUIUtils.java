@@ -248,20 +248,37 @@ public final class AWTUIUtils {
     }
 
     public static double getDPIScale(Component component) {
-        Objects.requireNonNull(component);
-        try {
-            if (AWTPlatform.isWindows) return ((Integer) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
-                    .getDeclaredMethod("getDpiForComponent", Component.class).invoke(null, component)) /
-                    (double) component.getToolkit().getScreenResolution();
-            else if (AWTPlatform.isMac) return (Integer) Class.forName("io.notcute.internal.awt.macosx.MacOSXUtils")
-                    .getDeclaredMethod("getScaleFactor").invoke(null);
-            else return (Double) Class.forName("io.notcute.internal.awt.X11.X11Utils")
-                    .getDeclaredMethod("getXFontDPI").invoke(null) /
-                    component.getToolkit().getScreenResolution();
+        if (component != null) {
+            try {
+                if (AWTPlatform.isWindows) return ((Integer) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
+                        .getDeclaredMethod("getDpiForComponent", Component.class).invoke(null, component)) /
+                        (double) component.getToolkit().getScreenResolution();
+                else if (AWTPlatform.isMac) return (Integer) Class.forName("io.notcute.internal.awt.macosx.MacOSXUtils")
+                        .getDeclaredMethod("getScaleFactor").invoke(null);
+                else return (Double) Class.forName("io.notcute.internal.awt.X11.X11Utils")
+                            .getDeclaredMethod("getXFontDPI").invoke(null) /
+                            component.getToolkit().getScreenResolution();
+            }
+            catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException ignored) {
+            }
         }
-        catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-            return 1.0;
+        return 1.0;
+    }
+
+    public static double getDPI(Component component) {
+        if (component != null) {
+             try {
+                if (AWTPlatform.isWindows) return ((Integer) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
+                        .getDeclaredMethod("getDpiForComponent", Component.class).invoke(null, component));
+                else if (AWTPlatform.isMac) return (Integer) Class.forName("io.notcute.internal.awt.macosx.MacOSXUtils")
+                        .getDeclaredMethod("getScaleFactor").invoke(null) * component.getToolkit().getScreenResolution();
+                else return (Double) Class.forName("io.notcute.internal.awt.X11.X11Utils")
+                            .getDeclaredMethod("getXFontDPI").invoke(null);
+            }
+            catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException ignored) {
+            }
         }
+        return Toolkit.getDefaultToolkit().getScreenResolution();
     }
 
 }
