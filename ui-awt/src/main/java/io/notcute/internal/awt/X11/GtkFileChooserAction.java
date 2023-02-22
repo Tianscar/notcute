@@ -1,8 +1,0 @@
-package io.notcute.internal.awt.X11;
-
-public enum GtkFileChooserAction {
-    GTK_FILE_CHOOSER_ACTION_OPEN,
-    GTK_FILE_CHOOSER_ACTION_SAVE,
-    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-    GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER
-}

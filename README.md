@@ -106,12 +106,12 @@ So contributions & PRs welcome!
 
 ### This project currently uses some code from the following projects:
 Apache-2.0 [Apache Harmony](https://harmony.apache.org)  
+[Apache-2.0](https://github.com/JFormDesigner/FlatLaf/blob/main/LICENSE) [FlatLaf](https://github.com/JFormDesigner/FlatLaf)
 [MIT](https://github.com/philfrei/AudioCue-maven/blob/main/LICENSE) [AudioCue-Maven](https://github.com/philfrei/AudioCue-maven)  
 [MIT](https://github.com/msteinbeck/sig4j/blob/master/LICENSE) [sig4j](https://github.com/msteinbeck/sig4j)
 ### This project currently uses the following libraries as dependencies:
 [Apache-2.0](https://github.com/jnr/jnr-ffi/blob/master/LICENSE) [jnr-ffi](https://github.com/jnr/jnr-ffi)  
 [BSD-3-Clause](https://github.com/haraldk/TwelveMonkeys/blob/master/LICENSE.txt) [TwelveMonkeys](http://haraldk.github.io/TwelveMonkeys/)  
-[GPL-2.0+CE](https://github.com/gredler/jdk9-png-writer-backport/blob/master/LICENSE) [JDK9 PNG Writer Backport](https://github.com/gredler/jdk9-png-writer-backport)  
 LGPL-2.1 [MP3SPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/mp3spi/1.9.5.4)  
 LGPL-2.1 [VorbisSPI](https://mvnrepository.com/artifact/com.googlecode.soundlibs/vorbisspi/1.0.3.3)  
 LGPL-2.1 [jFLAC](https://jflac.sourceforge.net)

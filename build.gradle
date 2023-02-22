@@ -47,7 +47,7 @@ configure ([project(':core'), project(':signalslot'), project(':collections'), p
     targetCompatibility = libraryCoreTargetCompatibility
 }
 
-configure ([project(':g2d-awt'), project(':ui-awt'), project(':javase'), project(':audio-javase'), project(':g2d-swt'), project(':ui-swt')]) {
+configure ([project(':desktop'), project(':g2d-awt'), project(':ui-awt'), project(':javase'), project(':audio-javase'), project(':g2d-swt'), project(':ui-swt')]) {
     apply plugin: 'java-library'
     sourceCompatibility = libraryJavaSESourceCompatibility
     targetCompatibility = libraryJavaSETargetCompatibility

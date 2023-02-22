@@ -1,0 +1,7 @@
+dependencies {
+    implementation project(':core')
+    apiElements project(':core')
+
+    implementation 'com.github.jnr:jnr-ffi:2.2.13'
+    apiElements 'com.github.jnr:jnr-ffi:2.2.13'
+}

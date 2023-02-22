@@ -250,11 +250,11 @@ public final class AWTG2DUtils {
 
     public static Font getSystemDefaultFont() {
         try {
-            if (JavaSEPlatform.isWindows) return Font.decode((String) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
+            if (JavaSEPlatform.isWindows) return Font.decode((String) Class.forName("io.notcute.internal.desktop.win32.Win32Utils")
                     .getDeclaredMethod("getDefaultFontName").invoke(null));
-            else if (JavaSEPlatform.isMac) return getAWTDefaultFont();
-            else return Font.decode((String) Class.forName("io.notcute.internal.awt.X11.GioUtils")
-                        .getDeclaredMethod("getDefaultFontName").invoke(null));
+            else if (JavaSEPlatform.isMac) return new Font("Lucida Grande", Font.PLAIN, 12);
+            else return Font.decode((String) Class.forName("io.notcute.internal.desktop.X11.GioUtils")
+                        .getDeclaredMethod("getDefaultFontName").invoke(null)).deriveFont((float) 12);
         }
         catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
             return getAWTDefaultFont();
@@ -263,10 +263,10 @@ public final class AWTG2DUtils {
 
     public static double getFontScale() {
         try {
-            if (JavaSEPlatform.isWindows) return (Integer) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
+            if (JavaSEPlatform.isWindows) return (Integer) Class.forName("io.notcute.internal.desktop.win32.Win32Utils")
                         .getDeclaredMethod("getTextScaleFactor").invoke(null) / 100.0;
             else if (JavaSEPlatform.isMac) return 1.0;
-            else return (Double) Class.forName("io.notcute.internal.awt.X11.GioUtils")
+            else return (Double) Class.forName("io.notcute.internal.awt.X11.AWTG2DGioUtils")
                         .getDeclaredMethod("getFontScaleFactor").invoke(null);
         }
         catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {

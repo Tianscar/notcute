@@ -2,7 +2,8 @@ package io.notcute.app.awt;
 
 import io.notcute.app.FileChooser;
 import io.notcute.internal.awt.AWTUIUtils;
-import io.notcute.internal.awt.X11.*;
+import io.notcute.internal.awt.X11.AWTUIGtkUtils;
+import io.notcute.internal.desktop.X11.*;
 import io.notcute.ui.Container;
 import io.notcute.ui.awt.AWTContainer;
 import io.notcute.util.MIMETypes;
@@ -10,7 +11,9 @@ import io.notcute.util.signalslot.*;
 import jnr.ffi.Runtime;
 
 import java.awt.FileDialog;
+import java.awt.Component;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.util.HashSet;
@@ -43,7 +46,7 @@ public class AWTFileChooser implements FileChooser {
                 CharSequence title = info.getTitle();
                 String[] filterMIMETypes = info.getFilterMIMETypes();
                 File pathname = info.getPathname();
-                Gtk3 GTK3 = Gtk3.INSTANCE;
+                Gtk3 GTK3 = Objects.requireNonNull(Gtk3.INSTANCE);
                 long gdkDisplay = GTK3.gdk_display_get_default();
                 long gdkWindow = GTK3.gdk_x11_window_foreign_new_for_display(gdkDisplay, window);
                 long gtkWindow = GTK3.gtk_window_new(GtkWindowType.GTK_WINDOW_TOPLEVEL);
@@ -121,11 +124,14 @@ public class AWTFileChooser implements FileChooser {
     @Override
     public void attachContainer(Container container) {
         Objects.requireNonNull(container);
-        if (AWTPlatform.isX11 && GtkUtils.getGtkMajorVersion() == 3) {
-            long window = X11Utils.getXWindow((AWTContainer) container);
-            if (window != 0L) {
+        if (AWTPlatform.isX11 && AWTUIGtkUtils.getGtkMajorVersion() == 3) {
+            try {
+                long window = (Long) Class.forName("io.notcute.internal.awt.X11.AWTUIX11Utils")
+                        .getDeclaredMethod("getXWindow", Component.class)
+                        .invoke(null, (Component) container);
                 onShowGtk3.emit((AWTContainer) container, window);
                 return;
+            } catch (ClassNotFoundException | InvocationTargetException | IllegalAccessException | NoSuchMethodException ignored) {
             }
         }
         CharSequence title = info.getTitle();

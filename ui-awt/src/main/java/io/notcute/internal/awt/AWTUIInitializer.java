@@ -9,8 +9,6 @@ import io.notcute.audio.javase.JavaSEAudioPlayer;
 import io.notcute.context.Identifier;
 import io.notcute.context.Initializer;
 import io.notcute.context.Producer;
-import io.notcute.g2d.GraphicsKit;
-import io.notcute.g2d.awt.AWTGraphicsKit;
 import io.notcute.ui.UIKit;
 import io.notcute.ui.awt.AWTUIKit;
 
@@ -19,7 +17,6 @@ public class AWTUIInitializer extends Initializer {
     @Override
     public void initialize() {
         Producer.GLOBAL.put(new Identifier("notcute", "platform"), AWTUIInitializer::getPlatform);
-        Producer.GLOBAL.put(new Identifier("notcute", "graphicsKit"), AWTUIInitializer::getGraphicsKit);
         Producer.GLOBAL.put(new Identifier("notcute", "uiKit"), AWTUIInitializer::getUIKit);
         Producer.GLOBAL.put(new Identifier("notcute", "audioPlayer"), AWTUIInitializer::getAudioPlayer);
         Producer.GLOBAL.put(new Identifier("notcute", "fileChooser"), AWTUIInitializer::getFileChooser);
@@ -29,12 +26,6 @@ public class AWTUIInitializer extends Initializer {
     public static Platform getPlatform() {
         if (platform == null) platform = new AWTPlatform();
         return platform;
-    }
-
-    private static volatile AWTGraphicsKit graphicsKit = null;
-    public static GraphicsKit getGraphicsKit() {
-        if (graphicsKit == null) graphicsKit = new AWTGraphicsKit();
-        return graphicsKit;
     }
 
     private static volatile AWTUIKit uiKit = null;

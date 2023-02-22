@@ -1,16 +1,17 @@
 package io.notcute.internal.awt.X11;
 
 import com.kenai.jffi.MemoryIO;
+import io.notcute.internal.desktop.X11.Xcursor;
+import io.notcute.internal.desktop.X11.XcursorImage;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
 import sun.awt.AWTAccessor;
 import sun.awt.CustomCursor;
-import sun.awt.X11.XToolkit;
 
 import java.awt.Image;
 import java.awt.Point;
 
-final class X11CustomCursor extends CustomCursor {
+public final class X11CustomCursor extends CustomCursor {
 
     private static final long serialVersionUID = 4990969689338375446L;
 
@@ -20,7 +21,7 @@ final class X11CustomCursor extends CustomCursor {
 
     @Override
     protected void createNativeCursor(Image im, int[] pixels, int width, int height, int xHotSpot, int yHotSpot) {
-        XToolkit.awtLock();
+        AWTUIX11Utils.awtLock();
         try {
             Xcursor XCURSOR = Xcursor.INSTANCE;
             long pNativePixels = MemoryIO.getInstance().allocateMemory(pixels.length * 4L, false);
@@ -30,12 +31,12 @@ final class X11CustomCursor extends CustomCursor {
             xCursorImage.xhot.set(xHotSpot);
             xCursorImage.yhot.set(yHotSpot);
             xCursorImage.pixels.set(nativePixels);
-            long pData = XCURSOR.XcursorImageLoadCursor(XToolkit.getDisplay(), xCursorImage);
+            long pData = XCURSOR.XcursorImageLoadCursor(AWTUIX11Utils.getDisplay(), xCursorImage);
             MemoryIO.getInstance().freeMemory(pNativePixels);
             XCURSOR.XcursorImageDestroy(xCursorImage);
             AWTAccessor.getCursorAccessor().setPData(this, pData);
         } finally {
-            XToolkit.awtUnlock();
+            AWTUIX11Utils.awtUnlock();
         }
     }
 

@@ -68,6 +68,7 @@ public final class AWTUIUtils {
         clipboard.setContents(new URIListSelection(Arrays.asList(uris)), null);
     }
 
+    @SuppressWarnings("unchecked")
     public static URI[] getURIsFromClipboard(Clipboard clipboard) throws IOException, UnsupportedFlavorException {
         Transferable transferable = clipboard.getContents(null);
         if (transferable.isDataFlavorSupported(URIListSelection.uriListFlavor)) {
@@ -250,12 +251,12 @@ public final class AWTUIUtils {
     public static double getDPIScale(Component component) {
         if (component != null) {
             try {
-                if (AWTPlatform.isWindows) return ((Integer) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
+                if (AWTPlatform.isWindows) return ((Integer) Class.forName("io.notcute.internal.awt.windows.AWTUIWin32Utils")
                         .getDeclaredMethod("getDpiForComponent", Component.class).invoke(null, component)) /
                         (double) component.getToolkit().getScreenResolution();
-                else if (AWTPlatform.isMac) return (Integer) Class.forName("io.notcute.internal.awt.macosx.MacOSXUtils")
+                else if (AWTPlatform.isMac) return (Integer) Class.forName("io.notcute.internal.awt.macosx.AWTUIMacOSXUtils")
                         .getDeclaredMethod("getScaleFactor").invoke(null);
-                else return (Double) Class.forName("io.notcute.internal.awt.X11.X11Utils")
+                else return (Double) Class.forName("io.notcute.internal.awt.X11.AWTUIX11Utils")
                             .getDeclaredMethod("getXFontDPI").invoke(null) /
                             component.getToolkit().getScreenResolution();
             }
@@ -268,11 +269,11 @@ public final class AWTUIUtils {
     public static double getDPI(Component component) {
         if (component != null) {
              try {
-                if (AWTPlatform.isWindows) return ((Integer) Class.forName("io.notcute.internal.awt.win32.Win32Utils")
+                if (AWTPlatform.isWindows) return ((Integer) Class.forName("io.notcute.internal.awt.windows.AWTUIWin32Utils")
                         .getDeclaredMethod("getDpiForComponent", Component.class).invoke(null, component));
-                else if (AWTPlatform.isMac) return (Integer) Class.forName("io.notcute.internal.awt.macosx.MacOSXUtils")
+                else if (AWTPlatform.isMac) return (Integer) Class.forName("io.notcute.internal.awt.macosx.AWTUIMacOSXUtils")
                         .getDeclaredMethod("getScaleFactor").invoke(null) * component.getToolkit().getScreenResolution();
-                else return (Double) Class.forName("io.notcute.internal.awt.X11.X11Utils")
+                else return (Double) Class.forName("io.notcute.internal.awt.X11.AWTUIX11Utils")
                             .getDeclaredMethod("getXFontDPI").invoke(null);
             }
             catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException ignored) {

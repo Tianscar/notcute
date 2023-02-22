@@ -33,3 +33,5 @@ include ':android'
 include ':widgets'
 include ':g2d-swt'
 include ':ui-swt'
+include ':desktop'
+
