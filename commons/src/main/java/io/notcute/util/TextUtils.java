@@ -15,4 +15,9 @@ public final class TextUtils {
         return chars;
     }
 
+    public static CharSequence deepCopy(CharSequence text) {
+        if (text == null) return null;
+        else return text.subSequence(0, text.length());
+    }
+
 }

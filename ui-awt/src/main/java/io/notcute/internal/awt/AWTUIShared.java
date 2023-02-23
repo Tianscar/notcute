@@ -1,8 +1,15 @@
 package io.notcute.internal.awt;
 
+import io.notcute.util.signalslot.SimpleDispatcher;
+
 import java.awt.*;
 
 public final class AWTUIShared {
+
+    public static final SimpleDispatcher DIALOG_DISPATCHER = new SimpleDispatcher("AWT-NativeDialogs");
+    static {
+        DIALOG_DISPATCHER.start();
+    }
 
     private AWTUIShared() {
         throw new UnsupportedOperationException();

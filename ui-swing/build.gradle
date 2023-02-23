@@ -1,0 +1,4 @@
+dependencies {
+    implementation project(':ui-awt')
+    apiElements project(':ui-awt')
+}

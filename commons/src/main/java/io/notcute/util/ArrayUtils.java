@@ -317,6 +317,14 @@ public final class ArrayUtils {
         return result;
     }
 
+    public static CharSequence[] copyOf(CharSequence[] original) {
+        CharSequence[] copy = new CharSequence[original.length];
+        for (int i = 0; i < copy.length; i ++) {
+            copy[i] = TextUtils.deepCopy(original[i]);
+        }
+        return copy;
+    }
+
     public static float[] copyOf(double[] original) {
         float[] copy = new float[original.length];
         for (int i = 0; i < copy.length; i ++) {
@@ -345,6 +353,14 @@ public final class ArrayUtils {
         long[] copy = new long[original.length];
         for (int i = 0; i < copy.length; i ++) {
             copy[i] = original[i];
+        }
+        return copy;
+    }
+
+    public static CharSequence[] copyOf(CharSequence[] original, int newLength) {
+        CharSequence[] copy = new CharSequence[newLength];
+        for (int i = 0, len = Math.min(original.length, newLength); i < len; i ++) {
+            copy[i] = TextUtils.deepCopy(original[i]);
         }
         return copy;
     }

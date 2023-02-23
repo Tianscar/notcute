@@ -1,15 +1,17 @@
-package io.notcute.app.android;
+package io.notcute.app.swing;
 
 import io.notcute.app.FileChooser;
 import io.notcute.ui.Container;
 import io.notcute.util.signalslot.VoidSignal1;
 
+import javax.swing.JFileChooser;
 import java.io.File;
 
-public class AndroidFileChooser implements FileChooser {
+public class SwingFileChooser implements FileChooser {
 
     private final Info info;
-    public AndroidFileChooser() {
+
+    public SwingFileChooser() {
         info = new Info();
     }
 
@@ -20,6 +22,7 @@ public class AndroidFileChooser implements FileChooser {
 
     @Override
     public void attachContainer(Container container) {
+        JFileChooser fileChooser = new JFileChooser();
 
     }
 

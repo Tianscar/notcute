@@ -37,6 +37,26 @@ public abstract class Signal<R> {
 	private final Set<Slot<R>> uniques = new ConcurrentHashSet<>();
 
 	/**
+	 * Returns whether the signal is enabled.
+	 * @see #enable()
+	 * @see #disable()
+	 * @return true if enabled, false opposite
+	 */
+	public boolean isEnabled() {
+		return enabled.get();
+	}
+
+	/**
+	 * Sets whether the signal is enabled.
+	 * @see #enable()
+	 * @see #disable()
+	 * @param enabled true if enabled, false opposite
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled.set(enabled);
+	}
+
+	/**
 	 * Enables this signal.
 	 * @see #disable()
 	 */

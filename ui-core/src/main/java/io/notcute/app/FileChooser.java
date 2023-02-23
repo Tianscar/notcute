@@ -3,6 +3,7 @@ package io.notcute.app;
 import io.notcute.ui.Container;
 import io.notcute.util.Resetable;
 import io.notcute.util.SwapCloneable;
+import io.notcute.util.TextUtils;
 import io.notcute.util.signalslot.VoidSignal1;
 
 import java.io.File;
@@ -102,7 +103,7 @@ public interface FileChooser {
         public Object clone() {
             try {
                 Info clone = (Info) super.clone();
-                if (title != null) clone.setTitle(title.subSequence(0, title.length()));
+                if (title != null) clone.setTitle(TextUtils.deepCopy(title));
                 if (filterMIMETypes != null) clone.setFilterMIMETypes(filterMIMETypes.clone());
                 return clone;
             } catch (CloneNotSupportedException e) {
@@ -124,6 +125,6 @@ public interface FileChooser {
 
     void attachContainer(Container container);
 
-    VoidSignal1<File[]> onFileChosen();
+    VoidSignal1<File[]> onFileSelected();
 
 }

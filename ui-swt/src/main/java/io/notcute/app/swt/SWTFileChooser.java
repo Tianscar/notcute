@@ -20,9 +20,10 @@ public class SWTFileChooser implements FileChooser {
         //fileDialog.setFilterExtensions();
     }
 
+    private final VoidSignal1<File[]> onFileChosen = new VoidSignal1<>();
     @Override
-    public VoidSignal1<File[]> onFileChosen() {
-        return null;
+    public VoidSignal1<File[]> onFileSelected() {
+        return onFileChosen;
     }
 
 }

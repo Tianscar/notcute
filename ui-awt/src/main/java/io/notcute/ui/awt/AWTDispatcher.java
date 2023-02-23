@@ -4,10 +4,11 @@ import io.notcute.util.signalslot.Dispatcher;
 
 import java.awt.EventQueue;
 
-public class AWTDispatcher extends Dispatcher {
+public final class AWTDispatcher extends Dispatcher {
 
     private AWTDispatcher() {
     }
+
     public static final AWTDispatcher INSTANCE = new AWTDispatcher();
 
     @Override

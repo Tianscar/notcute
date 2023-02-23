@@ -64,6 +64,9 @@ public final class AWTManifest {
             String applicationName = config.getApplicationName();
             if (applicationName != null) System.setProperty("apple.awt.application.name", applicationName);
         }
+        else if (AWTPlatform.isX11) {
+            System.setProperty("jdk.gtk.version", "3");
+        }
         if (AWTPlatform.isJava9) System.setProperty("sun.java2d.uiScale.enabled", "false");
         if (config.aboutHandler != null) Desktop.setAboutHandler(config.aboutHandler);
         if (config.preferencesHandler != null) Desktop.setPreferencesHandler(config.preferencesHandler);
