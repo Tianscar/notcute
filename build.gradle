@@ -131,9 +131,6 @@ project(':widgets'), project(':g2d-swt'), project(':ui-swt')]) {
     }
 
     signing {
-        def signingKey = findProperty("signingKey") ?: System.getenv("GPG_KEY")
-        def signingPassword = findProperty("signingPassword") ?:System.getenv("GPG_PASSWORD")
-        useInMemoryPgpKeys(signingKey, signingPassword)
         sign(publishing.publications.mavenJava)
     }
 }
@@ -209,7 +206,7 @@ configure ([project(':android'), project(':g2d-android'), project(':ui-android')
                     developers {
                         developer {
                             id = 'Tianscar'
-                            name = 'Tiansword Carbonicacid'
+                            name = 'Karstian Lee'
                             email = 'tianscar@protonmail.com'
                         }
                     }
@@ -238,9 +235,6 @@ configure ([project(':android'), project(':g2d-android'), project(':ui-android')
     }
 
     signing {
-        def signingKey = findProperty("signingKey") ?: System.getenv("GPG_KEY")
-        def signingPassword = findProperty("signingPassword") ?:System.getenv("GPG_PASSWORD")
-        useInMemoryPgpKeys(signingKey, signingPassword)
         sign(publishing.publications.release)
     }
 }

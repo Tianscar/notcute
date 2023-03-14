@@ -3,7 +3,10 @@ package io.notcute.internal.awt;
 import io.notcute.g2d.MultiFrameImage;
 import io.notcute.g2d.awt.AWTGraphicsKit;
 
-import javax.imageio.*;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
@@ -11,17 +14,18 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.Iterator;
 
-public final class JPEGAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansion {
+public final class WBMPAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansion {
 
-    private static final int JPEG_SOI = 0xD8;
+    private static final int MAX_WBMP_WIDTH = 1024;
+    private static final int MAX_WBMP_HEIGHT = 768;
 
-    private static final String[] READER_MIME_TYPES = new String[] { "image/jpeg" };
-    private static final String[] WRITER_MIME_TYPES = new String[] { "image/jpeg" };
+    private static final String[] READER_MIME_TYPES = new String[] { "image/vnd.wap.wbmp" };
+    private static final String[] WRITER_MIME_TYPES = new String[] { "image/vnd.wap.wbmp" };
 
     @Override
     public BufferedImage readBufferedImage(ImageInputStream stream) throws IOException {
-        if (!isJPEG(stream)) return null;
-        ImageReader reader = getJPEGImageReader();
+        if (!isWBMP(stream)) return null;
+        ImageReader reader = getWBMPImageReader();
         if (reader == null) return null;
         reader.setInput(stream, false, true);
         BufferedImage result = reader.read(0);
@@ -34,12 +38,28 @@ public final class JPEGAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansi
         return result;
     }
 
-    private static boolean isJPEG(ImageInputStream stream) throws IOException {
-        int b0, b1;
+    private static boolean isWBMP(ImageInputStream stream) throws IOException {
         stream.mark();
         try {
-            b0 = stream.read();
-            b1 = stream.read();
+            int type = stream.readByte();
+            int fixedHeader= stream.readByte();
+
+            if (type != 0 || fixedHeader != 0) return false;
+
+            int width = readVInt(stream);
+            int height = readVInt(stream);
+
+            if (width <= 0 || height <= 0) return false;
+
+            long dataLength = stream.length();
+
+            if (dataLength == -1) return (width < MAX_WBMP_WIDTH) && (height < MAX_WBMP_HEIGHT);
+
+            dataLength -= stream.getStreamPosition();
+
+            long scanSize = (width / 8) + ((width % 8) == 0 ? 0 : 1);
+
+            return (dataLength == scanSize * height);
         }
         catch (EOFException e) {
             return false;
@@ -47,21 +67,25 @@ public final class JPEGAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansi
         finally {
             stream.reset();
         }
-        return b0 == 0xFF && b1 == JPEG_SOI;
+    }
+
+    private static int readVInt(ImageInputStream iis) throws IOException {
+        int value = iis.readByte();
+        int result = value & 0x7F;
+        while ((value & 0x80) == 0x80) {
+            result <<= 7;
+            value = iis.readByte();
+            result |= (value & 0x7F);
+        }
+        return result;
     }
 
     @Override
     public boolean writeBufferedImage(BufferedImage im, String mimeType, float quality, ImageOutputStream output) throws IOException {
-        ImageWriter writer = getJPEGImageWriter();
+        ImageWriter writer = getWBMPImageWriter();
         if (writer == null) return false;
         writer.setOutput(output);
-        ImageWriteParam param = writer.getDefaultWriteParam();
-        if (param.canWriteCompressed()) {
-            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-            param.setCompressionType("JPEG");
-            param.setCompressionQuality(quality);
-        }
-        writer.write(null, new IIOImage(im, null, null), param);
+        writer.write(null, new IIOImage(im, null, null), null);
         writer.dispose();
         output.flush();
         return true;
@@ -77,14 +101,14 @@ public final class JPEGAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansi
         return false;
     }
 
-    private static ImageReader getJPEGImageReader() {
-        Iterator<ImageReader> it = ImageIO.getImageReadersByMIMEType("image/jpeg");
+    private static ImageReader getWBMPImageReader() {
+        Iterator<ImageReader> it = ImageIO.getImageReadersByMIMEType("image/vnd.wap.wbmp");
         if (it.hasNext()) return it.next();
         else return null;
     }
 
-    private static ImageWriter getJPEGImageWriter() {
-        Iterator<ImageWriter> it = ImageIO.getImageWritersByMIMEType("image/jpeg");
+    private static ImageWriter getWBMPImageWriter() {
+        Iterator<ImageWriter> it = ImageIO.getImageWritersByMIMEType("image/vnd.wap.wbmp");
         if (it.hasNext()) return it.next();
         else return null;
     }

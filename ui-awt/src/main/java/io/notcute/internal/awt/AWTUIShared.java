@@ -23,7 +23,7 @@ public final class AWTUIShared {
         return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getFullScreenWindow();
     }
 
-    public static void setFullscreenWindow(final Window window) {
+    public synchronized static void setFullscreenWindow(Window window) {
         if (mFullscreenWindow != window) {
             if (mFullscreenWindow != null) {
                 final boolean visible = mFullscreenWindow.isVisible();

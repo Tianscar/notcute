@@ -23,17 +23,17 @@ public class AndroidInitializer extends Initializer {
     }
 
     private static volatile AndroidAssets assets = null;
-    public static Assets getAssets() {
+    public synchronized static Assets getAssets() {
         if (assets == null && hasContext()) assets = new AndroidAssets(getContext().getAssets());
         return assets;
     }
     private static volatile AndroidLogger logger = null;
-    public static Logger getLogger() {
+    public synchronized static Logger getLogger() {
         if (logger == null) logger = new AndroidLogger();
         return logger;
     }
     private static volatile AndroidPlatform platform = null;
-    public static Platform getPlatform() {
+    public synchronized static Platform getPlatform() {
         if (platform == null) platform = new AndroidPlatform();
         return platform;
     }

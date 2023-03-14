@@ -20,17 +20,17 @@ public class JavaSEInitializer extends Initializer {
     }
 
     private static volatile JavaSEAssets assets = null;
-    public static Assets getAssets() {
+    public synchronized static Assets getAssets() {
         if (assets == null) assets = new JavaSEAssets();
         return assets;
     }
     private static volatile JavaSELogger logger = null;
-    public static Logger getLogger() {
+    public synchronized static Logger getLogger() {
         if (logger == null) logger = new JavaSELogger();
         return logger;
     }
     private static volatile JavaSEPlatform platform = null;
-    public static Platform getPlatform() {
+    public synchronized static Platform getPlatform() {
         if (platform == null) platform = new JavaSEPlatform();
         return platform;
     }

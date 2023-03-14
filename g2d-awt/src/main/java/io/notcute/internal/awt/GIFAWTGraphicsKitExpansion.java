@@ -35,6 +35,12 @@ public final class GIFAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansio
         return false;
     }
 
+    private static int parseGIFDisposalMethod(String disposalMethod) {
+        if ("restoreToBackgroundColor".equals(disposalMethod)) return Image.DisposalMode.BACKGROUND;
+        else if ("restoreToPrevious".equals(disposalMethod)) return Image.DisposalMode.PREVIOUS;
+        else return Image.DisposalMode.NONE;
+    }
+
     @Override
     public MultiFrameImage readMultiFrameImage(ImageInputStream stream) throws IOException {
         if (!isGIF(stream)) return null;
@@ -45,6 +51,7 @@ public final class GIFAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansio
         IIOMetadataNode node;
         int hotSpotX = 0, hotSpotY = 0, loops = 0;
         long duration = 0;
+        int disposalMode = Image.DisposalMode.NONE;
         for (int i = 0; i < frames.length; i ++) {
             node = (IIOMetadataNode) reader.getImageMetadata(i).getAsTree(NATIVE_FORMAT_NAME).getFirstChild();
             String name;
@@ -57,6 +64,7 @@ public final class GIFAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansio
                         break;
                     case "GraphicControlExtension":
                         duration = Integer.parseInt(node.getAttribute("delayTime")) * 10L;
+                        disposalMode = parseGIFDisposalMethod(node.getAttribute("disposalMethod"));
                         break;
                     case "ApplicationExtensions":
                         IIOMetadataNode appExtNode = (IIOMetadataNode) node.getFirstChild();
@@ -75,7 +83,7 @@ public final class GIFAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansio
                 }
                 node = (IIOMetadataNode) node.getNextSibling();
             }
-            frames[i] = new Image.Frame(new AWTImage(reader.read(i)), hotSpotX, hotSpotY, duration);
+            frames[i] = new Image.Frame(new AWTImage(reader.read(i)), hotSpotX, hotSpotY, duration, disposalMode, Image.BlendMode.SOURCE);
         }
         try {
             stream.close();
@@ -117,9 +125,11 @@ public final class GIFAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansio
         if (writer == null) return false;
         writer.setOutput(output);
         ImageWriteParam param = writer.getDefaultWriteParam();
-        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-        param.setCompressionType("LZW");
-        param.setCompressionQuality(quality);
+        if (param.canWriteCompressed()) {
+            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            param.setCompressionType("LZW");
+            param.setCompressionQuality(quality);
+        }
         writer.prepareWriteSequence(null);
         ImageTypeSpecifier specifier = ImageTypeSpecifier.createFromBufferedImageType(AWTG2DUtils.toAWTBufferedImageType(im.getGeneralType()));
         IIOMetadata metadata = writer.getDefaultImageMetadata(specifier, param);
@@ -131,8 +141,8 @@ public final class GIFAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansio
             writer.writeToSequence(new IIOImage(((AWTImage)frame.getImage()).getBufferedImage(), null, metadata), param);
         }
         writer.endWriteSequence();
-        output.flush();
         writer.dispose();
+        output.flush();
         return true;
     }
 

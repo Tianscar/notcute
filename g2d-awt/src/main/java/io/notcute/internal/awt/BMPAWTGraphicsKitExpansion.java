@@ -53,10 +53,14 @@ public final class BMPAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansio
         if (writer == null) return false;
         writer.setOutput(output);
         ImageWriteParam param = writer.getDefaultWriteParam();
-        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+        if (param.canWriteCompressed()) {
+            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            param.setCompressionType("BI_RGB");
+            param.setCompressionQuality(quality);
+        }
         writer.write(null, new IIOImage(im, null, null), param);
-        output.flush();
         writer.dispose();
+        output.flush();
         return true;
     }
 

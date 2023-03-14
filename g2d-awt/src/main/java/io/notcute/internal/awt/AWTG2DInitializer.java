@@ -16,7 +16,7 @@ public class AWTG2DInitializer extends Initializer {
     }
 
     private static volatile AWTGraphicsKit graphicsKit = null;
-    public static AWTGraphicsKit getGraphicsKit() {
+    public synchronized static AWTGraphicsKit getGraphicsKit() {
         if (graphicsKit == null) {
             graphicsKit = new AWTGraphicsKit();
             graphicsKit.getExpansions().add(new BMPAWTGraphicsKitExpansion());
@@ -24,6 +24,10 @@ public class AWTG2DInitializer extends Initializer {
             graphicsKit.getExpansions().add(new PNGAWTGraphicsKitExpansion());
             graphicsKit.getExpansions().add(new GIFAWTGraphicsKitExpansion());
             graphicsKit.getExpansions().add(new TIFFAWTGraphicsKitExpansion());
+            graphicsKit.getExpansions().add(new WBMPAWTGraphicsKitExpansion());
+            graphicsKit.getExpansions().add(new ICNSAWTGraphicsKitExpansion());
+            graphicsKit.getExpansions().add(new ICOAWTGraphicsKitExpansion());
+            graphicsKit.getExpansions().add(new TGAAWTGraphicsKitExpansion());
         }
         return graphicsKit;
     }

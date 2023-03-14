@@ -24,20 +24,20 @@ public class AndroidUIInitializer extends Initializer {
     }
 
     private static volatile AndroidGraphicsKit graphicsKit = null;
-    public static GraphicsKit getGraphicsKit() {
+    public synchronized static GraphicsKit getGraphicsKit() {
         if (graphicsKit == null) graphicsKit = new AndroidGraphicsKit();
         return graphicsKit;
     }
 
     @SuppressLint("StaticFieldLeak")
     private static volatile AndroidUIKit uiKit = null;
-    public static UIKit getUIKit() {
+    public synchronized static UIKit getUIKit() {
         if (uiKit == null && hasContext()) uiKit = new AndroidUIKit(getContext());
         return uiKit;
     }
 
     private static volatile AndroidAudioPlayer audioPlayer = null;
-    public static AudioPlayer getAudioPlayer() {
+    public synchronized static AudioPlayer getAudioPlayer() {
         if (audioPlayer == null) audioPlayer = new AndroidAudioPlayer();
         return audioPlayer;
     }

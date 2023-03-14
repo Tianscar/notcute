@@ -78,7 +78,7 @@ public final class TIFFAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansi
                 node = (IIOMetadataNode) node.getNextSibling();
             }
             frames[i] = new Image.Frame(new AWTImage(reader.read(i)),
-                    (int) (xpf * xrf / xpd / xrd), (int) (ypf * yrf / ypd / yrd), 0);
+                    (int) (xpf * xrf / xpd / xrd), (int) (ypf * yrf / ypd / yrd), 0, Image.DisposalMode.NONE, Image.BlendMode.SOURCE);
         }
         try {
             stream.close();
@@ -120,9 +120,11 @@ public final class TIFFAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansi
         if (writer == null) return false;
         writer.setOutput(output);
         ImageWriteParam param = writer.getDefaultWriteParam();
-        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-        param.setCompressionType(quality < 1.0f ? "Deflate" : "LZW");
-        param.setCompressionQuality(quality);
+        if (param.canWriteCompressed()) {
+            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            param.setCompressionType(quality < 1.0f ? "Deflate" : "LZW");
+            param.setCompressionQuality(quality);
+        }
         writer.prepareWriteSequence(null);
         ImageTypeSpecifier specifier = ImageTypeSpecifier.createFromBufferedImageType(AWTG2DUtils.toAWTBufferedImageType(im.getGeneralType()));
         IIOMetadata metadata = writer.getDefaultImageMetadata(specifier, param);
@@ -131,8 +133,8 @@ public final class TIFFAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansi
             writer.writeToSequence(new IIOImage(((AWTImage)frame.getImage()).getBufferedImage(), null, metadata), param);
         }
         writer.endWriteSequence();
-        output.flush();
         writer.dispose();
+        output.flush();
         return true;
     }
 

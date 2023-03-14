@@ -6,6 +6,7 @@ public interface Expandable<T extends Expandable.Expansion> {
 
     Set<T> getExpansions();
 
-    interface Expansion {}
+    interface Expansion {
+    }
 
 }

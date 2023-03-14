@@ -7,17 +7,38 @@ import io.notcute.util.SwapCloneable;
 
 public interface Image extends Disposable, Cloneable {
 
+    class DisposalMode {
+        private DisposalMode() {
+            throw new UnsupportedOperationException();
+        }
+        public static final int NONE = 0;
+        public static final int BACKGROUND = 1;
+        public static final int PREVIOUS = 2;
+    }
+
+    class BlendMode {
+        private BlendMode() {
+            throw new UnsupportedOperationException();
+        }
+        public static final int SOURCE = 0;
+        public static final int OVER = 1;
+    }
+
     class Frame implements Disposable, SwapCloneable {
 
         private long duration;
         private Image image;
         private int hotSpotX, hotSpotY;
+        private int disposal;
+        private int blend;
 
-        public Frame(Image image, int hotSpotX, int hotSpotY, long duration) {
+        public Frame(Image image, int hotSpotX, int hotSpotY, long duration, int disposal, int blend) {
             this.image = image;
             this.hotSpotX = hotSpotX;
             this.hotSpotY = hotSpotY;
             this.duration = duration;
+            this.disposal = disposal;
+            this.blend = blend;
         }
 
         public Frame(Image image) {
@@ -26,17 +47,19 @@ public interface Image extends Disposable, Cloneable {
         }
 
         public Frame(Frame frame) {
-            this(frame.getImage(), frame.getHotSpotX(), frame.getHotSpotY(), frame.getDuration());
+            this(frame.getImage(), frame.getHotSpotX(), frame.getHotSpotY(), frame.getDuration(), frame.getDisposal(), frame.getBlend());
         }
 
         public void setFrame(Frame frame) {
-            setFrame(frame.getImage(), frame.getHotSpotX(), frame.getHotSpotY(), frame.getDuration());
+            setFrame(frame.getImage(), frame.getHotSpotX(), frame.getHotSpotY(), frame.getDuration(), frame.getDisposal(), frame.getBlend());
         }
 
-        public void setFrame(Image image, int hotSpotX, int hotSpotY, long duration) {
+        public void setFrame(Image image, int hotSpotX, int hotSpotY, long duration, int disposal, int blend) {
             setImage(image);
             setHotSpot(hotSpotX, hotSpotY);
             setDuration(duration);
+            setDisposal(disposal);
+            setBlend(blend);
         }
 
         public void setImage(Image image) {
@@ -82,6 +105,22 @@ public interface Image extends Disposable, Cloneable {
         public void setHotSpot(int hotSpotX, int hotSpotY) {
             setHotSpotX(hotSpotX);
             setHotSpotY(hotSpotY);
+        }
+
+        public int getDisposal() {
+            return disposal;
+        }
+
+        public void setDisposal(int disposal) {
+            this.disposal = disposal;
+        }
+
+        public int getBlend() {
+            return blend;
+        }
+
+        public void setBlend(int blend) {
+            this.blend = blend;
         }
 
         @Override

@@ -9,7 +9,7 @@ import java.util.Objects;
 public class AndroidClipboard implements io.notcute.app.Clipboard {
 
     private static volatile AndroidClipboard systemClipboard;
-    public static AndroidClipboard getSystemClipboard(ClipboardManager manager) {
+    public synchronized static AndroidClipboard getSystemClipboard(ClipboardManager manager) {
         if (systemClipboard == null) systemClipboard = new AndroidClipboard(manager);
         return systemClipboard;
     }

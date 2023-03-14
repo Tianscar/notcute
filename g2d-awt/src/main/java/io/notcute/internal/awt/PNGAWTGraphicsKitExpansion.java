@@ -32,7 +32,7 @@ public final class PNGAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansio
         return result;
     }
 
-    private static boolean isPNG(ImageInputStream stream) throws IOException {
+    static boolean isPNG(ImageInputStream stream) throws IOException {
         byte[] b = new byte[8];
         stream.mark();
         try {
@@ -66,8 +66,8 @@ public final class PNGAWTGraphicsKitExpansion implements AWTGraphicsKit.Expansio
             param.setCompressionQuality(quality);
         }
         writer.write(null, new IIOImage(im, null, null), param);
-        output.flush();
         writer.dispose();
+        output.flush();
         return true;
     }
 

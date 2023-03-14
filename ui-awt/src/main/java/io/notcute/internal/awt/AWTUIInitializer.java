@@ -23,25 +23,25 @@ public class AWTUIInitializer extends Initializer {
     }
 
     private static volatile AWTPlatform platform = null;
-    public static Platform getPlatform() {
+    public synchronized static Platform getPlatform() {
         if (platform == null) platform = new AWTPlatform();
         return platform;
     }
 
     private static volatile AWTUIKit uiKit = null;
-    public static UIKit getUIKit() {
+    public synchronized static UIKit getUIKit() {
         if (uiKit == null) uiKit = new AWTUIKit();
         return uiKit;
     }
 
     private static volatile JavaSEAudioPlayer audioPlayer = null;
-    public static AudioPlayer getAudioPlayer() {
+    public synchronized static AudioPlayer getAudioPlayer() {
         if (audioPlayer == null) audioPlayer = new JavaSEAudioPlayer();
         return audioPlayer;
     }
 
     private static volatile AWTFileChooser fileChooser = null;
-    public static FileChooser getFileChooser() {
+    public synchronized static FileChooser getFileChooser() {
         if (fileChooser == null) fileChooser = new AWTFileChooser();
         return fileChooser;
     }

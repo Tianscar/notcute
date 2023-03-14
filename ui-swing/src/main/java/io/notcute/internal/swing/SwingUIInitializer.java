@@ -17,13 +17,13 @@ public class SwingUIInitializer extends Initializer {
     }
 
     private static volatile SwingPlatform platform = null;
-    public static Platform getPlatform() {
+    public synchronized static Platform getPlatform() {
         if (platform == null) platform = new SwingPlatform();
         return platform;
     }
 
     private static volatile SwingFileChooser fileChooser = null;
-    public static FileChooser getFileChooser() {
+    public synchronized static FileChooser getFileChooser() {
         if (fileChooser == null) fileChooser = new SwingFileChooser();
         return fileChooser;
     }

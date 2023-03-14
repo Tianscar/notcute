@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.FontData;
 public class SWTFont implements io.notcute.g2d.Font {
 
     private static volatile SWTFont defaultFont = null;
-    public static SWTFont getDefaultFont(Device device) {
+    public synchronized static SWTFont getDefaultFont(Device device) {
         if (defaultFont == null) defaultFont = new SWTFont(device.getSystemFont());
         return defaultFont;
     }

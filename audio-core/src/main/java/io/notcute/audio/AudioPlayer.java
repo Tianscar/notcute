@@ -51,11 +51,17 @@ public interface AudioPlayer {
 
     interface Music extends Resetable {
 
-        void setVolume(float volume);
+        void setLeftVolume(float leftVol);
+        void setRightVolume(float rightVol);
+        default void setVolume(float leftVol, float rightVol) {
+            setLeftVolume(leftVol);
+            setRightVolume(rightVol);
+        }
         void setLooping(int loops);
         void setMillisecondPos(int pos);
 
-        float getVolume();
+        float getLeftVolume();
+        float getRightVolume();
         int getLooping();
         int getMillisecondPos();
 
@@ -63,7 +69,7 @@ public interface AudioPlayer {
 
         @Override
         default void reset() {
-            setVolume(1.0f);
+            setVolume(1.0f, 1.0f);
             setLooping(0);
             setMillisecondPos(0);
         }
@@ -72,17 +78,23 @@ public interface AudioPlayer {
 
     interface Sound extends Resetable {
 
-        void setVolume(float volume);
+        void setLeftVolume(float leftVol);
+        void setRightVolume(float rightVol);
+        default void setVolume(float leftVol, float rightVol) {
+            setLeftVolume(leftVol);
+            setRightVolume(rightVol);
+        }
         void setSpeed(float speed);
         void setLooping(int loops);
 
-        float getVolume();
+        float getLeftVolume();
+        float getRightVolume();
         float getSpeed();
         int getLooping();
 
         @Override
         default void reset() {
-            setVolume(1.0f);
+            setVolume(1.0f, 1.0f);
             setSpeed(1.0f);
             setLooping(0);
         }

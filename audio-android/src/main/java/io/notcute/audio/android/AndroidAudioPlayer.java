@@ -189,7 +189,7 @@ public class AndroidAudioPlayer implements AudioPlayer, MediaPlayer.OnCompletion
     public void startSound(Sound sound) {
         Objects.requireNonNull(sound);
         AndroidSound androidSound = (AndroidSound) sound;
-        if (soundPool.play(androidSound.soundId, androidSound.volume, androidSound.volume, 1, androidSound.loops, androidSound.speed) != 0) {
+        if (soundPool.play(androidSound.soundId, androidSound.leftVolume, androidSound.rightVolume, 1, androidSound.loops, androidSound.speed) != 0) {
             onSoundStart.emit(sound);
         }
     }
@@ -313,7 +313,8 @@ public class AndroidAudioPlayer implements AudioPlayer, MediaPlayer.OnCompletion
 
         private volatile boolean prepared = false;
 
-        private volatile float volume;
+        private volatile float leftVolume;
+        private volatile float rightVolume;
         private volatile int loops;
         protected final AtomicInteger loopsLeft = new AtomicInteger();
         private volatile int pos;
@@ -336,14 +337,19 @@ public class AndroidAudioPlayer implements AudioPlayer, MediaPlayer.OnCompletion
         }
 
         protected void apply() {
-            mediaPlayer.setVolume(volume, volume);
+            mediaPlayer.setVolume(leftVolume, rightVolume);
             if (loopsLeft.get() != 0) mediaPlayer.setLooping(true);
             mediaPlayer.seekTo(MathUtils.clamp(pos, 0, getMillisecondLength()));
         }
 
         @Override
-        public void setVolume(float volume) {
-            this.volume = volume;
+        public void setLeftVolume(float leftVolume) {
+            this.leftVolume = leftVolume;
+        }
+
+        @Override
+        public void setRightVolume(float rightVolume) {
+            this.rightVolume = rightVolume;
         }
 
         @Override
@@ -358,8 +364,13 @@ public class AndroidAudioPlayer implements AudioPlayer, MediaPlayer.OnCompletion
         }
 
         @Override
-        public float getVolume() {
-            return volume;
+        public float getLeftVolume() {
+            return leftVolume;
+        }
+
+        @Override
+        public float getRightVolume() {
+            return rightVolume;
         }
 
         @Override
@@ -393,7 +404,8 @@ public class AndroidAudioPlayer implements AudioPlayer, MediaPlayer.OnCompletion
 
     public static class AndroidSound implements Sound {
 
-        private volatile float volume;
+        private volatile float leftVolume;
+        private volatile float rightVolume;
         private volatile float speed;
         private volatile int loops;
 
@@ -409,8 +421,13 @@ public class AndroidAudioPlayer implements AudioPlayer, MediaPlayer.OnCompletion
         }
 
         @Override
-        public void setVolume(float volume) {
-            this.volume = volume;
+        public void setLeftVolume(float leftVolume) {
+            this.leftVolume = leftVolume;
+        }
+
+        @Override
+        public void setRightVolume(float rightVolume) {
+            this.rightVolume = rightVolume;
         }
 
         @Override
@@ -424,8 +441,13 @@ public class AndroidAudioPlayer implements AudioPlayer, MediaPlayer.OnCompletion
         }
 
         @Override
-        public float getVolume() {
-            return volume;
+        public float getLeftVolume() {
+            return leftVolume;
+        }
+
+        @Override
+        public float getRightVolume() {
+            return rightVolume;
         }
 
         @Override

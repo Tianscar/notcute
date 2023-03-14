@@ -15,13 +15,13 @@ public class CoreInitializer extends Initializer {
     }
 
     private static volatile I18NText i18NText = null;
-    public static I18NText getI18NText() {
+    public synchronized static I18NText getI18NText() {
         if (i18NText == null) i18NText = new I18NText();
         return i18NText;
     }
 
     private static volatile MIMETypes mimeTypes = null;
-    public static MIMETypes getMIMETypes() {
+    public synchronized static MIMETypes getMIMETypes() {
         if (mimeTypes == null) {
             mimeTypes = new MIMETypes();
             mimeTypes.getExpansions().add(new BasicMIMETypesExpansion());

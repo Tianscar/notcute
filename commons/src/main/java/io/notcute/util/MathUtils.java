@@ -315,4 +315,20 @@ public final class MathUtils {
         return (float) Math.atan2(y, x);
     }
 
+    public static long gcd(final long a, final long b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+
+    public static long lcm(final long a, final long b) {
+        return a * b / gcd(a, b);
+    }
+
+    public static int gcd(final int a, final int b) {
+        return b == 0 ? a : gcd(b, a % b);
+    }
+
+    public static int lcm(final int a, final int b) {
+        return a * b / gcd(a, b);
+    }
+
 }
